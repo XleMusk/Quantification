@@ -33,7 +33,9 @@ export default function App() {
   const [page, setPage] = useState(pageFromHash);
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [selected, setSelected] = useState('');
+  const [selected, setSelected] = useState(() => {
+    try { return localStorage.getItem('quant.workspace.dataset.v1') || ''; } catch { return ''; }
+  });
   const [active, setActive] = useState('');
   const [online, setOnline] = useState(false);
   const [error, setError] = useState('');
@@ -58,6 +60,9 @@ export default function App() {
     setError(failed?.status === 'rejected' ? String(failed.reason?.message || failed.reason) : '');
   }, [reloadData, reloadJobs]);
   useEffect(() => { refresh().finally(() => setLoading(false)); }, [refresh]);
+  useEffect(() => {
+    try { if (selected) localStorage.setItem('quant.workspace.dataset.v1', selected); } catch { /* Selection remains usable. */ }
+  }, [selected]);
   const hasPendingJobs = jobs.some(job => ['running', 'queued'].includes(job.status));
   useEffect(() => {
     let current = true;
@@ -88,7 +93,7 @@ export default function App() {
       {error && <ErrorMessage message={error} />}
       <Suspense fallback={<Loading />}>
         {page === 'overview' ? <TerminalOverview datasets={datasets} selectedDatasetId={selected} onDatasetSelect={setSelected} jobs={jobs} onNavigate={navigate} onOpenResult={openResult} />
-          : page === 'chart-review' ? <ChartReview />
+          : page === 'chart-review' ? <ChartReview datasets={datasets} datasetId={selected} onDatasetSelect={setSelected} jobs={jobs} />
           : ['strategy', 'orders', 'comparison'].includes(page) ? <Trading page={page} />
           : loading ? <Loading />
           : page === 'research' ? <Research datasets={datasets} selected={selected} select={setSelected} workerOnline={online} onCreated={job => { setActive(job.id); void reloadJobs(); navigate('tasks'); }} />

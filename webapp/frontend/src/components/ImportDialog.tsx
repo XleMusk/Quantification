@@ -26,7 +26,8 @@ export function ImportDialog({ onClose, onImported }: { onClose: () => void; onI
         <label>价格口径<select name="adjustment" required defaultValue="unknown"><option value="unknown">未声明</option><option value="raw">不复权</option><option value="forward">前复权</option><option value="backward">后复权</option><option value="synthetic">合成价格</option></select></label></div>
       <label>数据来源<input name="source" required maxLength={200} placeholder="数据供应商 / 文件出处" /></label>
       <label>行情 CSV<input type="file" name="file" accept=".csv" required /></label>
-      <div className="field-note">date, symbol, open, high, low, close, volume · UTF-8 · 最大 12 MB</div>
+      <div className="field-note">必填：date, symbol, open, high, low, close, volume · UTF-8 · 最大 12 MB</div>
+      <div className="field-note">可选：amount（成交额，元）、turnover_rate_pct（换手率，%）、pre_close、pe_ttm、pb、total_mv、float_mv、is_st 等。缺失值保留为空；全市场库存请从 StockDB 面板接入。</div>
       <label>交易日历 CSV（可选）<input type="file" name="calendar_file" accept=".csv" /></label>
       <div className="field-note">date 单列。未提供时，日历标记为“观测日期并集”。</div>
       {error && <ErrorMessage message={error} />}

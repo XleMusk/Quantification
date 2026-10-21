@@ -10,6 +10,7 @@ import math
 
 from fastapi import HTTPException
 import pandas as pd
+import pyarrow.parquet as pq
 
 from . import data, settings, store
 from trading import store as trading_store
@@ -45,20 +46,35 @@ def dataset_chart(identifier, symbol=None, as_of=None):
     if item is None:
         raise HTTPException(404, "数据集不存在")
     selected, end = _symbol(symbol, item["symbols"]), cutoff(as_of)
-    frame = data.read_bars(identifier)
-    frame = frame.loc[frame.symbol.eq(selected)].sort_values("date")
+    frame = data.read_bars(identifier, symbol=selected, end=end).sort_values("date")
     calendar = pd.read_parquet(settings.STORAGE / "datasets" / identifier / "calendar.parquet").date
     if end:
         frame = frame.loc[frame.date.le(pd.Timestamp(end))]
         calendar = calendar.loc[calendar.le(pd.Timestamp(end))]
-    fields = [field for field in BAR_FIELDS if field in frame]
-    # Import currently stores OHLCV only. Do not reinterpret volume as amount.
+    # Cash amount is compatible with raw RMB prices only. A dataset containing
+    # adjusted prices and raw amount must not enable a raw-price VWAP overlay.
+    declared = set(item.get("fields", frame.columns))
+    fields = [field for field in (*BAR_FIELDS, *data.OPTIONAL_FIELDS) if field in frame and field in declared]
+    capable = item["adjustment"] == "raw" and "amount" in fields
+    complete = False
+    if capable:
+        valid_amount = (frame.amount.notna() & frame.amount.ge(0)
+                        & ((frame.volume.gt(0) & frame.amount.gt(0))
+                           | (frame.volume.eq(0) & frame.amount.eq(0))))
+        # Preserve valid prefixes: a later amount gap must not suppress an
+        # earlier replay's indicator. The client checks its visible prefix.
+        frame["turnover"] = frame.amount.where(valid_amount)
+        complete = bool(len(frame) and valid_amount.all())
+        fields.append("turnover")
     return {"dataset": item, "symbol": selected, "prices": data.records(frame),
             "calendar": pd.to_datetime(calendar).dt.strftime("%Y-%m-%d").tolist(),
             "source_period": "D", "price_basis": item["adjustment"],
             "source_kind": "research_snapshot", "realtime": False,
             "fields": fields, "available_fields": fields, "as_of": end,
-            "volume_unit": "share", "turnover_available": False}
+            "volume_unit": "share", "turnover_unit": "CNY" if capable else None,
+            "field_units": item.get("field_units", {}), "turnover_available": capable,
+            "turnover_complete": complete,
+            "turnover_reason": None if complete else "累计均价需要可见区间完整成交额（元）、成交量（股）和未复权价格"}
 
 
 def job_signals(identifier, symbol=None, as_of=None):
@@ -74,11 +90,12 @@ def job_signals(identifier, symbol=None, as_of=None):
     path = settings.STORAGE / "results" / identifier / "factors.parquet"
     if not path.is_file():
         raise HTTPException(404, "保存的因子明细不存在")
-    frame = pd.read_parquet(path)
     required = {"date", "symbol", *FACTOR_IDS}
-    if not required.issubset(frame.columns):
+    if not required.issubset(pq.read_schema(path).names):
         raise HTTPException(409, "保存结果缺少可用因子列")
-    frame = frame.loc[frame.symbol.eq(selected), ["date", "symbol", *FACTOR_IDS]].copy()
+    filters = [("symbol", "=", selected), ("date", ">=", pd.Timestamp(job["config"]["start"])),
+               ("date", "<=", pd.Timestamp(min(job["config"]["end"], end or job["config"]["end"])))]
+    frame = pd.read_parquet(path, columns=["date", "symbol", *FACTOR_IDS], filters=filters)
     frame["date"] = pd.to_datetime(frame.date)
     frame = frame.loc[frame.date.between(pd.Timestamp(job["config"]["start"]),
                                        pd.Timestamp(job["config"]["end"]))]

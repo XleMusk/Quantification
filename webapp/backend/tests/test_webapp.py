@@ -103,7 +103,7 @@ def test_snapshot_preserves_gaps_and_null_change_for_single_observation(client):
 
 def test_snapshot_empty_storage_and_unknown_dataset_remain_honest(client, dataset, monkeypatch):
     assert client.get("/api/datasets/unknown/snapshot").status_code == 404
-    monkeypatch.setattr(data, "read_bars", lambda identifier: pd.DataFrame(columns=data.COLUMNS))
+    monkeypatch.setattr(data, "read_latest", lambda identifier: [])
     value = client.get(f"/api/datasets/{dataset['id']}/snapshot").json()
     assert value["rows"] == [] and value["status"] == "empty"
     assert value["realtime"] is False

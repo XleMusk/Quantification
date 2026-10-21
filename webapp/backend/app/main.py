@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 import io
 import json
+import socket
 from typing import Literal
 
 from fastapi import FastAPI, File, Form, Header, HTTPException, Request, UploadFile
@@ -10,8 +11,8 @@ from pydantic import BaseModel, Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 import pandas as pd
 
-from . import chart_data, data, store
-from .settings import MAX_UPLOAD, STORAGE, UI_ORIGIN
+from . import chart_data, data, stockdb_registry, store
+from .settings import MAX_RESEARCH_GRID_CELLS, MAX_UPLOAD, STORAGE, UI_ORIGIN
 from trading import store as trading_store
 from trading.api import router as trading_router
 
@@ -86,6 +87,31 @@ def sync_cache():
     return data.sync_local_cache()
 
 
+@app.get("/api/data-sources/stockdb")
+def stockdb_inventory():
+    # Availability of the service and availability of saved research versions
+    # are independent. No query enumerates the live database here.
+    try:
+        with socket.create_connection(("127.0.0.1", 7899), timeout=.35):
+            status = "online"
+    except OSError:
+        status = "offline"
+    saved = stockdb_registry.inventory()
+    return {"service": {"status": status, "endpoint": "http://127.0.0.1:7899/",
+                        "message": "本机端口可连接，行情日期以保存版本为准" if status == "online" else "服务未连接，仍可使用已保存版本"},
+            "inventory": saved["items"], "warnings": saved["warnings"]}
+
+
+class StockDBRegistration(BaseModel):
+    inventory_id: str = Field(min_length=1, max_length=128)
+    name: str | None = Field(default=None, min_length=1, max_length=80)
+
+
+@app.post("/api/data-sources/stockdb/register")
+def register_stockdb(body: StockDBRegistration):
+    return stockdb_registry.register_inventory(body.inventory_id, body.name)
+
+
 @app.post("/api/datasets")
 async def upload_dataset(file: UploadFile = File(...), calendar_file: UploadFile | None = File(None),
                          name: str = Form(..., min_length=1, max_length=80),
@@ -119,8 +145,7 @@ def preview(identifier: str, symbol: str | None = None):
     symbol = symbol or item["symbols"][0]
     if symbol not in item["symbols"]:
         raise ValueError("证券代码不在此数据集中")
-    frame = data.read_bars(identifier)
-    frame = frame.loc[frame.symbol.eq(symbol)].sort_values("date")
+    frame = data.read_bars(identifier, symbol=symbol).sort_values("date")
     return {"dataset": item, "symbol": symbol, "prices": data.records(frame.tail(800)),
             "recent": data.records(frame.tail(10).iloc[::-1])}
 
@@ -128,7 +153,7 @@ def preview(identifier: str, symbol: str | None = None):
 @app.get("/api/datasets/{identifier}/snapshot")
 def dataset_snapshot(identifier: str):
     item = require_dataset(identifier)
-    rows = data.latest_observations(data.read_bars(identifier))
+    rows = data.read_latest(identifier)
     return {"dataset": item, "rows": rows, "status": "available" if rows else "empty",
             "price_change_basis": "previous_observed_row", "realtime": False}
 
@@ -170,6 +195,11 @@ def submit_job(body: JobInput, idempotency_key: str = Header(..., min_length=8, 
         raise ValueError("数据质量阻断：请先修复 OHLC / 成交量异常")
     if len(item["symbols"]) < body.min_pairs:
         raise ValueError("证券数量不足，至少需要 min_pairs 个证券")
+    calendar = pd.DatetimeIndex(pd.read_parquet(STORAGE / "datasets" / item["id"] / "calendar.parquet").date)
+    first = max(0, calendar.searchsorted(start, side="left") - 20)
+    last = calendar.searchsorted(end, side="right")
+    if (last - first) * len(item["symbols"]) > MAX_RESEARCH_GRID_CELLS:
+        raise ValueError("研究窗口加预热超过 500 万日期 × 证券格点，请缩短日期范围后分别研究")
     config = {"start": body.start, "end": body.end, "min_pairs": body.min_pairs,
               "factors": ["reversal_5", "momentum_20", "relative_volume_20"], "holding_sessions": 5}
     return store.create_job(body.dataset_id, config, idempotency_key)

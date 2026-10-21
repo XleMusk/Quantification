@@ -2,6 +2,28 @@
 
 ## Current priority: strategy evidence and a usable daily research path
 
+Latest actual source-only result (16:03:45, October21): saved32 formations /
+93,188 stock-months were reused without rescoring or rule/cost changes. LowMAX
+now completed106 sessions and stopped on600120/June14 reserve terms; sigma115
+stopped on600033/June27. Both keep20 residual positions; full-window returns,
+yearly increment and selection remain null. The bounded two-primary-document
+source correction is finished. Do not expand notice collection, retry this old
+window, tune parameters or compare different stopping values. Original failures
+and the pre-account reader-order bug are preserved. Actual result and two exact
+missing fields: outputs/monthly_max_vs_sigma/20261021_reader_order_fix_v2/REPORT.md
+and source_gaps.json. LowMAX has no established increment; sigma stays a baseline,
+not a validated winner. Next software work below is now actually completed.
+Independent advance-eight32 completed its five original stages at16:17:02,
+October21: exactday20 input appended; oldpanels/preview/sourceproof prefixes
+unchanged, only neweight32 profile inhead. Global/sourcecursor19 and original
+accounts unchanged; publication19/missing20 are explicit. No day20 backfill,
+forward32 or Engine. RealnewD source can publish independently sameD15:05+,
+using its own input and actualclock. Evidence outputs/eight32_daily/20261021_v1.
+Next paper-path gap is a narrow new-generation registration producer that uses
+an actual newfirstpublication and preserves old missing-publication accounts.
+The existing consumer accepts the paper schema statically but no actualnew
+firstpublication/registration/account has been validated; no automatic reset.
+
 The October 21 user correction is an allocation change: stop treating successive
 repairs to October 19/20 contexts as the default research task. The native cache
 already covers 908 sessions / 4,641,571 rows, and eight-type studies already exist
@@ -9,7 +31,7 @@ for partial 2023, full 2024/2025 and segmented 2026. Reuse these results. Broad
 data coverage does not establish a strong strategy; the completed studies retain
 weak, negative, empty and source-stopped cases. No strategy is validated.
 
-- Current actual study: one continuous January 5--September 21, 2026 original32
+- Completed at 14:45:39: one continuous January 5--September 21, 2026 original32
   account path, plus six tail sessions through September 30. Registration and
   the once-only command driver are in
   `outputs/leader_cross_year/20261021_2026_continuous_v1`. This addresses monthly
@@ -17,10 +39,35 @@ weak, negative, empty and source-stopped cases. No strategy is validated.
   first-day native-observed scope differs from the 2024/2025 annual61-valid
   cohort, so this is neither a blind holdout nor an only-year-changed comparison.
   Preserve both capacities, both guards, all 32 outcomes and original fees.
-- After that readback, use broad stored evidence to choose the next distinct
-  strategy question. Do not repeat annual/monthly studies, parameter searches,
-  old model evaluation or profitable subwindows. A negative complete result is
-  grounds to stop that formulation, not to retune the same inspected window.
+  All32 are terminal: 11 complete conditional returns (6 positive / 5 negative),
+  16 no possible entry and 5 source-stopped with null returns. ASSESSMENT.md and
+  case_summary.csv in that directory retain the decisions and every outcome.
+  Keep only the space/environment and liquidity/environment hypotheses for
+  inexpensive future observation; stop new historical tuning of the current
+  relay, rebound and turnover expressions. Trend, crossing and catch-up remain
+  untested because of input/identity gaps. No type qualifies for selection.
+  Original registered prospective books continue unchanged, including losers.
+- Next distinct comparison: fixed previous-complete-month lowMAX versus same-
+  month sample sigma, one common main-board/non-ST complete-history pool, same
+  raw execution/fees/shared Engine, two independent 140,000 books and monthly
+  20-stock targets at 4% each (80% gross; shortage leaves cash). Source2023 is
+  warmup; accounts2024-01-02..2026-09-30, first decision2024-01-31 and execution
+  February1, last decision August2026. January2024 is cash in both arms. Use the
+  original matched canonical/raw/action source pair, not a mixed extended pair.
+  Preregister exact inputs and economics before the run; no MAX-window search.
+  All dates were already inspected, so this is a mechanism replication, not a
+  blind holdout. Require complete paired books, positive lowMAX net return and
+  net increment, and positive increment in at least two of the three year slices
+  before considering future observation. Source failures remain unknown; they
+  do not stop the other arm or daily production. Do not repeat old studies.
+  Actual one-shot attempt finished15:11:59: all32 formations /93,188 common
+  stock-months, monthly pools2,338--3,027. LowMAX stopped at81 sessions on
+  600507.SSE/2024-05-09 reserve terms, sigma at107 on002293.SZSE/2024-06-17.
+  Both preserved their accounts (236/252 fill records); full paired returns
+  remain null. No repeat on these inputs or notice-review expansion. A separate
+  saved-score diagnostic gives rank correlation.869 and static top20 overlap
+  38.1%; it is not net-return evidence. Actual outputs/monthly_max_vs_sigma/
+  20261021_v1/REPORT.md records exact missing fields and source limitations.
 - Keep scheduled collection/publication and concrete production failures on the
   operational track. Once a repair is adequate, return to research; additional
   context separation, reports and UI checks cannot substitute for strategy
@@ -73,8 +120,8 @@ historical evidence, not the current data or account cursor.
   independent command receipts; same-day actual publication and immutable inputs
   are required. Saved successful children can be adopted without re-production;
   unresolved or failed attempts cannot be bypassed by another path or mode.
-- Next operational implementation: continue the same separation for eight-type context and
-  Alpha158. Eight-type can append exact day-20 inputs without a day-20 paper
+- Completed operational implementation: eight-type independent context/publication
+  is now connected and actual20context completed. Remaining: Alpha158. Eight-type can append exact day-20 inputs without a day-20 paper
   publication. Alpha needs its own provider-through-20 and frozen score context,
   followed by the new day's separate provider/score/publication; do not backfill
   an old score from a later provider. Original accounts remain unable to cross

@@ -14,7 +14,7 @@ import pandas as pd
 
 from quant_learning_starter.factor_lab import FACTORS, LABEL, compute_factors_and_labels, evaluate_cross_sections, summarize
 from webapp.backend.app import data, store
-from webapp.backend.app.settings import STORAGE
+from webapp.backend.app.settings import MAX_RESEARCH_GRID_CELLS, STORAGE
 
 
 @contextmanager
@@ -44,21 +44,48 @@ def checkpoint(identifier, percent, message):
     return store.job(identifier)["status"] != "cancelled"
 
 
+def research_calendar_window(calendar, start, end):
+    """Keep the 20 prior exchange sessions needed by the fixed factor set.
+
+    Bounds operate on the saved calendar, never on a stock's observed rows.
+    Reading no sessions after ``end`` also keeps future prices out of the task;
+    labels which would cross that date are naturally unavailable.
+    """
+    calendar = pd.DatetimeIndex(calendar, name="date")
+    if (calendar.hasnans or not calendar.is_unique
+            or not calendar.is_monotonic_increasing):
+        raise ValueError("Calendar must contain unique, sorted, non-missing sessions")
+    start, end = pd.Timestamp(start), pd.Timestamp(end)
+    if pd.isna(start) or pd.isna(end) or start > end:
+        raise ValueError("研究日期无效")
+    left = calendar.searchsorted(start, side="left")
+    right = calendar.searchsorted(end, side="right")
+    if left >= right:
+        raise ValueError("选择的日期范围没有交易日")
+    return calendar[max(0, left - 20):right]
+
+
 def execute(item):
     identifier = item["id"]
     try:
         if not checkpoint(identifier, 10, "读取数据与交易日历"):
             return
         dataset = store.dataset(item["dataset_id"])
-        panel = data.read_bars(dataset["id"])
-        calendar = pd.DatetimeIndex(pd.read_parquet(STORAGE / "datasets" / dataset["id"] / "calendar.parquet").date)
+        config = item["config"]
+        calendar = research_calendar_window(
+            pd.read_parquet(STORAGE / "datasets" / dataset["id"] / "calendar.parquet").date,
+            config["start"], config["end"])
+        input_start, input_end = str(calendar[0].date()), str(calendar[-1].date())
+        if len(calendar) * len(dataset["symbols"]) > MAX_RESEARCH_GRID_CELLS:
+            raise ValueError("研究窗口加预热超过 500 万日期 × 证券格点，请缩短日期范围")
+        panel = data.read_bars(dataset["id"], start=input_start, end=input_end,
+                               columns=data.COLUMNS)
         if dataset["quality"]["invalid_rows"]:
             raise ValueError("数据包含 OHLC 异常，拒绝计算")
         panel.loc[panel.volume.le(0), ["open", "close", "volume"]] = np.nan
         if not checkpoint(identifier, 25, f"计算 3 个因子；输入 {len(panel)} 行"):
             return
         frame = compute_factors_and_labels(panel, calendar)
-        config = item["config"]
         selected = frame.loc[frame.date.between(config["start"], config["end"])].copy()
         selected.loc[selected.exit_date.gt(pd.Timestamp(config["end"])), LABEL] = np.nan
         if selected.empty:
@@ -80,6 +107,11 @@ def execute(item):
         groups.to_csv(folder / "groups.csv", index=False)
         selected.to_parquet(folder / "factors.parquet", index=False)
         result = {"job_id": identifier, "dataset": dataset, "config": config,
+                  "input_window": {"start": input_start, "end": input_end,
+                                   "sessions": len(calendar), "rows": len(panel),
+                                   "warmup_sessions_requested": 20,
+                                   "calendar_basis": "saved_dataset_calendar",
+                                   "after_end_prices_read": False},
                   "completed_at": store.now(), "summary": data.records(summary),
                   "daily_ic": data.records(daily), "correlation": data.records(correlation),
                   "warnings": dataset["warnings"] + [

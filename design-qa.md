@@ -1,5 +1,28 @@
 # Terminal workbench design QA — 2026-10-21
 
+## Batch 1: frozen daily inventory integration
+
+The data center now separates the local StockDB port connection from saved inventory availability. It lists completed StockDB snapshots/bulk inventories and BaoStock raw daily cache views, registers a frozen daily projection, and exposes actual amount, percentage turnover, optional provider fields, units, coverage, source omissions and version identity. Shared dataset selection spans the overview, data center, chart review and factor research, including reload.
+
+Browser validation used Chrome at `http://terminal.local:4173/`, 1363 × 936. The local Edge extension could not open that internal preview (`ERR_BLOCKED_BY_CLIENT`); the Browser skill's cloud preview fallback was used. The displayed acceptance dataset is explicitly synthetic (8 SYN securities, 75 sessions, 596 rows with four real fixture gaps), produced through the actual registry and served as recorded FastAPI GET responses. No Windows data or private account was copied into this preview.
+
+| Check | Result |
+| --- | --- |
+| Page identity, meaningful content, no framework overlay | Pass |
+| Separate offline service and available frozen version | Pass |
+| Amount in RMB, turnover rate in percent, extended fields and coverage | Pass |
+| Data center → chart uses selected version | Pass |
+| Chart version change → research uses that same ID | Pass |
+| Reload retains selected acceptance dataset | Pass |
+| Relevant application console errors | None; browser-extension metadata errors excluded |
+| Browser registration writes and Windows installation | Not verified; registration separately tested with the actual FastAPI API |
+
+Screenshot: `/workspace/scratch/quant-data-center-1792571511800.jpg`. The view shows the dataset selection, canonical daily fields and extended-source preview. Backend checks cover source hashes, completed inventories, large-register vs CSV limits, preserved omissions, read filtering, actual registration API, raw/adjusted amount compatibility, prefix availability, and exact 20-session research warmup. The frontend production build and 56 charting checks passed. Existing large-chunk warnings remain.
+
+The isolated acceptance dataset also completed the actual registration → `POST /api/jobs` → targeted factor worker → saved result → chart-signals flow. The 596 observed input rows align to 600 calendar/security cells with gaps preserved; all three saved factor columns use the registered dataset fingerprint. The frozen bars and extended-field metadata were unchanged. Browser writes remain outside the read-only preview verification. Final backend suite: 59 passed.
+
+Desktop Commander reported the user's Windows device offline during this batch. The running Windows Git version, real inventory registration and local UI startup remain pending; no local project, source service, research account or broker state was changed remotely in this batch.
+
 Status: **passed** for the verified desktop terminal, research toolbox and drawing/replay workflow.
 
 ## Reference and comparison

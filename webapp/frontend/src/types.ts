@@ -2,8 +2,28 @@ export type Dataset = {
   id: string; name: string; kind: 'historical' | 'synthetic'; source: string; adjustment: string;
   rows: number; symbols: string[]; start: string; end: string; created_at: string; warnings: string[];
   quality: { invalid_rows: number; zero_volume_rows: number; missing_grid_rows: number; sessions: number; calendar_kind: string };
+  fields?: string[]; field_units?: Record<string, string>; field_coverage?: Record<string, number>;
+  pit_status?: string; fingerprint?: string; storage_kind?: string;
+  requested_daily_rows?: number | null; source_missing_daily_rows?: number | null;
+  omitted_suspended_rows_without_prices?: number; omitted_unknown_status_rows_without_prices?: number;
 };
-export type Bar = { date: string; symbol: string; open: number; high: number; low: number; close: number; volume: number; turnover?: number };
+export type Bar = {
+  date: string; symbol: string; open: number; high: number; low: number; close: number; volume: number;
+  /** Chart adapter amount in CNY; source turnover rate uses turnover_rate_pct. */
+  turnover?: number; amount?: number | null; turnover_rate_pct?: number | null; pre_close?: number | null;
+  name?: string | null; is_st?: boolean | null; pe_ttm?: number | null; pb?: number | null;
+  total_mv?: number | null; float_mv?: number | null; float_share?: number | null; total_share?: number | null;
+  pct_chg?: number | null; amplitude?: number | null; vol_ratio?: number | null;
+};
+export type StockDBInventoryItem = {
+  id: string; name: string; kind: string; format: string; start: string; end: string;
+  rows: number | null; symbols: number | null; sessions: number | null; fields: string[]; warnings: string[];
+  registered_dataset_id?: string | null; requested_symbols?: number | null; missing_symbols?: number | null;
+};
+export type StockDBSource = {
+  service: { status: 'online' | 'offline' | 'unavailable'; endpoint: string; message?: string };
+  inventory: StockDBInventoryItem[]; warnings: string[];
+};
 export type Preview = { dataset: Dataset; symbol: string; prices: Bar[]; recent: Bar[] };
 export type Config = { start: string; end: string; min_pairs: number; factors: string[]; holding_sessions: number };
 export type Job = { id: string; dataset_id: string; status: string; progress: number; config: Config; error: string | null; cancel_requested: number; created_at: string; updated_at: string; logs: { time: string; message: string }[] };

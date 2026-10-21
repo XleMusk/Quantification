@@ -12,19 +12,34 @@ from .settings import PROJECT, STORAGE
 
 PRICE_FIELDS = ["open", "high", "low", "close"]
 COLUMNS = ["date", "symbol", *PRICE_FIELDS, "volume"]
+OPTIONAL_NUMERIC_FIELDS = ["pre_close", "amount", "turnover_rate_pct", "pct_chg", "amplitude",
+                           "vol_ratio", "total_share", "float_share", "total_mv", "float_mv", "pe_ttm", "pb"]
+OPTIONAL_FIELDS = [*OPTIONAL_NUMERIC_FIELDS, "is_st", "name"]
+FIELD_UNITS = {**dict.fromkeys([*PRICE_FIELDS, "pre_close", "amount", "total_mv", "float_mv"], "CNY"),
+               **dict.fromkeys(["volume", "total_share", "float_share"], "share"),
+               **dict.fromkeys(["turnover_rate_pct", "pct_chg", "amplitude"], "percent"),
+               **dict.fromkeys(["vol_ratio", "pe_ttm", "pb"], "ratio"), "is_st": "boolean"}
+PIT_FIELDS = {"pe_ttm", "pb", "total_mv", "float_mv", "total_share", "float_share", "is_st", "name"}
+PIT_WARNING = "估值、市值、股本、ST 与名称保留供应商原值；历史可得时间及修订记录未核验，不能直接视为当时已知信息"
 
 
 def records(frame):
     return json.loads(frame.to_json(orient="records", date_format="iso"))
 
 
-def validate_panel(frame, calendar=None):
+def normalize_daily_fields(frame):
+    """Normalize a daily chunk without applying the interactive CSV size caps.
+
+    StockDB aliases belong in its source adapter: its ``turnover`` is a
+    percentage, whereas the chart library uses that name for cash turnover.
+    Missing optional observations remain null and are never filled from prices.
+    """
     absent = sorted(set(COLUMNS) - set(frame.columns))
     if absent:
         raise ValueError("缺少字段: " + ", ".join(absent))
-    if not 1 <= len(frame) <= 100000:
-        raise ValueError("数据行数须在 1 到 100000 之间")
-    frame = frame[COLUMNS].copy()
+    if "turnover" in frame:
+        raise ValueError("turnover 含义不明确：成交额请使用 amount（元），换手率请使用 turnover_rate_pct（百分数）")
+    frame = frame[[*COLUMNS, *[field for field in OPTIONAL_FIELDS if field in frame]]].copy()
     frame["date"] = pd.to_datetime(frame["date"], errors="raise")
     if frame.date.isna().any() or frame.date.dt.tz is not None or not frame.date.eq(frame.date.dt.normalize()).all():
         raise ValueError("date 必须为不含时区或时分秒的日频日期")
@@ -43,6 +58,47 @@ def validate_panel(frame, calendar=None):
     invalid = (prices.le(0).any(axis=1) | frame.volume.lt(0)
                | (frame.high + prices.max(axis=1) * 2e-6 < prices.max(axis=1))
                | (frame.low - prices.max(axis=1) * 2e-6 > prices.min(axis=1)))
+    for field in OPTIONAL_NUMERIC_FIELDS:
+        if field not in frame:
+            continue
+        values = pd.to_numeric(frame[field], errors="raise").astype(float)
+        if (~np.isfinite(values) & values.notna()).any():
+            raise ValueError(f"{field} 不能包含无穷值")
+        # Negative PE/PB and reported percentage returns can be meaningful.
+        if field not in {"pe_ttm", "pb", "pct_chg"} and values.lt(0).any():
+            raise ValueError(f"{field} 不能为负数；缺失值请保留为空")
+        frame[field] = values
+    if "is_st" in frame:
+        def st_flag(value):
+            if pd.isna(value):
+                return pd.NA
+            if value is True or value == 1 or (isinstance(value, str) and value.strip().lower() in {"1", "true"}):
+                return True
+            if value is False or value == 0 or (isinstance(value, str) and value.strip().lower() in {"0", "false"}):
+                return False
+            raise ValueError("is_st 只允许布尔值、0、1 或空值")
+        frame["is_st"] = frame.is_st.map(st_flag).astype("boolean")
+    if "name" in frame:
+        frame["name"] = frame.name.astype("string").str.strip()
+        if frame.name.str.len().gt(120).any() or frame.name.str.contains("\x00", regex=False, na=False).any():
+            raise ValueError("name 最长 120 字符，不能包含空字符")
+        frame["name"] = frame.name.mask(frame.name.eq(""), pd.NA)
+    return frame, invalid
+
+
+def field_metadata(frame):
+    fields = [field for field in [*COLUMNS, *OPTIONAL_FIELDS] if field in frame]
+    result = {"fields": fields, "field_units": {field: FIELD_UNITS[field] for field in fields if field in FIELD_UNITS},
+              "field_coverage": {field: float(frame[field].notna().mean()) if len(frame) else 0.0 for field in fields}}
+    if PIT_FIELDS.intersection(fields):
+        result["pit_status"] = "not_verified"
+    return result
+
+
+def validate_panel(frame, calendar=None):
+    if not 1 <= len(frame) <= 100000:
+        raise ValueError("数据行数须在 1 到 100000 之间")
+    frame, invalid = normalize_daily_fields(frame)
     symbols = sorted(frame.symbol.unique().tolist())
     if len(symbols) > 100:
         raise ValueError("首版每个数据集最多 100 个证券")
@@ -75,10 +131,12 @@ def register(frame, name, kind, source, adjustment, calendar=None, warnings=None
         warnings.append("OHLC 或成交量不合格，因子任务将被阻断")
     if quality["zero_volume_rows"]:
         warnings.append("零成交量记录在因子计算中视为缺失，不推定可成交")
+    if PIT_FIELDS.intersection(frame.columns):
+        warnings.append(PIT_WARNING)
     meta = {"kind": kind, "source": source, "adjustment": adjustment,
             "rows": len(frame), "symbols": sorted(frame.symbol.unique().tolist()),
             "start": str(dates[0].date()), "end": str(dates[-1].date()),
-            "quality": quality, "warnings": warnings}
+            "quality": quality, "warnings": warnings, **field_metadata(frame)}
     content = (frame.to_csv(index=False) + "\n".join(dates.strftime("%Y-%m-%d"))
                + json.dumps({"name": name, **meta}, sort_keys=True, ensure_ascii=False)).encode("utf-8")
     fingerprint = sha256(content).hexdigest()
@@ -94,6 +152,7 @@ def register(frame, name, kind, source, adjustment, calendar=None, warnings=None
     try:
         frame.to_parquet(folder / "bars.parquet", index=False)
         pd.DataFrame({"date": dates}).to_parquet(folder / "calendar.parquet", index=False)
+        pd.DataFrame(latest_observations(frame)).to_parquet(folder / "latest.parquet", index=False)
         with store.connection() as db:
             db.execute("INSERT OR IGNORE INTO datasets VALUES(?,?,?,?,?)",
                        (identifier, fingerprint, name, json.dumps(meta, ensure_ascii=False), store.now()))
@@ -106,10 +165,34 @@ def register(frame, name, kind, source, adjustment, calendar=None, warnings=None
         raise
 
 
-def read_bars(identifier):
+def read_bars(identifier, *, symbol=None, start=None, end=None, columns=None):
     if store.dataset(identifier) is None:
         raise ValueError("数据集不存在")
-    return pd.read_parquet(STORAGE / "datasets" / identifier / "bars.parquet")
+    filters = []
+    if symbol is not None:
+        filters.append(("symbol", "=", symbol))
+    for value, operator in ((start, ">="), (end, "<=")):
+        if value is not None:
+            day = pd.Timestamp(value)
+            if pd.isna(day) or day.tz is not None or day != day.normalize():
+                raise ValueError("查询日期须为不含时区或时分秒的日频日期")
+            filters.append(("date", operator, day))
+    return pd.read_parquet(STORAGE / "datasets" / identifier / "bars.parquet",
+                           filters=filters or None, columns=columns)
+
+
+def read_latest(identifier):
+    item = store.dataset(identifier)
+    if item is None:
+        raise ValueError("数据集不存在")
+    path = STORAGE / "datasets" / identifier / "latest.parquet"
+    if path.is_file():
+        return records(pd.read_parquet(path))
+    # Legacy CSV datasets are bounded by validate_panel; a large registered
+    # inventory must have its compact cache rather than forcing a full scan.
+    if item.get("rows", 0) > 100000:
+        raise ValueError("大型数据集缺少最新观测缓存，请重新登记该数据集")
+    return latest_observations(read_bars(identifier))
 
 
 def latest_observations(frame):
@@ -128,7 +211,8 @@ def latest_observations(frame):
                   & np.isfinite(frame.close) & np.isfinite(frame.previous_close))
     frame["change_pct"] = (frame.close / frame.previous_close - 1).where(comparable)
     return records(frame.groupby("symbol", sort=False).tail(1)[
-        [*COLUMNS, "previous_date", "previous_close", "change_pct"]])
+        [*COLUMNS, *[field for field in OPTIONAL_FIELDS if field in frame],
+         "previous_date", "previous_close", "change_pct"]])
 
 
 def sync_local_cache():
