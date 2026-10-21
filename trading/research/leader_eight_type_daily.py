@@ -160,6 +160,158 @@ def _steps(parent, day, package, operation, source_only):
         "expected_files": [str(p) for p in outputs[key]]} for key in selected]
 
 
+
+ADOPTION_SCHEMA = "eight32_failed_publication_context_adoption_v1"
+
+
+def _saved_input_context(directory, head, registration, sessions, now, day, *, profile=None):
+    """Read the original successful pre-publication stages, never execute them."""
+    profile = head.get(PROFILE_KEY) if profile is None else profile
+    if profile is None:
+        raise ValueError("An existing exact eight-type producer profile is required")
+    _validate(profile, head, registration, sessions, now)
+    if (day not in sessions or sessions.index(day) == 0 or day == sessions[-1]
+            or profile["source_day"] != sessions[sessions.index(day)-1]):
+        raise ValueError("Saved input context requires one exact source successor without skipping or rollback")
+    directory = Path(directory)
+    operation = directory / "eight32_production" / day.replace("-", "")
+    plan_file, receipt_file = operation / "plan.json", operation / "receipt.json"
+    if not plan_file.is_file() or not receipt_file.is_file():
+        raise ValueError("No original completed eight-type input stage exists for this exact settlement day")
+    plan, receipt = daily._read(plan_file), daily._read(receipt_file)
+    execution = sessions[sessions.index(day)+1]
+    if (plan.get("schema") != SCHEMA or plan.get("day") != day or plan.get("execution_day") != execution
+            or plan.get("source_only") is not False or plan.get("parent_profile") != profile
+            or plan.get("system_registration") != head["registration"]
+            or receipt.get("schema") != SCHEMA or receipt.get("day") != day
+            or receipt.get("source_only") is not False or receipt.get("plan_ref") != daily._ref(plan_file)
+            or any(plan.get(k) is not v or receipt.get(k) is not v for k,v in daily.FLAGS.items())):
+        raise ValueError("Saved input context changed its exact original producer parent, source day or method")
+    source = plan["source"]
+    package = Path(source["source_folder"]).resolve()
+    checked = daily._source(package, registration["calendar"], sessions, now)["proof"]
+    if source != checked or source["day"] != day:
+        raise ValueError("Saved input context requires the exact completed source-D package")
+    commands, steps = _steps(profile, day, package, operation, False)
+    terminals=[]
+    for step in steps[:-1]:
+        saved = receipt.get("steps", {}).get(step["id"])
+        if not saved or saved.get("status") != "completed":
+            raise ValueError("Saved pre-publication input stages require successful terminal evidence")
+        bound = {**step, "binding":{"kind":"eight32_independent_production",
+            "registration":head["registration"], "source":source, "plan":daily._ref(plan_file)}}
+        _, terminal, _, _ = daily._terminal(bound, operation/"commands", day, saved)
+        terminals.append(terminal)
+    manifest = daily._ref(operation/"artifacts/eight_inputs/manifest.json")
+    _manifest(manifest, [*profile["source_days"],day], [*profile["packages"],str(package)])
+    return {"operation":operation,"plan":plan,"receipt":receipt,"commands":commands,"steps":steps,
+        "source":source,"manifest":manifest,"successful_terminals":terminals}
+
+
+def _failed_paper_terminal(context, head, day):
+    """Accept only a matching observed nonzero CLI exit, never a pending label."""
+    operation=context["operation"]
+    step=context["steps"][-1]
+    spec=daily._step_spec(step)
+    saved=context["receipt"].get("steps",{}).get("paper32")
+    if saved is None:
+        saved=daily._read(operation/"commands/paper32.json")
+    files=daily.command_child.paths(operation/"commands","paper32")
+    request_ref,terminal_ref=daily._ref(files["request"]),daily._ref(files["terminal"])
+    request,started,terminal=(daily._read(files[key]) for key in ("request","started","terminal"))
+    expected_binding={"kind":"eight32_independent_production","registration":head["registration"],
+        "source":context["source"],"plan":daily._ref(operation/"plan.json")}
+    if (saved.get("command") != step["command"] or saved.get("status") == "completed"
+            or saved.get("child_request_ref") != request_ref
+            or (saved.get("child_terminal_ref") is not None and saved["child_terminal_ref"] != terminal_ref)
+            or saved.get("day") != day
+            or saved.get("step") != "paper32" or saved.get("expected_files") != spec["expected_files"]
+            or request.get("schema") != daily.command_child.REQUEST_SCHEMA or request.get("day") != day
+            or request.get("step") != spec or request.get("argv") != daily._command(step["command"])
+            or saved.get("argv") != request.get("argv") or request.get("cwd") != str(daily.ROOT)
+            or request.get("binding") != expected_binding
+            or started.get("schema") != daily.command_child.START_SCHEMA or started.get("request_ref") != request_ref
+            or type(started.get("supervisor_pid")) is not int or started["supervisor_pid"] <= 0
+            or terminal.get("schema") != daily.command_child.TERMINAL_SCHEMA or terminal.get("day") != day
+            or terminal.get("step") != spec or terminal.get("request_ref") != request_ref
+            or terminal.get("started_ref") != daily._ref(files["started"])
+            or terminal.get("argv") != request.get("argv")
+            or terminal.get("supervisor_pid") != started["supervisor_pid"]
+            or (saved.get("child_pid") is not None and saved["child_pid"] != started["supervisor_pid"])
+            or any(request.get(k) is not v or terminal.get(k) is not v for k,v in daily.FLAGS.items())
+            or terminal.get("status") != "failed_command_no_automatic_retry"
+            or type(terminal.get("exit_code")) is not int or terminal["exit_code"] == 0
+            or terminal.get("execution_progress_unknown") is not False):
+        raise ValueError("Context adoption requires the exact paper command's observed nonzero exit; success or pending cannot be discarded")
+    artifact = Path(step["expected_files"][0])
+    paper = None
+    if artifact.exists():
+        paper = {"reference":daily._ref(artifact),"status":"unverified_failed_command_artifact"}
+        try:
+            _publication(paper["reference"],context["manifest"],day,context["plan"]["execution_day"],datetime.now(MARKET_TZ))
+        except (OSError,KeyError,TypeError,ValueError) as error:
+            paper["validation_error"] = f"{type(error).__name__}: {error}"
+        else:
+            raise ValueError("A genuine saved publication exists despite the failed CLI; use original success recovery or explicit reconciliation")
+    return {"terminal":terminal_ref,"paper_artifact":paper}
+
+
+def recover_context(run_dir, day):
+    """Durably adopt successful own inputs after a proven paper CLI failure."""
+    daily._exact_day(day)
+    directory=daily.opening_daily._destination(run_dir)
+    with daily._lock(directory/"runner.lock"):
+        head,registration=daily._load(directory)
+        reference=registration["calendar"]
+        if daily._ref(reference["file"]) != reference:
+            raise ValueError("The original exchange calendar changed")
+        calendar=daily._read(reference["file"])
+        sessions,_,status=daily._calendar_view(calendar,f"{calendar['year']}-01-01",f"{calendar['year']}-12-31",[])
+        if status != "pinned_static_exchange_calendar":
+            raise ValueError("A fixed exchange calendar is required")
+        adoption_file=directory/"eight32_production"/day.replace("-", "")/"context_adoption.json"
+        saved=daily._read(adoption_file) if adoption_file.exists() else None
+        active=head.get(PROFILE_KEY)
+        parent=saved["parent_profile"] if saved else active
+        now=datetime.now(MARKET_TZ)
+        context=_saved_input_context(directory,head,registration,sessions,now,day,profile=parent)
+        failed_terminal=_failed_paper_terminal(context,head,day)
+        package=Path(context["source"]["source_folder"]).resolve()
+        original_receipt=daily._ref(context["operation"]/"receipt.json")
+        updated={**deepcopy(parent),"source_day":day,"source_days":[*parent["source_days"],day],
+            "packages":[*parent["packages"],str(package)],"commands":context["commands"],
+            "latest_manifest":context["manifest"],
+            "missing_publication_days":[*parent["missing_publication_days"],day],
+            "source_refs":[*parent["source_refs"],{"day":day,"source_folder":str(package),
+                "plan":daily._ref(package/"plan.json"),"receipt":daily._ref(package/"receipt.json")}],
+            "operations":[*parent["operations"],original_receipt]}
+        record={"schema":ADOPTION_SCHEMA,"day":day,"system_registration":head["registration"],
+            "recorded_at":saved["recorded_at"] if saved else daily._now(),"parent_profile":parent,
+            "producer_plan":daily._ref(context["operation"]/"plan.json"),"producer_receipt":original_receipt,
+            "successful_terminals":context["successful_terminals"],"failed_paper_evidence":failed_terminal,
+            "next_profile":updated,"producer_repeated":False,"publication_backfilled":False,
+            "engine_advanced":False,"old_accounts_advanced":False,**daily.FLAGS}
+        if saved is not None and saved != record:
+            raise ValueError("An immutable context adoption cannot change its source, failure or parent")
+        _validate(updated,head,registration,sessions,now)
+        if saved is None:
+            if active != parent:
+                raise ValueError("Context adoption cannot replace or roll back a newer producer profile")
+            daily._atomic(adoption_file,record)
+        updated["operations"].append(daily._ref(adoption_file))
+        if active == updated:
+            return {"status":"already_adopted_eight32_failed_publication_context","source_day":day,
+                "publication_source_day":updated["publication_source_day"],"producer_called":False,**daily.FLAGS}
+        if active != parent:
+            raise ValueError("Context adoption cannot replace or roll back a newer producer profile")
+        before=deepcopy(head)
+        head[PROFILE_KEY]=updated
+        assert {k:v for k,v in before.items() if k != PROFILE_KEY} == {k:v for k,v in head.items() if k != PROFILE_KEY}
+        daily._atomic(directory/"head.json",head)
+        return {"status":"adopted_eight32_failed_publication_context","source_day":day,
+            "publication_source_day":updated["publication_source_day"],"adoption":daily._ref(adoption_file),
+            "producer_called":False,"engine_advanced":False,"old_accounts_advanced":False,**daily.FLAGS}
+
 def advance(run_dir, day, package, *, source_only):
     daily._exact_day(day)
     if type(source_only) is not bool:

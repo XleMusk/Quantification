@@ -2694,6 +2694,10 @@ def main(argv=None):
     eight_mode = eight_only.add_mutually_exclusive_group(required=True)
     eight_mode.add_argument("--source-only", action="store_true")
     eight_mode.add_argument("--publish-current", action="store_true")
+    eight_context = commands.add_parser("recover-eight32-context",
+        help="Adopt original successful inputs after a proven failed paper CLI, without rerunning production")
+    eight_context.add_argument("--run-dir", type=Path, required=True)
+    eight_context.add_argument("--day", required=True)
     generation_start = commands.add_parser("start-eight32-generation",
         help="Register one explicitly independent generation from the latest successful real eight-type publication")
     generation_start.add_argument("--run-dir", type=Path, required=True)
@@ -2750,6 +2754,9 @@ def main(argv=None):
     elif args.action == "advance-eight32":
         from .leader_eight_type_daily import advance
         result = advance(args.run_dir, args.day, args.package, source_only=args.source_only)
+    elif args.action == "recover-eight32-context":
+        from .leader_eight_type_daily import recover_context
+        result = recover_context(args.run_dir, args.day)
     elif args.action == "start-eight32-generation":
         from .eight32_paper_generation import start
         result = start(args.run_dir, args.generation_id, session_method=args.session_method)

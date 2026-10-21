@@ -346,39 +346,9 @@ def _split_source_profile(directory, head, registration, sessions, now, day):
     profile = _current(head, registration, sessions, now, allow_context=True)
     if profile["source_day"] == day:
         return profile
-    if sessions.index(day) == 0 or profile["source_day"] != sessions[sessions.index(day)-1]:
-        raise ValueError("Split settlement needs the current source or one exact successful saved input successor")
-    operation = directory / "eight32_production" / day.replace("-", "")
-    plan_file, receipt_file = operation / "plan.json", operation / "receipt.json"
-    if not plan_file.is_file() or not receipt_file.is_file():
-        raise ValueError("No original completed eight-type input stage exists for this exact settlement day")
-    plan, receipt = daily._read(plan_file), daily._read(receipt_file)
-    execution = sessions[sessions.index(day)+1]
-    if (plan.get("schema") != producer.SCHEMA or plan.get("day") != day
-            or plan.get("execution_day") != execution or plan.get("source_only") is not False
-            or plan.get("parent_profile") != profile or plan.get("system_registration") != head["registration"]
-            or receipt.get("schema") != producer.SCHEMA or receipt.get("day") != day
-            or receipt.get("source_only") is not False or receipt.get("plan_ref") != daily._ref(plan_file)
-            or any(plan.get(k) is not v or receipt.get(k) is not v for k,v in daily.FLAGS.items())):
-        raise ValueError("Saved input context changed its exact original producer parent, source day or method")
-    source = plan["source"]
-    package = Path(source["source_folder"]).resolve()
-    checked = daily._source(package, registration["calendar"], sessions, now)["proof"]
-    if source != checked or source["day"] != day:
-        raise ValueError("Saved input context requires the exact completed source-D package")
-    _, steps = producer._steps(profile, day, package, operation, False)
-    for step in steps[:-1]:
-        saved = receipt.get("steps", {}).get(step["id"])
-        if not saved or saved.get("status") != "completed":
-            raise ValueError("Saved pre-publication input stages require successful terminal evidence")
-        bound = {**step, "binding":{"kind":"eight32_independent_production",
-            "registration":head["registration"], "source":source, "plan":daily._ref(plan_file)}}
-        daily._terminal(bound, operation/"commands", day, saved)
-    manifest = daily._ref(operation/"artifacts/eight_inputs/manifest.json")
-    producer._manifest(manifest, [*profile["source_days"],day], [*profile["packages"],str(package)])
-    # This temporary projection is only a source resolver result. It is never
-    # saved as a producer profile or treated as an E publication.
-    return {**profile, "source_day":day, "latest_manifest":manifest}
+    saved = producer._saved_input_context(directory, head, registration, sessions, now, day, profile=profile)
+    # The projection is deliberately not a durable producer continuation.
+    return {**profile, "source_day":day, "latest_manifest":saved["manifest"]}
 
 
 def _advance_split(directory, head, registration, value, day):

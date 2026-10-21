@@ -15,13 +15,30 @@ The registrar/coordinator/real Engine synthetic chain and original-path checks
 passed; these are software evidence, not new market returns. Actual21 source
 and new generation still absent at17:16. See outputs/eight32_split_session/
 20261021_v1/{REPORT.md,checks.json,deployment_readback.json}.
-Next bounded software gap: when E inputs have a saved successful terminal but
-E publication fails, adopt only that successful input context explicitly for
-subsequent F production. Current split settlement can already read the saved E
-inputs without changing producer state. Do not retry failed E production,
-backfill E publication, rerun the old19/20 dates or reset accounts. After this
-recovery gap, return to distinct strategy evidence and saved paper holdings;
-do not expand old monthly notice work or retest unchanged phases.
+Completed follow-up: `recover-eight32-context --run-dir --day E` now adopts only
+the original successful E input stages after the original publisher's observed
+nonzero exit. It preserves D publication, missing E and failed evidence, writes
+an independent adoption receipt and lets original F production append from E.
+The same receipt can recover a parent interruption without rerunning a child;
+pending/changed evidence and discarding an existing valid publication are
+rejected. Seven new focused checks and two affected source-reader checks pass;
+actual market recovery was not invoked. See the same REPORT.md/checks.json and
+context_recovery_readback.json. No need to revisit this coupling without a new
+failure or actual saved adoption evidence.
+
+Next distinct lifecycle gap: the saved190-factor Ridge account at
+outputs/factor_candidate_replays/20261005_142016_7f5fa566/run.json stopped after165
+sessions on an unresolved 601989.SSE outDate. No merger/share-conversion Ledger
+event exists. Build an explicit evidence-bound nontrade security-conversion
+settlement through the existing Engine/Ledger: dated source and credited shares,
+cash, availability, idempotence/conflict and pending-exit treatment, with missing
+evidence retaining the stop. Start with synthetic lifecycle evidence; do not
+infer this real issuer's settlement, fetch a notice campaign or rerun its old
+account. This repairs a real accounting capability, not strategy profitability.
+The saved strategy registry already covers many weak/negative price strategies;
+do not call another inspected-window variant an untouched holdout. Continue
+preregistered future observation and distinct research without tuning old32 or
+reopening the closed monthly notice work.
 
 New paper-path implementation (October21): an explicit new-generation registrar
 and start/advance-eight32-generation now bind a genuine first publication, own
