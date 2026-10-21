@@ -684,7 +684,7 @@ def _native_continuation(receipt, operation, day, package):
             or _read(evidence["file"]) != {k: v for k, v in result.items() if k != "operation"}
             or result.get("source_day") != day
             or result.get("status") not in {"completed_saved_native_daily_features_scores_two_policies",
-                "saved_state_without_scorable_input_no_plan"}
+                "saved_state_without_scorable_input_no_plan", "saved_native_source_context_without_publication"}
             or next_profile["source_day"] != day
             or next_profile["full_closes"] != [*attempt["parent_profile"]["full_closes"], str(Path(package).resolve())]
             or _ref(next_profile["checkpoint"]) != next_profile["checkpoint_ref"]):
@@ -746,7 +746,7 @@ def _native_production_refresh(head, receipt, operation, day, package, previous_
         result, next_profile = produced["result"], produced.get("next_profile")
         receipt["native_production"] = result
         if result.get("status") in {"completed_saved_native_daily_features_scores_two_policies",
-                "saved_state_without_scorable_input_no_plan"}:
+                "saved_state_without_scorable_input_no_plan", "saved_native_source_context_without_publication"}:
             if next_profile is None or next_profile["source_day"] != day:
                 raise ValueError("Successful native production lacks its exact next-day profile")
             evidence_file = Path(result["operation"]) if result.get("operation") else None
@@ -763,6 +763,158 @@ def _native_production_refresh(head, receipt, operation, day, package, previous_
             "error": f"{type(error).__name__}: {error}", "automatic_retry": False}
         receipt["native_production_attempt"].update(status="failed", completed_at=_now())
     _atomic(operation / "receipt.json", receipt)
+
+
+def advance_native(run_dir, day, package, *, source_only):
+    """Continue only native production; retain the core cursor and original books."""
+    from .native_shortline_daily import recover_saved_profile, run_profile
+    _exact_day(day)
+    if not isinstance(source_only, bool):
+        raise ValueError("Choose explicit source-only recovery or current publication")
+    directory, package = opening_daily._destination(run_dir), Path(package).resolve()
+    with _lock(directory / "runner.lock"):
+        head, registration = _load(directory)
+        calendar_ref = registration["calendar"]
+        if _ref(calendar_ref["file"]) != calendar_ref:
+            raise ValueError("Registered exchange calendar changed")
+        calendar = _read(calendar_ref["file"])
+        year = calendar["year"]
+        sessions, previous, status = _calendar_view(calendar, f"{year}-01-01", f"{year}-12-31", [])
+        if status != "pinned_static_exchange_calendar" or day not in sessions or sessions[-1] == day:
+            raise ValueError("An exact source session and its known next execution day are required")
+        execution_day = sessions[sessions.index(day) + 1]
+        now = datetime.now(MARKET_TZ)
+        deadline = datetime.fromisoformat(execution_day + "T09:30:00+08:00")
+        source = _source(package, calendar_ref, sessions, now)["proof"]
+        if source["day"] != day or Path(source["source_folder"]).resolve() != package:
+            raise ValueError("Native production requires the exact complete source-D close")
+        operation = directory / ("native_context" if source_only else "native_production") / day.replace("-", "")
+        plan_file, receipt_file = operation / "plan.json", operation / "receipt.json"
+        if not receipt_file.exists() and (now < datetime.fromisoformat(day + "T15:00:00+08:00")
+                or (source_only and now < deadline) or (not source_only and now >= deadline)):
+            raise ValueError("Only missed publication windows permit source-only recovery; current publication must precede E09:30")
+        for parent_folder in ("operations", "native_context", "native_production"):
+            peer = directory / parent_folder / day.replace("-", "")
+            if peer == operation:
+                continue
+            peer_receipt = peer / "receipt.json"
+            if (peer / "native/receipt.json").exists() or (peer_receipt.exists()
+                    and "native_production_attempt" in _read(peer_receipt)):
+                raise ValueError("An original native producer attempt exists in another operation; no mode-based retry")
+        if operation.exists() and not plan_file.exists():
+            raise ValueError("An unresolved native production operation cannot be replaced")
+        saved_plan = _read(plan_file) if plan_file.exists() else {
+            "schema": "system_daily_native_production_plan_v1", "day": day,
+            "execution_day": execution_day, "source_only": source_only,
+            "registration": head["registration"], "source": source,
+            "parent_profile": deepcopy(head["native_profile"]), **FLAGS}
+        parent = saved_plan["parent_profile"]
+        if (saved_plan.get("schema") != "system_daily_native_production_plan_v1"
+                or saved_plan.get("day") != day or saved_plan.get("source_only") is not source_only
+                or saved_plan.get("execution_day") != execution_day
+                or saved_plan.get("registration") != head["registration"] or saved_plan.get("source") != source
+                or parent["source_day"] != previous[day]
+                or any(saved_plan.get(k) is not v for k, v in FLAGS.items())):
+            raise ValueError("Native production cannot replace or skip its original source/profile/mode")
+        mutable = {"source_day", "checkpoint", "checkpoint_ref", "full_closes", "last_operation",
+            "latest_plans", "forward_templates", "score_publication", "chain_has_missing_plan", "missing_plan_days"}
+        initial = registration["initial_native_profile"]
+        if (any(parent.get(k) != v for k, v in initial.items() if k not in mutable)
+                or parent["full_closes"][:len(initial["full_closes"])] != initial["full_closes"]):
+            raise ValueError("Native production must retain its registered model, scope and source prefix")
+        validation_head = {**head, "native_profile": parent}
+        _validate_native_command_plan({"schema": "system_daily_native_command_plan_v1", "day": day,
+            "registration": head["registration"], "source": source, "parent_profile": parent, "profile": parent,
+            "steps": [_step_spec(_native_forward_step(parent, key, day, package, operation))
+                for key in parent["forward_templates"]], **FLAGS}, validation_head, registration, operation, day, source)
+        _separate(operation, package, *_input_directories(head["profile"], parent,
+            registration["original_routes"], head["lowvol"]))
+        receipt = _read(receipt_file) if receipt_file.exists() else {
+            "schema": "system_daily_native_production_result_v1", "day": day, "source": source,
+            "source_only": source_only, "plan_ref": None, "started_at": _now(),
+            "system_source_cursor_advanced": False, "engine_advanced": False,
+            "whole_system_daily_complete": False, "automatic_retry": False, **FLAGS}
+        if (receipt.get("schema") != "system_daily_native_production_result_v1"
+                or receipt.get("day") != day or receipt.get("source") != source
+                or receipt.get("source_only") is not source_only
+                or any(receipt.get(k) is not v for k, v in FLAGS.items())):
+            raise ValueError("Saved native producer result belongs to another exact operation")
+        if not plan_file.exists():
+            _atomic(plan_file, saved_plan)
+        if receipt["plan_ref"] not in (None, _ref(plan_file)):
+            raise ValueError("Saved native producer plan changed")
+        receipt["plan_ref"] = _ref(plan_file)
+        before = deepcopy(head)
+        if ("native_production_attempt" in receipt
+                and receipt["native_production_attempt"].get("parent_profile") != parent):
+            raise ValueError("The original producer attempt belongs to another native parent profile")
+
+        def continuation():
+            value = _native_continuation(receipt, operation, day, package)
+            for stage in receipt["native_production"].get("stages", {}).values():
+                if stage.get("status") != "completed" or any(
+                        _ref(ref["file"]) != ref for ref in stage.get("artifact", {}).get("refs", [])):
+                    raise ValueError("Saved native stage artifacts changed or are incomplete")
+            if source_only:
+                result = receipt["native_production"]
+                expected = {**deepcopy(parent), "source_day": day,
+                    "full_closes": [*parent["full_closes"], str(package)],
+                    "checkpoint": result["latest_checkpoint"],
+                    "checkpoint_ref": _ref(result["latest_checkpoint"]),
+                    "last_operation": result["operation"], "chain_has_missing_plan": True,
+                    "missing_plan_days": [*parent["missing_plan_days"], day]}
+                if (value != expected or set(result.get("stages", {})) != {"features"}
+                        or result.get("source_only") is not True
+                        or result.get("signals_published") is not False
+                        or result.get("missing_plan_day") != day
+                        or result.get("status") != "saved_native_source_context_without_publication"):
+                    raise ValueError("Source-only continuation must preserve plans and declare its missing publication")
+            return value
+
+        if "native_production_continuation" in receipt:
+            restored = continuation()
+            if head["native_profile"] == restored:
+                return {**receipt, "status": "already_completed_native_only_production", "producer_called": False}
+            if head["native_profile"] != parent:
+                raise ValueError("Native head moved beyond this saved continuation; no rollback is allowed")
+        elif head["native_profile"] != parent:
+            raise ValueError("Native source profile changed before exact single-day production")
+        elif "native_production_attempt" in receipt:
+            if receipt["native_production_attempt"].get("status") != "started":
+                return {**receipt, "status": "partial_native_only_production_no_retry", "producer_called": False}
+            try:
+                recovered = recover_saved_profile(parent, day, package, operation / "native", source_only=source_only)
+            except (ValueError, KeyError, TypeError, OSError) as error:
+                return {**receipt, "status": "partial_native_only_production_no_retry", "producer_called": False,
+                    "saved_producer_recovery_error": f"{type(error).__name__}: {error}"}
+            saved = recovered["result"]
+            producer_file = operation / "native/receipt.json"
+            if (Path(saved["operation"]).resolve() != producer_file
+                    or _read(producer_file) != {k:v for k,v in saved.items() if k != "operation"}):
+                raise ValueError("Recovery requires this original native producer result")
+            receipt.update(native_production=saved,
+                native_production_continuation={"next_profile": recovered["next_profile"],
+                    "producer_receipt": _ref(producer_file)}, native_saved_result_adopted_without_production=True)
+            receipt["native_production_attempt"].update(status="completed", recovered_at=_now(), producer_repeated=False)
+            continuation()
+            _atomic(receipt_file, receipt)
+        called = "native_production_attempt" not in receipt
+        _native_production_refresh(head, receipt, operation, day, package, previous[day],
+            lambda profile, source_day, folder, out: run_profile(profile, source_day, folder, out, source_only=source_only))
+        complete = "native_production_continuation" in receipt
+        if complete:
+            next_profile = continuation()
+            head["native_profile"] = deepcopy(next_profile)
+            assert {k:v for k,v in head.items() if k != "native_profile"} == {
+                k:v for k,v in before.items() if k != "native_profile"}
+            _atomic(directory / "head.json", head)
+        receipt.update(status="completed_native_only_production" if complete else "partial_native_only_production_no_retry",
+            completed_at=_now(), native_profile_adopted=complete,
+            signals_published=complete and receipt["native_production"].get("status") ==
+                "completed_saved_native_daily_features_scores_two_policies",
+            missing_plan_days=head["native_profile"].get("missing_plan_days", []))
+        _atomic(receipt_file, receipt)
+        return {**receipt, "producer_called": called}
 
 
 def _saved_native_forward_step(head, registration, directory, key, progress):
@@ -2458,6 +2610,22 @@ def main(argv=None):
     settlement.add_argument("--day", required=True)
     settlement.add_argument("--package", type=Path, required=True)
     settlement.add_argument("--policy", choices=("v1", "qualified"))
+    native_only = commands.add_parser("advance-native",
+        help="Continue native source context or a current publication without advancing any account or core cursor")
+    native_only.add_argument("--run-dir", type=Path, required=True)
+    native_only.add_argument("--day", required=True)
+    native_only.add_argument("--package", type=Path, required=True)
+    mode = native_only.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--source-only", action="store_true")
+    mode.add_argument("--publish-current", action="store_true")
+    leader_only = commands.add_parser("advance-leader20",
+        help="Continue fixed leader source context or current publication without consuming original accounts")
+    leader_only.add_argument("--run-dir", type=Path, required=True)
+    leader_only.add_argument("--day", required=True)
+    leader_only.add_argument("--package", type=Path, required=True)
+    leader_mode = leader_only.add_mutually_exclusive_group(required=True)
+    leader_mode.add_argument("--source-only", action="store_true")
+    leader_mode.add_argument("--publish-current", action="store_true")
     recover = commands.add_parser("recover-step")
     recover.add_argument("--run-dir", type=Path, required=True)
     recover.add_argument("--day", required=True)
@@ -2497,6 +2665,11 @@ def main(argv=None):
         result = recover_step(args.run_dir, args.day, args.step)
     elif args.action == "settle-native":
         result = settle_native(args.run_dir, args.day, args.package, policy=args.policy)
+    elif args.action == "advance-native":
+        result = advance_native(args.run_dir, args.day, args.package, source_only=args.source_only)
+    elif args.action == "advance-leader20":
+        from .leader_close_daily import advance
+        result = advance(args.run_dir, args.day, args.package, source_only=args.source_only)
     elif args.action == "recover-route":
         from .system_daily_route_recovery import recover_route
         result = recover_route(args.run_dir, args.day, args.route)
@@ -2532,6 +2705,6 @@ def main(argv=None):
             refresh_seat_disclosures=args.refresh_seat_disclosures, native_paper_closes=args.native_paper_close)
     print(json.dumps(result, ensure_ascii=False))
     return 1 if result.get("status") in {
-        "partial_research_routes", "partial_native_settlement_no_automatic_retry", "unknown_no_successful_child_terminal",
+        "partial_research_routes", "partial_native_settlement_no_automatic_retry", "partial_native_only_production_no_retry", "partial_leader20_production_no_retry", "unknown_no_successful_child_terminal",
         "recovered_saved_route_partial", "unknown_saved_route_publication_incomplete",
         "unknown_interrupted_route_projection_no_retry"} else 0

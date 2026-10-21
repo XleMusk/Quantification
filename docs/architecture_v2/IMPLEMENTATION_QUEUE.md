@@ -1,6 +1,36 @@
 # Active implementation queue - 2026-10-21
 
-## Current priority: usable daily research and independent route recovery
+## Current priority: strategy evidence and a usable daily research path
+
+The October 21 user correction is an allocation change: stop treating successive
+repairs to October 19/20 contexts as the default research task. The native cache
+already covers 908 sessions / 4,641,571 rows, and eight-type studies already exist
+for partial 2023, full 2024/2025 and segmented 2026. Reuse these results. Broad
+data coverage does not establish a strong strategy; the completed studies retain
+weak, negative, empty and source-stopped cases. No strategy is validated.
+
+- Current actual study: one continuous January 5--September 21, 2026 original32
+  account path, plus six tail sessions through September 30. Registration and
+  the once-only command driver are in
+  `outputs/leader_cross_year/20261021_2026_continuous_v1`. This addresses monthly
+  cash/capacity/holding resets; its dates have already been inspected. The 5,181
+  first-day native-observed scope differs from the 2024/2025 annual61-valid
+  cohort, so this is neither a blind holdout nor an only-year-changed comparison.
+  Preserve both capacities, both guards, all 32 outcomes and original fees.
+- After that readback, use broad stored evidence to choose the next distinct
+  strategy question. Do not repeat annual/monthly studies, parameter searches,
+  old model evaluation or profitable subwindows. A negative complete result is
+  grounds to stop that formulation, not to retune the same inspected window.
+- Keep scheduled collection/publication and concrete production failures on the
+  operational track. Once a repair is adequate, return to research; additional
+  context separation, reports and UI checks cannot substitute for strategy
+  evidence. Missing company-action terms stop only the affected case/route.
+- Progress must identify the actual change: new distinct market evidence,
+  a falsifiable strategy comparison, completed shared-Ledger account path or
+  repaired user-facing capability. Re-reading the same files and restating
+  source availability is not new research coverage.
+
+### Existing operational work and remaining gaps
 
 The full personal A-share system goal and parallel research/execution tracks
 remain active. Missing broker exports or one route's action evidence must not
@@ -16,13 +46,40 @@ historical evidence, not the current data or account cursor.
   existing thread automation was corrected from 20 minutes to one hour and
   explicitly restores the authorized close-collection and daily-refresh steps.
   The Windows workbench task remains read-only.
-- Next implementation: add an explicit source-only continuation to the existing
-  native daily producer, reusing its exact single-day incremental checkpoint.
-  Record missed-publication days without scoring or publishing those past days,
-  changing old plans, resetting accounts or injecting fabricated NO_CHANGE.
-  Then allow genuinely current source-day production; existing books must still
-  respect their missing-plan boundary. Other core routes need their own safe
-  production/consumption separation, not a manually edited global cursor.
+- Completed: `system-daily-refresh advance-native --source-only` appended the
+  October 20 feature state from the saved October 19 checkpoint, recording its
+  actual October 21 availability and missed publication. No scores, plans or
+  account sessions were produced. Only the native profile moved to October 20;
+  the core signal cursor remains October 19 and original books remain execution
+  October 20. Original plan/score files and account heads are unchanged.
+  `--publish-current` now allows independent current native production within
+  the real next-opening deadline; missing plans still prohibit old-book skips.
+  Saved-success recovery is read-only and also covers interruption before the
+  parent persisted its continuation; failed/partial work is not re-produced.
+- Completed: the native read-only workbench now follows registered system-head
+  plan pointers, including operation and independent-producer directories. The
+  actual GET and desktop/mobile interaction show context October 20, plan source
+  October 19, original account execution October 20 and the missed October 20
+  publication separately. Bad registered evidence cannot fall back to an older
+  success; a later publication does not imply old accounts consumed it. Refresh,
+  holdings, original orders and fills were checked without changing the heads.
+- Completed: system-daily-refresh advance-leader20 now separates the original
+  five-family publication producer from original-account consumption. One actual
+  source-only run appended the exact October 20 close to the unchanged 15/16/19
+  package prefix; the source cursor is 20, publication cursor remains 19, and
+  missing publication 20 is explicit. The core profile, original forward command
+  and all three core account heads are unchanged. No signal or account was
+  produced. Current-day mode reuses the original frozen-cohort publisher and its
+  independent command receipts; same-day actual publication and immutable inputs
+  are required. Saved successful children can be adopted without re-production;
+  unresolved or failed attempts cannot be bypassed by another path or mode.
+- Next operational implementation: continue the same separation for eight-type context and
+  Alpha158. Eight-type can append exact day-20 inputs without a day-20 paper
+  publication. Alpha needs its own provider-through-20 and frozen score context,
+  followed by the new day's separate provider/score/publication; do not backfill
+  an old score from a later provider. Original accounts remain unable to cross
+  a missing publication. No manual global-cursor edit, account reset or fabricated
+  NO_CHANGE can bridge a gap.
 - Acceptance still missing: an actual scheduled close run and recovery receipts,
   sufficient strategy evidence outside inspected windows, and the separately
   authorized broker/THS path. Monitoring code and healthy web pages do not prove

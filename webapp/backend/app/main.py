@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 import pandas as pd
 
-from . import data, store
+from . import chart_data, data, store
 from .settings import MAX_UPLOAD, STORAGE, UI_ORIGIN
 from trading import store as trading_store
 from trading.api import router as trading_router
@@ -131,6 +131,21 @@ def dataset_snapshot(identifier: str):
     rows = data.latest_observations(data.read_bars(identifier))
     return {"dataset": item, "rows": rows, "status": "available" if rows else "empty",
             "price_change_basis": "previous_observed_row", "realtime": False}
+
+
+@app.get("/api/datasets/{identifier}/chart")
+def dataset_chart(identifier: str, symbol: str | None = None, as_of: str | None = None):
+    return chart_data.dataset_chart(identifier, symbol, as_of)
+
+
+@app.get("/api/jobs/{identifier}/chart-signals")
+def chart_signals(identifier: str, symbol: str | None = None, as_of: str | None = None):
+    return chart_data.job_signals(identifier, symbol, as_of)
+
+
+@app.get("/api/trading/runs/{identifier}/chart")
+def run_chart(identifier: str, symbol: str | None = None, as_of: str | None = None):
+    return chart_data.run_chart(identifier, symbol, as_of)
 
 
 class JobInput(BaseModel):

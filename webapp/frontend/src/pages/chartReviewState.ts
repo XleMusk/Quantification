@@ -1,12 +1,13 @@
 import type { Overlay, OverlayCreate } from 'klinecharts';
 import type { Bar, Dataset } from '../types';
+import {REVIEW_EXTRA_TOOLS} from '../charting/reviewOverlays';
 
 export const DRAWING_TOOLS = [
   ['segment', '趋势线段'], ['rayLine', '射线'], ['straightLine', '直线'],
   ['horizontalStraightLine', '水平线'], ['horizontalRayLine', '水平射线'], ['horizontalSegment', '水平线段'],
   ['verticalStraightLine', '垂直线'], ['verticalRayLine', '垂直射线'], ['verticalSegment', '垂直线段'],
   ['priceLine', '价格线'], ['priceChannelLine', '价格通道'], ['parallelStraightLine', '平行通道'],
-  ['fibonacciLine', '斐波那契'], ['reviewRectangle', '矩形区域'], ['simpleAnnotation', '文字标注'], ['simpleTag', '价格标签'],
+  ['fibonacciLine', '斐波那契'], ['reviewRectangle', '矩形区域'], ['simpleAnnotation', '文字标注'], ['simpleTag', '价格标签'], ...REVIEW_EXTRA_TOOLS,
 ] as const;
 export type SavedDrawing = Pick<OverlayCreate, 'name' | 'points' | 'styles' | 'lock' | 'visible' | 'extendData' | 'mode'> & { id: string; paneId: string };
 export type ReviewState = { version: 1; drawings: SavedDrawing[]; notes: string };
@@ -34,10 +35,12 @@ export function readReview(key: string): ReviewState {
   if (value.drawings.some(d => !d || typeof d.id !== 'string' || !names.has(d.name) || !Array.isArray(d.points) || d.points.some(p => !(Number.isFinite(p.timestamp) || Number.isInteger(p.dataIndex)) || !Number.isFinite(p.value)))) throw new Error('本地画线数据无效，未载入');
   return value;
 }
-export function saveDrawing(overlay: Overlay, bars: Bar[]): SavedDrawing {
+export function saveDrawing(overlay: Overlay, bars: Bar[], useStableIndex = false): SavedDrawing {
   return {
     id: overlay.id, name: overlay.name, paneId: overlay.paneId,
     points: overlay.points.map(point => {
+      // Week/month bucket indices stay fixed while their revealed end dates move.
+      if (useStableIndex && Number.isInteger(point.dataIndex)) return {dataIndex:point.dataIndex,value:point.value};
       const day = point.dataIndex == null ? undefined : bars[point.dataIndex]?.date.slice(0, 10);
       const timestamp = point.timestamp ?? (day ? Date.parse(`${day}T00:00:00+08:00`) : undefined);
       // Blank-space anchors have an index but no observed timestamp; keep the
@@ -48,20 +51,34 @@ export function saveDrawing(overlay: Overlay, bars: Bar[]): SavedDrawing {
     extendData: typeof overlay.extendData === 'string' ? overlay.extendData : undefined,
   };
 }
-export function reviewKey(dataset: Dataset, symbol: string, replaySession = ''): string {
-  return `quant.review.v1:${dataset.id}:${encodeURIComponent(symbol)}:D:${dataset.adjustment}:${replaySession ? `replay:${replaySession}` : 'analysis'}`;
+export function reviewKey(dataset: Dataset, symbol: string, replaySession = '', period = 'D'): string {
+  return `quant.review.v1:${dataset.id}:${encodeURIComponent(symbol)}:${period}:${dataset.adjustment}:${replaySession ? `replay:${replaySession}` : 'analysis'}`;
 }
-export const replayCheckpointKey = (dataset: Dataset, symbol: string) => `${reviewKey(dataset, symbol)}:latest-replay`;
-export function readReplayCheckpoint(dataset: Dataset, symbol: string, bars: Bar[]): ReplayCheckpoint | null {
-  try {
-    const value = JSON.parse(readLocal(replayCheckpointKey(dataset, symbol)) ?? 'null') as ReplayCheckpoint | null;
-    if (!value || value.version !== 1 || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value.session)
-      || !/^\d{4}-\d{2}-\d{2}$/.test(value.startDate) || !Number.isFinite(Date.parse(`${value.startDate}T00:00:00Z`))
-      || new Date(`${value.startDate}T00:00:00Z`).toISOString().slice(0, 10) !== value.startDate
-      || !Number.isInteger(value.cursor) || value.cursor > bars.length) return null;
-    const first = bars.findIndex(bar => bar.date.slice(0, 10) >= value.startDate);
-    return first >= 0 && value.startDate >= bars[0].date.slice(0, 10) && value.cursor >= first + 1 ? value : null;
-  } catch { return null; }
+export const replayCheckpointKey = (dataset: Dataset, symbol: string, period = 'D') => `${reviewKey(dataset, symbol, '', period)}:latest-replay`;
+export function readReplayCheckpoint(dataset: Dataset, symbol: string, bars: Bar[], period = 'D'): ReplayCheckpoint | null {
+  function validate(raw: string | null): ReplayCheckpoint | null {
+    try {
+      const value = JSON.parse(raw ?? 'null') as Partial<ReplayCheckpoint> | null;
+      if (!value || value.version !== 1 || typeof value.session !== 'string'
+        || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value.session)
+        || typeof value.startDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value.startDate)
+        || !Number.isFinite(Date.parse(`${value.startDate}T00:00:00Z`))
+        || new Date(`${value.startDate}T00:00:00Z`).toISOString().slice(0, 10) !== value.startDate
+        || typeof value.cursor !== 'number' || !Number.isInteger(value.cursor) || value.cursor > bars.length) return null;
+      const startDate = value.startDate;
+      const first = bars.findIndex(bar => bar.date.slice(0, 10) >= startDate);
+      return first >= 0 && startDate >= bars[0].date.slice(0, 10) && value.cursor >= first + 1 ? value as ReplayCheckpoint : null;
+    } catch { return null; }
+  }
+  let saved = validate(readLocal(replayCheckpointKey(dataset, symbol, period)));
+  if (!saved) return null;
+  // Older versions saved each period independently. Resume the furthest point
+  // of this same session so later annotations cannot appear before that point.
+  for (const candidatePeriod of ['D', 'W', 'M']) {
+    const candidate = validate(readLocal(replayCheckpointKey(dataset, symbol, candidatePeriod)));
+    if (candidate?.session === saved.session && candidate.cursor > saved.cursor) saved = candidate;
+  }
+  return saved;
 }
 export function tradingViewSymbol(symbol: string): string | null {
   const suffix = /^(\d{6})\.(SSE|SH|SZSE|SZ)$/i.exec(symbol);

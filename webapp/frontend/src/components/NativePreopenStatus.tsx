@@ -22,6 +22,9 @@ type StatusView = { schema: string; status: string; checked_at?: string; read_at
   policy_id: string | null; model_generation: unknown; unknown_stage_symbols: string[] | null;
   models: ModelPlan[]; account_count: number | null; accounts: Account[];
   cash_cents: number | null; equity_cents: number | null; return_metrics: null;
+  system_progress?: null | { native_context_source_day: string | null; core_signal_source_day: string | null;
+    missing_plan_days: string[]; plan_source_day: string | null; plan_execution_day: string | null;
+    account_execution_day: string | null };
   stage_scope?: null | { raw_stage_membership_complete: boolean | null; raw_unknown_stage_symbols: string[] | null;
     excluded_no_limit_symbols: string[] | null; remaining_unknown_stage_symbols: string[] | null;
     scored_no_limit_conflicts: string[] | null; qualified_stage_membership_complete: boolean | null;
@@ -98,6 +101,7 @@ function PolicyPanel({ policy }: { policy: PolicyView }) {
   const view = policy.view;
   const observation = view?.observation;
   const scope = view?.stage_scope;
+  const progress = view?.system_progress;
   const unknownSymbols = scope?.raw_unknown_stage_symbols ?? view?.unknown_stage_symbols;
   const symbolsText = (symbols?: string[] | null) => symbols == null ? '待核验' : symbols.length ? symbols.join('、') : '无（仅本方案范围）';
   return <article aria-label={`${policy.label}保存状态`} data-policy-id={policy.policy_id} data-policy-scope={policy.scope}
@@ -106,7 +110,9 @@ function PolicyPanel({ policy }: { policy: PolicyView }) {
     {!view && <p className="window-stale" role="status">此版本回执缺失，不采用另一版本补齐。</p>}
     {view && <>
       <p role="status" style={{ marginTop: 14 }}>{statusNames[view.status] || '保存状态待核验'}</p>
-      <div className="window-summary" style={{ marginTop: 12 }}><span>背景收盘日 <strong>{view.source_day || '—'}</strong></span><span>计划执行日 <strong>{view.execution_day || '—'}</strong></span><span>已保存账户 <strong>{view.account_count == null ? '待核验' : view.account_count}</strong></span></div>
+      {progress && <div className="window-summary" style={{ marginTop: 12 }} data-system-progress="saved"><span>特征来源日 <strong>{progress.native_context_source_day || '—'}</strong></span><span>系统信号日 <strong>{progress.core_signal_source_day || '—'}</strong></span><span>账本执行至 <strong>{progress.account_execution_day || '—'}</strong></span></div>}
+      {progress && progress.missing_plan_days.length > 0 && <p className="window-stale" data-system-progress="missing-publication">{progress.missing_plan_days.join('、')} 缺少按时发表的方案。特征已接续不等于信号或账户已接续；下方保存计划不能作为当前交易指令。</p>}
+      <div className="window-summary" style={{ marginTop: 12 }}><span>计划来源日 <strong>{view.source_day || '—'}</strong></span><span>计划执行日 <strong>{view.execution_day || '—'}</strong></span><span>已保存账户 <strong>{view.account_count == null ? '待核验' : view.account_count}</strong></span></div>
       <p className="subtle">方案实际发表 {view.plan_published_at || '—'}；页面核对 {view.checked_at || view.read_at || '—'}。</p>
       <p className="subtle" style={{ marginTop: 10 }} data-scope-field="raw-unknown">原始阶段未知（原方案范围）：{symbolsText(unknownSymbols)}。原始分数与阶段记录保留，不回写为已知阶段。</p>
       {scope ? scope.qualified_stage_membership_complete != null ? <>
