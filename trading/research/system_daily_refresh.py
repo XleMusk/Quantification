@@ -415,6 +415,204 @@ def _native_forward_step(profile, key, day, package, operation):
         "expected_files": [str(Path(template["run_dir"]).resolve() / "head.json")]}
 
 
+def _native_settlement_terminal(step, commands, day, receipt):
+    evidence = _terminal(step, commands, day, receipt)
+    account = _read(step["expected_files"][0])
+    result = _read(step["expected_files"][1])
+    summaries = result.get("cases", [])
+    if (result.get("schema") != "native_shortline_preopen_forward_result_v1"
+            or result.get("status") not in {"advanced_isolated_native_research_books", "already_consumed_original_plan_prefix"}
+            or result.get("checkpoint") != step["expected_files"][0]
+            or result.get("run_directory") != str(Path(step["expected_files"][0]).parent)
+            or result.get("case_count") != 2 or len(summaries) != 2
+            or {case.get("model_kind") for case in summaries} != {"lr", "lgbm"}
+            or any(case.get("last_processed_day") != day for case in summaries)
+            or set(account.get("cases", {})) != {"lr", "lgbm"}
+            or any(case["state"].get("day") != day for case in account["cases"].values())
+            or result.get("method_id") != account.get("binding", {}).get("method_id")
+            or result.get("policy_id") != account.get("binding", {}).get("policy_id")):
+        raise ValueError("Native terminal/result must prove both original model accounts settled exact execution E")
+    return evidence
+
+
+def _native_settlement_policy(head, registration, key, day, package, operation, source, sessions, previous, now):
+    from .shortline_native_preopen import load_preopen_plan
+    from .shortline_native_preopen_forward import _panel_link
+
+    profile = deepcopy(head["native_profile"])
+    template = profile["forward_templates"][key]
+    # Validate each policy against its own original registration. A broken
+    # policy must not stop the other original account from being settled.
+    profile["forward_templates"] = {key: template}
+    configured = deepcopy(registration)
+    configured["initial_native_profile"]["forward_templates"] = {
+        key: registration["initial_native_profile"]["forward_templates"][key]}
+    validation_head = {**head, "native_profile": profile}
+    command_plan = {"schema": "system_daily_native_command_plan_v1", "day": day,
+        "registration": head["registration"], "source": source,
+        "parent_profile": profile, "profile": profile,
+        "steps": [_step_spec(_native_forward_step(profile, key, day, package, operation))], **FLAGS}
+    _validate_native_command_plan(command_plan, validation_head, configured, operation, day, source)
+    progress = head.get("native_forward_progress", {}).get(key)
+    if progress and progress["status"] not in {"completed", "exact_execution_day_already_committed"}:
+        raise ValueError("Unresolved original native attempt cannot be retried by settlement")
+    original = operation.parent.parent / "operations" / day.replace("-", "") / "commands"
+    original_files = command_child.paths(original, "native_forward_" + key)
+    if (original / ("native_forward_" + key + ".json")).exists() or any(p.exists() for p in original_files.values()):
+        raise ValueError("An original daily native attempt already exists; no second attempt is allowed")
+    plans = [load_preopen_plan(path) for path in template["plan_prefix"]]
+    days = [plan["source_day"] for plan in plans]
+    source_day = previous[day]
+    if (not days or days != [d for d in sessions if days[0] <= d <= source_day]
+            or plans[-1]["execution_day"] != day
+            or str(Path(profile["latest_plans"][key]).resolve()) != plans[-1]["plan_ref"]["file"]
+            or any(any(plan["calendar"].get(name) != value for name, value in registration["calendar"].items())
+                or previous.get(plan["execution_day"]) != plan["source_day"] for plan in plans)):
+        raise ValueError("Settlement cannot skip, roll, replace or backfill an original saved plan")
+    sources = {day: source}
+    for folder in template["raw_close_prefix"]:
+        proof = _source(Path(folder).resolve(), registration["calendar"], sessions, now)["proof"]
+        if proof["day"] in sources and sources[proof["day"]] != proof:
+            raise ValueError("A different raw source already occupies this exact day")
+        if proof["day"] > day:
+            raise ValueError("Settlement cannot use a future raw prefix")
+        sources[proof["day"]] = proof
+    for plan in plans:
+        expected = _panel_link(plan, now)["source_close_proof"]
+        proof = sources.get(plan["source_day"])
+        if proof is None or any(proof.get(name) != value for name, value in expected.items()):
+            raise ValueError("Saved plan and supplied original raw source differ")
+    step = _native_forward_step(profile, key, day, package, operation)
+    step["expected_files"].append(_values(step["command"], "--result-json")[0])
+    account_file = Path(step["expected_files"][0])
+    account = _read(account_file)
+    account_days = {case["state"].get("day") for case in account.get("cases", {}).values()}
+    commands = operation / "commands"
+    attempt = commands / (step["id"] + ".json")
+    if (set(account.get("cases", {})) != {"lr", "lgbm"}
+            or account_days not in ({source_day}, {day})
+            or (account_days == {day} and not attempt.exists())
+            or account["raw_sources"] != [sources[d] for d in sorted(sources) if d <= next(iter(account_days))]):
+        raise ValueError("Existing native account must retain its exact consecutive raw/account prefix")
+    _separate(operation, package, account_file.parent,
+        *[Path(plan["plan_ref"]["file"]).parent for plan in plans])
+    args = step["command"]
+    inputs = {"plans": [plan["plan_ref"] for plan in plans], "template": template,
+        "raw_sources": [sources[d] for d in sorted(sources)],
+        "ipo_proof": _ref(_values(args, "--ipo-proof")[0]),
+        "master_run": _ref(_values(args, "--research-master-run")[0])}
+    return step, inputs, _ref(account_file)
+
+
+def settle_native(run_dir, day, package, *, policy=None):
+    """Consume saved D->E plans in the two existing accounts; publish no E signal."""
+    _exact_day(day)
+    if policy not in (None, "v1", "qualified"):
+        raise ValueError("Native settlement supports only the two original policies")
+    directory = opening_daily._destination(run_dir)
+    package = Path(package).resolve()
+    keys = (policy,) if policy else ("v1", "qualified")
+    with _lock(directory / "runner.lock"):
+        head, registration = _load(directory)
+        calendar_ref = registration["calendar"]
+        if _ref(calendar_ref["file"]) != calendar_ref:
+            raise ValueError("Registered exchange calendar changed")
+        calendar = _read(calendar_ref["file"])
+        year = calendar["year"]
+        sessions, previous, status = _calendar_view(calendar, f"{year}-01-01", f"{year}-12-31", [])
+        source_day = previous.get(day)
+        profile = head["native_profile"]
+        if (status != "pinned_static_exchange_calendar" or day not in sessions
+                or profile["source_day"] != source_day
+                or profile.get("chain_has_missing_plan") or profile.get("missing_plan_days")):
+            raise ValueError("Settlement requires saved latest source-D plans for exact adjacent execution E")
+        now = datetime.now(MARKET_TZ)
+        source = _source(package, calendar_ref, sessions, now)["proof"]
+        if source["day"] != day or Path(source["source_folder"]).resolve() != package:
+            raise ValueError("Settlement requires the exact complete execution-E raw close")
+        original_receipt = directory / "operations" / day.replace("-", "") / "receipt.json"
+        if original_receipt.exists() and _read(original_receipt).get("source") != source:
+            raise ValueError("A different source already occupies the original exact daily operation")
+        operation = directory / "settlements" / day.replace("-", "")
+        plan_file = operation / "plan.json"
+        saved_plan = {"schema": "system_daily_native_settlement_plan_v1", "day": day,
+            "source_day": source_day, "registration": head["registration"], "source": source, **FLAGS}
+        if plan_file.exists() and _read(plan_file) != saved_plan:
+            raise ValueError("Settlement source or original registration changed")
+        if operation.exists() and not plan_file.exists():
+            raise ValueError("An incomplete settlement operation cannot be silently replaced")
+        steps, inputs, before, prior, blocked = {}, {}, {}, {}, {}
+        # Preflight every selected policy before starting either consumer.
+        for key in keys:
+            try:
+                step, values, account_ref = _native_settlement_policy(head, registration, key, day,
+                    package, operation, source, sessions, previous, now)
+                input_file = operation / (key + "_inputs.json")
+                if input_file.exists() and _read(input_file) != values:
+                    raise ValueError("Settlement plan, raw prefix or fixed IPO/master input changed")
+                attempt = operation / "commands" / (step["id"] + ".json")
+                files = command_child.paths(attempt.parent, step["id"])
+                if attempt.exists():
+                    receipt = _read(attempt)
+                    if receipt.get("command") != step["command"]:
+                        raise ValueError("An existing settlement attempt changed its command")
+                    if receipt.get("status") == "completed":
+                        if not input_file.exists() or not plan_file.exists():
+                            raise ValueError("A completed settlement lost its original bound inputs")
+                        step["binding"] = {"kind": "native_settlement", "registration": head["registration"],
+                            "source": source, "plan": _ref(plan_file), "policy_inputs": _ref(input_file)}
+                        _native_settlement_terminal(step, attempt.parent, day, receipt)
+                    prior[key] = receipt
+                elif any(p.exists() for p in files.values()):
+                    raise ValueError("An orphan settlement child claim cannot launch another attempt")
+                steps[key], inputs[key], before[key] = step, values, account_ref
+            except (ValueError, KeyError, TypeError, OSError) as error:
+                blocked[key] = {"status": "blocked_native_settlement_no_automatic_retry",
+                    "error": f"{type(error).__name__}: {error}", "consumer_called": False}
+        if not plan_file.exists():
+            _atomic(plan_file, saved_plan)
+        for key in steps:
+            input_file = operation / (key + "_inputs.json")
+            if not input_file.exists():
+                _atomic(input_file, inputs[key])
+            steps[key]["binding"] = {"kind": "native_settlement", "registration": head["registration"],
+                "source": source, "plan": _ref(plan_file), "policy_inputs": _ref(input_file)}
+        result_file = operation / "receipt.json"
+        result = _read(result_file) if result_file.exists() else {"schema": "system_daily_native_settlement_result_v1",
+            "day": day, "source_day": source_day, "plan_ref": _ref(plan_file), "policies": {},
+            "system_head_ref": _ref(directory / "head.json"), "system_source_cursor_advanced": False,
+            "signals_published": False, "whole_system_daily_complete": False, "automatic_retry": False, **FLAGS}
+        result["policies"].update(blocked)
+        called = False
+        for key, step in steps.items():
+            receipt = prior.get(key)
+            if receipt is None:
+                called = True
+                receipt = _run_command(step, operation / "commands", day)
+            if receipt.get("status") == "completed":
+                try:
+                    request_ref, terminal_ref, _, outputs = _native_settlement_terminal(
+                        step, operation / "commands", day, receipt)
+                    result["policies"][key] = {"status": "completed", "request_ref": request_ref,
+                        "terminal_ref": terminal_ref, "consumer_head_ref": outputs[0], "result_ref": outputs[1],
+                        "consumer_head_before": result["policies"].get(key, {}).get("consumer_head_before", before[key])}
+                except (ValueError, KeyError, TypeError, OSError) as error:
+                    result["policies"][key] = {"status": "failed_native_settlement_validation_no_automatic_retry",
+                        "error": f"{type(error).__name__}: {error}",
+                        "command_receipt_ref": _ref(operation / "commands" / (step["id"] + ".json"))}
+            else:
+                result["policies"][key] = {"status": receipt.get("status", "unknown_no_automatic_retry"),
+                    "command_receipt_ref": _ref(operation / "commands" / (step["id"] + ".json")),
+                    "execution_progress_unknown": receipt.get("execution_progress_unknown", True)}
+            _atomic(result_file, result)
+        complete = all(result["policies"][key]["status"] == "completed" for key in keys)
+        result["status"] = "completed_native_settlement" if complete else "partial_native_settlement_no_automatic_retry"
+        _atomic(result_file, result)
+        return {**result, "consumer_called": called, "selected_policies": list(keys),
+            "status": "already_completed_native_settlement" if complete and not called else result["status"],
+            "operation_result_ref": _ref(result_file)}
+
+
 def _static_native_command(argv):
     result, index = [], 0
     argv = _command(argv)[5:]
@@ -2254,6 +2452,12 @@ def main(argv=None):
         help="After the real D supplier window, collect only the new disclosure day and append its saved catalog")
     execute.add_argument("--native-paper-close", nargs=2, action="append", metavar=("RUN_DIR", "CLOSING_QUOTE"),
         help="Close only an existing intraday PAPER opening with its explicit saved same-provider closing quote")
+    settlement = commands.add_parser("settle-native",
+        help="Settle saved original D plans at exact E raw close, without producing E signals")
+    settlement.add_argument("--run-dir", type=Path, required=True)
+    settlement.add_argument("--day", required=True)
+    settlement.add_argument("--package", type=Path, required=True)
+    settlement.add_argument("--policy", choices=("v1", "qualified"))
     recover = commands.add_parser("recover-step")
     recover.add_argument("--run-dir", type=Path, required=True)
     recover.add_argument("--day", required=True)
@@ -2291,6 +2495,8 @@ def main(argv=None):
             action_reference_view=args.action_reference_view)
     elif args.action == "recover-step":
         result = recover_step(args.run_dir, args.day, args.step)
+    elif args.action == "settle-native":
+        result = settle_native(args.run_dir, args.day, args.package, policy=args.policy)
     elif args.action == "recover-route":
         from .system_daily_route_recovery import recover_route
         result = recover_route(args.run_dir, args.day, args.route)
@@ -2326,6 +2532,6 @@ def main(argv=None):
             refresh_seat_disclosures=args.refresh_seat_disclosures, native_paper_closes=args.native_paper_close)
     print(json.dumps(result, ensure_ascii=False))
     return 1 if result.get("status") in {
-        "partial_research_routes", "unknown_no_successful_child_terminal",
+        "partial_research_routes", "partial_native_settlement_no_automatic_retry", "unknown_no_successful_child_terminal",
         "recovered_saved_route_partial", "unknown_saved_route_publication_incomplete",
         "unknown_interrupted_route_projection_no_retry"} else 0
