@@ -34,6 +34,7 @@ FLAGS = {"research_only": True, "candidate_panel_only": True,
     "strategy_validated": False, "broker_interacted": False,
     "model_refit": False, "network_accessed": False, "user_account_mutated": False}
 ALLOWED = {"baostock-bulk-extras", "leader-close-publication", "leader-recent-source-preview",
+    "leader-eight-type-forward-register",
     "leader-environment", "leader-identity", "leader-identity-episodes", "leader-eight-type-inputs",
     "leader-eight-type-paper", "leader-eight-type-forward", "leader-published-forward",
     "recent-source-qlib-provider", "recent-source-alpha158", "recent-source-alpha158-target-publication",
@@ -219,7 +220,36 @@ def _outputs(step, day):
     if step["command"][0] in {"leader-eight-type-forward", "leader-published-forward", "recent-source-alpha158-forward-run",
             "shortline-native-preopen-forward"}:
         head = _read(step["expected_files"][0])
-        if not head.get("cases") or any(c["state"].get("day") != day for c in head["cases"].values()):
+        per_case_generation = False
+        if step["command"][0] == "leader-eight-type-forward":
+            from . import leader_eight_type_forward_run as forward
+            explicit_registration = _values(step["command"], "--registration")
+            if len(explicit_registration) > 1:
+                raise ValueError("Only one forward registration is supported")
+            registration_file = Path(explicit_registration[0]) if explicit_registration else forward.DEFAULT_REGISTRATION
+            registered = _read(registration_file)
+            if (any(key in registered for key in ("generation_method_id", "initial_quality_scope", "registered_run_dir"))
+                    or registered.get("generation", {}).get("kind") == "independent_new_research_generation"):
+                directory = str(Path(step["expected_files"][0]).resolve().parent)
+                binding = head.get("binding", {})
+                generation = binding.get("explicit_new_generation", {})
+                if (registered.get("generation_method_id") != forward.NEW_GENERATION_METHOD
+                        or head.get("schema") != forward.SCHEMA or set(head.get("cases", {})) != set(forward.CASE_IDS)
+                        or any(head.get(key) is not value for key, value in forward.FLAGS.items())
+                        or registered.get("initial_quality_scope") != "per_case"
+                        or registered.get("registered_run_dir") != directory
+                        or generation.get("method_id") != forward.NEW_GENERATION_METHOD
+                        or generation.get("initial_quality_scope") != "per_case"
+                        or generation.get("registered_run_dir") != directory
+                        or binding.get("run_directory") != directory
+                        or binding.get("config") != registered.get("config")
+                        or binding.get("forward_method_registration", {}).get("sha256") != _ref(registration_file)["sha256"]
+                        or any(c["state"].get("day") and c["state"]["day"] > day for c in head["cases"].values())
+                        or any(c["state"].get("day") != day and not (c.get("blocking_evidence") or c.get("error"))
+                               for c in head["cases"].values())):
+                    raise ValueError("New generation must preserve exact registration, partial-case evidence and requested date")
+                per_case_generation = True
+        if not per_case_generation and (not head.get("cases") or any(c["state"].get("day") != day for c in head["cases"].values())):
             raise ValueError("The existing account did not commit the exact requested source day")
     if step["command"][0] == "leader-dated-catchup-forward":
         # A successful command may accurately report blocked/partial books.
@@ -2634,6 +2664,14 @@ def main(argv=None):
     eight_mode = eight_only.add_mutually_exclusive_group(required=True)
     eight_mode.add_argument("--source-only", action="store_true")
     eight_mode.add_argument("--publish-current", action="store_true")
+    generation_start = commands.add_parser("start-eight32-generation",
+        help="Register one explicitly independent generation from the latest successful real eight-type publication")
+    generation_start.add_argument("--run-dir", type=Path, required=True)
+    generation_start.add_argument("--generation-id", required=True)
+    generation_advance = commands.add_parser("advance-eight32-generation",
+        help="Consume only this generation's contiguous actual-publication prefix with the existing Engine")
+    generation_advance.add_argument("--run-dir", type=Path, required=True)
+    generation_advance.add_argument("--day", required=True)
     recover = commands.add_parser("recover-step")
     recover.add_argument("--run-dir", type=Path, required=True)
     recover.add_argument("--day", required=True)
@@ -2681,6 +2719,12 @@ def main(argv=None):
     elif args.action == "advance-eight32":
         from .leader_eight_type_daily import advance
         result = advance(args.run_dir, args.day, args.package, source_only=args.source_only)
+    elif args.action == "start-eight32-generation":
+        from .eight32_paper_generation import start
+        result = start(args.run_dir, args.generation_id)
+    elif args.action == "advance-eight32-generation":
+        from .eight32_paper_generation import advance
+        result = advance(args.run_dir, args.day)
     elif args.action == "recover-route":
         from .system_daily_route_recovery import recover_route
         result = recover_route(args.run_dir, args.day, args.route)

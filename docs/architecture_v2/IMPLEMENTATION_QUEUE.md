@@ -2,6 +2,19 @@
 
 ## Current priority: strategy evidence and a usable daily research path
 
+New paper-path implementation (October21): an explicit new-generation registrar
+and start/advance-eight32-generation now bind a genuine first publication, own
+input, qualification, exact fresh run and original32/config. The original15
+accounts are not reset. Explicit new method uses per-case startup quality so
+one bad source does not prevent other cases from using the original Engine;
+legacy registrations retain their original shared startup check. Saved successful
+children can be adopted after producer advances without rerunning old commands.
+Synthetic Engine/Ledger and old-path regression pass; current actual source/pub
+remain20/19, so no real new registration or market account has been created.
+Read outputs/eight32_paper_generation/20261021_v1/REPORT.md and deployment_readback.json.
+At first actual eligible publication, register once, then consume only new exact
+source/publication prefixes. No first-E future source is required from the user.
+
 Latest actual source-only result (16:03:45, October21): saved32 formations /
 93,188 stock-months were reused without rescoring or rule/cost changes. LowMAX
 now completed106 sessions and stopped on600120/June14 reserve terms; sigma115

@@ -37,6 +37,7 @@ from .shortline_decision_v2 import BATCH_SCHEMA, fixed_exit_policy
 SCHEMA = "leader_eight_type_published_close_shared_ledger_checkpoint_v1"
 RESULT_SCHEMA = "leader_eight_type_published_close_forward_result_v1"
 TARGET_POLICY_ID = "leader_eight_type_published_close_fixed_expiry_reduction_v1"
+NEW_GENERATION_METHOD = "leader_eight_type_explicit_new_generation_per_case_start_v1"
 DEFAULT_REGISTRATION = Path(__file__).resolve().parents[2] / "outputs/system_landing/20261015_eight_type_forward_v1/registration.json"
 CASE_IDS = tuple(f"{t}__{g}__{c}" for t in TYPE_IDS for g in GUARDS for c, _ in CAPS)
 FLAGS = {"research_only": True, "candidate_panel_only": True,
@@ -309,6 +310,40 @@ def _registration(path, first, config, now):
         "registration_is_original_publication": False}
 
 
+def _generation_binding(path, registered, first, directory, ipo_evidence, research_master_run):
+    """Only explicitly registered new books may isolate first-day quality by case.
+
+    Legacy registrations retain the original shared startup check. The optional
+    generation never changes ranks, weights, costs, or per-case execution checks.
+    """
+    value = json.loads(Path(path).read_text(encoding="utf-8-sig"))
+    keys = ("generation_method_id", "initial_quality_scope", "registered_run_dir")
+    generation = value.get("generation", {})
+    if not any(key in value for key in keys) and generation.get("kind") != "independent_new_research_generation":
+        return None
+    own = {"file": first["reference"]["input_manifest"], "sha256": first["reference"]["input_manifest_sha256"]}
+    expected_inputs = {name: {"file": str(Path(file).resolve()), "sha256": digest(file)}
+        for name, file in (("ipo_evidence", ipo_evidence), ("research_master_run", research_master_run))}
+    if (value.get("generation_method_id") != NEW_GENERATION_METHOD
+            or value.get("initial_quality_scope") != "per_case"
+            or value.get("registered_run_dir") != str(directory)
+            or generation.get("kind") != "independent_new_research_generation"
+            or generation.get("intended_run_directory") != str(directory)
+            or generation.get("original_generations_unchanged") is not True
+            or generation.get("original_cash_reused") is not False
+            or generation.get("missing_old_publications_repaired") is not False
+            or value.get("own_input_manifest") != own
+            or value.get("qualification_inputs") != expected_inputs
+            or value.get("source_bindings") != first["record"]["source"]
+            or value.get("source_calendar") != first["loaded"]["calendar_payload"]
+            or value.get("scope_members") != first["loaded"]["scope_members"]
+            or digest(path) != registered["sha256"]):
+        raise ValueError("New generation must retain its exact method, per-case startup, directory and original inputs")
+    return {"method_id": NEW_GENERATION_METHOD, "initial_quality_scope": "per_case",
+        "registered_run_dir": str(directory), "own_input_manifest": own,
+        "qualification_inputs": expected_inputs}
+
+
 def run(publications, panel, ipo_evidence, research_master_run, run_dir, *, through=None, registration=None,
         method=None):
     case_ids = CASE_IDS if method is None else tuple(method.CASE_IDS)
@@ -361,6 +396,8 @@ def run(publications, panel, ipo_evidence, research_master_run, run_dir, *, thro
     config, qualification = _config(100000, 5), latest["qualification"]
     registration_path = (registration or DEFAULT_REGISTRATION) if method is None else registration
     registered = registration_loader(registration_path, first, config, now)
+    generation = (_generation_binding(registration_path, registered, first, directory, ipo_evidence, research_master_run)
+        if method is None else None)
     binding = {"protocol": deepcopy(first["record"]["protocol"]), "config": config.to_dict(),
         "external_fixed_protocol": first["record"]["source"]["external_fixed_protocol"],
         "risk_policy": deepcopy(FORWARD_RISK_SPEC) if method is None else {"id": risk_policy_id},
@@ -368,6 +405,8 @@ def run(publications, panel, ipo_evidence, research_master_run, run_dir, *, thro
         "calendar": latest["calendar_payload"], "qualification": qualification.verification,
         "scope_members": latest["scope_members"], "context_anchor": latest["provenance"]["context_anchor"],
         "run_directory": str(directory), "forward_method_registration": registered}
+    if generation is not None:
+        binding["explicit_new_generation"] = generation
     path = directory / "head.json"
     head = json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
     is_new = head is None
@@ -390,9 +429,10 @@ def run(publications, panel, ipo_evidence, research_master_run, run_dir, *, thro
     if head is None:
         if first["execution"] not in latest["source_days"]:
             return waiting("waiting_for_exact_successor_complete_source_close", first_decision_day=first["day"], required_successor_day=first["execution"], forward_method_registration=registered)
-        issue = _quality({"positions": {}, "pending_targets": None}, first, base, previous, qualification, require_successor=True)
-        if issue:
-            return waiting("waiting_for_required_execution_quality_evidence", blocking_evidence=issue)
+        if generation is None:
+            issue = _quality({"positions": {}, "pending_targets": None}, first, base, previous, qualification, require_successor=True)
+            if issue:
+                return waiting("waiting_for_required_execution_quality_evidence", blocking_evidence=issue)
     directory.mkdir(parents=True, exist_ok=True)
     with lock(directory / "runner.lock"):
         if head is not None and json.loads(path.read_text(encoding="utf-8")) != head:

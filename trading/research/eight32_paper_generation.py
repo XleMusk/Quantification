@@ -1,0 +1,298 @@
+"""Coordinate one explicitly new eight-type research-paper generation.
+
+The existing registrar and published-close consumer own registration and account
+semantics. This wrapper owns only their exact saved command prefix and receipts.
+It cannot repair older missing publications or reuse their account cash.
+"""
+from copy import deepcopy
+from datetime import datetime
+from pathlib import Path
+import re
+
+from ..contracts import MARKET_TZ
+from . import system_daily_refresh as daily
+from . import leader_eight_type_daily as producer
+from .leader_eight_type_forward_registration import GENERATION_METHOD_ID
+from .leader_close_daily import _saved_command
+
+SCHEMA = "eight32_explicit_paper_generation_coordinator_v1"
+KEY = "eight32_paper_generation"
+
+
+def _calendar(registration):
+    reference = registration["calendar"]
+    if daily._ref(reference["file"]) != reference:
+        raise ValueError("The original system calendar changed")
+    value = daily._read(reference["file"])
+    sessions, previous, status = daily._calendar_view(value, f"{value['year']}-01-01",
+        f"{value['year']}-12-31", [])
+    if status != "pinned_static_exchange_calendar":
+        raise ValueError("A fixed exchange calendar is required")
+    return sessions, previous
+
+
+def _checked_ref(reference):
+    if daily._ref(reference["file"]) != reference:
+        raise ValueError("A saved generation registration/publication/input changed")
+    return daily._read(reference["file"])
+
+
+def _current(head, registration, sessions, now):
+    profile = head.get(producer.PROFILE_KEY)
+    if profile is None:
+        raise ValueError("A successful independent eight-type publication is required first")
+    producer._validate(profile, head, registration, sessions, now)
+    if profile["source_day"] != profile["publication_source_day"]:
+        raise ValueError("Latest source is context only; it cannot start/advance a new publication generation")
+    return profile
+
+
+def _validate_generation(value, head, registration):
+    if (value.get("schema") != SCHEMA or value.get("system_registration") != head["registration"]
+            or any(value.get(k) is not v for k,v in daily.FLAGS.items())):
+        raise ValueError("Generation belongs to another exact system registration")
+    registered = _checked_ref(value["registration"])
+    run = Path(value["run_directory"]).resolve()
+    if (Path(registered["generation"]["intended_run_directory"]).resolve() != run
+            or registered.get("generation_method_id") != GENERATION_METHOD_ID
+            or registered.get("initial_quality_scope") != "per_case"
+            or Path(registered.get("registered_run_dir", "")).resolve() != run
+            or registered["generation"] != value["generation_binding"]
+            or registered["method"] != value["consumer_method"]
+            or registered["first_decision_day"] != value["first_decision_day"]
+            or registered["first_execution_day"] != value["first_execution_day"]
+            or registered["generation"].get("original_generations_unchanged") is not True
+            or registered["generation"].get("original_cash_reused") is not False
+            or registered["generation"].get("missing_old_publications_repaired") is not False
+            or registered["qualification_inputs"] != {"ipo_evidence":value["ipo_evidence"],
+                "research_master_run":value["research_master_run"]}):
+        raise ValueError("The explicit new generation cannot replace its original method or account directory")
+    for ref in [value["ipo_evidence"], value["research_master_run"], value["latest_manifest"],
+            *[ref for row in value["publications"] for ref in (row["publication"],row["manifest"])]]:
+        _checked_ref(ref)
+    for row in value["publications"]:
+        published=_checked_ref(row["publication"])
+        if (published["source_close_day"] != row["day"]
+                or Path(published["source"]["input_manifest"]).resolve() != Path(row["manifest"]["file"]).resolve()
+                or published["source"]["input_manifest_sha256"] != row["manifest"]["sha256"]):
+            raise ValueError("A generation publication lost its own unchanged input manifest")
+    original = registered["original_publication"]
+    if ({k:original[k] for k in ("file", "sha256")} != value["publications"][0]["publication"]
+            or registered["own_input_manifest"] != value["publications"][0]["manifest"]):
+        raise ValueError("The first generation publication/input cannot change")
+    sessions, _ = _calendar(registration)
+    days = [row["day"] for row in value["publications"]]
+    if days != [d for d in sessions if value["first_decision_day"] <= d <= days[-1]]:
+        raise ValueError("The generation requires its entire continuous actual-publication prefix")
+    return registered
+
+
+def _operation(directory, generation_id, kind, day=None):
+    root = directory / "eight32_generations" / generation_id
+    return root / kind if day is None else root / kind / day.replace("-", "")
+
+
+def _execute(operation, plan, step, day, *, allow_start=True):
+    plan_file, receipt_file = operation / "plan.json", operation / "receipt.json"
+    if plan_file.exists():
+        if daily._read(plan_file) != plan:
+            raise ValueError("A saved generation operation cannot change its exact command/input prefix")
+    elif operation.exists():
+        raise ValueError("An unresolved generation operation cannot be replaced")
+    else:
+        daily._atomic(plan_file, plan)
+    receipt = daily._read(receipt_file) if receipt_file.exists() else {
+        "schema": SCHEMA, "kind": plan["kind"], "day": day, "plan_ref": daily._ref(plan_file),
+        "started_at": daily._now(), "automatic_retry":False, **daily.FLAGS}
+    if (receipt.get("plan_ref") != daily._ref(plan_file) or receipt.get("kind") != plan["kind"]
+            or any(receipt.get(k) is not v for k,v in daily.FLAGS.items())):
+        raise ValueError("An original generation operation receipt changed")
+    bound = {**step, "binding":{"kind":"eight32_explicit_new_paper_generation",
+        "registration":plan["system_registration"], "plan":daily._ref(plan_file)}}
+    allow_start = allow_start and (plan["kind"] != "start" or datetime.now(MARKET_TZ)
+        < datetime.fromisoformat(plan["execution_day"] + "T09:30:00+08:00"))
+    command = _saved_command(bound, operation, day, allow_start=allow_start)
+    if command.get("status") != "completed":
+        receipt.update(status="partial_generation_command_no_retry", command_result=command,
+            account_state_unknown=True)
+        daily._atomic(receipt_file, receipt)
+        return receipt
+    if receipt.get("status") == "completed_generation_command":
+        return receipt
+    # The command child owns actual execution evidence. Saving this parent
+    # result can be repeated after interruption without invoking the child.
+    receipt.update(status="completed_generation_command", command_result=command,
+        completed_at=daily._now())
+    daily._atomic(receipt_file, receipt)
+    return receipt
+
+
+def start(run_dir, generation_id):
+    if not isinstance(generation_id,str) or not re.fullmatch(r"[a-z0-9][a-z0-9_\-]{0,63}",generation_id):
+        raise ValueError("Use one explicit simple generation identifier")
+    directory = daily.opening_daily._destination(run_dir)
+    with daily._lock(directory / "runner.lock"):
+        head, registration = daily._load(directory)
+        sessions, _ = _calendar(registration)
+        existing = head.get(KEY)
+        if existing is not None:
+            if existing["generation_id"] != generation_id:
+                raise ValueError("An existing explicit generation cannot be replaced or reset")
+            _validate_generation(existing, head, registration)
+            return {"status":"already_registered_eight32_paper_generation", "generation":existing,
+                "command_called":False, "account_created":False, **daily.FLAGS}
+        operation = _operation(directory,generation_id,"start")
+        plan_file = operation / "plan.json"
+        if plan_file.exists():
+            plan = daily._read(plan_file)
+            if (plan.get("schema") != SCHEMA or plan.get("kind") != "start"
+                    or plan.get("generation_id") != generation_id or plan.get("system_registration") != head["registration"]
+                    or any(plan.get(k) is not v for k,v in daily.FLAGS.items())):
+                raise ValueError("Saved start belongs to another exact generation/system")
+        else:
+            profile = _current(head,registration,sessions,datetime.now(MARKET_TZ))
+            day = profile["publication_source_day"]
+            publication = profile["latest_publication"]
+            manifest = profile["publication_manifest"]
+            execution = sessions[sessions.index(day)+1]
+            now = datetime.now(MARKET_TZ)
+            stamp = datetime.fromisoformat(_checked_ref(publication)["recorded_at"])
+            if not stamp <= now < datetime.fromisoformat(execution+"T09:30:00+08:00"):
+                raise ValueError("A new generation must register after actual publication and before its exact first open")
+            root = daily.DATA_ROOT / "research/leader_eight_type_forward_generations" / generation_id
+            out, account = root / "registration.json", root / "books"
+            if out.exists() or account.exists():
+                raise FileExistsError("The explicit new generation registration/account path already exists")
+            plan = {"schema":SCHEMA, "kind":"start", "generation_id":generation_id,
+                "system_registration":head["registration"], "day":day, "execution_day":execution,
+                "publication":publication, "manifest":manifest,
+                "ipo_evidence":daily._ref(producer._one(profile["commands"]["paper32"],"--ipo-evidence")),
+                "research_master_run":daily._ref(producer._one(profile["commands"]["paper32"],"--research-master-run")),
+                "registration_file":str(out), "run_directory":str(account), **daily.FLAGS}
+        for name in ("publication","manifest","ipo_evidence","research_master_run"):
+            _checked_ref(plan[name])
+        published=_checked_ref(plan["publication"])
+        if (published["source_close_day"] != plan["day"] or plan["day"] not in sessions
+                or sessions[sessions.index(plan["day"])+1] != plan["execution_day"]
+                or published["source"]["input_manifest_sha256"] != plan["manifest"]["sha256"]
+                or Path(published["source"]["input_manifest"]).resolve() != Path(plan["manifest"]["file"]).resolve()):
+            raise ValueError("Saved start changed its original own input or exact decision/execution day")
+        command = ["leader-eight-type-forward-register"]
+        for flag, value in (("publication",plan["publication"]["file"]),("input-manifest",plan["manifest"]["file"]),
+                ("ipo-evidence",plan["ipo_evidence"]["file"]),("research-master-run",plan["research_master_run"]["file"]),
+                ("out",plan["registration_file"]),("run-dir",plan["run_directory"])):
+            command.extend(["--"+flag,value])
+        step = {"id":"register_generation", "command":command,"requires":[],
+            "expected_files":[plan["registration_file"]]}
+        result = _execute(operation,plan,step,plan["day"])
+        if result["status"] != "completed_generation_command":
+            return result
+        record = daily._read(plan["registration_file"])
+        value = {"schema":SCHEMA,"generation_id":generation_id,"system_registration":head["registration"],
+            "registration":daily._ref(plan["registration_file"]),"run_directory":plan["run_directory"],
+            "generation_binding":record["generation"],"consumer_method":record["method"],
+            "first_decision_day":plan["day"],"first_execution_day":plan["execution_day"],
+            "ipo_evidence":plan["ipo_evidence"],"research_master_run":plan["research_master_run"],
+            "publications":[{"day":plan["day"],"publication":plan["publication"],"manifest":plan["manifest"]}],
+            "latest_manifest":plan["manifest"],"last_consumer_day":None,"account_count":0,
+            "start_operation":str(operation / "receipt.json"),**daily.FLAGS}
+        _validate_generation(value,head,registration)
+        if Path(value["run_directory"]).exists():
+            raise ValueError("Registration must not create an account")
+        before = deepcopy(head)
+        head[KEY]=value
+        assert {k:v for k,v in before.items() if k != KEY} == {k:v for k,v in head.items() if k != KEY}
+        daily._atomic(directory / "head.json",head)
+        return {"status":"registered_eight32_paper_generation", "generation":value,
+            "account_created":False,"old_accounts_advanced":False,**daily.FLAGS}
+
+
+def advance(run_dir, day):
+    daily._exact_day(day)
+    directory = daily.opening_daily._destination(run_dir)
+    with daily._lock(directory / "runner.lock"):
+        head, registration = daily._load(directory)
+        value = head.get(KEY)
+        if value is None:
+            raise ValueError("An explicitly registered new eight-type generation is required")
+        _validate_generation(value,head,registration)
+        sessions, previous = _calendar(registration)
+        if day not in sessions or day < value["first_decision_day"]:
+            raise ValueError("An exact current generation source day is required")
+        if value["last_consumer_day"] == day:
+            _checked_ref(value["account_head"])
+            return {"status":"already_saved_eight32_generation_day","command_called":False,**daily.FLAGS}
+        operation = _operation(directory,value["generation_id"],"advance",day)
+        saved_plan=operation/"plan.json"
+        recover_only=saved_plan.exists()
+        if recover_only:
+            plan=daily._read(saved_plan)
+            if (plan.get("schema") != SCHEMA or plan.get("kind") != "advance" or plan.get("day") != day
+                    or plan.get("generation_id") != value["generation_id"]
+                    or plan.get("system_registration") != head["registration"]
+                    or plan.get("parent_generation") != value
+                    or any(plan.get(k) is not v for k,v in daily.FLAGS.items())):
+                raise ValueError("Saved advance belongs to another original generation/input prefix")
+            rows,manifest=plan["publications"],plan["manifest"]
+            candidate={**deepcopy(value),"publications":rows,"latest_manifest":manifest}
+            _validate_generation(candidate,head,registration)
+            if (rows[-1]["day"] != day or rows[:-1] != value["publications"]
+                    or rows[-1]["manifest"] != manifest):
+                raise ValueError("Saved advance changed its original continuous publication/input prefix")
+        else:
+            profile = _current(head,registration,sessions,datetime.now(MARKET_TZ))
+            if profile["source_day"] != day:
+                raise ValueError("Use the latest exact complete source/publication day")
+            if day < value["first_execution_day"]:
+                return {"status":"awaiting_exact_first_execution_close","required_day":value["first_execution_day"],
+                    "command_called":False,"account_created":False,**daily.FLAGS}
+            rows = deepcopy(value["publications"])
+            if rows[-1]["day"] != previous[day]:
+                raise ValueError("Missing generation publication cannot be filled, skipped or rolled")
+            rows.append({"day":day,"publication":profile["latest_publication"],"manifest":profile["publication_manifest"]})
+            manifest=profile["latest_manifest"]
+        command=["leader-eight-type-forward"]
+        for row in rows:
+            command.extend(["--publication",row["publication"]["file"]])
+        for flag,item in (("panel",manifest["file"]),("ipo-evidence",value["ipo_evidence"]["file"]),
+                ("research-master-run",value["research_master_run"]["file"]),("run-dir",value["run_directory"]),
+                ("registration",value["registration"]["file"]),("through",day)):
+            command.extend(["--"+flag,item])
+        expected_plan={"schema":SCHEMA,"kind":"advance","day":day,"generation_id":value["generation_id"],
+            "system_registration":head["registration"],"parent_generation":deepcopy(value),"publications":rows,
+            "manifest":manifest,"command":command,**daily.FLAGS}
+        if recover_only and plan != expected_plan:
+            raise ValueError("Saved advance changed its original registered command")
+        plan=expected_plan
+        step={"id":"consume_generation","command":command,"requires":[],
+            "expected_files":[str(Path(value["run_directory"])/"head.json")]}
+        result=_execute(operation,plan,step,day,allow_start=not recover_only)
+        if result["status"] != "completed_generation_command":
+            return result
+        account_file=Path(value["run_directory"])/"head.json"
+        account=daily._read(account_file)
+        stdout_file=operation/"commands/consume_generation.stdout.txt"
+        observed=daily._read(stdout_file)
+        if (observed.get("case_count") != 32 or Path(observed.get("checkpoint", "")).resolve() != account_file
+                or observed.get("execution_admitted") is not False):
+            raise ValueError("Saved consumer stdout does not describe this exact independent generation")
+        case_status=[]
+        for key,case in account.get("cases",{}).items():
+            current=(case.get("state") or {}).get("day")
+            blocked=case.get("blocking_evidence")
+            error=case.get("error")
+            status="error" if error else "blocked" if blocked else "current" if current == day else "not_current"
+            case_status.append({"case_id":key,"state_day":current,"status":status,
+                "blocking_evidence":blocked,"error":error,"metrics":None})
+        updated={**deepcopy(value),"publications":rows,"latest_manifest":manifest,
+            "last_consumer_day":day,"account_count":len(account.get("cases",{})),
+            "account_head":daily._ref(account_file),"last_operation":str(operation/"receipt.json"),
+            "consumer_result":daily._ref(stdout_file),"consumer_status":observed["status"],
+            "cases":case_status,"current_case_count":sum(c["state_day"] == day for c in case_status),
+            "blocked_case_count":sum(c["status"] == "blocked" for c in case_status),
+            "error_case_count":sum(c["status"] == "error" for c in case_status),"metrics":None}
+        _validate_generation(updated,head,registration)
+        head[KEY]=updated
+        daily._atomic(directory/"head.json",head)
+        return {"status":"saved_eight32_generation_consumer_result","generation":updated,
+            "account_count":updated["account_count"],"old_accounts_advanced":False,**daily.FLAGS}
