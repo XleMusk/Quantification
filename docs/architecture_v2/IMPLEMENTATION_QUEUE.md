@@ -16,13 +16,22 @@ historical evidence, not the current data or account cursor.
   existing thread automation was corrected from 20 minutes to one hour and
   explicitly restores the authorized close-collection and daily-refresh steps.
   The Windows workbench task remains read-only.
-- Next implementation: add an explicit source-only continuation to the existing
-  native daily producer, reusing its exact single-day incremental checkpoint.
-  Record missed-publication days without scoring or publishing those past days,
-  changing old plans, resetting accounts or injecting fabricated NO_CHANGE.
-  Then allow genuinely current source-day production; existing books must still
-  respect their missing-plan boundary. Other core routes need their own safe
-  production/consumption separation, not a manually edited global cursor.
+- Completed: `system-daily-refresh advance-native --source-only` appended the
+  October 20 feature state from the saved October 19 checkpoint, recording its
+  actual October 21 availability and missed publication. No scores, plans or
+  account sessions were produced. Only the native profile moved to October 20;
+  the core signal cursor remains October 19 and original books remain execution
+  October 20. Original plan/score files and account heads are unchanged.
+  `--publish-current` now allows independent current native production within
+  the real next-opening deadline; missing plans still prohibit old-book skips.
+  Saved-success recovery is read-only and also covers interruption before the
+  parent persisted its continuation; failed/partial work is not re-produced.
+- Next implementation: separate source context, current publication and original
+  account consumption for other core routes, preserving actual availability and
+  missing-day evidence. Bind genuinely new native publications to the existing
+  read-only display through explicit saved pointers; do not assume plan-folder
+  discovery already covers new independent producer directories. No manual
+  global-cursor edit, account reset or fabricated NO_CHANGE can bridge a gap.
 - Acceptance still missing: an actual scheduled close run and recovery receipts,
   sufficient strategy evidence outside inspected windows, and the separately
   authorized broker/THS path. Monitoring code and healthy web pages do not prove

@@ -23,6 +23,7 @@ from .native_history_chain_source import NativeHistoryChainSource
 
 SCHEMA = "native_shortline_daily_producer_operation_v1"
 METHOD_ID = "native_incremental_frozen_score_two_fixed_preopen_policies_v1"
+SOURCE_ONLY_STATUS = "saved_native_source_context_without_publication"
 FLAGS = {"research_only": True, "candidate_panel_only": True,
     "execution_admitted": False, "selection_enabled": False,
     "strategy_validated": False, "model_refit": False,
@@ -217,14 +218,18 @@ def _stage(operation, receipt, name, artifact, producer, validator, *, reused=Fa
 
 
 def run(day, checkpoint, *, base_view, extension_views, full_closes, calendar,
-        model, ipo_evidence, master_run, out, reuse=None):
+        model, ipo_evidence, master_run, out, reuse=None, source_only=False):
     """Advance one true new D, or adopt an explicit unchanged saved D chain.
 
     ``model`` is one existing six-model generation, preserving LR and LGBM.
     Optional ``reuse`` keys are features_result, score_result,
     score_publication, plan_v1 and plan_qualified. A continuing call uses the
     same ``out``; failures do not authorize another producer invocation.
+    ``source_only`` explicitly records an already missed publication window;
+    it appends only feature state, never frozen scores or portfolio plans.
     """
+    if type(source_only) is not bool:
+        raise ValueError("Source-only mode must be an explicit boolean")
     if date.fromisoformat(day).isoformat() != day:
         raise ValueError("One exact canonical native source day is required")
     if datetime.now(MARKET_TZ) < datetime.fromisoformat(day + "T15:00:00+08:00"):
@@ -234,11 +239,26 @@ def run(day, checkpoint, *, base_view, extension_views, full_closes, calendar,
         raise ValueError("The explicit full-close prefix must end at the one exact requested D")
     reuse = dict(reuse or {})
     allowed = {"features_result", "score_result", "score_publication", "plan_v1", "plan_qualified"}
+    gap = None
+    if source_only:
+        if set(reuse) - {"features_result"}:
+            raise ValueError("Source-only mode may reuse only an exact saved features_result")
+        execution_day, calendar_ref = preopen._calendar(calendar, day)
+        deadline = execution_day + "T09:30:00+08:00"
+        if datetime.fromisoformat(_now()) < datetime.fromisoformat(deadline):
+            raise ValueError("Source-only mode requires the original exact next-opening publication window to have elapsed")
+        gap = {"source_day": day, "missed_execution_day": execution_day,
+            "publication_deadline": deadline, "calendar": calendar_ref,
+            "reason": "original_next_open_publication_window_elapsed"}
     if set(reuse) - allowed or ("score_result" in reuse) != ("score_publication" in reuse):
         raise ValueError("Reuse requires explicit known artifact keys and the score result/publication pair")
     operation = Path(out).resolve()
     inputs = _inputs(day, checkpoint, base_view, extension_views, full_closes,
         calendar, model, ipo_evidence, master_run, reuse)
+    if source_only:
+        # Keep all default input hashes/receipts unchanged; opt-in mode is an
+        # immutable part of this operation and cannot later turn into scoring.
+        inputs = {**inputs, "source_only": True, "publication_gap": gap}
     input_id = sha256(json.dumps(inputs, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     protected = [Path(checkpoint).resolve().parent, Path(base_view).resolve(),
         *[Path(path).resolve() for path in extension_views], *[Path(path).resolve() for path in full_closes],
@@ -275,6 +295,19 @@ def run(day, checkpoint, *, base_view, extension_views, full_closes, calendar,
             features = _stage(operation, receipt, "features", features_path, features_producer,
                 lambda: _validate_features(features_path, day, checkpoint), reused="features_result" in reuse)
             receipt["latest_checkpoint"] = features["checkpoint"]
+            if source_only:
+                feature_result = _read(features["result"])
+                receipt.update(status=SOURCE_ONLY_STATUS, source_only=True, signals_published=False,
+                    missing_plan_day=day, publication_gap={**gap, "observed_at": receipt["created_at"]},
+                    reason=gap["reason"], source_proof=feature_result["source_proof"],
+                    feature_computed_at=feature_result["computed_at"],
+                    feature_available_at=feature_result["available_at"],
+                    feature_result_ref=_ref(features["result"]),
+                    score_publication_created=False, plan_publication_created=False,
+                    no_change_manufactured=False, empty_target_manufactured=False,
+                    completed_at=receipt.get("completed_at") or _now())
+                _atomic(receipt_path, receipt)
+                return {**receipt, "operation": str(receipt_path)}
             if not features["score_input_published"] or features["eligible_stage123_rows"] == 0:
                 receipt.update(status="saved_state_without_scorable_input_no_plan",
                     reason="operational_history_unknown" if not features["score_input_published"] else "no_known_eligible_stage123_events",
@@ -385,33 +418,16 @@ def bootstrap_profile(receipt_root=None):
         "bootstrap_only_read_saved_files": True, **FLAGS}
 
 
-def run_profile(profile, day, package, out):
-    """Produce the exact next D and return an explicit continuation profile.
-
-    Forward templates are instructions for the caller, never executed here.
-    Their --result-json must always be replaced with a new external result.
-    """
-    if (profile.get("schema") != "native_shortline_daily_profile_v1"
-            or profile.get("method_id") != METHOD_ID
-            or any(profile.get(key) is not value for key, value in FLAGS.items())):
-        raise ValueError("An unchanged native producer profile is required")
-    _checked(profile["checkpoint_ref"])
-    if day <= profile["source_day"]:
-        raise ValueError("Existing native source days must be reused, never re-produced")
-    package = str(Path(package).resolve())
-    if package in [str(Path(path).resolve()) for path in profile["full_closes"]]:
-        raise ValueError("The exact new D package cannot duplicate an old source")
-    closes = [*profile["full_closes"], package]
-    result = run(day, profile["checkpoint"], base_view=profile["base_view"],
-        extension_views=profile["extension_views"], full_closes=closes,
-        calendar=profile["calendar"], model=profile["model"],
-        ipo_evidence=profile["ipo_evidence"], master_run=profile["master_run"], out=out)
+def _continued_profile(profile, day, package, result):
+    """Derive the same producer continuation after execution or saved recovery."""
     next_profile = deepcopy(profile)
     if result["status"] in {"completed_saved_native_daily_features_scores_two_policies",
-            "saved_state_without_scorable_input_no_plan"}:
-        next_profile.update(source_day=day, checkpoint=result["latest_checkpoint"], full_closes=closes,
+            "saved_state_without_scorable_input_no_plan", SOURCE_ONLY_STATUS}:
+        package = str(Path(package).resolve())
+        next_profile.update(source_day=day, checkpoint=result["latest_checkpoint"],
+            full_closes=[*profile["full_closes"], package],
             checkpoint_ref=_ref(result["latest_checkpoint"]), last_operation=result["operation"])
-        if result["status"] == "saved_state_without_scorable_input_no_plan":
+        if result["status"] in {"saved_state_without_scorable_input_no_plan", SOURCE_ONLY_STATUS}:
             next_profile["chain_has_missing_plan"] = True
             next_profile["missing_plan_days"] = [*profile["missing_plan_days"], day]
         else:
@@ -423,4 +439,128 @@ def run_profile(profile, day, package, out):
                 template["argv"] = _replace_values(template["argv"], "--plan", template["plan_prefix"])
                 template["argv"] = _replace_values(template["argv"], "--raw-close", template["raw_close_prefix"])
                 template["argv"] = _replace_values(template["argv"], "--through", [day])
-    return {"result": result, "next_profile": next_profile}
+    return next_profile
+
+
+def run_profile(profile, day, package, out, *, source_only=False):
+    """Produce the exact next D and return an explicit continuation profile.
+
+    Forward templates are instructions for the caller, never executed here.
+    Their --result-json must always be replaced with a new external result.
+    """
+    if type(source_only) is not bool:
+        raise ValueError("Source-only mode must be an explicit boolean")
+    if (profile.get("schema") != "native_shortline_daily_profile_v1"
+            or profile.get("method_id") != METHOD_ID
+            or any(profile.get(key) is not value for key, value in FLAGS.items())):
+        raise ValueError("An unchanged native producer profile is required")
+    _checked(profile["checkpoint_ref"])
+    if day <= profile["source_day"]:
+        raise ValueError("Existing native source days must be reused, never re-produced")
+    package = str(Path(package).resolve())
+    if package in [str(Path(path).resolve()) for path in profile["full_closes"]]:
+        raise ValueError("The exact new D package cannot duplicate an old source")
+    closes = [*profile["full_closes"], package]
+    options = {"source_only": True} if source_only else {}
+    result = run(day, profile["checkpoint"], base_view=profile["base_view"],
+        extension_views=profile["extension_views"], full_closes=closes,
+        calendar=profile["calendar"], model=profile["model"],
+        ipo_evidence=profile["ipo_evidence"], master_run=profile["master_run"], out=out, **options)
+    return {"result": result, "next_profile": _continued_profile(profile, day, package, result)}
+
+
+def recover_saved_profile(profile, day, package, out, *, source_only):
+    """Read and validate one complete child receipt; never invoke a producer.
+
+    This closes only the interruption before a parent saved its continuation.
+    Missing, partial, failed or changed artifacts are rejected without repair.
+    """
+    if (type(source_only) is not bool or profile.get("schema") != "native_shortline_daily_profile_v1"
+            or profile.get("method_id") != METHOD_ID
+            or any(profile.get(key) is not value for key, value in FLAGS.items())):
+        raise ValueError("Saved recovery requires the unchanged native profile and explicit original mode")
+    _checked(profile["checkpoint_ref"])
+    package, operation = Path(package).resolve(), Path(out).resolve()
+    if (date.fromisoformat(day).isoformat() != day or day <= profile["source_day"]
+            or _read(package / "plan.json").get("day") != day
+            or str(package) in [str(Path(path).resolve()) for path in profile["full_closes"]]):
+        raise ValueError("Saved recovery cannot replace or repeat the original source day")
+    inputs = _inputs(day, profile["checkpoint"], profile["base_view"], profile["extension_views"],
+        [*profile["full_closes"], str(package)], profile["calendar"], profile["model"],
+        profile["ipo_evidence"], profile["master_run"], {})
+    gap = None
+    if source_only:
+        execution_day, calendar_ref = preopen._calendar(profile["calendar"], day)
+        gap = {"source_day": day, "missed_execution_day": execution_day,
+            "publication_deadline": execution_day + "T09:30:00+08:00", "calendar": calendar_ref,
+            "reason": "original_next_open_publication_window_elapsed"}
+        inputs = {**inputs, "source_only": True, "publication_gap": gap}
+    receipt_file = operation / "receipt.json"
+    receipt = _read(receipt_file)
+    allowed_status = ({SOURCE_ONLY_STATUS} if source_only else {
+        "completed_saved_native_daily_features_scores_two_policies", "saved_state_without_scorable_input_no_plan"})
+    no_scorable_plan = not source_only and receipt.get("status") == "saved_state_without_scorable_input_no_plan"
+    expected_id = sha256(json.dumps(inputs, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    required_stages = {"features"} if source_only or no_scorable_plan else {"features", "frozen_scores", "plan_v1", "plan_qualified"}
+    if (receipt.get("schema") != SCHEMA or receipt.get("method_id") != METHOD_ID
+            or receipt.get("source_day") != day or receipt.get("status") not in allowed_status
+            or receipt.get("inputs") != inputs or receipt.get("input_id") != expected_id
+            or set(receipt.get("stages", {})) != required_stages
+            or any(receipt.get(key) is not value for key, value in FLAGS.items())):
+        raise ValueError("Saved native child is not the complete exact original input/mode receipt")
+
+    def saved_stage(name, artifact, validator):
+        stage = receipt["stages"][name]
+        if (stage.get("status") != "completed" or stage.get("execution_progress_unknown") is not False
+                or stage.get("artifact_file") != str(Path(artifact).resolve())):
+            raise ValueError("Saved native child contains a partial or differently bound stage")
+        for reference in stage.get("artifact", {}).get("refs", []):
+            _checked(reference)
+        validated = validator()
+        if stage.get("artifact") != validated:
+            raise ValueError("Saved native stage artifacts differ from their exact validated contracts")
+        return validated
+
+    features_file = operation / "features/result.json"
+    features = saved_stage("features", features_file,
+        lambda: _validate_features(features_file, day, profile["checkpoint"]))
+    if receipt.get("latest_checkpoint") != features["checkpoint"]:
+        raise ValueError("Saved native continuation changed its exact feature checkpoint")
+    if source_only:
+        feature_result = _read(features_file)
+        if (receipt.get("source_only") is not True or receipt.get("signals_published") is not False
+                or receipt.get("publication_gap") != {**gap, "observed_at": receipt["created_at"]}
+                or datetime.fromisoformat(receipt["created_at"]) < datetime.fromisoformat(gap["publication_deadline"])
+                or receipt.get("missing_plan_day") != day or receipt.get("reason") != gap["reason"]
+                or receipt.get("source_proof") != feature_result["source_proof"]
+                or receipt.get("feature_computed_at") != feature_result["computed_at"]
+                or receipt.get("feature_available_at") != feature_result["available_at"]
+                or receipt.get("feature_result_ref") != _ref(features_file)
+                or any(receipt.get(key) is not False for key in ("score_publication_created", "plan_publication_created"))
+                or "plans" in receipt or "score_publication" in receipt
+                or any((operation / name).exists() for name in ("scores", "plan_v1", "plan_qualified"))):
+            raise ValueError("Saved source-only child lost its actual gap, feature provenance or no-publication boundary")
+    elif no_scorable_plan:
+        reason = ("operational_history_unknown" if not features["score_input_published"]
+            else "no_known_eligible_stage123_events" if features["eligible_stage123_rows"] == 0 else None)
+        if (reason is None or receipt.get("reason") != reason or receipt.get("source_only") is True
+                or any(receipt.get(key) is not False for key in ("no_change_manufactured", "empty_target_manufactured"))
+                or "plans" in receipt or "score_publication" in receipt
+                or any((operation / name).exists() for name in ("scores", "plan_v1", "plan_qualified"))):
+            raise ValueError("Saved no-scorable-plan child changed its exact feature reason or no-publication boundary")
+    else:
+        score_file, publication = operation / "scores/result.json", operation / "scores/publication.json"
+        scores = saved_stage("frozen_scores", publication,
+            lambda: _validate_score(score_file, publication, day, features, profile["model"]))
+        if receipt.get("source_only") is True or receipt.get("score_publication") != scores["publication"]:
+            raise ValueError("Saved publication child changed its original mode or score publication")
+        plans = {}
+        for name, policy_id in (("plan_v1", preopen.POLICY_ID), ("plan_qualified", preopen.QUALIFIED_POLICY_ID)):
+            path = operation / name / "plan.json"
+            plans[name] = saved_stage(name, path, lambda path=path, policy_id=policy_id:
+                _validate_plan(path, policy_id, day, scores, profile["calendar"],
+                    profile["ipo_evidence"], profile["master_run"]))["plan"]
+        if receipt.get("plans") != plans:
+            raise ValueError("Saved publication child changed either exact original policy plan")
+    result = {**receipt, "operation": str(receipt_file)}
+    return {"result": result, "next_profile": _continued_profile(profile, day, package, result)}
