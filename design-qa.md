@@ -1,5 +1,17 @@
 # Terminal workbench design QA — 2026-10-21
 
+## Batches 2–4: saved research, minute review and execution evidence
+
+The same compact terminal now includes saved research A/B comparison and Ledger portfolio concentration, per-day frozen paper-market versions, bounded StockDB minute capture, 1/5/15/30/60-minute linked review, session/anchored VWAP, disposable minute execution diagnostics, saved Tonghuashun observations, explicit-reference execution-cost CSV calculations, and independent daily operations status. No live order submission was enabled.
+
+Final validation used the same Chrome viewport and read-only compiled preview, refreshed from 308 actual isolated FastAPI GET responses. Browser interactions verified complete-result filtering and paired A/B selection, per-day paper chart selection and overlays, saved-observation empty states, CSV-header download, minute period/link selection, Shanghai anchor entry, replay start/scrub/next/exit, hidden future-anchor output, and JSON export. The 09:43 anchor returned 24.711 at the final cutoff; session VWAP returned 24.633. At the first two revealed minutes the future anchor remained unavailable. No relevant application warnings/errors were logged. Mobile rendering and browser-to-live-API POSTs were not tested.
+
+A separate actual FastAPI POST using synthetic cent-aligned minute bars filled 100 shares at 17.58 in the first fully eligible interval ending 09:32, charged 5.02, and marked shares available next session, 2025-09-16. Saved accounts and the original chart fixture remained unchanged. Off-tick synthetic bars returned unavailable. The actual cost endpoint independently matched synthetic buy/sell references, reporting adverse slippage 30/20 bps, respectively, with actual supplied fees kept separate; saved accounts were unchanged. These are software fixtures, not market or strategy evidence.
+
+Final checks: 191 backend/account/merged-close-path tests, 66 charting tests, TypeScript/Vite production build, and git diff whitespace check passed. Existing large-bundle and test-client deprecation warnings remain. Regression coverage includes per-arm portfolio/cost settings, missing reference data, earlier-cutoff causality, same-book T+1/cash/fees, interrupted minute jobs, truncated paper calendars and changes to the captured execution implementation.
+
+Screenshots: `/workspace/scratch/quant-research-workspace-1792574499970.jpg` and `/workspace/scratch/quant-minute-workbench-final-1792575077401.jpg`. Both display clearly named synthetic fixtures. Final Desktop Commander device check remained offline (last seen about two hours earlier), so installation on Windows, installed-provider minute timestamp/unit semantics, real four-table Tonghuashun observation and actual execution-cost acceptance remain pending. The branch includes the latest main changes through `fc3de5a`; no saved paper generation was reset.
+
 ## Batch 1: frozen daily inventory integration
 
 The data center now separates the local StockDB port connection from saved inventory availability. It lists completed StockDB snapshots/bulk inventories and BaoStock raw daily cache views, registers a frozen daily projection, and exposes actual amount, percentage turnover, optional provider fields, units, coverage, source omissions and version identity. Shared dataset selection spans the overview, data center, chart review and factor research, including reload.
@@ -73,6 +85,6 @@ The production UI uses API data rather than copying concept values. Benchmark se
 
 Browser tests used the compiled production frontend plus a read-only mirror of 248 responses recorded from actual FastAPI TestClient GET requests against isolated synthetic state. Non-GET requests return 405 in that temporary preview. This verifies visual/client interactions, not browser-to-live-API writes. The real FastAPI backend separately passed 31 chart/webapp API tests, including seven new full-history/factor/pinned-ledger cases; 56 frontend charting tests and the final TypeScript/Vite production build passed. Existing large ECharts/Trading chunk warnings remain.
 
-Minute candles, anchored VWAP, volume-at-price/POC/value areas, order flow, Pine execution and server-side annotation sync are not implemented; the UI discloses their data/capability requirements. Paper accounts without per-day market versions and unmatched broker observations cannot present a frozen matched chart. Daily OHLCV is never converted into a purported actual price-level distribution.
+Minute candles and session/anchored VWAP were added in batches 2–4 above. Volume-at-price/POC/value areas, order flow, Pine execution and server-side annotation sync remain unavailable. Legacy paper accounts without per-day market versions and unmatched broker observations cannot present a frozen matched chart. Daily OHLCV is never converted into a purported actual price-level distribution.
 
 Windows desktop startup, the user's external data/account directories, mobile viewport behavior, real-time data and Tonghuashun client integration were not verified in this environment. Real order submission remains disabled. No external site deployment was performed.

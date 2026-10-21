@@ -2,6 +2,40 @@
 
 ## Current priority: strategy evidence and a usable daily research path
 
+Completed next execution-path gap (October21,17:16): explicit split settlement
+method now settles known D plans on E without requiring E's own publication.
+The same Engine/Ledger preserves fees/T+1/raw/qualification/action checks;
+current new-target quality is checked only after settlement. Separate attach
+journals queue the next session without repeating fills, marks or actions;
+missing publications stay explicit and the original five-session expiry still
+runs. All32 cases retain independent gaps/failures; existing registrations do
+not migrate. `start-eight32-generation --session-method split-settlement-v1`
+selects the new method before first registration; default v1 remains unchanged.
+The registrar/coordinator/real Engine synthetic chain and original-path checks
+passed; these are software evidence, not new market returns. Actual21 source
+and new generation still absent at17:16. See outputs/eight32_split_session/
+20261021_v1/{REPORT.md,checks.json,deployment_readback.json}.
+Next bounded software gap: when E inputs have a saved successful terminal but
+E publication fails, adopt only that successful input context explicitly for
+subsequent F production. Current split settlement can already read the saved E
+inputs without changing producer state. Do not retry failed E production,
+backfill E publication, rerun the old19/20 dates or reset accounts. After this
+recovery gap, return to distinct strategy evidence and saved paper holdings;
+do not expand old monthly notice work or retest unchanged phases.
+
+New paper-path implementation (October21): an explicit new-generation registrar
+and start/advance-eight32-generation now bind a genuine first publication, own
+input, qualification, exact fresh run and original32/config. The original15
+accounts are not reset. Explicit new method uses per-case startup quality so
+one bad source does not prevent other cases from using the original Engine;
+legacy registrations retain their original shared startup check. Saved successful
+children can be adopted after producer advances without rerunning old commands.
+Synthetic Engine/Ledger and old-path regression pass; current actual source/pub
+remain20/19, so no real new registration or market account has been created.
+Read outputs/eight32_paper_generation/20261021_v1/REPORT.md and deployment_readback.json.
+At first actual eligible publication, register once, then consume only new exact
+source/publication prefixes. No first-E future source is required from the user.
+
 Latest actual source-only result (16:03:45, October21): saved32 formations /
 93,188 stock-months were reused without rescoring or rule/cost changes. LowMAX
 now completed106 sessions and stopped on600120/June14 reserve terms; sigma115
@@ -19,10 +53,11 @@ unchanged, only neweight32 profile inhead. Global/sourcecursor19 and original
 accounts unchanged; publication19/missing20 are explicit. No day20 backfill,
 forward32 or Engine. RealnewD source can publish independently sameD15:05+,
 using its own input and actualclock. Evidence outputs/eight32_daily/20261021_v1.
-Next paper-path gap is a narrow new-generation registration producer that uses
-an actual newfirstpublication and preserves old missing-publication accounts.
-The existing consumer accepts the paper schema statically but no actualnew
-firstpublication/registration/account has been validated; no automatic reset.
+New-generation registration and continuous-consumption coordination are now
+implemented (see latest entry above). Actual first eligible market publication
+and its new registration/accounts have not occurred. Preserve old generations.
+That close-publication/settlement coupling is now resolved for the explicit
+split method above; old registered methods keep their original contract.
 
 The October 21 user correction is an allocation change: stop treating successive
 repairs to October 19/20 contexts as the default research task. The native cache

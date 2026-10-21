@@ -120,23 +120,32 @@ def run_chart(identifier, symbol=None, as_of=None):
         raise HTTPException(404, "运行不存在")
     requested_end = cutoff(as_of)
     state = run["state"]
-    if run["mode"] == "paper":
-        raise HTTPException(409, "日终纸面账户尚未保存逐日行情版本，请选择历史回放账户或研究快照")
     if state.get("broker_binding"):
         # A broker observation does not prove that an arbitrary dataset is the
         # same raw-price feed as the observed account. Keep that route separate.
         raise HTTPException(409, "券商观察账户没有已核实的同源冻结行情，暂不叠加成交")
-    if not run.get("dataset"):
-        raise HTTPException(409, "运行没有保存行情快照")
-    try:
-        feed = HistoricalFeed(run["dataset"])
-    except (OSError, ValueError, KeyError) as error:
-        raise HTTPException(409, "运行保存的行情快照不可读取或未通过校验") from error
-    selected = _symbol(symbol, feed.symbols)
     # A running/paused account cannot expose candles beyond the day actually
     # reached by that ledger. Earlier rows remain available for indicator warmup.
     observed_day = state.get("day") or run["start"]
     end = min(run["end"], observed_day, requested_end or run["end"])
+    versions = []
+    if run["mode"] == "paper":
+        from types import SimpleNamespace
+        from trading.paper_market_versions import chart_observations
+        try:
+            captured = chart_observations(run, trading_store.daily(identifier), end, symbol)
+            versions = captured.pop("versions")
+            feed = SimpleNamespace(**captured)
+        except (OSError, ValueError, KeyError) as error:
+            raise HTTPException(409, "日终纸面账户逐日行情版本不可用：" + str(error)) from error
+    else:
+        if not run.get("dataset"):
+            raise HTTPException(409, "运行没有保存行情快照")
+        try:
+            feed = HistoricalFeed(run["dataset"])
+        except (OSError, ValueError, KeyError) as error:
+            raise HTTPException(409, "运行保存的行情快照不可读取或未通过校验") from error
+    selected = _symbol(symbol, feed.symbols)
     raw = feed.raw.loc[feed.raw.symbol.eq(selected) & feed.raw.date.le(end)].copy()
     trading = raw.tradestatus.eq(1)
     positive_prices = raw[["open", "high", "low", "close"]].gt(0).all(axis=1)
@@ -179,7 +188,8 @@ def run_chart(identifier, symbol=None, as_of=None):
             "fills": fills, "signals": signals, "source_kind": "run_snapshot",
             "source_period": "D", "price_basis": "raw", "realtime": False,
             "snapshot": snapshot, "fields": fields, "available_fields": fields,
-            "snapshot_binding": "saved_historical_replay",
+            "snapshot_binding": "saved_paper_per_day" if run["mode"] == "paper" else "saved_historical_replay",
+            "market_versions": versions,
             "as_of": end, "volume_unit": "share", "turnover_unit": "CNY",
             "turnover_available": turnover_usable,
             "excluded_nontrading_rows": int((~(trading & positive_prices)).sum()),

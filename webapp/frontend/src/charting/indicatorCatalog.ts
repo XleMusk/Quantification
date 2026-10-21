@@ -100,6 +100,7 @@ const catalogIndex = new Map(CATALOG.map(definition => [definition.id, definitio
 export const CATEGORIES = [...new Set(CATALOG.map(definition => definition.category))];
 export function getIndicatorDefinition(id: string): IndicatorDefinition | undefined { return catalogIndex.get(id); }
 export function getUnavailableReason(definition: IndicatorDefinition, context: IndicatorContext): string | null {
+  if (/^(1|5|15|30|60)m$/.test(context.period) && ['Q_HVOL', 'Q_PARKINSON', 'Q_GK', 'Q_SHARPE', 'Q_SORTINO'].includes(definition.id)) return '分钟线年化需独立交易时段与频率假设，当前不沿用日线每年 252 柱';
   if (definition.requires === 'turnover' && !context.hasTurnover) return '需要真实成交额 turnover 与同单位成交量；当前数据字段不足';
   if (definition.requires === 'benchmark' && !context.hasBenchmark) return '请先选择有共同观测日期的比较基准';
   return null;

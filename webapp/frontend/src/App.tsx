@@ -11,13 +11,17 @@ import { TerminalOverview } from './pages/TerminalOverview';
 
 const Trading = lazy(() => import('./pages/Trading').then(module => ({ default: module.Trading })));
 const ChartReview = lazy(() => import('./pages/ChartReview').then(module => ({ default: module.ChartReview })));
+const IntradayReview = lazy(() => import('./pages/IntradayReview').then(module => ({ default: module.IntradayReview })));
+const ResearchWorkspace = lazy(() => import('./pages/ResearchWorkspace').then(module => ({ default: module.ResearchWorkspace })));
+const ExecutionReview = lazy(() => import('./pages/ExecutionReview').then(module => ({ default: module.ExecutionReview })));
+const Operations = lazy(() => import('./pages/Operations').then(module => ({ default: module.Operations })));
 const tabs = [
   { id: 'overview', label: '交易总览' }, { id: 'data', label: '数据中心' },
   { id: 'research', label: '因子研究' }, { id: 'comparison', label: '回测分析' },
   { id: 'strategy', label: '模拟账户' }, { id: 'orders', label: '执行管理' },
   { id: 'chart-review', label: '图表复盘' },
 ];
-const knownPages = new Set([...tabs.map(tab => tab.id), 'tasks', 'results']);
+const knownPages = new Set([...tabs.map(tab => tab.id), 'tasks', 'results', 'research-workspace', 'intraday-review', 'execution-review', 'operations']);
 const pageFromHash = () => { const hash = location.hash.slice(1); return knownPages.has(hash) ? hash : 'overview'; };
 
 function TerminalClock() {
@@ -76,24 +80,34 @@ export default function App() {
   useEffect(() => { window.scrollTo({ top: 0, left: 0 }); }, [page]);
   const navigate = useCallback((next: string) => { location.hash = next; setPage(next); }, []);
   const openResult = useCallback((id: string) => { setActive(id); navigate('results'); }, [navigate]);
-  const researchPage = ['research', 'tasks', 'results'].includes(page);
+  const researchPage = ['research', 'tasks', 'results', 'research-workspace'].includes(page);
+  const chartPage = ['chart-review', 'intraday-review'].includes(page);
+  const executionPage = ['orders', 'execution-review', 'operations'].includes(page);
+  const activeNav = researchPage ? 'research' : chartPage ? 'chart-review' : executionPage ? 'orders' : page;
+  const subnav = researchPage ? [['research', '研究配置'], ['tasks', '后台任务'], ['results', '研究结果'], ['research-workspace', '研究比较与组合']]
+    : chartPage ? [['chart-review', '日线复盘'], ['intraday-review', '分钟复盘']]
+    : executionPage ? [['orders', '订单与执行'], ['execution-review', '同花顺观察与成本'], ['operations', '运行状态']] : [];
 
   return <div className="app-shell terminal-shell">
     <header className="terminal-header">
       <a className="terminal-brand" href="#overview"><strong>QUANTIFICATION</strong><span>量化工作台</span></a>
       <span className="terminal-workspace">A股研究 <ChevronDown size={12} aria-hidden="true" /></span>
       <nav className="terminal-nav" aria-label="主导航">{tabs.map(tab => <button
-        key={tab.id} className={(researchPage ? tab.id === 'research' : page === tab.id) ? 'active' : ''}
-        aria-current={(researchPage ? tab.id === 'research' : page === tab.id) ? 'page' : undefined}
+        key={tab.id} className={activeNav === tab.id ? 'active' : ''}
+        aria-current={activeNav === tab.id ? 'page' : undefined}
         onClick={() => navigate(tab.id)}>{tab.label}{tab.id === 'research' && hasPendingJobs && <i className="nav-dot" />}</button>)}</nav>
       <div className="terminal-header-status"><span className="terminal-mode"><i />研究 / 模拟</span><TerminalClock /><button className="icon-button" title="刷新本地数据与任务" aria-label="刷新本地数据与任务" onClick={() => void refresh()}><RefreshCw size={14} /></button></div>
     </header>
-    {researchPage && <div className="terminal-subnav" aria-label="因子研究导航">{[['research', '研究配置'], ['tasks', '后台任务'], ['results', '研究结果']].map(([id, label]) => <button key={id} className={page === id ? 'active' : ''} onClick={() => navigate(id)}>{label}{id === 'tasks' && hasPendingJobs && <span>{jobs.filter(job => ['running', 'queued'].includes(job.status)).length}</span>}</button>)}</div>}
+    {subnav.length > 0 && <div className="terminal-subnav" aria-label="工作区导航">{subnav.map(([id, label]) => <button key={id} className={page === id ? 'active' : ''} onClick={() => navigate(id)}>{label}{id === 'tasks' && hasPendingJobs && <span>{jobs.filter(job => ['running', 'queued'].includes(job.status)).length}</span>}</button>)}</div>}
     <main className={page === 'overview' ? 'terminal-main terminal-main-overview' : 'terminal-main'}>
       {error && <ErrorMessage message={error} />}
       <Suspense fallback={<Loading />}>
         {page === 'overview' ? <TerminalOverview datasets={datasets} selectedDatasetId={selected} onDatasetSelect={setSelected} jobs={jobs} onNavigate={navigate} onOpenResult={openResult} />
           : page === 'chart-review' ? <ChartReview datasets={datasets} datasetId={selected} onDatasetSelect={setSelected} jobs={jobs} />
+          : page === 'intraday-review' ? <IntradayReview />
+          : page === 'research-workspace' ? <ResearchWorkspace />
+          : page === 'execution-review' ? <ExecutionReview />
+          : page === 'operations' ? <Operations />
           : ['strategy', 'orders', 'comparison'].includes(page) ? <Trading page={page} />
           : loading ? <Loading />
           : page === 'research' ? <Research datasets={datasets} selected={selected} select={setSelected} workerOnline={online} onCreated={job => { setActive(job.id); void reloadJobs(); navigate('tasks'); }} />

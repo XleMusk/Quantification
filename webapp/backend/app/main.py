@@ -4,7 +4,7 @@ import json
 import socket
 from typing import Literal
 
-from fastapi import FastAPI, File, Form, Header, HTTPException, Request, UploadFile
+from fastapi import BackgroundTasks, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel, Field
@@ -72,6 +72,69 @@ def health():
 @app.get("/api/datasets")
 def list_datasets():
     return store.datasets()
+
+
+@app.get("/api/operations")
+def operations_workspace():
+    from .operations import workspace
+    return workspace()
+
+
+@app.get("/api/research-workspace")
+def research_workspace():
+    from .research_workspace import workspace
+    return workspace()
+
+
+@app.get("/api/execution-review")
+def execution_review_workspace(run_id: str | None = None):
+    from .execution_review import workspace
+    return workspace(run_id)
+
+
+@app.post("/api/execution-review/calibration")
+def execution_calibration(body: dict):
+    from .execution_review import calibrate
+    return calibrate(body)
+
+
+@app.get("/api/minute-datasets")
+def minute_datasets():
+    from .minute_data import list_minute_datasets
+    return list_minute_datasets()
+
+
+@app.get("/api/minute-datasets/{identifier}/chart")
+def minute_chart(identifier: str, symbol: str | None = None, period: str = "1m", as_of: str | None = None):
+    from .minute_data import minute_chart
+    return minute_chart(identifier, symbol, period, as_of)
+
+
+class MinuteCaptureInput(BaseModel):
+    symbols: list[str] = Field(min_length=1, max_length=5)
+    start: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    end: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    name: str | None = Field(default=None, min_length=1, max_length=80)
+
+
+@app.post("/api/minute-captures", status_code=202)
+def minute_capture(body: MinuteCaptureInput, background: BackgroundTasks):
+    from .minute_data import create_capture, run_capture
+    item = create_capture(body.symbols, body.start, body.end, body.name)
+    background.add_task(run_capture, item["id"])
+    return item
+
+
+@app.get("/api/minute-captures/{identifier}")
+def minute_capture_status(identifier: str):
+    from .minute_data import capture_status
+    return capture_status(identifier)
+
+
+@app.post("/api/minute-execution/preview")
+def minute_execution_preview(body: dict):
+    from .minute_execution import preview
+    return preview(body)
 
 
 @app.get("/api/datasets/example.csv")
