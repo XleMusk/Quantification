@@ -26,12 +26,18 @@ historical evidence, not the current data or account cursor.
   the real next-opening deadline; missing plans still prohibit old-book skips.
   Saved-success recovery is read-only and also covers interruption before the
   parent persisted its continuation; failed/partial work is not re-produced.
+- Completed: the native read-only workbench now follows registered system-head
+  plan pointers, including operation and independent-producer directories. The
+  actual GET and desktop/mobile interaction show context October 20, plan source
+  October 19, original account execution October 20 and the missed October 20
+  publication separately. Bad registered evidence cannot fall back to an older
+  success; a later publication does not imply old accounts consumed it. Refresh,
+  holdings, original orders and fills were checked without changing the heads.
 - Next implementation: separate source context, current publication and original
   account consumption for other core routes, preserving actual availability and
-  missing-day evidence. Bind genuinely new native publications to the existing
-  read-only display through explicit saved pointers; do not assume plan-folder
-  discovery already covers new independent producer directories. No manual
-  global-cursor edit, account reset or fabricated NO_CHANGE can bridge a gap.
+  missing-day evidence. No manual global-cursor edit, account reset or fabricated
+  NO_CHANGE can bridge a gap. The display fix does not repair missing publication
+  or produce a new strategy signal.
 - Acceptance still missing: an actual scheduled close run and recovery receipts,
   sufficient strategy evidence outside inspected windows, and the separately
   authorized broker/THS path. Monitoring code and healthy web pages do not prove

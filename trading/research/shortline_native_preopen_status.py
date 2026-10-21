@@ -24,6 +24,16 @@ QUALIFIED_SCOPE = "20261016_source1015_ipoqualified_v1"
 POLICY_SCOPES = {POLICY_ID: SCOPE, QUALIFIED_POLICY_ID: QUALIFIED_SCOPE}
 COMPARISON_SCHEMA = "native_shortline_preopen_comparison_view_v1"
 FAILURE_SCHEMA = "native_shortline_preopen_forward_command_failure_v1"
+SYSTEM_SCHEMA = "a_share_existing_routes_daily_refresh_v1"
+SYSTEM_SCOPE = "20261017_v1"
+NATIVE_PROFILE_METHOD = "native_incremental_frozen_score_two_fixed_preopen_policies_v1"
+SYSTEM_FLAGS = {"research_only": True, "candidate_panel_only": True,
+    "execution_admitted": False, "selection_enabled": False, "strategy_validated": False,
+    "broker_interacted": False, "model_refit": False, "network_accessed": False, "user_account_mutated": False}
+NATIVE_PROFILE_FLAGS = {key: value for key, value in SYSTEM_FLAGS.items()
+    if key not in {"broker_interacted", "user_account_mutated"}}
+NATIVE_PROFILE_FLAGS.update(future_labels_used_for_score=False, engine_advanced=False,
+    ledger_mutated=False, account_accessed=False, orders_generated=False, old_outputs_modified=False)
 FLAGS = {**FORWARD_FLAGS, "read_only": True, "runner_called": False, "model_scored": False,
     "ledger_mutated": False, "account_created": False, "orders_generated": False,
     "fallback_to_older_success": False, "automatic_promotion": False}
@@ -65,7 +75,7 @@ def _bound(reference):
 
 
 def _flags(value, expected):
-    if any(value.get(key) is not flag for key, flag in expected.items()):
+    if not isinstance(value, dict) or any(value.get(key) is not flag for key, flag in expected.items()):
         raise ValueError("Saved research boundary flags changed")
 
 
@@ -100,6 +110,130 @@ def _discover_plan(data_root, policy_id=POLICY_ID):
             continue
         candidates.append((_day(record["source_day"]), _stamp(record["published_at"]), str(file), file))
     return max(candidates)[-1] if candidates else None
+
+
+def _system_head(data_root):
+    """Read the canonical registration; an existing broken pointer never falls back."""
+    directory = data_root / "research/system_daily" / SYSTEM_SCOPE
+    head_file, registration_file = directory / "head.json", directory / "registration.json"
+    if not head_file.exists() and not registration_file.exists():
+        return None
+    head, head_ref = _read(head_file)
+    registration, registration_ref = _read(registration_file)
+    if not isinstance(head, dict) or not isinstance(registration, dict):
+        raise ValueError("Current system head and registration must retain their saved records")
+    reference = head["registration"]
+    if (set(reference) - {"file", "sha256", "byte_count"} or not {"file", "sha256"} <= set(reference)
+            or Path(reference["file"]).resolve() != registration_file.resolve()
+            or any(registration_ref.get(key) != value for key, value in reference.items())
+            or head.get("schema") != SYSTEM_SCHEMA or registration.get("schema") != SYSTEM_SCHEMA
+            or Path(registration["run_directory"]).resolve() != directory.resolve()):
+        raise ValueError("Current system head lost its exact canonical registration")
+    _flags(head, SYSTEM_FLAGS)
+    _flags(registration, SYSTEM_FLAGS)
+    native, initial = head["native_profile"], registration["initial_native_profile"]
+    for profile in (native, initial):
+        _flags(profile, NATIVE_PROFILE_FLAGS)
+        if profile.get("schema") != "native_shortline_daily_profile_v1" or profile.get("method_id") != NATIVE_PROFILE_METHOD:
+            raise ValueError("Current native source profile changed its fixed method")
+    native_day = _day(native["source_day"])
+    core_day = _day(head["profile"]["last_source_day"])
+    missing = native["missing_plan_days"]
+    if (_day(head["last_source_day"]) != core_day or not isinstance(missing, list)
+            or missing != sorted({_day(day) for day in missing}) or any(day > native_day for day in missing)
+            or native.get("chain_has_missing_plan") is not bool(missing)
+            or Path(native["calendar"]).resolve() != Path(registration["calendar"]["file"]).resolve()):
+        raise ValueError("Current system source, signal or missing-plan cursors are inconsistent")
+    _, calendar_ref = _read(registration["calendar"]["file"])
+    if any(calendar_ref.get(key) != value for key, value in registration["calendar"].items()):
+        raise ValueError("Current system exchange calendar changed")
+    return {"head": head, "registration": registration, "progress": {
+        "native_context_source_day": native_day, "core_signal_source_day": core_day,
+        "missing_plan_days": list(missing), "plan_source_day": None, "plan_execution_day": None,
+        "account_execution_day": None, "system_head": str(head_file.resolve()),
+        "system_head_ref": head_ref, "registration_ref": registration_ref}}
+
+
+def _template_args(template):
+    args = template["argv"]
+    if not isinstance(args, list) or not args or not all(isinstance(value, str) for value in args):
+        raise ValueError("Current native command template is not an exact saved command")
+    launcher = [index for index, value in enumerate(args) if Path(value).name == "run_committee.py"]
+    if launcher:
+        if len(launcher) != 1:
+            raise ValueError("Current native template repeated its launcher")
+        args = args[launcher[0] + 1:]
+    if not args or args[0] != "shortline-native-preopen-forward":
+        raise ValueError("Current native template changed its original consumer")
+    return args
+
+
+def _template_values(args, option):
+    return [args[index + 1] for index, value in enumerate(args[:-1]) if value == option]
+
+
+def _template_static(args):
+    fixed, index = [], 0
+    while index < len(args):
+        if args[index] in {"--plan", "--raw-close", "--through", "--result-json"}:
+            if index + 1 >= len(args) or args[index + 1].startswith("--"):
+                raise ValueError("Current native template lost an exact argument")
+            index += 2
+        else:
+            fixed.append(args[index]); index += 1
+    return fixed
+
+
+def _system_policy(system, data_root, policy_id):
+    key = "qualified" if policy_id == QUALIFIED_POLICY_ID else "v1"
+    native = system["head"]["native_profile"]
+    initial = system["registration"]["initial_native_profile"]
+    current, original = native["forward_templates"][key], initial["forward_templates"][key]
+    args, original_args = _template_args(current), _template_args(original)
+    directory = data_root / "research/shortline_native_preopen_forward" / POLICY_SCOPES[policy_id]
+    if (Path(current["run_dir"]).resolve() != directory.resolve()
+            or Path(original["run_dir"]).resolve() != directory.resolve()
+            or _template_values(args, "--run") != [original["run_dir"]]
+            or _template_values(original_args, "--run") != [original["run_dir"]]
+            or _template_static(args) != _template_static(original_args)):
+        raise ValueError("Current native policy changed its original account, IPO or method template")
+    for field, option in (("plan_prefix", "--plan"), ("raw_close_prefix", "--raw-close")):
+        prefix, anchor = current[field], original[field]
+        if (not isinstance(prefix, list) or not prefix or not isinstance(anchor, list) or not anchor
+                or not all(isinstance(path, str) for path in prefix)
+                or prefix[:len(anchor)] != anchor or len(prefix) != len(set(prefix))
+                or _template_values(args, option) != prefix or _template_values(original_args, option) != anchor):
+            raise ValueError("Current native policy lost its exact original plan/raw prefix")
+    latest = Path(native["latest_plans"][key]).resolve()
+    if latest != Path(current["plan_prefix"][-1]).resolve():
+        raise ValueError("Current native policy latest publication does not match its saved template")
+    return latest, directory
+
+
+def _account_validation_plan(head_file, plan, now, policy_id):
+    """Validate a frozen old book against its consumed plan, not a later gap publication."""
+    saved, _ = _read(head_file)
+    consumed_prefix = saved.get("consumed_plans") if isinstance(saved, dict) else None
+    if (not isinstance(consumed_prefix, list) or not consumed_prefix
+            or not isinstance(consumed_prefix[-1], dict)
+            or not isinstance(saved.get("cases"), dict) or set(saved["cases"]) != set(MODEL_KINDS)):
+        raise ValueError("Saved native account has no complete original consumed-plan/model prefix")
+    last = consumed_prefix[-1]
+    current_day, consumed_day = plan["record"]["source_day"], last["source_day"]
+    if current_day < consumed_day or (current_day == consumed_day and plan["ref"] != last["plan"]):
+        raise ValueError("Current publication precedes or replaces the sealed consumed plan")
+    account_days = {case["state"]["day"] for case in saved["cases"].values()}
+    if len(account_days) != 1:
+        raise ValueError("Saved native model accounts disagree on their execution cursor")
+    if current_day <= next(iter(account_days)):
+        return plan
+    _bound(last["plan"])
+    consumed = _plan(last["plan"]["file"], now, policy_id)
+    if (consumed["ref"] != last["plan"] or consumed["record"]["source_day"] != consumed_day
+            or consumed["record"]["calendar"] != plan["record"]["calendar"]
+            or consumed["model_generation"] != plan["model_generation"]):
+        raise ValueError("New publication changed the old book's original calendar or model generation")
+    return consumed
 
 
 def _qualified_plan(file, now):
@@ -410,6 +544,7 @@ def native_preopen_status(data_root=DATA_ROOT, workspace=ROOT, *, plan_file=None
     data_root, workspace = Path(data_root).resolve(), Path(workspace).resolve()
     policy_spec(policy_id)
     scope_name = POLICY_SCOPES[policy_id]
+    use_system = plan_file is None and run_dir is None
     plan_file = Path(plan_file).resolve() if plan_file else None
     directory = Path(run_dir).resolve() if run_dir else data_root / "research/shortline_native_preopen_forward" / scope_name
     observation_file = Path(observation_file).resolve() if observation_file else workspace / "outputs/shortline_native_preopen_forward" / scope_name / "actual_cli_observation.json"
@@ -420,17 +555,28 @@ def native_preopen_status(data_root=DATA_ROOT, workspace=ROOT, *, plan_file=None
         "validation_basis": None, "execution_method_id": None, "ipo_append_only": None,
         "models": [], "account_count": None, "accounts": [], "cash_cents": None, "equity_cents": None,
         "return_metrics": None, "observation": None, "head_committed_at": None, "money_unit": "cent",
+        "system_progress": None,
         "accounts_are_independent_not_a_combined_user_account": True, "source_raw_reaudited": False,
         "source_refs": {"plan": None, "head": None, "observation": None}, **FLAGS}
     try:
-        plan_file = plan_file if plan_file is not None else _discover_plan(data_root, policy_id)
+        system = _system_head(data_root) if use_system else None
+        if system is not None:
+            base["system_progress"] = system["progress"]
+            plan_file, directory = _system_policy(system, data_root, policy_id)
+        else:
+            plan_file = plan_file if plan_file is not None else _discover_plan(data_root, policy_id)
         if plan_file is None or not plan_file.exists():
+            if system is not None:
+                raise ValueError("Current system native policy latest publication is missing")
             return {**base, "reason": "saved_current_scope_plan_unavailable"}
         plan = _plan(plan_file, actual, policy_id)
+        if system is not None and plan["record"]["source_day"] > system["progress"]["native_context_source_day"]:
+            raise ValueError("Current native publication lies beyond its saved source context")
         accounts, head, head_ref, committed = [], None, None, None
         head_file = directory / "head.json"
         if head_file.exists():
-            head, head_ref, accounts, committed = _head(head_file, directory, plan, actual)
+            account_plan = _account_validation_plan(head_file, plan, actual, policy_id)
+            head, head_ref, accounts, committed = _head(head_file, directory, account_plan, actual)
         observations = []
         if observation_file.exists(): observations.append(_observation(observation_file, directory, actual, legacy=True, policy_id=policy_id))
         if result_file.exists(): observations.append(_observation(result_file, directory, actual, policy_id=policy_id))
@@ -441,6 +587,9 @@ def native_preopen_status(data_root=DATA_ROOT, workspace=ROOT, *, plan_file=None
         if observation and observation["checkpoint_claimed"] and head is None:
             raise ValueError("Saved execution result claims a checkpoint whose account evidence is missing")
         cursor = accounts[0]["last_processed_day"] if accounts else None
+        if system is not None:
+            base["system_progress"] = {**system["progress"], "plan_source_day": plan["record"]["source_day"],
+                "plan_execution_day": plan["record"]["execution_day"], "account_execution_day": cursor}
         if observation and cursor:
             required = observation["required_execution_day"]
             observation["stale_for_current_head"] = (observation["observed_at"] < _stamp(committed).isoformat()
