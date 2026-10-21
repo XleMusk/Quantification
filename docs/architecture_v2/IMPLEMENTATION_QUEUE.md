@@ -38,6 +38,14 @@ weak, negative, empty and source-stopped cases. No strategy is validated.
   net increment, and positive increment in at least two of the three year slices
   before considering future observation. Source failures remain unknown; they
   do not stop the other arm or daily production. Do not repeat old studies.
+  Actual one-shot attempt finished15:11:59: all32 formations /93,188 common
+  stock-months, monthly pools2,338--3,027. LowMAX stopped at81 sessions on
+  600507.SSE/2024-05-09 reserve terms, sigma at107 on002293.SZSE/2024-06-17.
+  Both preserved their accounts (236/252 fill records); full paired returns
+  remain null. No repeat on these inputs or notice-review expansion. A separate
+  saved-score diagnostic gives rank correlation.869 and static top20 overlap
+  38.1%; it is not net-return evidence. Actual outputs/monthly_max_vs_sigma/
+  20261021_v1/REPORT.md records exact missing fields and source limitations.
 - Keep scheduled collection/publication and concrete production failures on the
   operational track. Once a repair is adequate, return to research; additional
   context separation, reports and UI checks cannot substitute for strategy
