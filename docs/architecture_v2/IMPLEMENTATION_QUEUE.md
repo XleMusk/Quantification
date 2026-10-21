@@ -1,4 +1,33 @@
-# Active implementation queue - 2026-10-07
+# Active implementation queue - 2026-10-21
+
+## Current priority: usable daily research and independent route recovery
+
+The full personal A-share system goal and parallel research/execution tracks
+remain active. Missing broker exports or one route's action evidence must not
+stop independent software or strategy work. Older dated entries below are
+historical evidence, not the current data or account cursor.
+
+- Completed: existing `system-daily-refresh settle-native` settled the original
+  October 19 publications through October 20 in four original research books.
+  It neither published October 20 signals nor advanced the system source cursor.
+- Completed: hourly supervision now uses the fixed exchange calendar, Shanghai
+  time and the 18:30 supplier threshold. Source completeness, signal cursor,
+  saved account settlement and runtime worker evidence are separate. The
+  existing thread automation was corrected from 20 minutes to one hour and
+  explicitly restores the authorized close-collection and daily-refresh steps.
+  The Windows workbench task remains read-only.
+- Next implementation: add an explicit source-only continuation to the existing
+  native daily producer, reusing its exact single-day incremental checkpoint.
+  Record missed-publication days without scoring or publishing those past days,
+  changing old plans, resetting accounts or injecting fabricated NO_CHANGE.
+  Then allow genuinely current source-day production; existing books must still
+  respect their missing-plan boundary. Other core routes need their own safe
+  production/consumption separation, not a manually edited global cursor.
+- Acceptance still missing: an actual scheduled close run and recovery receipts,
+  sufficient strategy evidence outside inspected windows, and the separately
+  authorized broker/THS path. Monitoring code and healthy web pages do not prove
+  these outcomes. Do not repeat completed source collection, old model fitting,
+  historical panels or known waiting calls to fill the gap.
 
 ## 2026-10-08 objective reset: closure-first trading loop
 

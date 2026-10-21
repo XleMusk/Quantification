@@ -9,6 +9,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+if __package__:
+    from .progress_supervision_status import (
+        close_receipt_complete, observed_workers, progress_status, readonly_runtime_ok,
+        scheduling_clock, settlement_summary,
+    )
+else:
+    from progress_supervision_status import (
+        close_receipt_complete, observed_workers, progress_status, readonly_runtime_ok,
+        scheduling_clock, settlement_summary,
+    )
+
 PROJECT = Path(__file__).resolve().parents[1]
 TRADING_HOME = Path(os.environ.get("QUANT_TRADING_HOME", r"D:\QuantificationData\trading"))
 RESEARCH = TRADING_HOME / "research"
@@ -71,6 +82,20 @@ def latest_operations_receipt(root: Path) -> tuple[Path | None, dict[str, Any] |
     return path, data
 
 
+def latest_settlement_receipt(root: Path) -> tuple[Path | None, dict[str, Any] | None]:
+    rows: list[tuple[str, Path, dict[str, Any]]] = []
+    if root.exists():
+        for path in root.glob("*/settlements/*/receipt.json"):
+            data, _ = read_json(path)
+            if isinstance(data, dict):
+                rows.append((str(data.get("day") or path.parent.name), path, data))
+    if not rows:
+        return None, None
+    rows.sort(key=lambda item: (item[0], str(item[1])))
+    _, path, data = rows[-1]
+    return path, data
+
+
 def latest_comparison(root: Path) -> tuple[Path | None, dict[str, Any] | None]:
     rows: list[tuple[str, Path, dict[str, Any]]] = []
     if not root.exists():
@@ -109,6 +134,19 @@ now = datetime.now(timezone.utc)
 close_path, close = latest_receipt(RESEARCH / "bulk_close_cycles", "receipt.json")
 system_path, system = latest_receipt(RESEARCH / "system_daily", "head.json")
 operations_path, operations = latest_operations_receipt(RESEARCH / "system_daily")
+settlement_path, settlement = latest_settlement_receipt(RESEARCH / "system_daily")
+calendar_path = RESEARCH / "calendar" / "cn_a_share_2026_sse_v1.json"
+calendar, calendar_error = read_json(calendar_path)
+clock = scheduling_clock(now, calendar)
+clock["calendar_file"] = str(calendar_path)
+clock["calendar_read_error"] = calendar_error
+due_path, due_close, due_error = None, None, None
+if clock["calendar_status"] == "ready":
+    due_path = RESEARCH / "bulk_close_cycles" / (clock["latest_due_day"].replace("-", "") + "_v1") / "receipt.json"
+    if due_path.exists():
+        due_close, due_error = read_json(due_path)
+progress = progress_status(clock, close, due_close, system, operations, due_receipt_error=due_error)
+saved_settlement = settlement_summary(settlement)
 comparison_path, comparison = latest_comparison(PROJECT / "outputs" / "research_comparisons")
 health, health_error = get_local_json("http://127.0.0.1:8765/api/health")
 opening, opening_error = get_local_json("http://127.0.0.1:8765/api/trading/research/opening-daily")
@@ -137,9 +175,12 @@ if isinstance(opening, dict):
 close_status = "missing"
 if isinstance(close, dict):
     status = str(close.get("status") or "")
-    source_status = str(close.get("source_status") or "")
-    if status.startswith("completed") and "complete" in source_status:
-        close_status = "complete_research_only"
+    if close_receipt_complete(close):
+        close_status = (
+            "stale_complete_research_only" if progress["latest_receipt_stale"] is True
+            else "complete_research_only" if clock["calendar_status"] == "ready"
+            else "complete_calendar_unverified"
+        )
     elif status:
         close_status = "incomplete_or_unknown"
 
@@ -148,14 +189,14 @@ system_day = None
 if isinstance(operations, dict):
     raw_status = str(operations.get("status") or operations.get("state") or "")
     system_day = operations.get("day")
-    if raw_status in {"completed", "complete", "success"}:
+    if raw_status in {"completed", "complete", "success", "completed_saved_research_refresh"}:
         system_status = "completed"
     elif raw_status:
         system_status = raw_status
 elif isinstance(system, dict):
     raw_status = str(system.get("status") or system.get("state") or "")
     system_day = system.get("day")
-    system_status = "completed" if raw_status in {"completed", "complete", "success"} else (raw_status or "present")
+    system_status = "completed" if raw_status in {"completed", "complete", "success", "completed_saved_research_refresh"} else (raw_status or "present")
 
 operation_steps = operations.get("steps") if isinstance(operations, dict) else None
 step_count = len(operation_steps) if isinstance(operation_steps, dict) else None
@@ -169,13 +210,8 @@ completed_steps = (
     else None
 )
 
-runtime_ok = bool(
-    isinstance(health, dict)
-    and health.get("status") == "ok"
-    and health.get("mode") == "research_only"
-    and health.get("live_trading") is False
-    and ui_ok
-)
+workers_started = observed_workers(health)
+runtime_ok = readonly_runtime_ok(health, ui_ok)
 restricted_runtime_probe = any(
     "WinError 10013" in str(error)
     for error in (health_error, ui_error)
@@ -225,30 +261,22 @@ if isinstance(comparison, dict):
         "fresh_holdout": False,
     }
 
-if close_status == "complete_research_only":
-    data_status = "latest_complete_research_snapshot"
-elif close_status == "missing":
-    data_status = "waiting_for_new_close_package"
-else:
-    data_status = "source_present_but_quality_requires_review"
+data_status = progress["data_status"]
 
 if runtime_ok:
     software_status = "readonly_workbench_healthy"
 elif restricted_runtime_probe:
     software_status = "runtime_probe_unverified_in_restricted_session"
+elif isinstance(health, dict) and health.get("status") == "ok" and ui_ok and workers_started is None:
+    software_status = "readonly_workbench_workers_unverified"
+elif workers_started is True:
+    software_status = "readonly_workbench_workers_active"
 elif health_error or ui_error:
     software_status = "readonly_workbench_unavailable"
 else:
     software_status = "readonly_workbench_degraded"
 
-if system_status == "completed":
-    paper_status = "daily_routes_completed"
-elif system_status == "missing":
-    paper_status = "latest_daily_head_missing"
-elif system_status == "partial_research_routes":
-    paper_status = "daily_routes_partial"
-else:
-    paper_status = "daily_routes_status_unknown"
+paper_status = progress["paper_status"]
 
 strategy_status = (
     "same_cost_comparison_available_unvalidated"
@@ -263,7 +291,7 @@ strategy_status = (
 maturity = {
     "data_snapshot": (
         "research_snapshot_only"
-        if close_status == "complete_research_only"
+        if progress["due_source_status"] == "complete_research_only"
         else "missing_or_incomplete"
     ),
     "unified_engine_ledger": (
@@ -271,8 +299,9 @@ maturity = {
         else "implementation_gap"
     ),
     "daily_paper_closure": (
-        "partial_routes_with_receipts" if system_status == "partial_research_routes"
-        else "completed_routes" if system_status == "completed"
+        "source_ready_but_publication_cursor_lagging" if paper_status == "source_ready_system_lagging"
+        else "partial_routes_with_receipts" if paper_status == "daily_routes_partial"
+        else "completed_routes" if paper_status == "daily_routes_completed"
         else "missing_or_unknown"
     ),
     "recovery": "code_path_present" if pipeline["paper_recovery"] else "implementation_gap",
@@ -292,13 +321,17 @@ maturity = {
 }
 
 next_actions: list[str] = []
-if close_status != "complete_research_only":
-    next_actions.append("等待准确新收盘包后复用成功cycle并推进system-daily-refresh")
+if clock["calendar_status"] != "ready":
+    next_actions.append("固定交易日历范围不足或不可读，不能判断应完成日期；补准确日历，不猜测跨年交易日")
+elif progress["due_source_status"] != "complete_research_only":
+    next_actions.append(f"{clock['latest_due_day']}准确收盘包为{progress['due_source_status']}；核对该日原采集回执，不自动重试或改日期")
+elif paper_status == "source_ready_system_lagging":
+    next_actions.append(f"{clock['latest_due_day']}收盘包已齐，统一日更信号仍在{progress['system_source_day']}；保留实际发表钟，通过现有入口处理漏日，不补造历史信号")
 if not runtime_ok and not restricted_runtime_probe:
-    next_actions.append("恢复research_only工作台健康状态")
+    next_actions.append("核实research_only工作台与真实workers状态；未知不当关闭，不启动交易worker")
 if not all(pipeline.values()):
     next_actions.append("补统一Engine/Ledger或恢复链路缺口")
-if system_status == "partial_research_routes":
+if paper_status == "daily_routes_partial":
     next_actions.append("保留已完成路线，逐项核对未完成路线；不重跑已成功子路线")
 if not flags["strategy_validated"]:
     if comparison_summary is None:
@@ -311,6 +344,15 @@ snapshot = {
     "checked_at": now.isoformat(),
     "project": str(PROJECT),
     "trading_home": str(TRADING_HOME),
+    "schedule": clock,
+    "freshness": {
+        **progress,
+        "due_receipt": str(due_path) if due_path else None,
+        "due_receipt_error": due_error,
+    },
+    "latest_native_settlement": {
+        **saved_settlement, "receipt": str(settlement_path),
+    } if saved_settlement is not None else None,
     "latest_close": {
         "receipt": str(close_path) if close_path else None,
         "day": close.get("day") if isinstance(close, dict) else None,
@@ -328,13 +370,15 @@ snapshot = {
         "day": system_day,
         "step_count": step_count,
         "completed_steps": completed_steps,
+        "source_day": progress["system_source_day"],
+        "lagging_due_day": progress["system_lagging_due_day"],
     },
     "runtime": {
         "api_ok": isinstance(health, dict) and health.get("status") == "ok",
         "ui_ok": ui_ok,
         "mode": health.get("mode") if isinstance(health, dict) else None,
         "live_trading": health.get("live_trading") if isinstance(health, dict) else None,
-        "workers_started": False,
+        "workers_started": workers_started,
         "health_error": health_error,
         "ui_error": ui_error,
     },
@@ -351,13 +395,19 @@ snapshot = {
     },
     "flags": flags,
     "next_actions": next_actions,
-    "source_is_future_data": False,
+    "source_is_future_data": (
+        str(close.get("day")) > clock["latest_closed_day"]
+        if isinstance(close, dict) and close.get("day") and clock["latest_closed_day"] else None
+    ),
     "user_action_required": False,
 }
 
 previous_path = OUT_DIR / "latest.json"
 previous, _ = read_json(previous_path)
 snapshot["comparison_input"] = {
+    "schedule": {key: value for key, value in snapshot["schedule"].items() if key != "checked_at_shanghai"},
+    "freshness": snapshot["freshness"],
+    "latest_native_settlement": snapshot["latest_native_settlement"],
     "latest_close": snapshot["latest_close"],
     "latest_system": snapshot["latest_system"],
     "runtime": snapshot["runtime"],
