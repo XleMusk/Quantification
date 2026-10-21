@@ -6,6 +6,58 @@ from .contracts import BrokerFillBatch, BrokerSessionBalance, ExecutionEvent, Or
 from .rules import cents, execution_rule, fees, notional_cents
 
 ACTIVE = {"submitted", "partial", "cancel_pending"}
+SECURITY_CONVERSION_METHOD = "explicit_nontrade_security_conversion_v1"
+
+
+def tracked_holding_lots(state, symbol):
+    """Read surviving lot origins in an explicitly conversion-enabled account."""
+    result, identifiers = [], set()
+    for lot in state["positions"].get(symbol, []):
+        if type(lot.get("qty")) is not int or lot["qty"] < 0:
+            raise ValueError("Tracked holding has an invalid quantity")
+        if not lot["qty"]:
+            continue
+        identifier = lot.get("lot_id")
+        fill = state["fills"].get(lot.get("origin_fill_id"))
+        if (not isinstance(identifier, str) or not identifier or identifier in identifiers
+                or not fill or fill.get("side") != "buy"
+                or fill.get("day") != lot.get("origin_day")
+                or fill.get("symbol") != lot.get("origin_symbol")
+                or lot.get("available", "") < fill.get("available_day", "9999-12-31")):
+            raise ValueError("Tracked holding lacks its actual buy-fill lineage")
+        identifiers.add(identifier)
+        chain = lot.get("conversion_chain", [])
+        if chain:
+            if (not isinstance(chain, list) or any(not isinstance(key, str) for key in chain)
+                    or any(key not in state.get("security_conversion_applied", {}) for key in chain)):
+                raise ValueError("Converted lot lacks its applied conversion receipts")
+            record = state.get("security_conversion_records", {}).get(chain[-1], {})
+            original = next((row for row in record.get("after_destination_lots", [])
+                             if row.get("lot_id") == identifier), None)
+            if (not original or record.get("receipt", {}).get("destination_symbol") != symbol
+                    or lot["qty"] > original["qty"]
+                    or any(lot.get(key) != original.get(key) for key in
+                           ("available", "origin_day", "origin_fill_id", "origin_symbol", "conversion_chain"))):
+                raise ValueError("Converted lot lineage disagrees with the applied receipt")
+        elif (identifier != lot.get("origin_fill_id") or symbol != lot.get("origin_symbol")
+              or lot["qty"] > fill["qty"] or lot["available"] != fill.get("available_day")):
+            raise ValueError("Tracked buy lot disagrees with its actual execution")
+        result.append(lot)
+    return result
+
+
+def tracked_holding_origin(state, symbol):
+    """Continuous exposure origin; selling an older FIFO lot does not reset age."""
+    lots = tracked_holding_lots(state, symbol)
+    if not lots:
+        return None
+    origin = state.get("security_conversion_holding_origins", {}).get(symbol)
+    fill = state["fills"].get(origin.get("origin_fill_id")) if isinstance(origin, dict) else None
+    if (not fill or fill.get("side") != "buy" or fill.get("day") != origin.get("origin_day")
+            or fill.get("symbol") != origin.get("origin_symbol")
+            or origin["origin_day"] > min(lot["origin_day"] for lot in lots)):
+        raise ValueError("Continuous holding lacks its actual opening buy-fill lineage")
+    return origin["origin_day"]
 
 
 def new_state(cash):
@@ -91,6 +143,18 @@ class Ledger:
         elif binding:
             raise PermissionError("A broker-bound account cannot receive simulator mutations")
 
+    def _conversion_tracking(self):
+        binding = self.state.get("security_conversion_binding")
+        if binding is None:
+            return False
+        if (self.context.mode != TradingMode.REPLAY or self.state.get("broker_binding")
+                or not isinstance(binding, dict)
+                or binding.get("method_id") != SECURITY_CONVERSION_METHOD
+                or binding.get("context") != self.context.to_dict()
+                or binding.get("config") != self.config.to_dict()):
+            raise ValueError("Security conversion needs its explicit immutable replay binding")
+        return True
+
     def submit(self, identifier, day, symbol, side, qty, limit_price, *, price_unit="cent", _broker=False):
         self._execution_source(_broker)
         signature = (day, symbol, side, qty, limit_price)
@@ -125,6 +189,7 @@ class Ledger:
 
     def fill(self, execution_id, order_id, qty, price, day, available_day, *, price_unit="cent", _broker=False):
         self._execution_source(_broker)
+        track_origin = self._conversion_tracking()
         order = self.state["orders"][order_id]
         same_day = self.rule(order["symbol"], day).same_day_resale
         if day != order["day"] or (available_day != day if same_day else available_day <= day):
@@ -145,6 +210,9 @@ class Ledger:
             raise ValueError("Fill quote unit/profile does not match order")
         if (side == "buy" and price > order["limit_price"]) or (side == "sell" and price < order["limit_price"]):
             raise ValueError("Fill violates limit price")
+        prior_quantity = self.quantity(symbol)
+        if track_origin and prior_quantity:
+            tracked_holding_origin(self.state, symbol)
         # Round cumulative mill notional once; callback fragmentation must not change cash.
         total_minor = order.get("notional_minor", order["notional"]) + price * qty
         total_notional = notional_cents(total_minor, 1, price_unit)
@@ -155,7 +223,14 @@ class Ledger:
             if self.state["cash"] < notional + fee_delta:
                 raise ValueError("Fill would create negative cash")
             self.state["cash"] -= notional + fee_delta
-            self.state["positions"].setdefault(symbol, []).append({"qty": qty, "available": available_day})
+            lot = {"qty": qty, "available": available_day}
+            if track_origin:
+                lot.update(lot_id=execution_id, origin_day=day, origin_fill_id=execution_id,
+                           origin_symbol=symbol)
+                if not prior_quantity:
+                    self.state.setdefault("security_conversion_holding_origins", {})[symbol] = {
+                        "origin_day": day, "origin_fill_id": execution_id, "origin_symbol": symbol}
+            self.state["positions"].setdefault(symbol, []).append(lot)
         else:
             lots = self.state["positions"].get(symbol, [])
             if self.state["cash"] + notional < fee_delta:
@@ -169,6 +244,8 @@ class Ledger:
                     lot["qty"] -= take
                     remaining -= take
             self.state["positions"][symbol] = [lot for lot in lots if lot["qty"]]
+            if track_origin and not self.quantity(symbol):
+                self.state["security_conversion_holding_origins"].pop(symbol)
             self.state["cash"] += notional - fee_delta
         order["filled"] += qty
         order["notional"] += notional
@@ -190,6 +267,73 @@ class Ledger:
             extra.update(price_unit=price_unit, notional=notional)
             self.state["fills"][execution_id].update(extra)
         self.emit(day, order["status"], order_id=order_id, execution_id=execution_id, symbol=symbol, qty=qty, price=price, **extra)
+        return True
+
+    def apply_security_conversion(self, receipt):
+        """Atomically replace proven lots without inventing an order or fill."""
+        from .security_conversion import SecurityConversionReceipt
+        if (not isinstance(receipt, SecurityConversionReceipt) or receipt.context != self.context
+                or not self._conversion_tracking()):
+            raise ValueError("Security conversion requires a bound matching replay receipt")
+        receipt.validate_source()
+        payload = receipt.to_dict()
+        previous = self.state.get("security_conversion_applied", {}).get(receipt.event_id)
+        if previous is not None:
+            if previous != payload:
+                raise ValueError("Conflicting security conversion event id")
+            return False
+        if self.state.get("day") is not None and receipt.effective_day <= self.state["day"]:
+            raise ValueError("Security conversion must precede its unsettled effective session")
+        source, destination = receipt.source_symbol, receipt.destination_symbol
+        lots = tracked_holding_lots(self.state, source)
+        if not lots or self.quantity(source) != receipt.registered_quantity:
+            raise ValueError("Security conversion registered quantity disagrees with actual holdings")
+        tracked_holding_origin(self.state, source)
+        holding_origin = deepcopy(self.state["security_conversion_holding_origins"][source])
+        if self.quantity(destination):
+            raise ValueError("Security conversion destination holding collision is unsupported")
+        if any(order["symbol"] in {source, destination} and order["status"] in ACTIVE
+               for order in self.state["orders"].values()):
+            raise ValueError("Security conversion cannot replace lots with active orders")
+        by_id = {lot["lot_id"]: lot for lot in lots}
+        if (len(by_id) != len(lots) or len(receipt.credits) != len(lots)
+                or {credit.source_lot_id for credit in receipt.credits} != by_id.keys()):
+            raise ValueError("Security conversion requires exact coverage of every surviving source lot")
+        credited = []
+        for index, credit in enumerate(receipt.credits):
+            old = by_id[credit.source_lot_id]
+            if credit.source_quantity != old["qty"]:
+                raise ValueError("Security conversion source lot quantity changed")
+            if credit.available_on < max(receipt.effective_day, old["available"]):
+                raise ValueError("Security conversion cannot accelerate share availability")
+            if credit.credited_quantity:
+                credited.append({"qty": credit.credited_quantity, "available": credit.available_on,
+                    "lot_id": f"{receipt.event_id}:{index}", "origin_day": old["origin_day"],
+                    "origin_fill_id": old["origin_fill_id"], "origin_symbol": old["origin_symbol"],
+                    "conversion_chain": [*old.get("conversion_chain", []), receipt.event_id]})
+        if type(receipt.cash_cents) is not int or receipt.cash_cents < 0:
+            raise ValueError("Security conversion cash must be an explicit nonnegative integer credit")
+        trial = deepcopy(self.state)
+        book = Ledger(trial, self.config, self.context, instrument_profiles=self.instrument_profiles)
+        trial["positions"][source] = []
+        trial["positions"][destination] = credited
+        trial["security_conversion_holding_origins"].pop(source)
+        trial["security_conversion_holding_origins"][destination] = holding_origin
+        cash_before = trial["cash"]
+        trial["cash"] += receipt.cash_cents
+        trial.setdefault("security_conversion_applied", {})[receipt.event_id] = payload
+        trial.setdefault("security_conversion_records", {})[receipt.event_id] = {
+            "receipt": payload, "before_source_lots": deepcopy(lots),
+            "after_destination_lots": deepcopy(credited), "cash_before": cash_before,
+            "cash_after": trial["cash"], "before_holding_origin": deepcopy(holding_origin),
+            "after_holding_origin": deepcopy(holding_origin)}
+        book.emit(receipt.effective_day, "security_conversion_applied", event_id=receipt.event_id,
+                  source_symbol=source, destination_symbol=destination,
+                  source_quantity=receipt.registered_quantity,
+                  credited_quantity=sum(lot["qty"] for lot in credited), cash_cents=receipt.cash_cents,
+                  nontrade_event=True, source_file=receipt.source_file, source_sha256=receipt.source_sha256)
+        self.state.clear()
+        self.state.update(trial)
         return True
 
     def apply_broker_receipt(self, receipt):

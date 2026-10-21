@@ -13,7 +13,7 @@ import math
 
 from ..contracts import SignalFrame, SignalUnavailable, TradingMode
 from ..engine import advance
-from ..ledger import Ledger, new_state
+from ..ledger import Ledger, new_state, tracked_holding_origin
 from .shortline_panel_replay import FUTURE_LABEL_COLUMNS, ShortlinePanelFeed, _config
 
 
@@ -100,6 +100,8 @@ class ShortlineDecisionFeedV2:
 
 def holding_origin(state, symbol):
     """Current continuous holding origin from the sole Ledger's actual fills."""
+    if state.get("security_conversion_binding") is not None:
+        return tracked_holding_origin(state, symbol)
     quantity, origin = 0, None
     fills = sorted(enumerate(state["fills"].values()), key=lambda item: (item[1]["day"], item[0]))
     for _, fill in fills:

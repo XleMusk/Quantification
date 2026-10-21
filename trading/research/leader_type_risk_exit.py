@@ -10,6 +10,7 @@ import math
 
 from ..contracts import SignalUnavailable, TradingMode
 from ..engine import ReplayRiskExitIntent
+from ..ledger import tracked_holding_lots
 from .leader_environment import ARCHETYPES
 from .leader_listing_features import METHOD_ID as FEATURE_METHOD
 from .shortline_decision_v3 import FiveSessionExpiryPolicy, _known_raw
@@ -68,6 +69,24 @@ def _qualified(row, day):
 
 def surviving_buy_anchor(state, symbol, calendar, day):
     """Reconstruct the Ledger's settled FIFO lot consumption without mutation."""
+    if state.get("security_conversion_binding") is not None:
+        try:
+            tracked = tracked_holding_lots(state, symbol)
+        except ValueError:
+            return None, "actual_conversion_lot_lineage_unknown"
+        if not tracked:
+            return None, "actual_fill_position_reconciliation_unknown"
+        first = tracked[0]
+        fill_day = first["origin_day"]
+        if fill_day not in calendar or fill_day > day:
+            return None, "actual_fill_history_invalid"
+        index = calendar.index(fill_day)
+        if index == 0:
+            return None, "buy_fill_exact_previous_decision_session_unavailable"
+        return {"fill_id": first["origin_fill_id"], "fill_day": fill_day,
+            "origin_symbol": first["origin_symbol"], "lot_id": first["lot_id"],
+            "available_day": first["available"], "surviving_qty": first["qty"],
+            "decision_day": calendar[index - 1]}, None
     lots = []
     indexed = sorted(enumerate(state["fills"].items()), key=lambda value: (value[1][1]["day"], value[0]))
     for _, (identifier, fill) in indexed:
@@ -136,6 +155,8 @@ class LeaderTypeRiskExitPolicy:
         anchor, reason = surviving_buy_anchor(state, symbol, feed.calendar, day)
         if reason:
             return None, reason
+        if anchor.get("origin_symbol", symbol) != symbol:
+            return anchor, "conversion_structure_not_rebased"
         decision = anchor["decision_day"]
         candidate = self.candidates.get(decision, {}).get(symbol)
         if candidate is None:

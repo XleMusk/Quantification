@@ -26,15 +26,41 @@ actual market recovery was not invoked. See the same REPORT.md/checks.json and
 context_recovery_readback.json. No need to revisit this coupling without a new
 failure or actual saved adoption evidence.
 
-Next distinct lifecycle gap: the saved190-factor Ridge account at
-outputs/factor_candidate_replays/20261005_142016_7f5fa566/run.json stopped after165
-sessions on an unresolved 601989.SSE outDate. No merger/share-conversion Ledger
-event exists. Build an explicit evidence-bound nontrade security-conversion
-settlement through the existing Engine/Ledger: dated source and credited shares,
-cash, availability, idempotence/conflict and pending-exit treatment, with missing
-evidence retaining the stop. Start with synthetic lifecycle evidence; do not
-infer this real issuer's settlement, fetch a notice campaign or rerun its old
-account. This repairs a real accounting capability, not strategy profitability.
+Completed distinct lifecycle capability: explicit account-specific nontrade
+security credits now use the existing Engine/Ledger and saved experiment replay
+and checkpoint entry points. Explicit credited quantities, cash and availability
+replace exact original lots; no ratio or rounding is inferred. Original order
+and fill records remain unchanged by the conversion. Pending published targets,
+risk exits and residual exits retain their original evidence and dates; the
+continuous holding age survives partial FIFO sales and conversions. Locked shares
+stay locked, and recovery cannot skip an exchange session, remove the method or
+change its saved receipt prefix. Two successive conversions across saved replay
+checkpoints and the eventual real simulated sale have been exercised with local
+synthetic evidence. No old market study or account was rerun.
+Correction to the earlier inventory: research/successor_transfers.py already
+provided a floor/ceil ratio-assumption diagnostic used by candidate replays.
+The old165-session Ridge receipt is not evidence that no merger code existed.
+This new method instead requires actual allocation quantities and preserves
+holding and pending-execution lineage; the old diagnostic and all results remain.
+The method is opt-in on a fresh REPLAY account. Destination holdings collisions,
+preopen/router execution, simultaneous distributions and zero-share/cash-only
+recoveries are not implemented. Missing evidence still stops the affected path.
+See outputs/security_conversion/20261021_v1/REPORT.md. This is accounting software
+evidence, not a new profitable strategy or permission to migrate existing books.
+
+Next operational outcome: the first actual current-day close package and timely
+independent publications, followed by the original32 new split-settlement
+generation seeding and exact next-day settlement. The18:30 supplier schedule,
+original source directory and successful receipts remain authoritative; no old
+context, conversion fixture or previous publication substitutes for new data.
+Do not fetch merger notices or rerun the stopped Ridge/lowMAX windows to exercise
+this capability. The remaining concrete daily software gap is Alpha158's frozen
+provider/score/publication producer still sharing the broken global publication
+cursor. After the scheduled path, decouple its current production as already done
+for the other routes, preserving original weights, source lineage and actual
+publication clock; never backfill old signals or cross their absence in original
+accounts. Check for an existing completed implementation first. Do not keep
+generalizing conversions or producing repeated audits without an actual use case.
 The saved strategy registry already covers many weak/negative price strategies;
 do not call another inspected-window variant an untouched holdout. Continue
 preregistered future observation and distinct research without tuning old32 or

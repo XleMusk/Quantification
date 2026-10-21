@@ -149,6 +149,9 @@ def _pending_published_close_receipt(state, feed, day, config, context):
         return None
     if not isinstance(receipt, dict):
         raise ValueError("Invalid persisted published close intent")
+    if receipt.get("schema") == "security_conversion_adjusted_published_target_v1":
+        from .security_conversion_engine import checked_pending
+        return checked_pending(state, feed, day, config, context, _pending_published_close_receipt)
     if receipt.get("schema") == ROUTER_RECEIPT_SCHEMA:
         envelope = PublishedCloseRouterEnvelope.from_dict(receipt.get("envelope"))
         result = PortfolioIntent.from_dict(receipt.get("intent"))
@@ -936,7 +939,7 @@ def _mark_session_close(book, feed, day, rows, action_view=None):
     return stale
 
 
-def advance(state, feed, day, config, session_number, *, context=None, target_policy=None, portfolio_policy=None,
+def _advance_session(state, feed, day, config, session_number, *, context=None, target_policy=None, portfolio_policy=None,
             commission_deadband=False, lot_allocation=None, replay_risk_exit_policy=None,
             published_close_intent=None, published_close_target_policy=None, preopen_intent=None,
             full_exit_lifecycle=None, published_close_router=None, published_close_router_policy=None,
@@ -1245,3 +1248,53 @@ def advance(state, feed, day, config, session_number, *, context=None, target_po
     if preopen_receipt is not None:
         result["preopen_intent_frontier"] = preopen_receipt
     return result
+
+
+def advance(state, feed, day, config, session_number, *, context=None, target_policy=None, portfolio_policy=None,
+            commission_deadband=False, lot_allocation=None, replay_risk_exit_policy=None,
+            published_close_intent=None, published_close_target_policy=None, preopen_intent=None,
+            full_exit_lifecycle=None, published_close_router=None, published_close_router_policy=None,
+            published_close_session_method=None, security_conversion_view=None):
+    """One original session path, with an explicit atomic nontrade preparation."""
+    options = dict(context=context, target_policy=target_policy, portfolio_policy=portfolio_policy,
+        commission_deadband=commission_deadband, lot_allocation=lot_allocation,
+        replay_risk_exit_policy=replay_risk_exit_policy, published_close_intent=published_close_intent,
+        published_close_target_policy=published_close_target_policy, preopen_intent=preopen_intent,
+        full_exit_lifecycle=full_exit_lifecycle, published_close_router=published_close_router,
+        published_close_router_policy=published_close_router_policy,
+        published_close_session_method=published_close_session_method)
+    if security_conversion_view is None and not any(key in state for key in
+            ("security_conversion_binding", "security_conversion_catalog", "security_conversion_applied", "security_conversion_records")):
+        return _advance_session(state, feed, day, config, session_number, **options)
+    from .security_conversion import validate_view, BINDING_KEY, CATALOG_KEY
+    from .security_conversion_engine import apply_due
+    actual_context = context if context is not None else RunContext("standalone_replay", TradingMode.REPLAY)
+    if state.get("day") is not None and day <= state["day"]:
+        raise ValueError("A session cannot be processed twice or backwards")
+    if (preopen_intent is not None or published_close_router is not None or published_close_router_policy is not None
+            or state.get("intraday_session_method") is not None or state.get("preopen_execution_binding") is not None
+            or getattr(feed, "rights_replay_policy", None) is not None or state.get("rights_replay_policy") is not None
+            or getattr(feed, "merger_replay_policy", None) is not None or state.get("successor_transfer_receipts")):
+        raise ValueError("Security conversion requires its close path without preopen, router, rights or ratio-assumption overlays")
+    binding, prefix, due = validate_view(state, security_conversion_view, day, config, actual_context, feed.calendar)
+    previous_day = state.get("day")
+    if previous_day is not None:
+        calendar = list(feed.calendar)
+        if (previous_day not in calendar or calendar.index(previous_day) + 1 >= len(calendar)
+                or calendar[calendar.index(previous_day) + 1] != day):
+            raise ValueError("A conversion-bound account must settle the exact next calendar session")
+    original_pending = _pending_published_close_receipt(state, feed, day, config, actual_context) if due else None
+    saved = deepcopy(state)
+    before_events = len(state["events"])
+    try:
+        state[BINDING_KEY], state[CATALOG_KEY] = binding, prefix
+        apply_due(state, feed, day, config, actual_context, due, original_pending=original_pending)
+        result = _advance_session(state, feed, day, config, session_number, **options)
+        result["events"] = deepcopy(state["events"][before_events:])
+        if due:
+            result["security_conversion_receipts"] = [r.to_dict() for r in due]
+        return result
+    except Exception:
+        state.clear()
+        state.update(saved)
+        raise

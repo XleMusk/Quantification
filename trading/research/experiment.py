@@ -182,11 +182,46 @@ def checked_portfolio_policy_contract(contract, config):
     return json.loads(json.dumps(contract, allow_nan=False))
 
 
+def _conversion_sources(catalog):
+    return [{"event_id": row["event_id"], "source_file": row["source_file"],
+             "source_sha256": row["source_sha256"], "source_available_at": row["source_available_at"],
+             "recorded_at": row["recorded_at"]} for row in catalog]
+
+
+def _replay_conversion_metadata(state, config, dates, completed, view, calendar, saved=None):
+    """Validate an optional replay method without consuming an event or a session."""
+    from ..security_conversion import validate_view
+    keys = ("security_conversion_binding", "security_conversion_catalog", "security_conversion_sources")
+    recorded = {key: saved[key] for key in keys if saved is not None and key in saved}
+    if not dates and (view is not None or recorded or state.get("security_conversion_binding") is not None):
+        raise ValueError("Security conversion replay requires an exact inception/session calendar")
+    day = dates[completed] if completed < len(dates) else state.get("day")
+    binding, catalog, _ = validate_view(state, view, day, config,
+        RunContext("standalone_replay", TradingMode.REPLAY), calendar)
+    if binding is None:
+        if recorded:
+            raise ValueError("Checkpoint security conversion method cannot be disabled")
+        return {}
+    if saved is not None:
+        if set(recorded) != set(keys) or recorded["security_conversion_binding"] != binding:
+            raise ValueError("Checkpoint security conversion method/configuration changed")
+        previous = recorded["security_conversion_catalog"]
+        if (not isinstance(previous, list) or len(catalog) < len(previous)
+                or catalog[:len(previous)] != previous
+                or recorded["security_conversion_sources"] != _conversion_sources(previous)):
+            raise ValueError("Checkpoint security conversion receipt/source prefix changed")
+        committed = state.get("security_conversion_catalog", [])
+        if len(committed) > len(previous) or previous[:len(committed)] != committed:
+            raise ValueError("Checkpoint conversion account/catalog receipt mismatch")
+    return {keys[0]: binding, keys[1]: catalog, keys[2]: _conversion_sources(catalog)}
+
+
 def load_replay_checkpoint(folder, config, dates, previous_config=None, *,
                            portfolio_policy_contract=None, target_policy_contract=None,
                            legacy_policy_protocol=None, entry_risk_policy=None,
                            risk_notice_view=None, commission_deadband=False, lot_allocation=None,
-                           rights_replay_policy=None, full_exit_lifecycle=None):
+                           rights_replay_policy=None, full_exit_lifecycle=None,
+                           security_conversion_view=None):
     """Load a terminal replay prefix; its consumer must check data compatibility."""
     folder = Path(folder)
     dates = list(dates)
@@ -260,6 +295,11 @@ def load_replay_checkpoint(folder, config, dates, previous_config=None, *,
         from ..ledger import Ledger
         if round(float(daily[-1]["equity"]) * 100) != Ledger(state, config).equity():
             raise ValueError("Checkpoint last equity does not match the saved ledger")
+    conversion_binding = receipt.get("security_conversion_binding")
+    conversion_calendar = (conversion_binding.get("calendar", [])
+        if isinstance(conversion_binding, dict) else [])
+    conversion_metadata = _replay_conversion_metadata(state, config, dates, count,
+        security_conversion_view, conversion_calendar, receipt)
     checkpoint = {"state": state, "daily": daily, "source": str(folder.resolve()), "config": config.to_dict(),
                   "commission_deadband": commission_deadband, "lot_allocation": lot_allocation,
                   "rights_replay_policy": rights_contract}
@@ -271,12 +311,14 @@ def load_replay_checkpoint(folder, config, dates, previous_config=None, *,
         checkpoint["target_policy_contract"] = target_binding
     if full_exit_lifecycle is not None:
         checkpoint["full_exit_lifecycle"] = full_exit_lifecycle
+    checkpoint.update(conversion_metadata)
     return checkpoint
 
 
 def replay(feed, config, dates, destination, *, target_policy=None, portfolio_policy=None, checkpoint=None,
            portfolio_policy_contract=None, target_policy_contract=None,
-           commission_deadband=False, lot_allocation=None, full_exit_lifecycle=None):
+           commission_deadband=False, lot_allocation=None, full_exit_lifecycle=None,
+           security_conversion_view=None):
     dates = list(dates)
     if lot_allocation not in {None, LOT_ALLOCATION, OPEN_LOT_ALLOCATION}:
         raise ValueError("Unknown close lot allocation")
@@ -339,6 +381,8 @@ def replay(feed, config, dates, destination, *, target_policy=None, portfolio_po
     if lifecycle is not None:
         state["full_exit_lifecycle"] = lifecycle
     reused = len(daily)
+    conversion_metadata = _replay_conversion_metadata(state, config, dates, reused,
+        security_conversion_view, feed.calendar, checkpoint)
     destination.mkdir(parents=True, exist_ok=False)
     frontier_sessions = []
     if checkpoint is not None:
@@ -363,6 +407,7 @@ def replay(feed, config, dates, destination, *, target_policy=None, portfolio_po
               "event_time_frontier": summarize_frontiers(frontier_sessions)}
     if full_exit_lifecycle is not None:
         record["full_exit_lifecycle"] = full_exit_lifecycle
+    record.update(conversion_metadata)
     try:
         for count, day in enumerate(dates[reused:], start=reused):
             record["attempted_session"] = day
@@ -376,6 +421,8 @@ def replay(feed, config, dates, destination, *, target_policy=None, portfolio_po
                 options["lot_allocation"] = lot_allocation
             if full_exit_lifecycle is not None:
                 options["full_exit_lifecycle"] = full_exit_lifecycle
+            if security_conversion_view is not None:
+                options["security_conversion_view"] = security_conversion_view
             row = advance(trial, feed, day, config, count, **options)
             state = trial
             daily.append(row)
