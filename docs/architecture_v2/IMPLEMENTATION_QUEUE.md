@@ -33,11 +33,23 @@ historical evidence, not the current data or account cursor.
   publication separately. Bad registered evidence cannot fall back to an older
   success; a later publication does not imply old accounts consumed it. Refresh,
   holdings, original orders and fills were checked without changing the heads.
-- Next implementation: separate source context, current publication and original
-  account consumption for other core routes, preserving actual availability and
-  missing-day evidence. No manual global-cursor edit, account reset or fabricated
-  NO_CHANGE can bridge a gap. The display fix does not repair missing publication
-  or produce a new strategy signal.
+- Completed: system-daily-refresh advance-leader20 now separates the original
+  five-family publication producer from original-account consumption. One actual
+  source-only run appended the exact October 20 close to the unchanged 15/16/19
+  package prefix; the source cursor is 20, publication cursor remains 19, and
+  missing publication 20 is explicit. The core profile, original forward command
+  and all three core account heads are unchanged. No signal or account was
+  produced. Current-day mode reuses the original frozen-cohort publisher and its
+  independent command receipts; same-day actual publication and immutable inputs
+  are required. Saved successful children can be adopted without re-production;
+  unresolved or failed attempts cannot be bypassed by another path or mode.
+- Next implementation: continue the same separation for eight-type context and
+  Alpha158. Eight-type can append exact day-20 inputs without a day-20 paper
+  publication. Alpha needs its own provider-through-20 and frozen score context,
+  followed by the new day's separate provider/score/publication; do not backfill
+  an old score from a later provider. Original accounts remain unable to cross
+  a missing publication. No manual global-cursor edit, account reset or fabricated
+  NO_CHANGE can bridge a gap.
 - Acceptance still missing: an actual scheduled close run and recovery receipts,
   sufficient strategy evidence outside inspected windows, and the separately
   authorized broker/THS path. Monitoring code and healthy web pages do not prove
