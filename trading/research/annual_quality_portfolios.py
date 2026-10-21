@@ -532,7 +532,7 @@ def confirm_session_successor(base, calendar_file):
         "source_manifest_changed": False, "price_rows_added": 0}
 
 
-def advance(prepared_run, inputs=None, current=None, *, session_calendar=None):
+def advance(prepared_run, inputs=None, current=None, *, session_calendar=None, only_cases=None):
     current = current or market_now()
     root = Path(prepared_run).resolve()
     with lock(root / "runner.lock"):
@@ -547,6 +547,19 @@ def advance(prepared_run, inputs=None, current=None, *, session_calendar=None):
                 or head.get("lot_allocation") != protocol.get("lot_allocation")
                 or [row["signal"] for row in head["results"]] != list(cases)):
             raise ValueError("Original unadmitted fixed annual quality comparison required")
+        selected_cases = cases
+        if only_cases is not None:
+            requested = tuple(only_cases)
+            if not requested:
+                raise ValueError("Select at least one declared annual case")
+            if len(set(requested)) != len(requested):
+                raise ValueError("Duplicate selected annual cases")
+            if any(case not in cases for case in requested):
+                raise ValueError("Unknown selected annual case")
+            selected_cases = tuple(case for case in cases if case in requested)
+            pending = head.get("pending_case")
+            if pending and pending["signal"] not in selected_cases:
+                raise ValueError("Selected cases must include the saved pending case; reconcile it before skipping")
         allocation_options = ({"lot_allocation": protocol["lot_allocation"]}
                               if protocol.get("lot_allocation") else {})
         config = StrategyConfig(**protocol["portfolio"]).validate()
@@ -596,6 +609,10 @@ def advance(prepared_run, inputs=None, current=None, *, session_calendar=None):
                     raise ValueError("Saved batch lot allocation differs from its declaration")
                 validate_extension(before["manifest"], base.manifest, before["end"])
             pending = head.get("pending_case")
+            if only_cases is not None and not pending and all(
+                    previous[case].get("status") == "completed"
+                    and previous[case]["completed_sessions"] >= len(dates) for case in selected_cases):
+                return root, head
             if pending:
                 if pending["signal"] not in cases:
                     raise ValueError("Unknown saved pending case")
@@ -624,10 +641,13 @@ def advance(prepared_run, inputs=None, current=None, *, session_calendar=None):
             record = {"status": "running", "received_at": current.isoformat(), "manifest": base.manifest,
                       "end": end, "results": [], "lot_allocation": protocol.get("lot_allocation"),
                       "execution_admitted": False}
+            if only_cases is not None:
+                record.update(status_scope="selected_cases_only", selected_cases=list(selected_cases),
+                              unselected_cases=[case for case in cases if case not in selected_cases])
             if calendar_confirmation is not None:
                 record["calendar_confirmation"] = calendar_confirmation
             write_json(batch / "run.json", record)
-            for case in cases:
+            for case in selected_cases:
                 saved = previous.get(case, {})
                 checkpoint_path = saved.get("checkpoint")
                 checkpoint = (recovered[case] if case in recovered else
@@ -649,8 +669,12 @@ def advance(prepared_run, inputs=None, current=None, *, session_calendar=None):
                 head.pop("pending_case")
                 publish_head(root, head)
             record["status"] = "completed" if all(row["status"] == "completed" for row in record["results"]) else "partial"
+            comparison_status = ("completed" if all(row.get("status") == "completed"
+                and row["completed_sessions"] >= len(dates) for row in head["results"]) else "partial")
+            if only_cases is not None:
+                record["comparison_status"] = comparison_status
             write_json(batch / "run.json", record)
-            head.update(status=record["status"], reason=None)
+            head.update(status=comparison_status, reason=None)
             publish_head(root, head)
             report(root, protocol, head)
             return root, head
@@ -736,6 +760,8 @@ def main(argv=None):
     replay.add_argument("--prepared-run", type=Path, required=True)
     replay.add_argument("--inputs", type=Path)
     replay.add_argument("--session-calendar", type=Path)
+    replay.add_argument("--case", action="append", dest="only_cases",
+                        help="Advance only this declared case; repeat to select more cases")
     sizing = commands.add_parser("capacity")
     sizing.add_argument("--prepared-run", type=Path, required=True)
     sizing.add_argument("--allocation", choices=[LOT_ALLOCATION, OPEN_LOT_ALLOCATION])
@@ -755,7 +781,8 @@ def main(argv=None):
         build(args.prepared_run, args.capacity_run)
         return 0
     inputs = json.loads(args.inputs.read_text(encoding="utf-8")) if args.inputs else None
-    root, result = advance(args.prepared_run, inputs, session_calendar=args.session_calendar)
+    root, result = advance(args.prepared_run, inputs, session_calendar=args.session_calendar,
+                           only_cases=args.only_cases)
     print(json.dumps({"artifacts": str(root), "status": result["status"], "sessions": result["sessions"],
                       "account_created": result["account_created"]}), flush=True)
     return 1 if result["status"] == "partial" else 0

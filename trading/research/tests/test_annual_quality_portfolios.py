@@ -1,4 +1,5 @@
 from datetime import datetime
+from contextlib import nullcontext
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -339,3 +340,191 @@ def test_investment_feed_rejects_old_decisions_and_late_asset_inputs():
     annual.loc[0, "asset_growth_received_at"] = pd.Timestamp("2026-10-05T01:00:00+00:00")
     with pytest.raises(ValueError, match="not received"):
         AnnualQualityFeed(*args)
+
+
+def selective_advance_fixture(tmp_path, monkeypatch):
+    cases = module.INVESTMENT_CASES
+    root, price = tmp_path / "prepared", tmp_path / "price"
+    root.mkdir()
+    price.mkdir()
+    module.write_json(price / "result.json", {"status": "research_reconstruction_completed", "cutoff": "2026-10-19"})
+    protocol = {"id": "fixed", "definition_id": module.INVESTMENT_ID, "signals": list(cases),
+        "formulas": module.INVESTMENT_FORMULAS, "execution_admitted": False,
+        "portfolio": portfolio().to_dict(), "stock_inputs": {"price_view": str(price)},
+        "declared_at": "2026-10-05T06:11:00+08:00", "preview_market_day": "2026-09-30",
+        "quality_run": "unused", "report_day": "2025-12-31", "feature_id": "frozen",
+        "feature_asof": "2026-10-05T06:10:00+08:00", "manifest": {}, "end": "2026-12-31",
+        "lot_allocation": module.OPEN_LOT_ALLOCATION}
+    module.write_json(root / "protocol.json", protocol)
+    prior = root / "batches/prior"
+    prior.mkdir(parents=True)
+    module.write_json(prior / "run.json", {"manifest": {}, "end": "2026-10-16",
+        "lot_allocation": module.OPEN_LOT_ALLOCATION})
+    results = []
+    for index, case in enumerate(cases):
+        checkpoint = prior / case
+        checkpoint.mkdir()
+        completed = index in (0, 3)
+        row = {"signal": case, "checkpoint": str(checkpoint), "status": "completed" if completed else "failed",
+            "completed_sessions": 7 if completed else 4, "final_equity": 140000 - index,
+            "financial_unknown": None, "failure_detail": "unchanged original failure" if not completed else None}
+        module.write_json(checkpoint / "account.json", {"original_case": case, "cash": 140000 - index})
+        results.append(row)
+    head = {"id": "fixed", "execution_admitted": False, "sessions": 4, "account_created": True,
+        "lot_allocation": module.OPEN_LOT_ALLOCATION, "status": "partial", "last_batch": str(prior), "results": results}
+    module.publish_head(root, head)
+    calls = SimpleNamespace(consumed=[], loaded=[], validations=[], opened=[])
+    base = SimpleNamespace(calendar=["2026-09-30", "2026-10-08", "2026-10-09", "2026-10-12",
+        "2026-10-13", "2026-10-14", "2026-10-15", "2026-10-16", "2026-10-19", "2026-10-20"],
+        manifest={}, close=lambda: None)
+    monkeypatch.setattr(module, "lock", lambda path: nullcontext())
+    monkeypatch.setattr(module, "BulkResearchFeed", lambda **kwargs: (calls.opened.append(kwargs), base)[1])
+    monkeypatch.setattr(module, "load_quality", lambda *args: (pd.DataFrame(), {"id": "frozen", "asof": protocol["feature_asof"]}))
+    monkeypatch.setattr(module, "validate_extension", lambda before, after, day: calls.validations.append(day))
+    monkeypatch.setattr(module, "features", lambda *args, **kwargs: {})
+    monkeypatch.setattr(module, "report", lambda *args: None)
+    monkeypatch.setattr(module, "AnnualQualityFeed", lambda *args: SimpleNamespace(audit=[], ranking_rows=[], case=args[3]))
+    def checkpoint(path, config, dates, **kwargs):
+        assert kwargs == {"lot_allocation": module.OPEN_LOT_ALLOCATION}
+        calls.loaded.append(str(path))
+        return {"source": str(path)}
+    def consume(feed, config, dates, destination, *, checkpoint, **kwargs):
+        assert kwargs == {"lot_allocation": module.OPEN_LOT_ALLOCATION}
+        calls.consumed.append(feed.case)
+        destination.mkdir()
+        module.write_json(destination / "account.json", {"continued_from": checkpoint["source"], "day": dates[-1]})
+        return {"status": "completed", "completed_sessions": len(dates), "sessions": len(dates)}
+    monkeypatch.setattr(module, "load_replay_checkpoint", checkpoint)
+    monkeypatch.setattr(module, "baseline_ledger_result", consume)
+    return SimpleNamespace(root=root, protocol=protocol, head=head, calls=calls,
+        current=datetime.fromisoformat("2026-10-19T18:00:00+08:00"))
+
+
+def test_selected_healthy_cases_continue_in_declared_order_and_carry_all_other_results(tmp_path, monkeypatch):
+    saved = selective_advance_fixture(tmp_path, monkeypatch)
+    cases = module.INVESTMENT_CASES
+    original_protocol = (saved.root / "protocol.json").read_bytes()
+    original_accounts = {row["checkpoint"]: (Path(row["checkpoint"]) / "account.json").read_bytes()
+        for row in saved.head["results"]}
+    _, head = module.advance(saved.root, current=saved.current, only_cases=[cases[3], cases[0]])
+    assert saved.calls.consumed == [cases[0], cases[3]]
+    assert saved.calls.loaded == [saved.head["results"][index]["checkpoint"] for index in (0, 3)]
+    assert saved.calls.validations == ["2026-09-30", "2026-10-16"]
+    assert [row["signal"] for row in head["results"]] == list(cases)
+    assert head["status"] == "partial" and head["sessions"] == 4
+    for index in (1, 2, 4):
+        assert head["results"][index] == saved.head["results"][index]
+    assert [head["results"][index]["completed_sessions"] for index in (0, 3)] == [8, 8]
+    assert (saved.root / "protocol.json").read_bytes() == original_protocol
+    assert all((Path(path) / "account.json").read_bytes() == value for path, value in original_accounts.items())
+    record = json.loads((Path(head["last_batch"]) / "run.json").read_text(encoding="utf-8"))
+    assert record["status"] == "completed" and record["status_scope"] == "selected_cases_only"
+    assert record["comparison_status"] == "partial"
+    assert record["selected_cases"] == [cases[0], cases[3]]
+    assert record["unselected_cases"] == [cases[1], cases[2], cases[4]]
+    assert [row["signal"] for row in record["results"]] == [cases[0], cases[3]]
+
+
+@pytest.mark.parametrize("selection", [[], ["unknown"], [module.INVESTMENT_CASES[0]] * 2])
+def test_bad_case_selection_is_rejected_before_data_or_account_writes(tmp_path, monkeypatch, selection):
+    saved = selective_advance_fixture(tmp_path, monkeypatch)
+    before = {path: path.read_bytes() for path in saved.root.rglob("*.json")}
+    with pytest.raises(ValueError, match="annual case"):
+        module.advance(saved.root, current=saved.current, only_cases=selection)
+    assert not saved.calls.opened and not saved.calls.loaded and not saved.calls.consumed
+    assert {path: path.read_bytes() for path in saved.root.rglob("*.json")} == before
+    assert list((saved.root / "batches").iterdir()) == [saved.root / "batches/prior"]
+
+
+@pytest.mark.parametrize("include_pending", [False, True])
+def test_case_selection_cannot_skip_or_bypass_unreconciled_pending(tmp_path, monkeypatch, include_pending):
+    saved = selective_advance_fixture(tmp_path, monkeypatch)
+    pending = saved.root / "batches/pending"
+    pending.mkdir()
+    (pending / "account.json").write_text("{}", encoding="utf-8")
+    saved.head["pending_case"] = {"signal": module.INVESTMENT_CASES[2], "destination": str(pending)}
+    module.publish_head(saved.root, saved.head)
+    before = (saved.root / "head.json").read_bytes()
+    selection = [module.INVESTMENT_CASES[2 if include_pending else 0]]
+    with pytest.raises(ValueError, match="no terminal receipt|saved pending case"):
+        module.advance(saved.root, current=saved.current, only_cases=selection)
+    assert not saved.calls.loaded and not saved.calls.consumed
+    assert (saved.root / "head.json").read_bytes() == before
+
+
+def test_default_advance_still_calls_every_declared_case(tmp_path, monkeypatch):
+    saved = selective_advance_fixture(tmp_path, monkeypatch)
+    _, head = module.advance(saved.root, current=saved.current)
+    assert saved.calls.consumed == list(module.INVESTMENT_CASES)
+    assert head["status"] == "completed" and head["sessions"] == 8
+    record = json.loads((Path(head["last_batch"]) / "run.json").read_text(encoding="utf-8"))
+    assert "status_scope" not in record and len(record["results"]) == 5
+
+
+def test_unselected_completed_cases_behind_new_endpoint_keep_comparison_partial(tmp_path, monkeypatch):
+    saved = selective_advance_fixture(tmp_path, monkeypatch)
+    for row in saved.head["results"]:
+        row.update(status="completed", completed_sessions=7)
+    saved.head["sessions"] = 7
+    module.publish_head(saved.root, saved.head)
+    cases = module.INVESTMENT_CASES
+    _, head = module.advance(saved.root, current=saved.current, only_cases=[cases[0], cases[3]])
+    assert head["status"] == "partial" and head["sessions"] == 7
+    assert [row["completed_sessions"] for row in head["results"]] == [8, 7, 7, 8, 7]
+    for index in (1, 2, 4):
+        assert head["results"][index] == saved.head["results"][index]
+
+
+def test_repeated_selected_endpoint_returns_without_new_batch_or_account_writes(tmp_path, monkeypatch):
+    saved = selective_advance_fixture(tmp_path, monkeypatch)
+    selected = [module.INVESTMENT_CASES[0], module.INVESTMENT_CASES[3]]
+    _, first = module.advance(saved.root, current=saved.current, only_cases=selected)
+    before = {path: path.read_bytes() for path in saved.root.rglob("*") if path.is_file()}
+    def unexpected(*args, **kwargs):
+        pytest.fail("An already completed selected endpoint must not prepare features or write a new batch/account")
+    for name in ("features", "load_replay_checkpoint", "AnnualQualityFeed", "baseline_ledger_result", "publish_head"):
+        monkeypatch.setattr(module, name, unexpected)
+    _, repeated = module.advance(saved.root, current=saved.current, only_cases=selected)
+    assert repeated == first and repeated["status"] == "partial" and repeated["sessions"] == 4
+    assert saved.calls.consumed == selected
+    assert saved.calls.validations == ["2026-09-30", "2026-10-16", "2026-09-30", "2026-10-19"]
+    assert {path: path.read_bytes() for path in saved.root.rglob("*") if path.is_file()} == before
+
+
+def test_selected_endpoint_noop_still_rejects_changed_last_source_prefix(tmp_path, monkeypatch):
+    saved = selective_advance_fixture(tmp_path, monkeypatch)
+    selected = [module.INVESTMENT_CASES[0], module.INVESTMENT_CASES[3]]
+    for row in saved.head["results"]:
+        if row["signal"] in selected:
+            row["completed_sessions"] = 8
+    module.publish_head(saved.root, saved.head)
+    prior = Path(saved.head["last_batch"]) / "run.json"
+    batch = json.loads(prior.read_text(encoding="utf-8"))
+    batch["end"] = "2026-10-19"
+    module.write_json(prior, batch)
+    before = {path: path.read_bytes() for path in saved.root.rglob("*") if path.is_file()}
+    def validate(before, after, day):
+        saved.calls.validations.append(day)
+        if day == "2026-10-19":
+            raise ValueError("Past source prefix changed")
+    monkeypatch.setattr(module, "validate_extension", validate)
+    with pytest.raises(ValueError, match="Past source prefix changed"):
+        module.advance(saved.root, current=saved.current, only_cases=selected)
+    assert saved.calls.validations == ["2026-09-30", "2026-10-19"]
+    assert not saved.calls.loaded and not saved.calls.consumed
+    assert {path: path.read_bytes() for path in saved.root.rglob("*") if path.is_file()} == before
+
+
+@pytest.mark.parametrize("selection", [None, [module.INVESTMENT_CASES[3], module.INVESTMENT_CASES[0]]])
+def test_advance_cli_passes_repeated_case_selection(tmp_path, monkeypatch, capsys, selection):
+    calls = []
+    def advance(root, inputs, **kwargs):
+        calls.append((root, inputs, kwargs))
+        return root, {"status": "partial", "sessions": 4, "account_created": True}
+    monkeypatch.setattr(module, "advance", advance)
+    argv = ["advance", "--prepared-run", str(tmp_path)]
+    for case in selection or []:
+        argv.extend(["--case", case])
+    assert module.main(argv) == 1
+    assert calls == [(tmp_path, None, {"session_calendar": None, "only_cases": selection})]
+    assert json.loads(capsys.readouterr().out)["status"] == "partial"

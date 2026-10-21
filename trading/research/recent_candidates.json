@@ -1683,13 +1683,13 @@
         "shared Engine/Ledger costs, T+1, lots and corporate-action rules"
       ],
       "original_period": "2025-12-31 financial snapshot declared 2026-10-05; prospective diagnostic only",
-      "A_share_reproduction_status": "five_fixed_arms_started_two_complete_one_additional_posthoc_action_repair_two_still_unresolved",
+      "A_share_reproduction_status": "five_fixed_arms_two_controls_through1019_three_original_failures_preserved",
       "result": {
-        "evidence": "D:/Quantification/outputs/annual_quality_forward/20261018_v1/initial_actual_readback.json",
+        "evidence": "D:\\Quantification\\outputs\\annual_quality_forward\\20261021_source1019_v1\\actual_readback.json",
         "status": "partial",
         "actual_first_signal_day": "2026-10-08",
         "first_execution_day": "2026-10-09",
-        "source_through": "2026-10-16",
+        "source_through": "2026-10-19",
         "account_count": 5,
         "completed_cases": 2,
         "blocked_cases": 3,
@@ -1697,13 +1697,20 @@
           {
             "signal": "annual_matched_momentum",
             "status": "completed",
-            "completed_sessions": 7,
-            "net_return": -0.05379092857142864,
-            "max_drawdown": -0.05379092857142864,
+            "completed_sessions": 8,
+            "net_return": -0.060776642857142904,
+            "max_drawdown": -0.060776642857142904,
             "fees": 55.73,
-            "final_equity": 132469.27,
+            "final_equity": 131491.27,
             "error": null,
-            "checkpoint": "D:\\QuantificationData\\trading\\research\\annual_quality_portfolios\\20261005_061126_bc190810\\batches\\20261018_183123_764207\\annual_matched_momentum"
+            "checkpoint": "D:\\QuantificationData\\trading\\research\\annual_quality_portfolios\\20261005_061126_bc190810\\batches\\20261021_125538_301494\\annual_matched_momentum",
+            "reused_sessions": 7,
+            "newly_completed_sessions": 1,
+            "cash_cny": 67023.27,
+            "positive_positions": 11,
+            "new_day_equity_change_cny": -978.0,
+            "new_day_orders": 0,
+            "new_day_fill_callbacks": 0
           },
           {
             "signal": "annual_matched_low_vol_half_momentum",
@@ -1730,13 +1737,20 @@
           {
             "signal": "annual_low_asset_growth",
             "status": "completed",
-            "completed_sessions": 7,
-            "net_return": -0.04108499999999993,
-            "max_drawdown": -0.05638371601000336,
+            "completed_sessions": 8,
+            "net_return": -0.04867542857142859,
+            "max_drawdown": -0.06385304541090231,
             "fees": 101.12,
-            "final_equity": 134248.1,
+            "final_equity": 133185.44,
             "error": null,
-            "checkpoint": "D:\\QuantificationData\\trading\\research\\annual_quality_portfolios\\20261005_061126_bc190810\\batches\\20261018_183123_764207\\annual_low_asset_growth"
+            "checkpoint": "D:\\QuantificationData\\trading\\research\\annual_quality_portfolios\\20261005_061126_bc190810\\batches\\20261021_125538_301494\\annual_low_asset_growth",
+            "reused_sessions": 7,
+            "newly_completed_sessions": 1,
+            "cash_cny": 27852.52,
+            "positive_positions": 20,
+            "new_day_equity_change_cny": -1062.66,
+            "new_day_orders": 0,
+            "new_day_fill_callbacks": 0
           },
           {
             "signal": "annual_quality_low_asset_growth",
@@ -1781,7 +1795,15 @@
           "original_files_unchanged": true,
           "execution_admitted": false
         },
-        "final_readback": "D:\\Quantification\\outputs\\annual_quality_forward\\20261018_v1\\final_actual_readback.json"
+        "final_readback": "D:\\Quantification\\outputs\\annual_quality_forward\\20261021_source1019_v1\\actual_readback.json",
+        "previous_forward_evidence": "D:/Quantification/outputs/annual_quality_forward/20261018_v1/initial_actual_readback.json",
+        "selected_case_forward": true,
+        "selected_cases": [
+          "annual_matched_momentum",
+          "annual_low_asset_growth"
+        ],
+        "unselected_results_unchanged": true,
+        "adjusted_feature_coverage_through": "2026-10-13"
       },
       "known_gaps": [
         "Current annual feature retrieval is not a complete historical PIT/QMJ reproduction",
@@ -1790,8 +1812,9 @@
         "No untouched prospective holdout, account, current quote or THS evidence",
         "Missing financial inputs must remain unknown rather than be imputed into a trade"
       ],
-      "next_test": "Resolve only exact held action/reference defects in explicitly labelled post-event research branches; preserve original failures and successful accounts. Continue unchanged monthly rules on genuinely new complete sessions; the seven-session negative results establish no robust advantage. Do not re-fetch financials or tune on this window.",
-      "execution_admitted": false
+      "next_test": "Continue unchanged monthly rules only on genuinely new complete sessions using explicit case selection; carry the three original failures and separate posthoc quality repair. Do not retune from these eight negative sessions, re-fetch frozen financials, repeat known-failed cases without new relevant evidence, or merge the two control accounts.",
+      "execution_admitted": false,
+      "last_updated_at": "2026-10-21T12:57:23.085256+08:00"
     },
     {
       "strategy_id": "native_fixed_eight_leaders_environment_comparison_v1",
