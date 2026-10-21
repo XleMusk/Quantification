@@ -112,9 +112,25 @@ def qcode(symbol):
 
 def write_provider(panel, calendar, folder, *, provider_fields=None):
     """The shared Qlib binary exporter; observed rows do not establish PIT membership."""
-    if (panel.empty or panel.duplicated(["date", "symbol"]).any() or not calendar
-            or calendar != sorted(set(calendar))
-            or not pd.to_datetime(panel.date).isin(pd.to_datetime(calendar)).all()):
+    if panel.empty or not calendar or calendar != sorted(set(calendar)):
+        raise ValueError("Unique observed panel within a distinct ordered calendar required")
+    try:
+        calendar_index = pd.DatetimeIndex(pd.to_datetime(calendar, errors="raise"))
+        observed_dates = pd.DatetimeIndex(pd.to_datetime(panel.date, errors="raise"))
+    except (TypeError, ValueError) as error:
+        raise ValueError("Provider dates must be valid daily dates without a timezone") from error
+    if (calendar_index.hasnans or observed_dates.hasnans
+            or calendar_index.tz is not None or observed_dates.tz is not None
+            or not calendar_index.equals(calendar_index.normalize())
+            or not observed_dates.equals(observed_dates.normalize())):
+        raise ValueError("Provider dates must be valid daily dates without a timezone")
+    # CSV panels carry ISO strings, while normalized-price panels carry Timestamps.
+    # Reindexing an unconverted string index with a DatetimeIndex silently loses
+    # every observation. Normalize on a copy before checking identities/exporting.
+    panel = panel.copy(deep=False)
+    panel["date"] = observed_dates
+    if (panel.duplicated(["date", "symbol"]).any() or calendar_index.has_duplicates
+            or not observed_dates.isin(calendar_index).all()):
         raise ValueError("Unique observed panel within a distinct ordered calendar required")
     folder.mkdir(parents=True, exist_ok=False)
     (folder / "calendars").mkdir()
@@ -124,7 +140,7 @@ def write_provider(panel, calendar, folder, *, provider_fields=None):
     (folder / "instruments/all.txt").write_text("".join(
         f"{qcode(s)}\t{calendar[0]}\t{calendar[-1]}\n" for s in symbols), encoding="utf-8")
     for symbol, rows in panel.groupby("symbol"):
-        data = rows.set_index("date").reindex(pd.to_datetime(calendar))
+        data = rows.set_index("date").reindex(calendar_index)
         destination = folder / "features" / qcode(symbol).lower()
         destination.mkdir(parents=True)
         fields = provider_fields if provider_fields is not None else ("open", "high", "low", "close", "volume", "vwap", "factor")

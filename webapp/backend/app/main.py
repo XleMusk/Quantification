@@ -125,6 +125,14 @@ def preview(identifier: str, symbol: str | None = None):
             "recent": data.records(frame.tail(10).iloc[::-1])}
 
 
+@app.get("/api/datasets/{identifier}/snapshot")
+def dataset_snapshot(identifier: str):
+    item = require_dataset(identifier)
+    rows = data.latest_observations(data.read_bars(identifier))
+    return {"dataset": item, "rows": rows, "status": "available" if rows else "empty",
+            "price_change_basis": "previous_observed_row", "realtime": False}
+
+
 class JobInput(BaseModel):
     dataset_id: str = Field(pattern=r"^[0-9a-f]{32}$")
     start: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")

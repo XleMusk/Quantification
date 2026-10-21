@@ -77,6 +77,40 @@ def test_export_preflights_all_destinations_before_writing(tmp_path):
     assert not account_path.exists()
 
 
+@pytest.mark.parametrize("kind", ["orders", "trades", "cashflows"])
+def test_invalid_later_export_preserves_all_templates(tmp_path, kind):
+    account_path = tmp_path / "account_observation.json"
+    account_template = '{"schema":"ths_account_observation_v1","account_alias":"<fill-from-user-selected-account>"}\n'
+    account_path.write_text(account_template, encoding="utf-8")
+    csv_path = tmp_path / f"{kind}.csv"
+    csv_template = "original,unfilled,template\r\n"
+    csv_path.write_bytes(csv_template.encode("utf-8"))
+    row = {"symbol": "600000.SSE", "side": "buy", "order_id": "O1", "qty": 100,
+           "price_cents": 1234, "filled_qty": 0, "broker_status": "ACCEPTED",
+           "execution_id": "E1", "gross_cents": 123400, "fees_cents": 5,
+           "cash_change_cents": -123405}
+    row["gross_cents" if kind == "cashflows" else "price_cents"] = -1
+    malformed = {**_account(), "kind": kind, "rows": [row]}
+
+    with pytest.raises(ValueError, match="nonnegative integer cents"):
+        export_observations([_account(), malformed], tmp_path)
+
+    assert account_path.read_bytes() == account_template.encode("utf-8")
+    assert csv_path.read_bytes() == csv_template.encode("utf-8")
+
+
+def test_invalid_later_account_does_not_leave_earlier_csv(tmp_path):
+    orders = {**_account(), "kind": "orders", "rows": []}
+    account = _account()
+    account["rows"][0]["price_cents"] = -1
+
+    with pytest.raises(ValueError, match="nonnegative integer cents"):
+        export_observations([orders, account], tmp_path)
+
+    assert not (tmp_path / "orders.csv").exists()
+    assert not (tmp_path / "account_observation.json").exists()
+
+
 def test_exported_four_views_are_ready_for_reconciliation(tmp_path):
     values = [_account(),
         {"kind": "orders", "source": "ths_controls", "account_alias": "sim",

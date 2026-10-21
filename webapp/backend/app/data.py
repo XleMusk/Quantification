@@ -112,6 +112,25 @@ def read_bars(identifier):
     return pd.read_parquet(STORAGE / "datasets" / identifier / "bars.parquet")
 
 
+def latest_observations(frame):
+    """Latest stored row per symbol, compared only with its previous observed row.
+
+    Missing sessions are not filled, so the previous row need not be the prior
+    exchange session. These are research snapshot values, never live quotes.
+    """
+    if frame.empty:
+        return []
+    frame = frame.sort_values(["symbol", "date"]).copy()
+    groups = frame.groupby("symbol", sort=False)
+    frame["previous_date"] = groups.date.shift(1)
+    frame["previous_close"] = groups.close.shift(1)
+    comparable = (frame.close.gt(0) & frame.previous_close.gt(0)
+                  & np.isfinite(frame.close) & np.isfinite(frame.previous_close))
+    frame["change_pct"] = (frame.close / frame.previous_close - 1).where(comparable)
+    return records(frame.groupby("symbol", sort=False).tail(1)[
+        [*COLUMNS, "previous_date", "previous_close", "change_pct"]])
+
+
 def sync_local_cache():
     from a_stock_committee.market_data import normalize_symbol
 

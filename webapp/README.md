@@ -6,6 +6,49 @@
 
 ## 启动与停止
 
+### 克隆后或 Linux 环境启动
+
+新增 `scripts/workbench.py`，使用当前 Python 环境启动同一后端、前端及可选 worker。
+它不依赖 `D:\Quantification\env` 或已存在的学习环境。先在项目根目录创建独立环境：
+
+```powershell
+# Windows / PowerShell；已有 webapp/.venv 时跳过创建步骤
+py -3.12 -m venv webapp/.venv
+.\webapp\.venv\Scripts\python.exe -m pip install -r webapp/backend/requirements.lock.txt
+npm --prefix webapp/frontend ci --no-fund
+.\webapp\.venv\Scripts\python.exe scripts/workbench.py check
+.\webapp\.venv\Scripts\python.exe scripts/workbench.py start --seed-demo --factor-worker
+```
+
+```bash
+# Linux；已有 webapp/.venv 时跳过创建步骤
+python3 -m venv webapp/.venv
+webapp/.venv/bin/python -m pip install -r webapp/backend/requirements.lock.txt
+npm --prefix webapp/frontend ci --no-fund
+webapp/.venv/bin/python scripts/workbench.py check
+webapp/.venv/bin/python scripts/workbench.py start --seed-demo --factor-worker
+```
+
+`--seed-demo` 仅登记固定种子的合成教学数据，不下载行情，也不创建真实账户。
+界面可据此提交三类因子任务、查看结果和下载 CSV。默认不启动任何 worker；
+`--factor-worker` 启动因子计算，`--trading-worker` 另行启动原日终回放/纸面进程。
+后者可能触发原有日终数据更新，须先配置所需数据与供应商依赖。
+
+使用原有资料时传 `--data-dir D:/QuantificationData/trading`，或设置
+`QUANT_TRADING_HOME`；研究资料目录可用 `--web-storage` 或 `QUANT_WEB_STORAGE`
+指定。Windows 交易目录默认值沿用原项目；Linux 默认使用
+`$XDG_DATA_HOME/quantification/trading`，未设置时为 `~/.local/share/quantification/trading`。
+`check` 会显示实际目录，以及默认历史快照是否存在；缺行情不冒充运行环境失败。
+克隆 Git 不会恢复任何外置行情、模型或账户记录，也不会自动迁移这些文件。
+
+服务仅监听 `127.0.0.1`。自定义端口用 `--api-port` 和 `--ui-port`，端口占用时
+停止本次启动，不结束其他程序。启动器在当前终端运行，按 Ctrl+C 关闭本次启动的
+服务；该方式与原 `start.ps1/stop.ps1` 的后台进程记录独立，不混用停止命令。
+Python 3.12/Linux 已实际验证启动、Vite 代理、因子任务、下载及退出后端口释放；
+Windows 启动路径与进程组逻辑仍待本机验证。同花顺客户端功能仍按其 README 执行。
+
+### 原 Windows 后台启动方式
+
 依赖已装好，日常运行：
 
 ```powershell
@@ -44,6 +87,16 @@
 有缓存时可设置 `$env:UV_OFFLINE='1'` 离线安装。历史行情、冻结模型、持久账户另行迁移。
 此环境覆盖 CLI 离线入口及 Engine/Ledger 核心，不代表 Qlib、行情供应商 SDK 和原 worker
 所用主环境已全部恢复；独立 worker 仍复用原 `env`，迁移后先使用 `-NoWorkers`。
+
+## 终端总览与图表复盘
+
+首页采用紧凑的深色终端布局：账户资产、行情快照、组合净值与回撤、因子结果、持仓目标、委托成交在同一工作区。所有数值来自现有 API；无数据时显示空状态。行情的“观测涨跌”是同一证券最近两条已观测收盘价的变化，不保证相邻交易日，也不是实时盘口。
+
+顶部“图表复盘”使用 Apache-2.0 的 KLineCharts 9.8.12，读取数据中心所选快照中单个证券最近最多 800 根日线。提供趋势线、射线、水平/垂直线、通道、斐波那契、矩形与文字等 16 种工具；支持颜色、线宽、锁定、隐藏、删除、撤销与重做，以及 MA、VOL、MACD。它尚未关联运行账户的冻结执行行情、订单标记或分钟线。
+
+画线和笔记按快照 ID、证券、日线及价格口径保存在当前浏览器；可导出图表 PNG 和复盘 JSON。更换浏览器、清理站点存储不会保留这些本地记录，当前没有服务端同步或 JSON 导入。逐根回放只把截至当前游标的 K 线交给图表和指标；每次开始/重新开始使用独立标注会话，避免把全历史分析画线带入回放。退出后恢复全历史分析记录；刷新或重新进入后可点击“恢复上次回放”，以暂停状态恢复最近一次进度和批注。新建或重新开始会替换上次回放，重要记录可先导出。
+
+需要 TradingView 完整工具集时可继续使用其网站；已明确为沪深交易所格式的历史证券提供外链，合成代码与未核实代码不猜测映射。本地复盘复用开源组件，并非 TradingView 官方集成。其 [Advanced Charts 授权说明](https://www.tradingview.com/free-charting-libraries/)对个人及私有项目有限制；免费 Widget 使用 TradingView 数据，不能替代本项目自有快照与执行数据链路。
 
 ## 交易页面
 
