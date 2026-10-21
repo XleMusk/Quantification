@@ -32,10 +32,13 @@ unchanged, only neweight32 profile inhead. Global/sourcecursor19 and original
 accounts unchanged; publication19/missing20 are explicit. No day20 backfill,
 forward32 or Engine. RealnewD source can publish independently sameD15:05+,
 using its own input and actualclock. Evidence outputs/eight32_daily/20261021_v1.
-Next paper-path gap is a narrow new-generation registration producer that uses
-an actual newfirstpublication and preserves old missing-publication accounts.
-The existing consumer accepts the paper schema statically but no actualnew
-firstpublication/registration/account has been validated; no automatic reset.
+New-generation registration and continuous-consumption coordination are now
+implemented (see latest entry above). Actual first eligible market publication
+and its new registration/accounts have not occurred. Preserve old generations.
+Next inspect/reuse existing Engine/PAPER opening settlement and close-decision
+phases: the close consumer still needs its own E publication before whole E
+replay. Any separation needs an explicit method, not an old-protocol rewrite or
+fabricated NO_CHANGE; no repeated fill when a later close is adopted.
 
 The October 21 user correction is an allocation change: stop treating successive
 repairs to October 19/20 contexts as the default research task. The native cache
