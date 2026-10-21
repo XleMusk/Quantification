@@ -1,0 +1,26 @@
+{
+  "schema": "baostock_primary_field_unit_evidence_v1",
+  "status": "official_provider_document_read",
+  "source_url": "https://www.baostock.com/mainContent?file=stockKData.md",
+  "document_url": "https://www.baostock.com/helpdocs/api/markdown/stockKData.md",
+  "document_read_method": "POST",
+  "method_provenance": "Current official public SPA reads its markdown documentation with POST; GET returns 405",
+  "retrieved_at": "2026-10-15T12:15:34.021388+08:00",
+  "http_status": 200,
+  "content_type": "text/plain;charset=UTF-8",
+  "document_bytes": 12485,
+  "document_sha256": "2a6db3b24ab21a199aa17bd949dfbe545d3279007bea1664854f9b7c20542aac",
+  "turn_unit": "percent",
+  "turn_unit_short_quote": "精度：小数点后6位；单位：%",
+  "turn_formula_paraphrase": "100 * the dated share volume / the dated circulating share count",
+  "normalization": "Keep original percentage values; do not multiply or divide by 100",
+  "halt_policy": "Preserve original blank and numeric null; the documentation's optional fill-zero example is not applied",
+  "valuation_units": {
+    "peTTM": "price_to_earnings_TTM_multiple",
+    "pbMRQ": "price_to_latest_disclosed_book_equity_multiple",
+    "psTTM": "price_to_sales_TTM_multiple",
+    "pcfNcfTTM": "price_to_net_increase_in_cash_and_cash_equivalents_TTM_multiple"
+  },
+  "independent_exchange_unit_verification": false,
+  "financial_PIT_verification": false
+}

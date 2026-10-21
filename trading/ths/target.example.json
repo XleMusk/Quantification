@@ -1,0 +1,9 @@
+{
+  "mode": "current_preview",
+  "strategy_id": "REPLACE_WITH_REVIEWED_CURRENT_STRATEGY",
+  "generated_at": "REPLACE_WITH_ACTUAL_SIGNAL_TIME_WITH_TIMEZONE",
+  "symbol": "REPLACE_WITH_EXCHANGE_QUALIFIED_SYMBOL",
+  "target_qty": null,
+  "limit_price_rmb": null,
+  "price_basis": "raw_rmb"
+}

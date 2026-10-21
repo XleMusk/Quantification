@@ -1,0 +1,455 @@
+{
+  "prepared_at": "2026-09-09T22:43:09.896193+08:00",
+  "execution_location": "local",
+  "remote_workspace": "not confirmed; no cloud actions",
+  "counts": {
+    "books": 8,
+    "courses": 8,
+    "projects": 9,
+    "book_pdfs_downloaded": 0,
+    "lecture_pdfs_downloaded": 3,
+    "notebooks_downloaded": 6,
+    "downloaded_bytes": 1136184
+  },
+  "practice": {
+    "status": "executed",
+    "source": "synthetic",
+    "rows": 16,
+    "symbols": 2,
+    "sessions": 8,
+    "checks": [
+      "Parquet round trip equal",
+      "16 rows and complete many-to-one join",
+      "3-day mean = 11",
+      "first-date volume = 200",
+      "warm-up missing per symbol"
+    ],
+    "market_backtest": false
+  },
+  "resources": [
+    {
+      "category": "books",
+      "id": "chan",
+      "order": 1,
+      "title": "Quantitative Trading",
+      "url": "https://www.wiley.com/en-au/quantitative-trading-how-to-build-your-own-algorithmic-trading-business-2nd-edition-p-9781119800064",
+      "focus": "先读研究想法、回测、执行、风险管理；建议第2、3、5、6、7章。",
+      "local_files": [],
+      "status": "purchase_or_library",
+      "note": "商业书正版入口已保留，需已有正版或图书馆授权；未购买或获取正文。"
+    },
+    {
+      "category": "books",
+      "id": "pydata",
+      "order": 2,
+      "title": "Python for Data Analysis",
+      "url": "https://wesmckinney.com/book/",
+      "focus": "第5—8、10—11章：pandas、读写、清洗、合并、分组、时间序列。已有基础可当工具书。",
+      "local_files": [],
+      "status": "online_html",
+      "note": "作者 HTML 全文入口已保留，未批量镜像或转成 PDF。"
+    },
+    {
+      "category": "books",
+      "id": "probability",
+      "order": 3,
+      "title": "Introduction to Probability",
+      "url": "https://stat110.hsites.harvard.edu/",
+      "focus": "条件概率、期望、方差、协方差、大数定律与中心极限定理。按Stat 110所学内容选读。",
+      "local_files": [],
+      "status": "online_readable_download_unavailable",
+      "note": "作者站跳转的 Google Drive 可阅读 630 页。本轮文件菜单未提供下载，打印也不可用；原下载目标返回网页，未取得本地 PDF。",
+      "reader_url": "https://drive.google.com/file/d/1VmkAAGOYCTORq1wxSQqy255qLJjTNvBI/view"
+    },
+    {
+      "category": "books",
+      "id": "islp",
+      "order": 4,
+      "title": "An Introduction to Statistical Learning, with Applications in Python",
+      "url": "https://www.statlearning.com/",
+      "focus": "第2、3、5、6、8、13章：统计学习、回归、重采样、正则化、树模型和多重检验。",
+      "local_files": [],
+      "status": "download_failed",
+      "note": "原 PDF URL 实际返回 HTTP 404；作者站当前链接指向 .pdf.download.html，该页在网页工具中返回 403，浏览器未呈现可用下载内容。未改用第三方书籍镜像。"
+    },
+    {
+      "category": "books",
+      "id": "systematic",
+      "order": 5,
+      "title": "Systematic Trading",
+      "url": "https://www.harriman-house.com/authors/robert-carver/systematic-trading/9780857194459",
+      "focus": "交易规则、预测分数、仓位、组合、交易成本；在做组合回测时阅读。",
+      "local_files": [],
+      "status": "purchase_or_library",
+      "note": "商业书正版入口已保留，需已有正版或图书馆授权；未购买或获取正文。"
+    },
+    {
+      "category": "books",
+      "id": "ml4t",
+      "order": 6,
+      "title": "Machine Learning for Algorithmic Trading",
+      "url": "https://ml4trading.io/second-edition/",
+      "focus": "第4、5、6、7、8、12章；代码使用second-edition分支。",
+      "local_files": [],
+      "status": "purchase_or_library",
+      "note": "商业书正版入口已保留，需已有正版或图书馆授权；未购买或获取正文。"
+    },
+    {
+      "category": "books",
+      "id": "afml",
+      "order": 7,
+      "title": "Advances in Financial Machine Learning",
+      "url": "https://www.wiley.com/en-us/Advances%2Bin%2BFinancial%2BMachine%2BLearning-p-9781119482086",
+      "focus": "完成第一份研究后，按需阅读金融交叉验证、样本重叠、特征重要性和回测偏差。",
+      "local_files": [],
+      "status": "purchase_or_library",
+      "note": "商业书正版入口已保留，需已有正版或图书馆授权；未购买或获取正文。"
+    },
+    {
+      "category": "books",
+      "id": "convex",
+      "order": 8,
+      "title": "Convex Optimization",
+      "url": "https://web.stanford.edu/~boyd/cvxbook/",
+      "focus": "先读第2—5章，关注凸集、凸函数、优化建模、对偶；做组合约束时使用。",
+      "local_files": [],
+      "status": "download_failed",
+      "note": "官方网页工具能够解析原 PDF（714 页），但本机 Python、curl 和浏览器访问均出现 TLS/连接中断。使用已配置的本地代理作单次下载测试也失败；未更改系统网络设置，未取得本地 PDF。"
+    },
+    {
+      "category": "courses",
+      "id": "yale252",
+      "order": 1,
+      "title": "Yale ECON252 — Financial Markets",
+      "url": "https://oyc.yale.edu/economics/econ-252",
+      "focus": "第2、4、7、9、11讲：风险、组合分散、有效市场、股票、行为金融。",
+      "local_files": [],
+      "status": "link_saved",
+      "note": "课程入口已保存，未下载课程视频。课程页Sessions进入每一讲；有公开视频与文字稿。无需整门先学完。",
+      "other_links": {
+        "video_url": "https://oyc.yale.edu/economics/econ-252"
+      }
+    },
+    {
+      "category": "courses",
+      "id": "mit15401",
+      "order": 2,
+      "title": "MIT 15.401 — Finance Theory I",
+      "url": "https://ocw.mit.edu/courses/15-401-finance-theory-i-fall-2008/",
+      "focus": "Equities → Risk and Return → Portfolio Theory → CAPM and APT → Efficient Markets。",
+      "local_files": [
+        "courses/MIT15401_Equities.pdf",
+        "courses/MIT15401_Risk_and_Return.pdf"
+      ],
+      "status": "selected_notes_downloaded",
+      "note": "指定讲义已下载并解析；视频只保存官方链接。",
+      "other_links": {
+        "video_url": "https://ocw.mit.edu/courses/15-401-finance-theory-i-fall-2008/pages/video-lectures-and-slides/"
+      }
+    },
+    {
+      "category": "courses",
+      "id": "stat110",
+      "order": 3,
+      "title": "Harvard Stat 110 — Probability",
+      "url": "https://stat110.hsites.harvard.edu/",
+      "focus": "条件概率、随机变量、期望方差、协方差、极限定理。",
+      "local_files": [],
+      "status": "link_saved",
+      "note": "课程入口已保存，未下载课程视频。有微积分和矩阵的基本先修要求；配合概率教材做题。",
+      "other_links": {
+        "video_url": "https://www.youtube.com/playlist?list=PL2SOU6wwxB0uwwH80KTQ6ht66KWxbzTIo"
+      }
+    },
+    {
+      "category": "courses",
+      "id": "mit1805",
+      "order": 4,
+      "title": "MIT 18.05 — Introduction to Probability and Statistics",
+      "url": "https://ocw.mit.edu/courses/18-05-introduction-to-probability-and-statistics-spring-2022/",
+      "focus": "置信区间、假设检验、Bootstrap、回归。",
+      "local_files": [
+        "courses/MIT1805_Covariance_and_Correlation.pdf"
+      ],
+      "status": "selected_notes_downloaded",
+      "note": "指定讲义已下载并解析；视频只保存官方链接。",
+      "other_links": {
+        "materials_url": "https://ocw.mit.edu/courses/18-05-introduction-to-probability-and-statistics-spring-2022/pages/classes-reading-and-in-class-materials/"
+      }
+    },
+    {
+      "category": "courses",
+      "id": "stanford_islp",
+      "order": 5,
+      "title": "Stanford — Statistical Learning with Python",
+      "url": "https://www.statlearning.com/online-courses",
+      "focus": "对应ISLP第2、3、5、6、8、13章。",
+      "local_files": [],
+      "status": "link_saved",
+      "note": "课程入口已保存，未下载课程视频。理论播放列表名为with R，但作者说明R/Python理论课共用；Python实验看单独列表。edX登录和证书规则以页面为准。",
+      "other_links": {
+        "video_url": "https://www.youtube.com/playlist?list=PLoROMvodv4rOzrYsAxzQyHb8n_RWNuS1e",
+        "python_labs_video_url": "https://www.youtube.com/playlist?list=PLoROMvodv4rNHU1-iPeDRH-J0cL-CrIda"
+      }
+    },
+    {
+      "category": "courses",
+      "id": "berkeley189",
+      "order": 6,
+      "title": "UC Berkeley CS189/289A — Introduction to Machine Learning",
+      "url": "https://eecs189.org/sp26/",
+      "focus": "第3、7—10、14讲：学习流程、回归、正则化、偏差与方差。",
+      "local_files": [],
+      "status": "link_saved",
+      "note": "课程入口已保存，未下载课程视频。从Schedule的Video链接进入；不是每讲都有公开视频。",
+      "other_links": {
+        "video_url": "https://eecs189.org/sp26/"
+      }
+    },
+    {
+      "category": "courses",
+      "id": "mit18642",
+      "order": 7,
+      "title": "MIT 18.642 — Topics in Mathematics with Applications in Finance",
+      "url": "https://ocw.mit.edu/courses/18-642-topics-in-mathematics-with-applications-in-finance-fall-2024/",
+      "focus": "第1、6、8、9、11、12、13、19、23讲，按项目需要选看。",
+      "local_files": [],
+      "status": "link_saved",
+      "note": "课程入口已保存，未下载课程视频。官方公开视频目录没有第3、22讲，不再把这两讲列成必须观看任务。",
+      "other_links": {
+        "video_url": "https://www.youtube.com/playlist?list=PLUl4u3cNGP601Q2jo-J_3raNCMMs6Jves",
+        "materials_url": "https://ocw.mit.edu/courses/18-642-topics-in-mathematics-with-applications-in-finance-fall-2024/resources/lecture-videos/"
+      }
+    },
+    {
+      "category": "courses",
+      "id": "ee364a",
+      "order": 8,
+      "title": "Stanford EE364A — Convex Optimization I",
+      "url": "https://see.stanford.edu/Course/EE364A",
+      "focus": "凸集、凸函数、最小二乘、二次规划、约束与对偶。",
+      "local_files": [],
+      "status": "link_saved",
+      "note": "课程入口已保存，未下载课程视频。在明确需要组合优化时学习；不是因子入门的前置门槛。",
+      "other_links": {
+        "video_url": "https://see.stanford.edu/Course/EE364A"
+      }
+    },
+    {
+      "category": "projects",
+      "id": "pydata",
+      "order": 1,
+      "title": "wesm/pydata-book",
+      "url": "https://github.com/wesm/pydata-book",
+      "focus": "读取数据、合并、分组、滚动计算、保存Parquet。",
+      "local_files": [
+        "code/pydata-book/ch05.ipynb",
+        "code/pydata-book/ch06.ipynb",
+        "code/pydata-book/ch07.ipynb",
+        "code/pydata-book/ch08.ipynb",
+        "code/pydata-book/ch10.ipynb",
+        "code/pydata-book/ch11.ipynb",
+        "code/pydata-book/COPYING",
+        "code/pydata-book/README.md"
+      ],
+      "status": "selected_notebooks_downloaded",
+      "note": "第 5/6/7/8/10/11 章已缓存，含许可证；只校验格式，未执行上游 Notebook。部分示例需额外数据或依赖。"
+    },
+    {
+      "category": "projects",
+      "id": "islp",
+      "order": 2,
+      "title": "intro-stat-learning/ISLP_labs",
+      "url": "https://github.com/intro-stat-learning/ISLP_labs",
+      "focus": "先用教材数据比较回归、正则化与树模型；迁移金融数据时重新设计时间划分。",
+      "local_files": [],
+      "status": "link_saved",
+      "note": "入口已保留；未下载或安装，未逐项重新核验。"
+    },
+    {
+      "category": "projects",
+      "id": "alphalens",
+      "order": 3,
+      "title": "stefan-jansen/alphalens-reloaded",
+      "url": "https://github.com/stefan-jansen/alphalens-reloaded",
+      "focus": "用自己计算的因子值和正确对齐的价格，产生IC和分组分析。",
+      "local_files": [],
+      "status": "link_saved",
+      "note": "入口已保留；未下载或安装，未逐项重新核验。"
+    },
+    {
+      "category": "projects",
+      "id": "ml4t",
+      "order": 4,
+      "title": "stefan-jansen/machine-learning-for-trading",
+      "url": "https://github.com/stefan-jansen/machine-learning-for-trading/tree/second-edition",
+      "focus": "只复用相关章节，不一次安装所有依赖。旧代码需要实际验证兼容性。",
+      "local_files": [],
+      "status": "link_saved",
+      "note": "第二版入口已固定为 second-edition；未克隆或安装。"
+    },
+    {
+      "category": "projects",
+      "id": "qlib",
+      "order": 5,
+      "title": "microsoft/qlib",
+      "url": "https://github.com/microsoft/qlib",
+      "focus": "复现基准，再替换数据、加入自己的因子；修改日期、资金、成本和线程。官方数据目前暂停，数据需另行解决。",
+      "local_files": [],
+      "status": "link_saved",
+      "note": "入口已保留；未下载或安装，未逐项重新核验。"
+    },
+    {
+      "category": "projects",
+      "id": "rdagent",
+      "order": 6,
+      "title": "microsoft/RD-Agent",
+      "url": "https://github.com/microsoft/RD-Agent",
+      "focus": "已有可信基准后，让Agent提出并测试少量候选；当前Linux、多数场景Docker。",
+      "local_files": [],
+      "status": "link_saved",
+      "note": "入口已保留；未下载或安装，未逐项重新核验。"
+    },
+    {
+      "category": "projects",
+      "id": "vnpy",
+      "order": "选修A",
+      "title": "vnpy/vnpy",
+      "url": "https://github.com/vnpy/vnpy",
+      "focus": "先选一个研究示例，随后才考虑模拟交易接口。",
+      "local_files": [],
+      "status": "link_saved",
+      "note": "入口已保留；未下载或安装，未逐项重新核验。"
+    },
+    {
+      "category": "projects",
+      "id": "lean",
+      "order": "选修B",
+      "title": "QuantConnect/Lean",
+      "url": "https://github.com/QuantConnect/Lean",
+      "focus": "更接近交易流程时再选；开源引擎不代表云服务、CLI或数据全部免费。",
+      "local_files": [],
+      "status": "link_saved",
+      "note": "入口已保留；未下载或安装，未逐项重新核验。"
+    },
+    {
+      "category": "projects",
+      "id": "pysystemtrade",
+      "order": "选修C",
+      "title": "pst-group/pysystemtrade",
+      "url": "https://github.com/pst-group/pysystemtrade",
+      "focus": "先读架构和回测，暂不接真实资金。",
+      "local_files": [],
+      "status": "link_saved",
+      "note": "入口已保留；未下载或安装，未逐项重新核验。"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "code/pydata-book/ch05.ipynb",
+      "url": "https://raw.githubusercontent.com/wesm/pydata-book/a892791ce5a3831134cfa2989033ecbb9289f1ea/ch05.ipynb",
+      "kind": "notebook",
+      "cells": 142,
+      "execution": "not_run; upstream outputs are not local execution evidence",
+      "bytes": 29194,
+      "sha256": "d1aef2a0beb2b3529099c8d22c0c44479e2c9eefe0dc2eff2735ca17ed587450",
+      "status": "downloaded"
+    },
+    {
+      "path": "code/pydata-book/ch06.ipynb",
+      "url": "https://raw.githubusercontent.com/wesm/pydata-book/a892791ce5a3831134cfa2989033ecbb9289f1ea/ch06.ipynb",
+      "kind": "notebook",
+      "cells": 74,
+      "execution": "not_run; upstream outputs are not local execution evidence",
+      "bytes": 16500,
+      "sha256": "4b59a3be0759cb20ffc8c29cdb598ece1d5d0ce9512eea497d86dcb777b6e3c0",
+      "status": "downloaded"
+    },
+    {
+      "path": "code/pydata-book/ch07.ipynb",
+      "url": "https://raw.githubusercontent.com/wesm/pydata-book/a892791ce5a3831134cfa2989033ecbb9289f1ea/ch07.ipynb",
+      "kind": "notebook",
+      "cells": 123,
+      "execution": "not_run; upstream outputs are not local execution evidence",
+      "bytes": 26450,
+      "sha256": "c6ab74ab3bf02d30e4ad03f347a01f3d9cc6cb30d0f0afafeddf123720dc9b08",
+      "status": "downloaded"
+    },
+    {
+      "path": "code/pydata-book/ch08.ipynb",
+      "url": "https://raw.githubusercontent.com/wesm/pydata-book/a892791ce5a3831134cfa2989033ecbb9289f1ea/ch08.ipynb",
+      "kind": "notebook",
+      "cells": 76,
+      "execution": "not_run; upstream outputs are not local execution evidence",
+      "bytes": 20734,
+      "sha256": "e94d18e12fb57aa0ddbaa03eccbf0ff2505ceba4833c15473f21672efa85a8b8",
+      "status": "downloaded"
+    },
+    {
+      "path": "code/pydata-book/ch10.ipynb",
+      "url": "https://raw.githubusercontent.com/wesm/pydata-book/a892791ce5a3831134cfa2989033ecbb9289f1ea/ch10.ipynb",
+      "kind": "notebook",
+      "cells": 89,
+      "execution": "not_run; upstream outputs are not local execution evidence",
+      "bytes": 21850,
+      "sha256": "bc27bf06575f38385f683fd7cc27cccbba779a7cfad66858111572d0c78e0243",
+      "status": "downloaded"
+    },
+    {
+      "path": "code/pydata-book/ch11.ipynb",
+      "url": "https://raw.githubusercontent.com/wesm/pydata-book/a892791ce5a3831134cfa2989033ecbb9289f1ea/ch11.ipynb",
+      "kind": "notebook",
+      "cells": 119,
+      "execution": "not_run; upstream outputs are not local execution evidence",
+      "bytes": 27066,
+      "sha256": "80bf3d997e4edac764eaeda0388118f2a7186e1efe9a8481a0d43101fa640067",
+      "status": "downloaded"
+    },
+    {
+      "path": "code/pydata-book/COPYING",
+      "url": "https://raw.githubusercontent.com/wesm/pydata-book/a892791ce5a3831134cfa2989033ecbb9289f1ea/COPYING",
+      "kind": "text",
+      "bytes": 1138,
+      "sha256": "233f3830c41a6949d833a40cdcfa316d661ed7c5ad87105aaf2056dfa50fbdcf",
+      "status": "downloaded"
+    },
+    {
+      "path": "code/pydata-book/README.md",
+      "url": "https://raw.githubusercontent.com/wesm/pydata-book/a892791ce5a3831134cfa2989033ecbb9289f1ea/README.md",
+      "kind": "text",
+      "bytes": 3750,
+      "sha256": "617c2680dd330954bd08ab6e771075d6b4de93f3da709ca6a95cad377bbafef1",
+      "status": "downloaded"
+    },
+    {
+      "path": "courses/MIT15401_Equities.pdf",
+      "kind": "pdf",
+      "url": "https://ocw.mit.edu/courses/15-401-finance-theory-i-fall-2008/1aea40b063cad5a335e980ecf30d84b7_MIT15_401F08_lec07.pdf",
+      "pages": 24,
+      "first_page_text_present": true,
+      "bytes": 255815,
+      "sha256": "9eb7e4c30ff8a42220d947554d0021fad446fea9c270fd2cca00f82039bba106",
+      "status": "downloaded"
+    },
+    {
+      "path": "courses/MIT15401_Risk_and_Return.pdf",
+      "kind": "pdf",
+      "url": "https://ocw.mit.edu/courses/15-401-finance-theory-i-fall-2008/637f2121ff813c0385c42c8f7d376761_MIT15_401F08_lec12.pdf",
+      "pages": 36,
+      "first_page_text_present": true,
+      "bytes": 440087,
+      "sha256": "8b28552c599ae2202635a2a59f236455bfb9403804c81c3c339e5327ed5953a2",
+      "status": "downloaded"
+    },
+    {
+      "path": "courses/MIT1805_Covariance_and_Correlation.pdf",
+      "kind": "pdf",
+      "url": "https://ocw.mit.edu/courses/18-05-introduction-to-probability-and-statistics-spring-2022/mit18_05_s22_class07-prep-b.pdf",
+      "pages": 10,
+      "first_page_text_present": true,
+      "bytes": 293600,
+      "sha256": "71f8a7b5f3b2233de2e8722ec1372f5704195efc2a6fb72c50c8ef505f92c4dc",
+      "status": "downloaded"
+    }
+  ]
+}

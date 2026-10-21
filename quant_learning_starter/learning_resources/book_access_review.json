@@ -1,0 +1,18 @@
+{
+  "checked_on": "2026-09-09",
+  "probability": {
+    "status": "online_readable_download_unavailable",
+    "note": "作者站跳转的 Google Drive 可阅读 630 页。本轮文件菜单未提供下载，打印也不可用；原下载目标返回网页，未取得本地 PDF。",
+    "reader_url": "https://drive.google.com/file/d/1VmkAAGOYCTORq1wxSQqy255qLJjTNvBI/view"
+  },
+  "islp": {
+    "status": "download_failed",
+    "note": "原 PDF URL 实际返回 HTTP 404；作者站当前链接指向 .pdf.download.html，该页在网页工具中返回 403，浏览器未呈现可用下载内容。未改用第三方书籍镜像。",
+    "current_author_link": "https://hastie.su.domains/ISLP/ISLP_website.pdf.download.html"
+  },
+  "convex": {
+    "status": "download_failed",
+    "note": "官方网页工具能够解析原 PDF（714 页），但本机 Python、curl 和浏览器访问均出现 TLS/连接中断。使用已配置的本地代理作单次下载测试也失败；未更改系统网络设置，未取得本地 PDF。",
+    "official_pdf": "https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf"
+  }
+}

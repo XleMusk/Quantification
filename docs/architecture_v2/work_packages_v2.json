@@ -1,0 +1,738 @@
+{
+  "version": "2.0",
+  "as_of": "2026-09-27",
+  "purpose": "设计任务，不是已完成状态；全部真实账户动作禁用。",
+  "tasks": [
+    {
+      "id": "A01",
+      "phase": "P0",
+      "title": "实际模块与状态归属映射",
+      "owner_role": "CTO/整合负责人",
+      "depends_on": [],
+      "output": "现有模块图、入口和写入归属表",
+      "acceptance": "每个当前策略、数据、订单、账本入口有真实代码定位；未知不猜测",
+      "steps": "沿当前三个回放入口和交易核心阅读；记录谁写现金/持仓/订单；标出供应商、模型、GUI的交叉依赖。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "A02",
+      "phase": "P0",
+      "title": "固定现有行为与参考样例",
+      "owner_role": "研究工程/验证",
+      "depends_on": [
+        "A01"
+      ],
+      "output": "baseline_manifest与必要输入、输出索引",
+      "acceptance": "能重现至少一个已有回放；没法重现时列出具体缺失；不覆盖旧结果",
+      "steps": "选择现有250股的一致子切片和手算样例；记录代码、环境、原始结果与已知问题；只补关联测试。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "A03",
+      "phase": "P1",
+      "title": "核心对象与意图语义",
+      "owner_role": "CTO/组合/数据",
+      "depends_on": [
+        "A01"
+      ],
+      "output": "类型定义、schema版本和兼容适配",
+      "acceptance": "现有规则策略和模拟适配共同使用对象；空目标不被误作清仓",
+      "steps": "定义证券、时间、Signal、Target、Order、Fill；区分分数/收益、元/股、完整目标/增量/无变更；旧格式经适配保留。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "A04",
+      "phase": "P1",
+      "title": "依赖约束与分步重构",
+      "owner_role": "CTO",
+      "depends_on": [
+        "A02",
+        "A03"
+      ],
+      "output": "依赖检查、ADR与迁移清单",
+      "acceptance": "策略不导入券商GUI；核心类型不导入供应商SDK；旧路径有退出条件",
+      "steps": "给每个越层依赖明确整改位置；先新旧并行比对，再切调用入口；不要复制第二个资金账本。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "D01",
+      "phase": "P1",
+      "title": "证券主表与历史资格",
+      "owner_role": "数据负责人",
+      "depends_on": [
+        "A03"
+      ],
+      "output": "instrument_master、状态历史和市场规则索引",
+      "acceptance": "前导零保留；代码变更、上市退市、ETF与股票可区分；字段未知有状态",
+      "steps": "核对StockDB与已有股票代码；为市场、类型、身份分配稳定id；分开记录行情存在与账户可交易。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "D02",
+      "phase": "P1",
+      "title": "价量、参考昨收与权益语义",
+      "owner_role": "数据/核算",
+      "depends_on": [
+        "A02",
+        "A03"
+      ],
+      "output": "字段目录、pre_close差异分类、原价和权益样例",
+      "acceptance": "普通日/除权日等样例可解释；研究价不进入人民币订单；缺因子不标已调整",
+      "steps": "从已有local_audit读取样本；核对原价、参考昨收、复权因子及数量；与公司行动接口约定现金/股数处理。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "D03",
+      "phase": "P1",
+      "title": "不可变快照与原子发布",
+      "owner_role": "数据工程",
+      "depends_on": [
+        "D01",
+        "D02"
+      ],
+      "output": "snapshot manifest、发布流程、版本索引",
+      "acceptance": "同一run始终读同一版本；更新中断不发布半份快照；旧输入可恢复",
+      "steps": "冻结现有250股及必要字段；清单包含对象、时间、单位、哈希和源版本；临时写入完成后发布清单指针。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "D04",
+      "phase": "P2",
+      "title": "三类历史时间读取",
+      "owner_role": "数据/研究验证",
+      "depends_on": [
+        "D03"
+      ],
+      "output": "historical/published/as_known读取规则与测试",
+      "acceptance": "晚到修订不会提前进入as-known回放；不把有event_time自动认定PIT",
+      "steps": "保留市场发生、公开可得、本机收到和修订时间；分别输出当时可知与修订后结果；字段不足明确限制。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "D05",
+      "phase": "P2",
+      "title": "按日期有效的研究股票池",
+      "owner_role": "数据/研究",
+      "depends_on": [
+        "D01",
+        "D03"
+      ],
+      "output": "universe版本与每日资格解释",
+      "acceptance": "固定250股与动态池分开；今日ST/行业不回填历史；退市缺口可见",
+      "steps": "对历史上市与流动性等建立资格函数；保存排除原因；扩围前记录选择过程及研究区间。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "D06",
+      "phase": "P2",
+      "title": "分钟区间与汇总特征输入",
+      "owner_role": "数据/执行研究",
+      "depends_on": [
+        "D02",
+        "D03"
+      ],
+      "output": "分钟标准视图、完整状态和聚合测试",
+      "acceptance": "跨午休/停牌/竞价不盲目聚合；不完整bar不用于提前决策",
+      "steps": "核对原始一分钟的区间标签与交易时段；amount/volume单位一致；再按需生成多周期，不复制五份全库。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "D07",
+      "phase": "P3",
+      "title": "修订影响分析与缓存失效",
+      "owner_role": "数据/平台",
+      "depends_on": [
+        "D03",
+        "R02"
+      ],
+      "output": "数据依赖图与重算分支",
+      "acceptance": "修改一日数据只使实际依赖产物失效；旧run和实际成交不变",
+      "steps": "为特征/模型/run记录快照依赖；比较修订清单；保留旧版并计算affected后代，不将缓存路径当唯一身份。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "D08",
+      "phase": "P2",
+      "title": "第二来源资格验证",
+      "owner_role": "数据/采购",
+      "depends_on": [
+        "D02",
+        "D03"
+      ],
+      "output": "供应商比较与许可证说明",
+      "acceptance": "同股票同日字段含义能比较；切换不改策略源码；不无声混源",
+      "steps": "优先已有BaoStock或允许来源；用普通/权益/停复牌样例对照；记录权限与终止后保留权；不自动采购。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "R01",
+      "phase": "P2",
+      "title": "研究运行登记与复现配方",
+      "owner_role": "研究工程",
+      "depends_on": [
+        "A02",
+        "D03"
+      ],
+      "output": "run registry、参数/环境/输入/结果关系",
+      "acceptance": "现有三个回放能登记真实来源；缺失项unknown；换机器可按说明重现一个run",
+      "steps": "每次运行固定代码commit、数据、特征、标签、切分、参数、种子和成本；保存失败运行；工具可先SQLite再评估MLflow。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "R02",
+      "phase": "P2",
+      "title": "共享特征与拟合状态",
+      "owner_role": "研究工程",
+      "depends_on": [
+        "A03",
+        "D03"
+      ],
+      "output": "FeatureSpec、fit/transform、依赖缓存",
+      "acceptance": "训练外数据不会改变已拟合状态；批处理与逐时点相同含义；无假VWAP",
+      "steps": "整理现有Alpha158真实定义；保留所用特征版本；清洗归一化只在训练拟合；新增因子复用计算接口。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "R03",
+      "phase": "P2",
+      "title": "标签与日期组验证",
+      "owner_role": "独立验证/研究",
+      "depends_on": [
+        "R01",
+        "R02"
+      ],
+      "output": "LabelSpec、分组切分、冻结评价配置",
+      "acceptance": "同日证券不跨拆分；标签区间不穿越评价；已看过样本不改称盲测",
+      "steps": "确定信号产生及可执行时刻；缺未来标签不填零；按日期和标签时间排除交叉，训练选参与最终评价分层。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "R04",
+      "phase": "P2",
+      "title": "原有策略差异归因",
+      "owner_role": "研究/PM",
+      "depends_on": [
+        "R03",
+        "P01"
+      ],
+      "output": "两类信号×两类权重实验和可重复报告",
+      "acceptance": "能区分信号、权重、成本贡献；没有把24股结果推广成全市场",
+      "steps": "固定股票池和成本；普通/风险调整信号分别配等权/风险权重；模型作独立对照；不同时新增指标。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "R05",
+      "phase": "P3",
+      "title": "不可变策略包与状态版本",
+      "owner_role": "ML工程/CTO",
+      "depends_on": [
+        "R01",
+        "A03"
+      ],
+      "output": "StrategyPackage、状态快照、采用记录",
+      "acceptance": "发布指向明确版本不指latest；重训练不覆盖当前包；兼容性有检查",
+      "steps": "记录模型、转换器、代码、规则、风险、组合、环境；定义启动/状态迁移/停止；没有用户批准不升级真实运行。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "R06",
+      "phase": "P2",
+      "title": "策略家族与复现卡",
+      "owner_role": "CIO/研究",
+      "depends_on": [
+        "R01"
+      ],
+      "output": "固定候选与反证、来源、预算、数据需求",
+      "acceptance": "每个策略包含持有/退出/仓位，不只是公式；来源结果与本地结果分开",
+      "steps": "保留已有趋势/模型；先加入一个不同假设的挑战者；控制搜索次数；按信息、风险、成本与维护价值判断继续。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "R07",
+      "phase": "P5",
+      "title": "龙虎榜事件研究扩展",
+      "owner_role": "事件研究/数据",
+      "depends_on": [
+        "D04",
+        "R03",
+        "R06"
+      ],
+      "output": "席位事件表、去重、匹配对照",
+      "acceptance": "单日/多日上榜不重复累加；公布后才交易；不冒充个人交割单",
+      "steps": "先验证实际事件来源和发布时间；训练期选席位；以相同上榜原因/流动性作对照；明确自己的退出假设。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "R08",
+      "phase": "P5",
+      "title": "受控因子搜索与新增信息比较",
+      "owner_role": "量化研究",
+      "depends_on": [
+        "R03",
+        "R06"
+      ],
+      "output": "搜索记录、候选公式、增量对照",
+      "acceptance": "生成器只见训练验证；失败候选保留；最终测试不反复反馈",
+      "steps": "先模板少量生成；比较加入前后与同预算简单搜索；确有重复劳动再评估AlphaGen/RD-Agent及许可环境。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "P01",
+      "phase": "P2",
+      "title": "经济目标与可执行目标",
+      "owner_role": "PM/组合开发",
+      "depends_on": [
+        "A03",
+        "D01"
+      ],
+      "output": "PortfolioIntent与FeasibleTarget",
+      "acceptance": "NO_CHANGE不是空仓；现金、资格、整手削减可解释；不猜实际本金",
+      "steps": "把分数转为预设排序方案；经济权重和执行股数分开；计算目标差额时读取账户与未完成订单。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "P02",
+      "phase": "P3",
+      "title": "组合约束与风险预算",
+      "owner_role": "PM/CRO",
+      "depends_on": [
+        "P01",
+        "L01"
+      ],
+      "output": "版本化组合配置与约束检查",
+      "acceptance": "不产生负可用现金/不可卖数量；相冲突约束有解释而非静默放宽",
+      "steps": "使用用户确认参数或标注模拟值；约束按账户/证券；先明确等权基准再研究风险权重与成本目标。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "P03",
+      "phase": "P3",
+      "title": "多策略合并与归属",
+      "owner_role": "组合/核算",
+      "depends_on": [
+        "P02",
+        "L01"
+      ],
+      "output": "虚拟策略子账与账户净额映射",
+      "acceptance": "子策略归属与真实成交守恒；内部抵消不制造成交或收益",
+      "steps": "保留一个账户订单写入者；确定净额、费用分摊与未分配人工交易；规则与模型可在模拟中同时进入。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "P04",
+      "phase": "P3",
+      "title": "组合与执行收益归因",
+      "owner_role": "PM/执行研究",
+      "depends_on": [
+        "P02",
+        "L04"
+      ],
+      "output": "信号/仓位/成交/费用/现金贡献报告",
+      "acceptance": "报告可由日结与事件重算；差额未解释时显式显示",
+      "steps": "预先定义决策价/到达价/实现价；固定参照；把机会成本、价格差和费用分开，避免用当日最佳价事后判断。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "P05",
+      "phase": "P4",
+      "title": "容量与成本情景",
+      "owner_role": "执行研究/PM",
+      "depends_on": [
+        "P04",
+        "D06"
+      ],
+      "output": "不同假设本金/参与率/滑点研究",
+      "acceptance": "情景参数标为假设，不代表用户资金；OHLC不等于排队全成交",
+      "steps": "先比较基础及更高费用；按实际股数、最小费用和分笔模拟；用未来真实记录校准而非直接套机构系数。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "L01",
+      "phase": "P3",
+      "title": "事件到账本的单一事实写入",
+      "owner_role": "核算/交易开发",
+      "depends_on": [
+        "A03",
+        "A02"
+      ],
+      "output": "事件去重、原子记账、账户版本",
+      "acceptance": "重复Fill不重复记账；写入中断不半更新；事件可重建账户",
+      "steps": "明确order/fill的唯一键及券商命名空间；固定点金额/明确舍入；现金、可用、冻结与证券可卖分开。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "L02",
+      "phase": "P3",
+      "title": "公司行动与现金应收",
+      "owner_role": "核算/数据",
+      "depends_on": [
+        "L01",
+        "D02"
+      ],
+      "output": "权益事件处理及手算固定例",
+      "acceptance": "除权与到账不重复收益；分红送股及相关修正可解释",
+      "steps": "分开登记日/除权日/到账日；权益应收与现金分开；修订用更正事件；仅对已实现证券范围宣称支持。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "L03",
+      "phase": "P3",
+      "title": "券商核对与人工交易",
+      "owner_role": "运营/执行",
+      "depends_on": [
+        "L01",
+        "E01"
+      ],
+      "output": "reconciliation报告、差异分类和恢复流程",
+      "acceptance": "未知差异不被覆盖清空；人工交易可归类；迟到成交不会消失",
+      "steps": "读取完整度和时点；匹配委托成交及外部现金/权益；未解释项冻结对应操作并记录处理，不盲目重放点击。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "L04",
+      "phase": "P3",
+      "title": "日结、净值和外部现金",
+      "owner_role": "核算/验证",
+      "depends_on": [
+        "L01",
+        "L02"
+      ],
+      "output": "每日估值、收益口径和汇总",
+      "acceptance": "无交易日也有估值；入金不算策略收益；未支付费用单列",
+      "steps": "固定估值源和停牌方法；分开replay/init/forward；生成可重算日结；价格修订不改真实发生的交易。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "E01",
+      "phase": "P1",
+      "title": "执行端能力与状态语义",
+      "owner_role": "执行开发/CTO",
+      "depends_on": [
+        "A03"
+      ],
+      "output": "CapabilityProfile、状态转移与消费者",
+      "acceptance": "能读/预填/提交/撤单逐项区分；没有真实证据不宣称兼容",
+      "steps": "记录客户端/券商/会话版本；定义未知、待撤、部分成交；先用模拟消费者证明核心不依赖THS。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "E02",
+      "phase": "P3",
+      "title": "报撤单竞态与未知结果",
+      "owner_role": "执行开发/验证",
+      "depends_on": [
+        "E01",
+        "L01"
+      ],
+      "output": "有序/乱序/重复回报情景",
+      "acceptance": "待撤不是已撤；撤单期间成交正确记账；超时不盲目重发",
+      "steps": "合并本地意图与远端orderid；先持久化意图再外部动作；重启先核对券商；仅替身/模拟测试真实发送路径。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "E03",
+      "phase": "P4",
+      "title": "THS版本化只读与预填适配",
+      "owner_role": "执行开发",
+      "depends_on": [
+        "E01",
+        "E02"
+      ],
+      "output": "本机配置、读取与预填回读报告",
+      "acceptance": "准确区分替身测试与真实本机证据；默认不提交/不撤单",
+      "steps": "用户自行登录并允许后才操作；控件优先、局部视觉补；账户表格完整度单列；GUI模型不决定股票与金额。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "E04",
+      "phase": "P4",
+      "title": "第二执行适配器替换演练",
+      "owner_role": "执行开发",
+      "depends_on": [
+        "E01",
+        "E02"
+      ],
+      "output": "Paper到替身API的适配与契约测试",
+      "acceptance": "相同目标不改策略/账本实现；能力差异明确",
+      "steps": "先用模拟正式API构造ACK/FILL/reject；实际XtQuant或其他接口需权限再适配；不因此自动开通真实交易。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "O01",
+      "phase": "P3",
+      "title": "持久化任务与业务运行状态",
+      "owner_role": "SRE/平台",
+      "depends_on": [
+        "D03",
+        "R01",
+        "L01"
+      ],
+      "output": "任务DAG、幂等身份、心跳和最新业务日",
+      "acceptance": "running不掩盖0日结；进程崩溃后任务可判断恢复；休市有正确状态",
+      "steps": "区分期望运行/存活/成功日；更新完成后触发；研究可重试，订单未知不可自动重复；租约和单写所有权明确。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "O02",
+      "phase": "P4",
+      "title": "可重复构建与发布回退",
+      "owner_role": "SRE/平台",
+      "depends_on": [
+        "R05",
+        "A04"
+      ],
+      "output": "锁定环境、发布清单、旧包恢复演练",
+      "acceptance": "新模型包不覆盖旧包；配置/数据库迁移可回退；账户不随git回退",
+      "steps": "分开研究和Windows执行环境；校验兼容；策略切换处理未完成订单；记录实际运行版本。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "O03",
+      "phase": "P4",
+      "title": "一致备份与空目录恢复",
+      "owner_role": "SRE/核算",
+      "depends_on": [
+        "L04",
+        "D03"
+      ],
+      "output": "备份清单、恢复日志与校验结果",
+      "acceptance": "真正恢复一套隔离环境；缺原始输入明确；只复制活动db主文件不算通过",
+      "steps": "按数据库正式方法备份；区分可再生缓存和不可恢复事件；检查外部数据停订权；不自动删重要数据。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "O04",
+      "phase": "P4",
+      "title": "问题定位与通知",
+      "owner_role": "SRE/产品",
+      "depends_on": [
+        "O01",
+        "L03"
+      ],
+      "output": "业务指标、告警分级、故障说明",
+      "acceptance": "能由过期数据/未知订单定位具体原因；不以日志总量为成果",
+      "steps": "贯通snapshot/run/strategy/target/order/fill；告警注明影响和可执行恢复动作；不把暂停新单当撤完旧单。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "U01",
+      "phase": "P2",
+      "title": "六工作区的信息模型",
+      "owner_role": "产品/前端",
+      "depends_on": [
+        "A03",
+        "R01"
+      ],
+      "output": "页面关系、API schema、状态版本",
+      "acceptance": "数据/研究/策略/组合/执行/运行视图有真实对象；不是静态曲线",
+      "steps": "沿现有前后端重组导航；字段包含时间、模式、来源；长作业返回jobid；构建分页与摘要。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "U02",
+      "phase": "P4",
+      "title": "对象血缘与命令查询分离",
+      "owner_role": "产品/后端",
+      "depends_on": [
+        "U01",
+        "P04",
+        "O04"
+      ],
+      "output": "可点击血缘、API客户端与刷新恢复",
+      "acceptance": "成交能回到计划/策略/快照；WebSocket断后能从后端恢复",
+      "steps": "事件推送只是通知；服务端校验命令版本与权限；浏览器不存券商口令，不直接写账本。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "T01",
+      "phase": "P1",
+      "title": "业务语义固定测试集",
+      "owner_role": "验证",
+      "depends_on": [
+        "A02",
+        "A03"
+      ],
+      "output": "小型手算与时间/价格测试",
+      "acceptance": "修改未来数据不改历史可得信号；股/手和金额对齐；未知不填正确",
+      "steps": "围绕复权、preclose、标签、权益、空目标构建小而明确的样例；数据含义错必须失败，不用扩大误差容忍消除。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "T02",
+      "phase": "P3",
+      "title": "账户与故障情景套件",
+      "owner_role": "验证/核算",
+      "depends_on": [
+        "L01",
+        "E02"
+      ],
+      "output": "部分成交/取消/重复/中断恢复场景",
+      "acceptance": "每个场景都有预期现金股数和终态；不依赖真实账户",
+      "steps": "组合有限关键故障；保存事件顺序及预期账本；复跑新旧版本，不以测试数量作为唯一目标。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "T03",
+      "phase": "P4",
+      "title": "版本与消费者兼容检查",
+      "owner_role": "平台/验证",
+      "depends_on": [
+        "R05",
+        "O02"
+      ],
+      "output": "旧策略包、当前核心、第二消费者兼容表",
+      "acceptance": "新增可选字段旧包可读；破坏性变更有迁移；schema号不是摆设",
+      "steps": "以实际消费者而非空接口测试；固定兼容窗口；不一次重构所有模块。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    },
+    {
+      "id": "T04",
+      "phase": "P4",
+      "title": "五项扩展演练",
+      "owner_role": "整合负责人",
+      "depends_on": [
+        "D08",
+        "R05",
+        "E04",
+        "D07",
+        "T03",
+        "U02"
+      ],
+      "output": "五场景修改范围、结果及回归报告",
+      "acceptance": "换源/新策略/换执行/修订/并行开发均满足06文档要求",
+      "steps": "按扩展测试说明执行；未执行项明确blocked；旧研究/事件不变；比较实际修改模块和规定职责。",
+      "status": "planned_not_executed",
+      "rollback": "保留旧输入、旧结果及入口；经比较后切换。涉及数据库或对象结构时先备份并验证兼容迁移，不能仅用git回退账户。",
+      "live_actions_allowed": false
+    }
+  ],
+  "one_valid_topological_order": [
+    "A01",
+    "A02",
+    "A03",
+    "A04",
+    "D01",
+    "D02",
+    "E01",
+    "L01",
+    "T01",
+    "D03",
+    "E02",
+    "L02",
+    "L03",
+    "P01",
+    "D04",
+    "D05",
+    "D06",
+    "D08",
+    "E03",
+    "E04",
+    "L04",
+    "P02",
+    "R01",
+    "R02",
+    "T02",
+    "D07",
+    "O01",
+    "O03",
+    "P03",
+    "P04",
+    "R03",
+    "R05",
+    "R06",
+    "U01",
+    "O02",
+    "O04",
+    "P05",
+    "R04",
+    "R07",
+    "R08",
+    "T03",
+    "U02",
+    "T04"
+  ]
+}

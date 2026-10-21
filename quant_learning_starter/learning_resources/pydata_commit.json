@@ -1,0 +1,125 @@
+{
+  "sha": "a892791ce5a3831134cfa2989033ecbb9289f1ea",
+  "node_id": "C_kwDOAEnsvtoAKGE4OTI3OTFjZTVhMzgzMTEzNGNmYTI5ODkwMzNlY2JiOTI4OWYxZWE",
+  "commit": {
+    "author": {
+      "name": "Wes McKinney",
+      "email": "wes@posit.co",
+      "date": "2025-10-17T13:19:11Z"
+    },
+    "committer": {
+      "name": "Wes McKinney",
+      "email": "wes@posit.co",
+      "date": "2025-10-17T13:19:11Z"
+    },
+    "message": "Pin package versions, add pyproject.toml, uv instructions. Close #217",
+    "tree": {
+      "sha": "d4890109f242621228423f797b603ac5d44a4774",
+      "url": "https://api.github.com/repos/wesm/pydata-book/git/trees/d4890109f242621228423f797b603ac5d44a4774"
+    },
+    "url": "https://api.github.com/repos/wesm/pydata-book/git/commits/a892791ce5a3831134cfa2989033ecbb9289f1ea",
+    "comment_count": 0,
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "url": "https://api.github.com/repos/wesm/pydata-book/commits/a892791ce5a3831134cfa2989033ecbb9289f1ea",
+  "html_url": "https://github.com/wesm/pydata-book/commit/a892791ce5a3831134cfa2989033ecbb9289f1ea",
+  "comments_url": "https://api.github.com/repos/wesm/pydata-book/commits/a892791ce5a3831134cfa2989033ecbb9289f1ea/comments",
+  "author": {
+    "login": "wesm",
+    "id": 329591,
+    "node_id": "MDQ6VXNlcjMyOTU5MQ==",
+    "avatar_url": "https://avatars.githubusercontent.com/u/329591?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/wesm",
+    "html_url": "https://github.com/wesm",
+    "followers_url": "https://api.github.com/users/wesm/followers",
+    "following_url": "https://api.github.com/users/wesm/following{/other_user}",
+    "gists_url": "https://api.github.com/users/wesm/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/wesm/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/wesm/subscriptions",
+    "organizations_url": "https://api.github.com/users/wesm/orgs",
+    "repos_url": "https://api.github.com/users/wesm/repos",
+    "events_url": "https://api.github.com/users/wesm/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/wesm/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "committer": {
+    "login": "wesm",
+    "id": 329591,
+    "node_id": "MDQ6VXNlcjMyOTU5MQ==",
+    "avatar_url": "https://avatars.githubusercontent.com/u/329591?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/wesm",
+    "html_url": "https://github.com/wesm",
+    "followers_url": "https://api.github.com/users/wesm/followers",
+    "following_url": "https://api.github.com/users/wesm/following{/other_user}",
+    "gists_url": "https://api.github.com/users/wesm/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/wesm/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/wesm/subscriptions",
+    "organizations_url": "https://api.github.com/users/wesm/orgs",
+    "repos_url": "https://api.github.com/users/wesm/repos",
+    "events_url": "https://api.github.com/users/wesm/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/wesm/received_events",
+    "type": "User",
+    "user_view_type": "public",
+    "site_admin": false
+  },
+  "parents": [
+    {
+      "sha": "d86d8056fa17b180e2a7dc1d9ae1cfb830967d50",
+      "url": "https://api.github.com/repos/wesm/pydata-book/commits/d86d8056fa17b180e2a7dc1d9ae1cfb830967d50",
+      "html_url": "https://github.com/wesm/pydata-book/commit/d86d8056fa17b180e2a7dc1d9ae1cfb830967d50"
+    }
+  ],
+  "stats": {
+    "total": 76,
+    "additions": 75,
+    "deletions": 1
+  },
+  "files": [
+    {
+      "sha": "a3b03a241965542412a4ac7b3d8ab4b7f21f5e3a",
+      "filename": "README.md",
+      "status": "modified",
+      "additions": 38,
+      "deletions": 0,
+      "changes": 38,
+      "blob_url": "https://github.com/wesm/pydata-book/blob/a892791ce5a3831134cfa2989033ecbb9289f1ea/README.md",
+      "raw_url": "https://github.com/wesm/pydata-book/raw/a892791ce5a3831134cfa2989033ecbb9289f1ea/README.md",
+      "contents_url": "https://api.github.com/repos/wesm/pydata-book/contents/README.md?ref=a892791ce5a3831134cfa2989033ecbb9289f1ea",
+      "patch": "@@ -9,6 +9,44 @@ website][6].\n \n Follow Wes on Twitter: [![Twitter Follow](https://img.shields.io/twitter/follow/wesmckinn.svg?style=social&label=Follow)](https://twitter.com/wesmckinn)\n \n+## Setup Instructions\n+\n+### Option 1: Using uv (Recommended)\n+\n+[uv](https://github.com/astral-sh/uv) is a fast Python package installer and resolver. To get started:\n+\n+1. Install uv if you haven't already:\n+```bash\n+curl -LsSf https://astral.sh/uv/install.sh | sh\n+```\n+\n+2. Start Jupyter Notebook with all dependencies:\n+```bash\n+uv run jupyter notebook\n+```\n+\n+That's it! uv will automatically create a virtual environment and install all required packages from `pyproject.toml`.\n+\n+### Option 2: Using Conda\n+\n+1. Create a new conda environment:\n+```bash\n+conda create -n pydata-book python=3.11\n+conda activate pydata-book\n+```\n+\n+2. Install dependencies:\n+```bash\n+pip install -r requirements.txt\n+```\n+\n+3. Start Jupyter Notebook:\n+```bash\n+jupyter notebook\n+```\n+\n+**Note:** This project uses pandas 2.0.3 to ensure compatibility with the notebooks.\n+\n # 2nd Edition Readers\n \n If you are reading the 2nd Edition (published in 2017), please find the"
+    },
+    {
+      "sha": "e604b794425dbb298a312661463bdd7a2a3d460b",
+      "filename": "pyproject.toml",
+      "status": "added",
+      "additions": 31,
+      "deletions": 0,
+      "changes": 31,
+      "blob_url": "https://github.com/wesm/pydata-book/blob/a892791ce5a3831134cfa2989033ecbb9289f1ea/pyproject.toml",
+      "raw_url": "https://github.com/wesm/pydata-book/raw/a892791ce5a3831134cfa2989033ecbb9289f1ea/pyproject.toml",
+      "contents_url": "https://api.github.com/repos/wesm/pydata-book/contents/pyproject.toml?ref=a892791ce5a3831134cfa2989033ecbb9289f1ea",
+      "patch": "@@ -0,0 +1,31 @@\n+[project]\n+name = \"pydata-book\"\n+version = \"3.0.0\"\n+description = \"Code and materials for Python for Data Analysis, 3rd Edition\"\n+requires-python = \">=3.9\"\n+dependencies = [\n+    \"numpy\",\n+    \"pandas==2.0.3\",\n+    \"matplotlib\",\n+    \"lxml\",\n+    \"seaborn\",\n+    \"statsmodels\",\n+    \"scipy\",\n+    \"patsy\",\n+    \"scikit-learn\",\n+    \"beautifulsoup4\",\n+    \"jupyter\",\n+    \"ipython\",\n+    \"requests\",\n+    \"sqlalchemy\",\n+    \"pytz\",\n+]\n+\n+[project.optional-dependencies]\n+dev = [\n+    \"jupyter\",\n+]\n+\n+[build-system]\n+requires = [\"setuptools>=61.0\"]\n+build-backend = \"setuptools.build_meta\""
+    },
+    {
+      "sha": "22213014918ae8404828f6ec3de7303facb748d3",
+      "filename": "requirements.txt",
+      "status": "modified",
+      "additions": 6,
+      "deletions": 1,
+      "changes": 7,
+      "blob_url": "https://github.com/wesm/pydata-book/blob/a892791ce5a3831134cfa2989033ecbb9289f1ea/requirements.txt",
+      "raw_url": "https://github.com/wesm/pydata-book/raw/a892791ce5a3831134cfa2989033ecbb9289f1ea/requirements.txt",
+      "contents_url": "https://api.github.com/repos/wesm/pydata-book/contents/requirements.txt?ref=a892791ce5a3831134cfa2989033ecbb9289f1ea",
+      "patch": "@@ -1,5 +1,5 @@\n numpy\n-pandas\n+pandas==2.0.3\n matplotlib\n lxml\n seaborn\n@@ -8,3 +8,8 @@ scipy\n patsy\n scikit-learn\n beautifulsoup4\n+jupyter\n+ipython\n+requests\n+sqlalchemy\n+pytz"
+    }
+  ]
+}

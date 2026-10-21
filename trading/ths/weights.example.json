@@ -1,0 +1,28 @@
+{
+  "mode": "current_preview",
+  "strategy_id": "<reviewed current strategy version>",
+  "account_alias": "<observed account alias>",
+  "generated_at": "<actual current timestamp with timezone>",
+  "weight_unit": "equity_fraction",
+  "targets": [
+    {
+      "symbol": "600000.SSE",
+      "target_weight": 0.1,
+      "price_basis": "raw_rmb",
+      "limit_price_rmb": "<reviewed limit in RMB>"
+    },
+    {
+      "symbol": "000001.SZSE",
+      "target_weight": 0.2,
+      "price_basis": "raw_rmb",
+      "limit_price_rmb": "<reviewed limit in RMB>",
+      "quote": {
+        "symbol": "000001.SZSE",
+        "price_rmb": "<observed unadjusted quote in RMB>",
+        "price_basis": "raw_rmb",
+        "observed_at": "<actual quote timestamp with timezone>",
+        "trading_date": "<current local YYYY-MM-DD>"
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "status": "prepared_not_run",
+  "provider_uri": "D:/Quantification/qlib_data/cn_data",
+  "handler": "Alpha158",
+  "model": "LightGBM",
+  "segments": {
+    "train": ["2008-01-01", "2014-12-31"],
+    "valid": ["2015-01-01", "2016-12-31"],
+    "test": ["2017-01-01", "2020-12-31"]
+  },
+  "before_training": [
+    "Preserve existing missing-constituent and OHLC data-quality blockers",
+    "Use point-in-time membership and purge boundary-crossing labels",
+    "Export predictions with signal date, instrument, score and available_at",
+    "Compare through the unified target and order path, never a second account writer"
+  ],
+  "known_blocker": "Existing provider contains inconsistent OHLC and a missing constituent price file; not promoted to execution evidence"
+}

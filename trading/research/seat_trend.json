@@ -1,0 +1,22 @@
+{
+  "dataset": "D:/QuantificationData/trading/datasets/hs300_20231229_pilot/versions/initial_20260926",
+  "events": "D:/QuantificationData/trading/research/seat_trend/raw/pilot_20240926_20260924",
+  "requested_end": "2026-09-26",
+  "seat_fit": ["2024-09-26", "2025-09-25"],
+  "evaluation": ["2025-09-26", "2026-09-24"],
+  "entry_window": 20,
+  "exit_window": 10,
+  "atr_window": 20,
+  "min_seat_events": 2,
+  "max_seats": 10,
+  "seat_net_turnover_threshold": 0.01,
+  "publication_lag_sessions": 1,
+  "portfolio": {"rebalance_sessions": 1, "retain_rank": 100},
+  "hypothesis": "Disclosed seat net buying may confirm an existing Donchian regime; net selling may veto that regime.",
+  "scope": "10 pre-period-selected main-board names; exploratory historical comparison, not a validated trading strategy.",
+  "known_feedback": "2026 portfolio outcomes from earlier factor work were already viewed. This is not a pristine external holdout.",
+  "selection_rule": "Exact seat names ranked by distinct stock-day count in seat_fit, minimum 2, top 10; no return-based or celebrity selection.",
+  "availability": "Historical publication time is missing. Primary assumes available by next session close, execution no earlier than the following session open. Also report one extra session delay. Not a verified historical timestamp.",
+  "h1": "During an active trend regime, a qualifying selected-seat net buy activates entry eligibility until the regime ends. This is our signal state, not the seat's holdings.",
+  "h4": "During an active trend regime, a qualifying selected-seat net sell vetoes it until the next new Donchian regime. Sell wins when buy and sell coexist."
+}

@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-09-27",
+  "purpose": "V2 A02 reference for existing behavior; not strategy validation",
+  "database": "D:/QuantificationData/trading/trading.sqlite3",
+  "existing_replay_dataset": "D:/QuantificationData/trading/datasets/hs300_20231229_pilot/versions/initial_20260926",
+  "existing_replay_sessions": 663,
+  "existing_replay_period": ["2024-01-02", "2026-09-24"],
+  "reproduced_runs": [
+    {
+      "id": "422cbdb8e78848dfad07375f46c28e67",
+      "signal": "risk_adjusted_momentum",
+      "original_results": "D:/QuantificationData/trading/results/422cbdb8e78848dfad07375f46c28e67",
+      "before_report": "outputs/architecture_v2/baseline_422cbdb8e78848dfad07375f46c28e67.json",
+      "after_report": "outputs/architecture_v2/post_intent_422cbdb8e78848dfad07375f46c28e67.json"
+    },
+    {
+      "id": "a4b3f1189b434acca6dcd3f3162e4c36",
+      "signal": "momentum",
+      "original_results": "D:/QuantificationData/trading/results/a4b3f1189b434acca6dcd3f3162e4c36",
+      "before_report": "outputs/architecture_v2/baseline_a4b3f1189b434acca6dcd3f3162e4c36.json",
+      "after_report": "outputs/architecture_v2/post_intent_a4b3f1189b434acca6dcd3f3162e4c36.json"
+    },
+    {
+      "id": "abbbbd5df78747e0923a54e4a2bca16b",
+      "signal": "equal_weight",
+      "original_results": "D:/QuantificationData/trading/results/abbbbd5df78747e0923a54e4a2bca16b",
+      "before_report": "outputs/architecture_v2/baseline_abbbbd5df78747e0923a54e4a2bca16b.json",
+      "after_report": "outputs/architecture_v2/post_intent_abbbbd5df78747e0923a54e4a2bca16b.json"
+    }
+  ],
+  "reference_slice": {
+    "membership_file": "D:/QuantificationData/trading/datasets/ashare_2023_20260924/universes/hs300_20231229/mainboard_priority.csv",
+    "membership_sha256": "30861d7b3d9eeeb3dce5b593e5b91a556c1ccfee75016e0006b74b2ff8f50660",
+    "dates": ["2024-01-02", "2024-01-03", "2024-01-04"],
+    "raw_bar_root": "D:/QuantificationData/trading/datasets/ashare_2023_20260924/raw",
+    "symbols_and_sha256": {
+      "600000.SSE": "91ccd1735265baf73138e97cb032f8d49e9ba18ed5c0230eb6a27195714f655e",
+      "600009.SSE": "de17ba0e72d2f5452f6e3cad50560d3ee7cc5e46dc16ad1cb098eda5f52bf03f",
+      "600010.SSE": "2b142786d39814c22e622a486bbe04fd5eec0082e9e97b3687995351b0e468f4",
+      "600011.SSE": "267fb9b30b723e99970ea91fcfe8520db6acf67bbb71008dc413208ba9438673",
+      "600015.SSE": "ec3b6b266f02b4af6034487fc8c6aeb7505cb8db17240c35e6dfef83a6369f92"
+    },
+    "sample_bars": 15,
+    "sample_trading_non_st": true,
+    "membership_independently_verified": false,
+    "fixed_250_snapshot_validated": false
+  },
+  "hand_calculation": {
+    "test": "trading/tests/test_trading.py::test_fixed_250_member_hand_calculated_cash_and_T1",
+    "symbol": "600000.SSE",
+    "shares": 100,
+    "initial_cash_rmb": 10000,
+    "buy_open_rmb": 6.59,
+    "buy_fill_rmb": 6.60,
+    "buy_fees_rmb": 5.01,
+    "cash_after_buy_rmb": 9334.99,
+    "same_day_sell_allowed": false,
+    "sell_open_rmb": 6.64,
+    "sell_fill_rmb": 6.63,
+    "sell_fees_rmb": 5.34,
+    "cash_after_sell_rmb": 9992.65
+  },
+  "claims": {
+    "old_daily_and_final_states_reproduced": true,
+    "strategy_validated": false,
+    "live_ready": false
+  }
+}

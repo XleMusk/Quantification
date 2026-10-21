@@ -1,0 +1,64 @@
+{
+  "date": "",
+  "action": "buy",
+  "stock_name": "",
+  "code": "",
+  "time_horizon": "3-12 months",
+  "current_price": null,
+  "account_equity": null,
+  "planned_capital_pct": null,
+  "planned_stop_loss_pct": null,
+  "business": "",
+  "buy_reason": "",
+  "field_research": "",
+  "market_context": "",
+  "consensus_view": "",
+  "variant_view": "",
+  "benchmark": "沪深300/中证500/行业指数",
+  "edge": "",
+  "catalysts": [],
+  "valuation": {
+    "pe": null,
+    "pb": null,
+    "growth_assumption": "",
+    "comparison": ""
+  },
+  "fundamentals": {
+    "revenue_growth": "",
+    "profit_growth": "",
+    "roe": "",
+    "debt": "",
+    "cashflow": ""
+  },
+  "technical": {
+    "trend": "",
+    "relative_strength": "",
+    "volume": "",
+    "key_levels": ""
+  },
+  "risks": [],
+  "sell_rules": {
+    "wrong": "",
+    "expensive": "",
+    "changed": "",
+    "time_stop": ""
+  },
+  "risk_limits": {
+    "max_single_position_pct": 5,
+    "max_total_stock_pct": 80,
+    "cash_reserve_pct": 10,
+    "max_loss_per_trade_pct": 0.5,
+    "max_daily_loss_pct": 1
+  },
+  "a_share_constraints": {
+    "st": null,
+    "halted": null,
+    "limit_status": "unknown",
+    "board_permission": "",
+    "liquidity": "",
+    "t_plus_one_notes": ""
+  },
+  "data_checked": [],
+  "notes": ""
+}
+

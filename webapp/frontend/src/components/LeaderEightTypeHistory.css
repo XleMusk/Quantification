@@ -1,0 +1,27 @@
+.leader-eight-history .leader-history-controls { flex-wrap: wrap; }
+.leader-eight-history .leader-history-controls label { flex: 1 1 200px; min-width: 0; }
+.leader-eight-history .leader-history-controls select { width: 100%; max-width: 100%; }
+.leader-eight-history .leader-history-metrics { margin: 14px 0; }
+.leader-eight-history .leader-history-table small { display: block; margin-top: 4px; color: var(--muted); white-space: normal; }
+.leader-eight-history .leader-history-expand { text-align: left; white-space: normal; }
+.leader-eight-history .leader-history-expand > details > summary { cursor: pointer; padding: 6px 0; }
+.leader-eight-history .leader-history-day { max-width: 100%; padding: 6px 0 12px; overflow-wrap: anywhere; }
+.leader-eight-history .leader-history-day h4 { margin: 18px 0 8px; }
+.leader-eight-history .leader-history-day p { white-space: normal; }
+.leader-eight-history .leader-history-fact { border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.leader-eight-history .leader-history-risk-facts { grid-template-columns: minmax(110px, 180px) minmax(0, 1fr); width: 100%; }
+.leader-eight-history .leader-history-risk-facts dt,
+.leader-eight-history .leader-history-risk-facts dd { padding: 6px 0; white-space: normal; overflow-wrap: anywhere; }
+.leader-eight-history .leader-history-original { margin: 6px 0; }
+.leader-eight-history .leader-history-original > summary { cursor: pointer; color: var(--muted); }
+.leader-eight-history .leader-history-original pre { max-height: 320px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; text-align: left; font-size: 12px; line-height: 1.6; }
+.leader-eight-history .leader-history-comparison { margin: 16px 0; }
+.leader-eight-history .leader-history-comparison h4 { margin: 0 0 6px; }
+.leader-eight-history .leader-history-comparison table { min-width: 840px; }
+.leader-eight-history .leader-history-comparison td { white-space: normal; }
+.leader-eight-history .leader-history-comparison tr[aria-current="true"] td { background: var(--surface-soft, rgba(127, 127, 127, .06)); }
+@media (max-width: 600px) {
+  .leader-eight-history .leader-history-controls label { flex-basis: 100%; }
+  .leader-eight-history .leader-history-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .leader-eight-history .leader-history-table { min-width: 710px; }
+}

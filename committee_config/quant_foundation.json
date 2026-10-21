@@ -1,0 +1,24 @@
+{
+  "provider_uri": "qlib_data/cn_data",
+  "market": "csi300",
+  "board_scope": "main_board",
+  "segments": {
+    "development": ["2018-01-01", "2018-12-31"],
+    "validation": ["2019-01-01", "2019-12-31"],
+    "test": ["2020-01-01", "2020-12-31"]
+  },
+  "min_pairs": 20,
+  "baseline_factor": "momentum_20",
+  "portfolio": {
+    "capital": 1000000,
+    "topk": 30,
+    "n_drop": 5,
+    "risk_degree": 0.7,
+    "open_cost": 0.0003,
+    "close_cost": 0.0013,
+    "min_cost": 5,
+    "slippage_bps": 10,
+    "limit_proxy": 0.095,
+    "previous_volume_fraction": 0.01
+  }
+}

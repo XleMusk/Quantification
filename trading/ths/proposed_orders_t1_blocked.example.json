@@ -1,0 +1,9 @@
+[
+  {
+    "order_id": "REVIEW-T1-001",
+    "symbol": "000001.SZSE",
+    "side": "sell",
+    "qty": 100,
+    "price_rmb": "10.00"
+  }
+]

@@ -1,0 +1,40 @@
+{
+  "verified_local": false,
+  "account_alias": "REPLACE_WITH_LOCAL_ACCOUNT_ALIAS",
+  "target": {
+    "hwnd": null,
+    "pid": null,
+    "exe": "",
+    "version": "",
+    "class_name": "",
+    "backend": "win32"
+  },
+  "fields": {"symbol": {}, "price": {}, "qty": {}},
+  "guards": {
+    "account": {"selector": {}, "expected": ""},
+    "side": {"selector": {}, "expected": {"buy": "", "sell": ""}},
+    "price_mode": {"selector": {}, "expected": ""}
+  },
+  "views": {
+    "account": {"guard": {"selector": {}, "expected": ""}, "grid": {}, "cash_available": {}},
+    "orders": {"guard": {"selector": {}, "expected": ""}, "grid": {}},
+    "trades": {"guard": {"selector": {}, "expected": ""}, "grid": {}}
+  },
+  "tables": {
+    "account": {
+      "columns": {"symbol": "symbol", "market": "market", "quantity": "quantity", "sellable": "sellable"},
+      "markets": {"SSE": "SSE", "SZSE": "SZSE", "BSE": "BSE"}
+    },
+    "orders": {
+      "columns": {"symbol": "symbol", "market": "market", "side": "side", "order_id": "order_id", "qty": "qty", "price": "price", "filled_qty": "filled_qty", "status": "status"},
+      "markets": {"SSE": "SSE", "SZSE": "SZSE", "BSE": "BSE"},
+      "sides": {"buy": "buy", "sell": "sell"},
+      "statuses": {"accepted": "accepted", "partial": "partial", "filled": "filled", "cancelled": "cancelled", "rejected": "rejected"}
+    },
+    "trades": {
+      "columns": {"symbol": "symbol", "market": "market", "side": "side", "order_id": "order_id", "execution_id": "execution_id", "qty": "qty", "price": "price"},
+      "markets": {"SSE": "SSE", "SZSE": "SZSE", "BSE": "BSE"},
+      "sides": {"buy": "buy", "sell": "sell"}
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "protocol_id": "MASTER_395_open5_single_seed_engineering_v1",
+  "dataset": "D:/QuantificationData/trading/datasets/ashare_2023_20260924/snapshots/20260930_111746_c0ed81d8",
+  "feature_run": "D:/QuantificationData/trading/research/factor_mining/20260930_113402_ad490a81",
+  "market_run": "D:/QuantificationData/trading/research/market_indices/20260930_133239_ba91022d",
+  "segments": {
+    "train": ["2024-01-02", "2024-12-31"],
+    "valid": ["2025-01-01", "2025-12-31"],
+    "test": ["2026-01-01", "2026-09-24"]
+  },
+  "seed": 17,
+  "step_len": 8,
+  "model": {
+    "d_feat": 158, "d_model": 256, "t_nhead": 4, "s_nhead": 2,
+    "T_dropout_rate": 0.5, "S_dropout_rate": 0.5,
+    "gate_input_start_index": 158, "gate_input_end_index": 221, "beta": 5
+  },
+  "training": {"max_epochs": 40, "learning_rate": 0.00001, "stop_train_loss": 0.95, "wall_seconds": 900},
+  "portfolio": {"initial_cash": 140000},
+  "label": "adjusted_open_T_plus_6_over_T_plus_1_minus_1",
+  "scope": "historical_engineering_diagnostic_NOT_strategy_validation",
+  "disclosure": "Partial acquisition-order, non-PIT 395-code snapshot. Inspected 2026 is not independent. Reuse official MASTER architecture and train-loss stopping, eight exchange sessions, separate train-fitted stock/market RobustZScoreNorm. Local adaptations: existing open-five-session labels/eligibility/ledger, beta=5 fixed source CSI300 setting on a non-CSI sample, one seed, purged split labels and explicit small-cross-section guard. No tuning, validation-best checkpoint selection, current signals or order admission."
+}

@@ -1,0 +1,48 @@
+# 研究意图示例，不是可直接传给Qlib运行的配置；由Codex按真实数据落实。
+project: independent_daily_equity_research
+status: planned_not_executed
+mode: education_then_research
+execution:
+  prefer_existing_cloud_workspace: true
+  create_paid_resources: false
+  live_orders: false
+  install_rd_agent_initially: false
+  local_large_downloads: false
+  num_workers_initial: 2  # 根据实际CPU/RAM调整；不是平台限额
+storage:
+  code: current_project
+  data_root: null        # 使用已确认的云端/授权目录，不猜路径
+  credentials_in_git: false
+data:
+  source: synthetic_for_first_demo
+  market_for_real_research: null
+  frequency: daily
+  universe: point_in_time_when_available
+  start: null
+  end: null
+  adjust_policy: document_before_use
+  missing_future_returns: keep_missing
+research:
+  feature_time: after_close_t
+  entry: next_trading_session_open
+  horizon_sessions: 5
+  exit: open_after_5_holding_sessions
+  # t收盘信号 -> t+1开盘进入 -> t+6开盘退出，仅为教学定义。
+  # 实际个股停牌/市场限制与公司行动须另外处理。
+  split: by_trading_date_with_non_overlapping_label_intervals
+  fit_preprocessing: training_only
+  final_test_for_iterative_tuning: false
+  initial_factors:
+    - negative_past_5_session_return
+    - past_20_session_return
+    - volume_relative_to_past_20_session_mean
+  planned_models: [ridge, lightgbm]
+portfolio:
+  initial_design: long_only_equal_weight
+  high_minus_low: diagnostic_not_assumed_tradable
+  rebalance_sessions: 5
+  transaction_costs: null   # 正式组合回测前按市场/来源明确，不默认为0
+  market_constraints: null
+outputs:
+  first_demo_label: synthetic_education_only
+  persist_observed_results_only: true

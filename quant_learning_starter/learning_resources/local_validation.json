@@ -1,0 +1,24 @@
+{
+  "local_links_checked": 14,
+  "missing_local_links": [],
+  "pdfs": [
+    {
+      "file": "courses\\MIT15401_Equities.pdf",
+      "pages": 24,
+      "first_page_rendered": true,
+      "last_page_readable": true
+    },
+    {
+      "file": "courses\\MIT15401_Risk_and_Return.pdf",
+      "pages": 36,
+      "first_page_rendered": true,
+      "last_page_readable": true
+    },
+    {
+      "file": "courses\\MIT1805_Covariance_and_Correlation.pdf",
+      "pages": 10,
+      "first_page_rendered": true,
+      "last_page_readable": true
+    }
+  ]
+}

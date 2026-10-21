@@ -1,0 +1,46 @@
+.research-candidate-evidence { min-width: 0; }
+.research-candidate-evidence .research-heading { gap: 12px; align-items: flex-start; }
+.research-candidate-evidence .research-heading button { flex-shrink: 0; }
+.research-candidate-evidence .rce-conclusion { max-width: 1040px; font-size: 14px; line-height: 1.8; color: #263842; }
+.research-candidate-evidence .rce-times { margin: 12px 0 4px; line-height: 1.7; }
+.research-candidate-evidence .rce-times > span { min-width: 0; overflow-wrap: anywhere; }
+.research-candidate-evidence .rce-detail, .research-candidate-evidence .rce-library { margin-top: 14px; padding-top: 12px; }
+.research-candidate-evidence summary { cursor: pointer; line-height: 1.7; overflow-wrap: anywhere; }
+.research-candidate-evidence .rce-summary-note { display: inline; margin-left: 12px; color: var(--muted); font-size: 12px; font-weight: 400; }
+.research-candidate-evidence .rce-note, .research-candidate-evidence .rce-message { margin: 12px 0; line-height: 1.7; }
+.research-candidate-evidence .rce-message { font-size: 12px; color: #926023; }
+.research-candidate-evidence .rce-coverage { margin: 12px 0; }
+.research-candidate-evidence .table-scroll { min-width: 0; margin-top: 12px; }
+.research-candidate-evidence .rce-table { min-width: 790px; }
+.research-candidate-evidence .rce-table th, .research-candidate-evidence .rce-table td { vertical-align: top; }
+.research-candidate-evidence .rce-table .rce-wrap { white-space: normal; min-width: 180px; max-width: 320px; overflow-wrap: anywhere; text-align: left; }
+.research-candidate-evidence .rce-facts { grid-template-columns: minmax(95px, 145px) minmax(0, 1fr); max-width: none; font-size: 12px; }
+.research-candidate-evidence .rce-facts dt, .research-candidate-evidence .rce-facts dd { padding: 8px 0; min-width: 0; line-height: 1.7; white-space: normal; overflow-wrap: anywhere; }
+.research-candidate-evidence .rce-facts dd { text-align: left; }
+.research-candidate-evidence .rce-facts ul { margin: 0; padding-left: 18px; }
+.research-candidate-evidence .rce-facts li + li { margin-top: 5px; }
+.research-candidate-evidence .rce-source { font-size: 11px; white-space: normal; overflow-wrap: anywhere; }
+.research-candidate-evidence .rce-subdetail { margin-top: 14px; font-size: 12px; color: #526878; }
+.research-candidate-evidence .rce-row-detail { margin-top: 6px; }
+.research-candidate-evidence .rce-search { display: grid; gap: 7px; width: min(100%, 480px); margin: 16px 0 10px; color: #526878; font-size: 12px; }
+.research-candidate-evidence .rce-match-count { margin: 10px 0; }
+.research-candidate-evidence .rce-candidate { margin-top: 8px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 12px; }
+.research-candidate-evidence .rce-candidate summary strong { font-weight: 500; }
+.research-candidate-evidence .rce-candidate > .rce-facts { margin-top: 8px; }
+.research-candidate-evidence .rce-footer { margin-top: 16px; line-height: 1.7; }
+.research-candidate-evidence .rce-native { min-width: 0; max-width: 100%; margin: 14px 0 22px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.research-candidate-evidence .rce-native h3 { margin: 0 0 8px; font-size: 15px; font-weight: 600; }
+.research-candidate-evidence .rce-native .table-scroll { width: 100%; max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.research-candidate-evidence .rce-native .rce-native-quality-table { min-width: 1040px; }
+.research-candidate-evidence .rce-native .rce-native-account-table { min-width: 1080px; }
+.research-candidate-evidence .rce-native .rce-native-hit-table { min-width: 900px; }
+.research-candidate-evidence .rce-native-issues { margin: 0; padding-left: 16px; font-size: 12px; }
+.research-candidate-evidence .rce-native-issues li + li { margin-top: 5px; }
+@media (max-width: 700px) {
+  .research-candidate-evidence .research-heading { flex-wrap: wrap; }
+  .research-candidate-evidence .rce-times { gap: 5px 14px; }
+  .research-candidate-evidence .rce-times > span { width: 100%; }
+  .research-candidate-evidence .rce-summary-note { display: block; margin-left: 0; }
+  .research-candidate-evidence .rce-facts { grid-template-columns: 92px minmax(0, 1fr); }
+  .research-candidate-evidence .rce-conclusion { font-size: 13px; }
+}

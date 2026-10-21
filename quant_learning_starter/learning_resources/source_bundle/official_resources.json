@@ -1,0 +1,300 @@
+{
+  "checked_on": "2026-09-09",
+  "ordering_note": "顺序是针对个人股票日频因子研究的建议。数学基础和组合优化是按需支线，不必所有材料全学完。",
+  "pdf_delivery_status": "NO_BOOK_PDFS_ATTACHED: remote download failed in this runtime. Official links and retry script are included.",
+  "books": [
+    {
+      "order": 1,
+      "id": "chan",
+      "title": "Quantitative Trading",
+      "edition": "2nd edition",
+      "authors": "Ernest P. Chan",
+      "level": "入门",
+      "focus": "先读研究想法、回测、执行、风险管理；建议第2、3、5、6、7章。",
+      "url": "https://www.wiley.com/en-au/quantitative-trading-how-to-build-your-own-algorithmic-trading-business-2nd-edition-p-9781119800064",
+      "access": "商业电子书；购买或学校图书馆授权。未找到授权免费全文。",
+      "pdf_url": null,
+      "filename": null
+    },
+    {
+      "order": 2,
+      "id": "pydata",
+      "title": "Python for Data Analysis",
+      "edition": "3rd edition",
+      "authors": "Wes McKinney",
+      "level": "入门实操",
+      "focus": "第5—8、10—11章：pandas、读写、清洗、合并、分组、时间序列。已有基础可当工具书。",
+      "url": "https://wesmckinney.com/book/",
+      "access": "作者提供免费HTML全文；不是免费PDF。",
+      "pdf_url": null,
+      "filename": null
+    },
+    {
+      "order": 3,
+      "id": "probability",
+      "title": "Introduction to Probability",
+      "edition": "2nd edition",
+      "authors": "Joseph K. Blitzstein; Jessica Hwang",
+      "level": "基础数学支线",
+      "focus": "条件概率、期望、方差、协方差、大数定律与中心极限定理。按Stat 110所学内容选读。",
+      "url": "https://stat110.hsites.harvard.edu/",
+      "access": "作者官网链接至公开PDF；Google Drive下载可能出现确认页。",
+      "reader_url": "https://drive.google.com/file/d/1VmkAAGOYCTORq1wxSQqy255qLJjTNvBI/view",
+      "pdf_url": "https://drive.google.com/uc?export=download&id=1VmkAAGOYCTORq1wxSQqy255qLJjTNvBI",
+      "filename": "03_Introduction_to_Probability_Blitzstein_Hwang.pdf"
+    },
+    {
+      "order": 4,
+      "id": "islp",
+      "title": "An Introduction to Statistical Learning, with Applications in Python",
+      "edition": "2023 Python edition (ISLP)",
+      "authors": "Gareth James; Daniela Witten; Trevor Hastie; Robert Tibshirani; Jonathan Taylor",
+      "level": "统计学习基础",
+      "focus": "第2、3、5、6、8、13章：统计学习、回归、重采样、正则化、树模型和多重检验。",
+      "url": "https://www.statlearning.com/",
+      "access": "作者提供免费PDF；本次文件抓取失败，可在官网点击Download ISL with Python。",
+      "pdf_url": "https://hastie.su.domains/ISLP/ISLP_website.pdf",
+      "filename": "04_ISLP_2023.pdf"
+    },
+    {
+      "order": 5,
+      "id": "systematic",
+      "title": "Systematic Trading",
+      "edition": "2015",
+      "authors": "Robert Carver",
+      "level": "交易系统与组合",
+      "focus": "交易规则、预测分数、仓位、组合、交易成本；在做组合回测时阅读。",
+      "url": "https://www.harriman-house.com/authors/robert-carver/systematic-trading/9780857194459",
+      "access": "商业电子书；购买或学校图书馆授权。未找到授权免费全文。",
+      "pdf_url": null,
+      "filename": null
+    },
+    {
+      "order": 6,
+      "id": "ml4t",
+      "title": "Machine Learning for Algorithmic Trading",
+      "edition": "2nd edition",
+      "authors": "Stefan Jansen",
+      "level": "中级项目实战",
+      "focus": "第4、5、6、7、8、12章；代码使用second-edition分支。",
+      "url": "https://ml4trading.io/second-edition/",
+      "access": "商业书；作者提供配套代码，不等于书籍全文免费。",
+      "pdf_url": null,
+      "filename": null
+    },
+    {
+      "order": 7,
+      "id": "afml",
+      "title": "Advances in Financial Machine Learning",
+      "edition": "2018",
+      "authors": "Marcos López de Prado",
+      "level": "进阶研究方法",
+      "focus": "完成第一份研究后，按需阅读金融交叉验证、样本重叠、特征重要性和回测偏差。",
+      "url": "https://www.wiley.com/en-us/Advances%2Bin%2BFinancial%2BMachine%2BLearning-p-9781119482086",
+      "access": "商业电子书；购买或学校图书馆授权。未找到授权免费全文。",
+      "pdf_url": null,
+      "filename": null
+    },
+    {
+      "order": 8,
+      "id": "convex",
+      "title": "Convex Optimization",
+      "edition": "Boyd & Vandenberghe",
+      "authors": "Stephen Boyd; Lieven Vandenberghe",
+      "level": "进阶数学选修",
+      "focus": "先读第2—5章，关注凸集、凸函数、优化建模、对偶；做组合约束时使用。",
+      "url": "https://web.stanford.edu/~boyd/cvxbook/",
+      "access": "作者主页说明出版社允许在网上公开全文。",
+      "pdf_url": "https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf",
+      "filename": "08_Convex_Optimization_Boyd_Vandenberghe.pdf"
+    }
+  ],
+  "courses": [
+    {
+      "order": 1,
+      "id": "yale252",
+      "title": "Yale ECON252 — Financial Markets",
+      "year": "2011",
+      "role": "可选金融通识，最容易开始",
+      "url": "https://oyc.yale.edu/economics/econ-252",
+      "video_url": "https://oyc.yale.edu/economics/econ-252",
+      "focus": "第2、4、7、9、11讲：风险、组合分散、有效市场、股票、行为金融。",
+      "notes": "课程页Sessions进入每一讲；有公开视频与文字稿。无需整门先学完。"
+    },
+    {
+      "order": 2,
+      "id": "mit15401",
+      "title": "MIT 15.401 — Finance Theory I",
+      "year": "2008",
+      "role": "金融基础主线",
+      "url": "https://ocw.mit.edu/courses/15-401-finance-theory-i-fall-2008/",
+      "video_url": "https://ocw.mit.edu/courses/15-401-finance-theory-i-fall-2008/pages/video-lectures-and-slides/",
+      "focus": "Equities → Risk and Return → Portfolio Theory → CAPM and APT → Efficient Markets。",
+      "notes": "概念可学；历史案例和制度不能直接视为当前交易规则。"
+    },
+    {
+      "order": 3,
+      "id": "stat110",
+      "title": "Harvard Stat 110 — Probability",
+      "year": "公开课程版",
+      "role": "概率基础；可与金融课并行",
+      "url": "https://stat110.hsites.harvard.edu/",
+      "video_url": "https://www.youtube.com/playlist?list=PL2SOU6wwxB0uwwH80KTQ6ht66KWxbzTIo",
+      "outline_url": "https://stat110.hsites.harvard.edu/youtube",
+      "focus": "条件概率、随机变量、期望方差、协方差、极限定理。",
+      "notes": "有微积分和矩阵的基本先修要求；配合概率教材做题。"
+    },
+    {
+      "order": 4,
+      "id": "mit1805",
+      "title": "MIT 18.05 — Introduction to Probability and Statistics",
+      "year": "2022",
+      "role": "统计补课资料，不是完整视频课",
+      "url": "https://ocw.mit.edu/courses/18-05-introduction-to-probability-and-statistics-spring-2022/",
+      "video_url": null,
+      "materials_url": "https://ocw.mit.edu/courses/18-05-introduction-to-probability-and-statistics-spring-2022/pages/classes-reading-and-in-class-materials/",
+      "focus": "置信区间、假设检验、Bootstrap、回归。",
+      "notes": "主打讲义、练习、交互材料；概率部分与Harvard不必重复全学。"
+    },
+    {
+      "order": 5,
+      "id": "stanford_islp",
+      "title": "Stanford — Statistical Learning with Python",
+      "year": "2023配套课程",
+      "role": "统计学习主课；比CS189更适合作为直接实操入口",
+      "url": "https://www.statlearning.com/online-courses",
+      "video_url": "https://www.youtube.com/playlist?list=PLoROMvodv4rOzrYsAxzQyHb8n_RWNuS1e",
+      "python_labs_video_url": "https://www.youtube.com/playlist?list=PLoROMvodv4rNHU1-iPeDRH-J0cL-CrIda",
+      "edx_url": "https://www.edx.org/learn/python/stanford-university-statistical-learning-with-python",
+      "focus": "对应ISLP第2、3、5、6、8、13章。",
+      "notes": "理论播放列表名为with R，但作者说明R/Python理论课共用；Python实验看单独列表。edX登录和证书规则以页面为准。"
+    },
+    {
+      "order": 6,
+      "id": "berkeley189",
+      "title": "UC Berkeley CS189/289A — Introduction to Machine Learning",
+      "year": "Spring 2026",
+      "role": "加深模型与推导；无需与ISLP全部重复",
+      "url": "https://eecs189.org/sp26/",
+      "video_url": "https://eecs189.org/sp26/",
+      "focus": "第3、7—10、14讲：学习流程、回归、正则化、偏差与方差。",
+      "notes": "从Schedule的Video链接进入；不是每讲都有公开视频。"
+    },
+    {
+      "order": 7,
+      "id": "mit18642",
+      "title": "MIT 18.642 — Topics in Mathematics with Applications in Finance",
+      "year": "Fall 2024",
+      "role": "综合应用主课",
+      "url": "https://ocw.mit.edu/courses/18-642-topics-in-mathematics-with-applications-in-finance-fall-2024/",
+      "video_url": "https://www.youtube.com/playlist?list=PLUl4u3cNGP601Q2jo-J_3raNCMMs6Jves",
+      "materials_url": "https://ocw.mit.edu/courses/18-642-topics-in-mathematics-with-applications-in-finance-fall-2024/resources/lecture-videos/",
+      "focus": "第1、6、8、9、11、12、13、19、23讲，按项目需要选看。",
+      "notes": "官方公开视频目录没有第3、22讲，不再把这两讲列成必须观看任务。"
+    },
+    {
+      "order": 8,
+      "id": "ee364a",
+      "title": "Stanford EE364A — Convex Optimization I",
+      "year": "公开课程档案",
+      "role": "进阶选修",
+      "url": "https://see.stanford.edu/Course/EE364A",
+      "video_url": "https://see.stanford.edu/Course/EE364A",
+      "focus": "凸集、凸函数、最小二乘、二次规划、约束与对偶。",
+      "notes": "在明确需要组合优化时学习；不是因子入门的前置门槛。"
+    }
+  ],
+  "projects": [
+    {
+      "order": 1,
+      "id": "pydata",
+      "name": "wesm/pydata-book",
+      "url": "https://github.com/wesm/pydata-book",
+      "role": "基础数据处理",
+      "entry": "ch05.ipynb—ch08.ipynb；ch10.ipynb、ch11.ipynb",
+      "task": "读取数据、合并、分组、滚动计算、保存Parquet。",
+      "branch": null
+    },
+    {
+      "order": 2,
+      "id": "islp",
+      "name": "intro-stat-learning/ISLP_labs",
+      "url": "https://github.com/intro-stat-learning/ISLP_labs",
+      "role": "基础建模",
+      "entry": "第3、5、6、8章Notebook",
+      "task": "先用教材数据比较回归、正则化与树模型；迁移金融数据时重新设计时间划分。",
+      "branch": null
+    },
+    {
+      "order": 3,
+      "id": "alphalens",
+      "name": "stefan-jansen/alphalens-reloaded",
+      "url": "https://github.com/stefan-jansen/alphalens-reloaded",
+      "role": "单因子评价",
+      "entry": "项目README及examples",
+      "task": "用自己计算的因子值和正确对齐的价格，产生IC和分组分析。",
+      "branch": null
+    },
+    {
+      "order": 4,
+      "id": "ml4t",
+      "name": "stefan-jansen/machine-learning-for-trading",
+      "url": "https://github.com/stefan-jansen/machine-learning-for-trading/tree/second-edition",
+      "role": "中级研究案例",
+      "entry": "04_alpha_factor_research；05_strategy_evaluation；07_linear_models；08_ml4t_workflow；12_gradient_boosting_machines",
+      "task": "只复用相关章节，不一次安装所有依赖。旧代码需要实际验证兼容性。",
+      "branch": "second-edition"
+    },
+    {
+      "order": 5,
+      "id": "qlib",
+      "name": "microsoft/qlib",
+      "url": "https://github.com/microsoft/qlib",
+      "role": "完整研究主框架",
+      "entry": "examples/benchmarks/LightGBM/workflow_config_lightgbm_Alpha158.yaml",
+      "entry_url": "https://github.com/microsoft/qlib/blob/main/examples/benchmarks/LightGBM/workflow_config_lightgbm_Alpha158.yaml",
+      "task": "复现基准，再替换数据、加入自己的因子；修改日期、资金、成本和线程。官方数据目前暂停，数据需另行解决。",
+      "branch": null
+    },
+    {
+      "order": 6,
+      "id": "rdagent",
+      "name": "microsoft/RD-Agent",
+      "url": "https://github.com/microsoft/RD-Agent",
+      "role": "最后再接入的自动化研究",
+      "entry": "fin_factor",
+      "task": "已有可信基准后，让Agent提出并测试少量候选；当前Linux、多数场景Docker。",
+      "branch": null
+    },
+    {
+      "order": "选修A",
+      "id": "vnpy",
+      "name": "vnpy/vnpy",
+      "url": "https://github.com/vnpy/vnpy",
+      "role": "国内市场与交易系统工程",
+      "entry": "vnpy.alpha；examples/alpha_research",
+      "task": "先选一个研究示例，随后才考虑模拟交易接口。",
+      "branch": null
+    },
+    {
+      "order": "选修B",
+      "id": "lean",
+      "name": "QuantConnect/Lean",
+      "url": "https://github.com/QuantConnect/Lean",
+      "role": "海外市场、事件驱动回测与交易",
+      "entry": "官方文档及Algorithm.Python",
+      "task": "更接近交易流程时再选；开源引擎不代表云服务、CLI或数据全部免费。",
+      "branch": null
+    },
+    {
+      "order": "选修C",
+      "id": "pysystemtrade",
+      "name": "pst-group/pysystemtrade",
+      "url": "https://github.com/pst-group/pysystemtrade",
+      "role": "配合Carver研究系统化期货",
+      "entry": "docs/introduction.md；docs/backtesting.md",
+      "task": "先读架构和回测，暂不接真实资金。",
+      "branch": null
+    }
+  ]
+}

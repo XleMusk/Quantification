@@ -1,0 +1,35 @@
+{
+  "dataset": "D:/QuantificationData/trading/research/bulk_adjusted_prices/20261001_153451_b32f5701",
+  "segments": {
+    "train": ["2024-01-02", "2024-12-31"],
+    "valid": ["2025-01-01", "2025-12-31"],
+    "test": ["2026-01-01", "2026-09-30"]
+  },
+  "windows": [5, 10, 20, 30, 60],
+  "candidate_budget": 200,
+  "selection_pool": 10,
+  "max_selected": 5,
+  "min_pairs": 5,
+  "min_coverage": 0.8,
+  "min_ic_days": 80,
+  "min_validation_gain": 0.002,
+  "seeds": [17, 29, 43],
+  "model": {
+    "objective": "regression",
+    "num_leaves": 64,
+    "learning_rate": 0.05,
+    "n_estimators": 200,
+    "min_child_samples": 30,
+    "colsample_bytree": 0.9,
+    "subsample": 0.9,
+    "subsample_freq": 1,
+    "n_jobs": 2,
+    "deterministic": true,
+    "force_col_wise": true,
+    "verbosity": -1
+  },
+  "early_stopping_rounds": 30,
+  "portfolio": {"initial_cash": 140000},
+  "scope": "full_source_sh_sz_research_only",
+  "holdout_disclosure": "Full acquired ordinary SH/SZ stock scope without a stock budget; not independently complete A/BSE/ETF or PIT coverage. Reuse fixed prior model settings, seeds17/29/43, common ledger costs and cached native Alpha158. Evaluation extends to the pinned2026-09-30 cutoff, already inspected on other samples; no fresh untouched test, factor search, tuning or automatic trading admission. Each evaluation account starts at140000; not the carried2024 long-replay account."
+}

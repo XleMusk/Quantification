@@ -1,0 +1,8 @@
+mock PDF signature/end-marker: PASS (not a real book)
+existing PDF is not overwritten: PASS
+HTML response rejected: PASS
+size limit enforced: PASS
+
+Remote book downloads: NOT SUCCESSFUL.
+No book PDFs attached.
+Project installation and execution: NOT PERFORMED.

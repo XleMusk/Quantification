@@ -1,0 +1,35 @@
+{
+  "dataset": "D:/QuantificationData/trading/datasets/hs300_20231229_pilot/versions/initial_20260926",
+  "segments": {
+    "train": ["2024-01-02", "2024-12-31"],
+    "valid": ["2025-01-01", "2025-12-31"],
+    "test": ["2026-01-01", "2026-09-24"]
+  },
+  "windows": [5, 10, 20, 30, 60],
+  "candidate_budget": 200,
+  "selection_pool": 10,
+  "max_selected": 5,
+  "min_pairs": 5,
+  "min_coverage": 0.8,
+  "min_ic_days": 80,
+  "min_validation_gain": 0.002,
+  "seeds": [17, 29, 43],
+  "model": {
+    "objective": "regression",
+    "num_leaves": 64,
+    "learning_rate": 0.05,
+    "n_estimators": 200,
+    "min_child_samples": 30,
+    "colsample_bytree": 0.9,
+    "subsample": 0.9,
+    "subsample_freq": 1,
+    "n_jobs": 2,
+    "deterministic": true,
+    "force_col_wise": true,
+    "verbosity": -1
+  },
+  "early_stopping_rounds": 30,
+  "portfolio": {},
+  "scope": "historical_10_name_pilot_not_full_market_validation",
+  "holdout_disclosure": "2026 rule-strategy aggregate results were seen in earlier project work. No 2026 candidate/model feedback is used for this search; this is not a pristine external holdout."
+}

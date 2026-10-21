@@ -1,0 +1,53 @@
+{
+  "work_package": "A02",
+  "mode": "historical_replay_reproduction",
+  "run_id": "422cbdb8e78848dfad07375f46c28e67",
+  "dataset": "D:\\QuantificationData\\trading\\datasets\\hs300_20231229_pilot\\versions\\initial_20260926",
+  "start": "2024-01-02",
+  "end": "2026-09-24",
+  "sessions": 663,
+  "config": {
+    "commission": 0.0003,
+    "dividend_tax_reserve": 0.2,
+    "gross_limit": 0.8,
+    "holdings": 5,
+    "initial_cash": 100000,
+    "lookback": 126,
+    "min_amount": 20000000,
+    "min_listing_days": 365,
+    "minimum_commission": 5,
+    "participation": 0.01,
+    "rebalance_sessions": 5,
+    "retain_rank": 8,
+    "sell_tax": 0.0005,
+    "signal": "risk_adjusted_momentum",
+    "single_limit": 0.2,
+    "skip": 21,
+    "slippage_bps": 10,
+    "transfer_fee": 1e-05,
+    "volatility_window": 60
+  },
+  "input_sha256": {
+    "manifest.json": "4ae0daf58a6291a7204ffe675063f73f4ebc4323571b23c52fb7f3239f7b3f17",
+    "raw.parquet": "6672b0b740146f9a177b29e6142cb470d6335f462a31be6024d1a7084fa76999",
+    "adjusted.parquet": "ecd299da92b8da90f6e0eb17a7b4bc3e5340b6470b9ff256a38e03e48cc3968f",
+    "calendar.csv": "9b7dc46b7b6ca44728d97767f9d8ed945891e3e731e262d71e3f77a3d1350505",
+    "instruments.csv": "c084473c7bc43836c3c3c8a0bffdb82010b5fddceb732c7ba1296b3d66ba5d1b",
+    "actions.csv": "c7496bd040aee732a689e9fd813a579c928b693052ff15132c48cb126ecba164"
+  },
+  "code_sha256": {
+    "trading/config.py": "06a212888fdd6bb4e9999b9396cb13cb272b27fa4e59bf2316c8e0295854efd0",
+    "trading/engine.py": "5f2f89fd8020b5f85de2a090e496effa9570222f0adbc368ffbbfa04ebd0b9f2",
+    "trading/feed.py": "8557c5b0703fb23fd4a288cbb7a8aa0ffae04ef9d694620ffff5a03c55764d70",
+    "trading/ledger.py": "fc5a2145239a99b76f22541c1ed64cc3c69da2489428457182f10c1a8989461b",
+    "trading/rules.py": "77cdfeaf8318fc357f2180fc79cb065d66cfa98ac8c05c2c83864f396e3a54af"
+  },
+  "python": "3.10.20",
+  "pandas": "2.3.3",
+  "all_daily_records_match": true,
+  "final_state_matches": true,
+  "legacy_days_without_dataset_metadata": 663,
+  "first_difference": null,
+  "result": "reproduced",
+  "strategy_validated": false
+}

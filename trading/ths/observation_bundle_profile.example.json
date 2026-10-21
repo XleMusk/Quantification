@@ -1,0 +1,119 @@
+{
+  "schema": "ths_observation_bundle_profile_v1",
+  "verified_local": false,
+  "encoding": "gb18030",
+  "delimiter": "comma",
+  "tables": {
+    "account": {
+      "columns": {
+        "symbol": "symbol",
+        "market": "market",
+        "quantity": "quantity",
+        "sellable": "sellable",
+        "price": "price"
+      },
+      "price_basis": "raw_rmb",
+      "markets": {"SSE": "SSE", "SZSE": "SZSE", "BSE": "BSE"}
+    },
+    "orders": {
+      "columns": {
+        "symbol": "symbol",
+        "market": "market",
+        "side": "side",
+        "order_id": "order_id",
+        "qty": "qty",
+        "price": "price",
+        "filled_qty": "filled_qty",
+        "status": "status"
+      },
+      "markets": {"SSE": "SSE", "SZSE": "SZSE", "BSE": "BSE"},
+      "sides": {"buy": "buy", "sell": "sell"},
+      "statuses": {
+        "accepted": "accepted",
+        "partial": "partial",
+        "filled": "filled",
+        "cancelled": "cancelled",
+        "rejected": "rejected"
+      }
+    },
+    "trades": {
+      "columns": {
+        "symbol": "symbol",
+        "market": "market",
+        "side": "side",
+        "order_id": "order_id",
+        "execution_id": "execution_id",
+        "qty": "qty",
+        "price": "price"
+      },
+      "markets": {"SSE": "SSE", "SZSE": "SZSE", "BSE": "BSE"},
+      "sides": {"buy": "buy", "sell": "sell"}
+    },
+    "cashflows": {
+      "columns": {
+        "symbol": "symbol",
+        "market": "market",
+        "side": "side",
+        "order_id": "order_id",
+        "gross_amount": "gross_amount",
+        "fees": "fees",
+        "cash_change": "cash_change"
+      },
+      "markets": {"SSE": "SSE", "SZSE": "SZSE", "BSE": "BSE"},
+      "sides": {"buy": "buy", "sell": "sell"},
+      "basis": "cumulative_order_cashflow",
+      "currency": "CNY",
+      "amount_unit": "rmb"
+    },
+    "movements": {
+      "columns": {
+        "movement_id": "movement_id",
+        "kind": "kind",
+        "cash_change": "cash_change"
+      },
+      "basis": "nontrade_cash_movements",
+      "currency": "CNY",
+      "amount_unit": "rmb",
+      "kinds": {
+        "cash_dividend": "cash_dividend",
+        "interest": "interest",
+        "tax": "tax",
+        "fee": "fee",
+        "deposit": "deposit",
+        "withdrawal": "withdrawal"
+      }
+    },
+    "restriction_releases": {
+      "columns": {
+        "release_id": "release_id",
+        "symbol": "symbol",
+        "market": "market",
+        "released_qty": "released_qty",
+        "release_day": "release_day",
+        "reason": "reason"
+      },
+      "basis": "opening_restriction_releases",
+      "quantity_unit": "share",
+      "markets": {"SSE": "SSE", "SZSE": "SZSE", "BSE": "BSE"},
+      "reasons": {"opening_unknown_restriction_release": "opening_unknown_restriction_release"}
+    },
+    "share_credits": {
+      "columns": {
+        "credit_id": "credit_id",
+        "symbol": "symbol",
+        "market": "market",
+        "credited_qty": "credited_qty",
+        "credit_day": "credit_day",
+        "available_day": "available_day",
+        "kind": "kind"
+      },
+      "basis": "account_bonus_share_credits",
+      "quantity_unit": "share",
+      "markets": {"SSE": "SSE", "SZSE": "SZSE", "BSE": "BSE"},
+      "kinds": {
+        "bonus_shares": "bonus_shares",
+        "capital_transfer": "capital_transfer"
+      }
+    }
+  }
+}

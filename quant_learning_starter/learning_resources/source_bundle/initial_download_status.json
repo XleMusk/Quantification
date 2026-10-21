@@ -1,0 +1,22 @@
+{
+  "checked_on": "2026-09-09",
+  "book_pdfs_attached": 0,
+  "attempts": [
+    {
+      "book": "Convex Optimization",
+      "tool": "container.download",
+      "result": "download failed (retried after web PDF open)"
+    },
+    {
+      "book": "ISLP",
+      "tool": "container.download",
+      "result": "download failed; remote source not successfully retrieved by browser tool"
+    },
+    {
+      "operation": "official-source requests via Python requests",
+      "result": "DNS name resolution failed"
+    }
+  ],
+  "probability_pdf": "official free reading entry located; PDF bytes not obtained",
+  "project_execution": "not attempted"
+}
