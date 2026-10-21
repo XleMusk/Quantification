@@ -34,7 +34,7 @@ FLAGS = {"research_only": True, "candidate_panel_only": True,
     "strategy_validated": False, "broker_interacted": False,
     "model_refit": False, "network_accessed": False, "user_account_mutated": False}
 ALLOWED = {"baostock-bulk-extras", "leader-close-publication", "leader-recent-source-preview",
-    "leader-eight-type-forward-register",
+    "leader-eight-type-forward-register", "leader-eight-type-split-forward",
     "leader-environment", "leader-identity", "leader-identity-episodes", "leader-eight-type-inputs",
     "leader-eight-type-paper", "leader-eight-type-forward", "leader-published-forward",
     "recent-source-qlib-provider", "recent-source-alpha158", "recent-source-alpha158-target-publication",
@@ -217,6 +217,36 @@ def _outputs(step, day):
         paper._verify_last_journal(head, directory)
         if head["phase"] != "closing" or head["execution_day"] != day:
             raise ValueError("Native PAPER did not finish this exact session")
+    if step["command"][0] == "leader-eight-type-split-forward":
+        from . import leader_eight_type_forward_run as forward
+        from .leader_eight_type_forward_registration import SPLIT_GENERATION_METHOD_ID, SPLIT_SESSION_METHOD_ID
+        directory = str(Path(_values(step["command"], "--run-dir")[0]).resolve())
+        registrations = _values(step["command"], "--registration")
+        if len(registrations) != 1 or step["expected_files"] != [str(Path(directory) / "head.json")]:
+            raise ValueError("Split settlement requires its exact explicit registration and account head")
+        registered = _read(registrations[0])
+        head = _read(step["expected_files"][0])
+        binding = head.get("binding", {})
+        generation = binding.get("explicit_new_generation", {})
+        cases = head.get("cases", {})
+        if (registered.get("generation_method_id") != SPLIT_GENERATION_METHOD_ID
+                or registered.get("session_method_id") != SPLIT_SESSION_METHOD_ID
+                or registered.get("initial_quality_scope") != "per_case"
+                or registered.get("registered_run_dir") != directory
+                or head.get("schema") != "leader_eight_type_split_forward_checkpoint_v1"
+                or set(cases) != set(forward.CASE_IDS)
+                or any(head.get(key) is not val for key,val in forward.FLAGS.items())
+                or generation.get("method_id") != SPLIT_GENERATION_METHOD_ID
+                or generation.get("session_method_id") != SPLIT_SESSION_METHOD_ID
+                or generation.get("initial_quality_scope") != "per_case"
+                or generation.get("registered_run_dir") != directory
+                or binding.get("run_directory") != directory
+                or binding.get("config") != registered.get("config")
+                or binding.get("forward_method_registration", {}).get("sha256") != _ref(registrations[0])["sha256"]
+                or any((c.get("state") or {}).get("day") and c["state"]["day"] > day for c in cases.values())
+                or any((c.get("state") or {}).get("day") != day and not (c.get("blocking_evidence") or c.get("error"))
+                    for c in cases.values())):
+            raise ValueError("Split generation output must retain exact method, registration, dates and case failures")
     if step["command"][0] in {"leader-eight-type-forward", "leader-published-forward", "recent-source-alpha158-forward-run",
             "shortline-native-preopen-forward"}:
         head = _read(step["expected_files"][0])
@@ -2668,6 +2698,7 @@ def main(argv=None):
         help="Register one explicitly independent generation from the latest successful real eight-type publication")
     generation_start.add_argument("--run-dir", type=Path, required=True)
     generation_start.add_argument("--generation-id", required=True)
+    generation_start.add_argument("--session-method", choices=("split-settlement-v1",))
     generation_advance = commands.add_parser("advance-eight32-generation",
         help="Consume only this generation's contiguous actual-publication prefix with the existing Engine")
     generation_advance.add_argument("--run-dir", type=Path, required=True)
@@ -2721,7 +2752,7 @@ def main(argv=None):
         result = advance(args.run_dir, args.day, args.package, source_only=args.source_only)
     elif args.action == "start-eight32-generation":
         from .eight32_paper_generation import start
-        result = start(args.run_dir, args.generation_id)
+        result = start(args.run_dir, args.generation_id, session_method=args.session_method)
     elif args.action == "advance-eight32-generation":
         from .eight32_paper_generation import advance
         result = advance(args.run_dir, args.day)

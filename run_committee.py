@@ -533,6 +533,9 @@ def main(argv=None):
     if argv[:1] == ["leader-eight-type-forward-register"]:
         from trading.research.leader_eight_type_forward_registration import main as leader_eight_type_register_main
         return leader_eight_type_register_main(argv[1:])
+    if argv[:1] == ["leader-eight-type-split-forward"]:
+        from trading.research.leader_eight_type_split_forward import main as eight_type_split_main
+        return eight_type_split_main(argv[1:])
     if argv[:1] == ["leader-eight-type-forward"]:
         from trading.research.leader_eight_type_forward_run import main as leader_eight_type_forward_main
         return leader_eight_type_forward_main(argv[1:])

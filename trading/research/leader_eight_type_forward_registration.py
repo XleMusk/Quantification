@@ -15,6 +15,9 @@ from . import leader_eight_type_forward_run as forward
 
 STATUS = "registered_independent_eight_type_forward_only"
 GENERATION_METHOD_ID = "leader_eight_type_explicit_new_generation_per_case_start_v1"
+SPLIT_GENERATION_METHOD_ID = "leader_eight_type_explicit_split_settlement_generation_v1"
+SPLIT_SESSION_METHOD_ID = "published_close_settlement_then_attach_v1"
+SPLIT_SESSION_OPTION = "split-settlement-v1"
 
 
 def _now():
@@ -37,11 +40,15 @@ def _destinations(out, run_dir, protected):
         if (target == original_registration or original_registration.parent in target.parents
                 or any(target == file or target in file.parents for file in protected)
                 or any(head.is_file() and json.loads(head.read_text(encoding="utf-8-sig")).get("schema")
-                    == forward.SCHEMA for head in book_ancestors)):
+                    in {forward.SCHEMA, "leader_eight_type_split_forward_checkpoint_v1"} for head in book_ancestors)):
             raise ValueError("New generation cannot write original evidence or an existing account tree")
 
 
-def register(publication, input_manifest, ipo_evidence, research_master_run, out, run_dir):
+def register(publication, input_manifest, ipo_evidence, research_master_run, out, run_dir, *, session_method=None):
+    if session_method not in (None, SPLIT_SESSION_OPTION):
+        raise ValueError("Only the explicit split-settlement-v1 session method is supported")
+    split = session_method == SPLIT_SESSION_OPTION
+    method_id = SPLIT_GENERATION_METHOD_ID if split else GENERATION_METHOD_ID
     publication, input_manifest, ipo_evidence, research_master_run, out, run_dir = (
         Path(path).resolve() for path in
         (publication, input_manifest, ipo_evidence, research_master_run, out, run_dir))
@@ -77,7 +84,7 @@ def register(publication, input_manifest, ipo_evidence, research_master_run, out
         "config": forward._config(100000, 5).to_dict(),
         "method": "original_published_weights_then_post_opening_reduce_only_and_current_close_risk_queue",
         "registration_is_original_publication": False, "original_publication_unchanged": True,
-        "generation_method_id": GENERATION_METHOD_ID, "initial_quality_scope": "per_case",
+        "generation_method_id": method_id, "initial_quality_scope": "per_case",
         "registered_run_dir": str(run_dir),
         "generation": {
             "kind": "independent_new_research_generation", "intended_run_directory": str(run_dir),
@@ -96,6 +103,12 @@ def register(publication, input_manifest, ipo_evidence, research_master_run, out
             "The new consumer generation binding and wrapper both enforce per-case initial quality and the exact run directory; older methods are unchanged."],
         **forward.FLAGS,
     }
+    if split:
+        record["session_method_id"] = SPLIT_SESSION_METHOD_ID
+        record["method"] = "settle_exact_sessions_then_attach_actual_close_publications_without_reexecuting_open"
+        record["limitations"][1] = ("Exact raw sessions settle independently of their own close publication; "
+            "missing publications remain explicit and are never replaced by NO_CHANGE.")
+        record["limitations"].append("This explicit split method cannot migrate or reset an existing generation.")
     _destinations(out, run_dir, protected)
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("x", encoding="utf-8") as stream:
@@ -111,7 +124,7 @@ def register(publication, input_manifest, ipo_evidence, research_master_run, out
         "registration_file": str(out), "registration": checked,
         "registered_at": record["registered_at"], "first_decision_day": first["day"],
         "first_execution_day": first["execution"], "intended_run_directory": str(run_dir),
-        "generation_method_id": GENERATION_METHOD_ID, "initial_quality_scope": "per_case",
+        "generation_method_id": method_id, "initial_quality_scope": "per_case",
         "registered_run_dir": str(run_dir),
         "case_count": 32, "initial_cash_per_case": 100000, "research_accounts_created": 0,
         "account_created": False, "engine_run": False, "orders_generated": False,
@@ -123,6 +136,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("publication", "input-manifest", "ipo-evidence", "research-master-run", "out", "run-dir"):
         parser.add_argument("--" + name, required=True, type=Path)
+    parser.add_argument("--session-method", choices=(SPLIT_SESSION_OPTION,))
     result = register(**vars(parser.parse_args(argv)))
     print(json.dumps(result, ensure_ascii=False, allow_nan=False))
     return 0

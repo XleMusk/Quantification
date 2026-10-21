@@ -2,6 +2,27 @@
 
 ## Current priority: strategy evidence and a usable daily research path
 
+Completed next execution-path gap (October21,17:16): explicit split settlement
+method now settles known D plans on E without requiring E's own publication.
+The same Engine/Ledger preserves fees/T+1/raw/qualification/action checks;
+current new-target quality is checked only after settlement. Separate attach
+journals queue the next session without repeating fills, marks or actions;
+missing publications stay explicit and the original five-session expiry still
+runs. All32 cases retain independent gaps/failures; existing registrations do
+not migrate. `start-eight32-generation --session-method split-settlement-v1`
+selects the new method before first registration; default v1 remains unchanged.
+The registrar/coordinator/real Engine synthetic chain and original-path checks
+passed; these are software evidence, not new market returns. Actual21 source
+and new generation still absent at17:16. See outputs/eight32_split_session/
+20261021_v1/{REPORT.md,checks.json,deployment_readback.json}.
+Next bounded software gap: when E inputs have a saved successful terminal but
+E publication fails, adopt only that successful input context explicitly for
+subsequent F production. Current split settlement can already read the saved E
+inputs without changing producer state. Do not retry failed E production,
+backfill E publication, rerun the old19/20 dates or reset accounts. After this
+recovery gap, return to distinct strategy evidence and saved paper holdings;
+do not expand old monthly notice work or retest unchanged phases.
+
 New paper-path implementation (October21): an explicit new-generation registrar
 and start/advance-eight32-generation now bind a genuine first publication, own
 input, qualification, exact fresh run and original32/config. The original15
@@ -35,10 +56,8 @@ using its own input and actualclock. Evidence outputs/eight32_daily/20261021_v1.
 New-generation registration and continuous-consumption coordination are now
 implemented (see latest entry above). Actual first eligible market publication
 and its new registration/accounts have not occurred. Preserve old generations.
-Next inspect/reuse existing Engine/PAPER opening settlement and close-decision
-phases: the close consumer still needs its own E publication before whole E
-replay. Any separation needs an explicit method, not an old-protocol rewrite or
-fabricated NO_CHANGE; no repeated fill when a later close is adopted.
+That close-publication/settlement coupling is now resolved for the explicit
+split method above; old registered methods keep their original contract.
 
 The October 21 user correction is an allocation change: stop treating successive
 repairs to October 19/20 contexts as the default research task. The native cache

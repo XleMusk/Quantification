@@ -239,7 +239,7 @@ def _router_close_binding(state, envelope, policy, day, feed, config, context):
     return binding
 
 
-def _published_close_target_binding(state, policy, context, intent):
+def _published_close_target_binding(state, policy, context, intent, *, allow_absent_intent=False):
     """A published-target reduction is an explicit, immutable replay method."""
     saved = state.get("published_close_target_policy")
     if policy is None:
@@ -254,7 +254,7 @@ def _published_close_target_binding(state, policy, context, intent):
                "context": context.to_dict()}
     if saved != binding and (saved is not None or state["day"] is not None):
         raise ValueError("An existing published-close target policy cannot be changed or introduced")
-    if intent is None:
+    if intent is None and not allow_absent_intent:
         raise ValueError("A published-close target policy requires an explicit publication on every session")
     return binding
 
@@ -330,6 +330,28 @@ def _replay_risk_exit_binding(state, policy, context):
     if saved != binding and (saved is not None or state["day"] is not None):
         raise ValueError("An existing replay risk-exit policy cannot be changed")
     return binding
+
+
+def _schedule_replay_risk_exit(book, feed, day, policy):
+    """Queue the existing typed risk decision without executing any orders."""
+    if policy is None:
+        return
+    state, context = book.state, book.context
+    risk_intent = policy(day, book, feed)
+    if isinstance(risk_intent, SignalUnavailable):
+        book.emit(day, "risk_exit_deferred", reason=risk_intent.reason)
+    elif risk_intent is not None:
+        if not isinstance(risk_intent, ReplayRiskExitIntent):
+            raise ValueError("Independent risk-exit policy must return a typed share-reduction intent")
+        next_index = feed.calendar.index(day) + 1
+        if (risk_intent.context != context or risk_intent.decided_on != day
+                or next_index >= len(feed.calendar) or risk_intent.execution_on != feed.calendar[next_index]
+                or risk_intent.execution_on != feed.next_day(day)
+                or any(book.quantity(symbol) <= 0 for symbol in risk_intent.symbols)):
+            raise ValueError("Risk exit changed account/session identity or included a nonheld symbol")
+        state["pending_risk_exits"] = risk_intent.to_dict()
+        book.emit(day, "risk_exit_scheduled", execution_not_before=risk_intent.execution_on,
+                  symbols=list(risk_intent.symbols), source=risk_intent.source, reason=risk_intent.reason)
 
 
 def choose_targets(candidates, held, config):
@@ -917,7 +939,8 @@ def _mark_session_close(book, feed, day, rows, action_view=None):
 def advance(state, feed, day, config, session_number, *, context=None, target_policy=None, portfolio_policy=None,
             commission_deadband=False, lot_allocation=None, replay_risk_exit_policy=None,
             published_close_intent=None, published_close_target_policy=None, preopen_intent=None,
-            full_exit_lifecycle=None, published_close_router=None, published_close_router_policy=None):
+            full_exit_lifecycle=None, published_close_router=None, published_close_router_policy=None,
+            published_close_session_method=None):
     if state.get("intraday_open_session") is not None or state.get("intraday_session_method") is not None:
         raise ValueError("A two-phase intraday account must use its explicit opening/closing path, not legacy advance")
     if state.get("broker_binding"):
@@ -928,6 +951,15 @@ def advance(state, feed, day, config, session_number, *, context=None, target_po
     entry_contract = entry_risk_contract(getattr(feed, "entry_risk_policy", None), notice_view)
     validate_entry_risk_binding(state, entry_contract)
     context = context if context is not None else RunContext("standalone_replay", TradingMode.REPLAY)
+    from .published_close_session import validate_binding as validate_published_session, marker as published_session_marker
+    split_binding = validate_published_session(state, published_close_session_method, day, feed,
+        config, context, published_close_intent)
+    if split_binding is not None and (any(value is not None for value in (
+            target_policy, portfolio_policy, lot_allocation, preopen_intent, full_exit_lifecycle,
+            published_close_router, published_close_router_policy, getattr(feed, "prior_volume_policy", None)))
+            or commission_deadband or published_close_target_policy is None or replay_risk_exit_policy is None
+            or config.rebalance_sessions != 1):
+        raise ValueError("Split published-close sessions require their fixed target/risk callbacks without other overlays")
     close_frame_method, close_candidate_binding = _close_candidate_binding(state, feed, context)
     router_requested = published_close_router is not None or published_close_router_policy is not None
     if router_requested and (close_frame_method is not None or any(value is not None for value in (
@@ -975,7 +1007,8 @@ def advance(state, feed, day, config, session_number, *, context=None, target_po
             raise ValueError("Published close intent requires a due session without target/portfolio/lot overlays")
         published_receipt = _published_close_receipt(published_close_intent, day, feed, config, context)
     published_target_binding = _published_close_target_binding(
-        state, published_close_target_policy, context, published_close_intent)
+        state, published_close_target_policy, context, published_close_intent,
+        allow_absent_intent=split_binding is not None)
     pending_published = _pending_published_close_receipt(state, feed, day, config, context)
     risk_binding = _replay_risk_exit_binding(state, replay_risk_exit_policy, context)
     pending_risk = (ReplayRiskExitIntent.from_dict(state["pending_risk_exits"])
@@ -1030,7 +1063,7 @@ def advance(state, feed, day, config, session_number, *, context=None, target_po
                           or not callable(getattr(portfolio_policy, "validate_frame", None))):
         raise ValueError("Expected-return selection is explicit and separate from target/lot overlays")
     if (session_number % config.rebalance_sessions == 0 and published_close_intent is None
-            and preopen_intent is None and not router_requested):
+            and preopen_intent is None and not router_requested and split_binding is None):
         # A proxy's __getattr__ may expose its base feed's rule method and bypass
         # its own model/trend scores. Only opt in through a declared consumer.
         frame_method = getattr(type(feed), "signal_frame", None)
@@ -1106,6 +1139,8 @@ def advance(state, feed, day, config, session_number, *, context=None, target_po
         state["full_exit_lifecycle"] = exit_lifecycle
     if capacity_binding is not None:
         state["prior_volume_execution_policy"] = capacity_binding
+    if split_binding is not None:
+        state["published_close_session_binding"] = split_binding
     _execute_session_opening(book, feed, day, rows, before_events=before_events,
         preopen_intent=preopen_intent, preopen_receipt=preopen_receipt,
         preopen_full_exits=preopen_full_exits, exit_lifecycle=exit_lifecycle,
@@ -1114,7 +1149,8 @@ def advance(state, feed, day, config, session_number, *, context=None, target_po
         capacity_binding=capacity_binding, risk_compatible_exits=risk_compatible_exits)
     stale = _mark_session_close(book, feed, day, rows, action_view=action_view)
     published_reduction, router_receipt = None, None
-    if session_number % config.rebalance_sessions == 0 and preopen_intent is None:
+    if (session_number % config.rebalance_sessions == 0 and preopen_intent is None
+            and not (split_binding is not None and published_close_intent is None)):
         if close_frame_method is not None and isinstance(signal_batch, SignalFrame):
             # The original complete rank/frontier was checked before opening.
             # Admission now sees this same book after D's fills, marks and actions.
@@ -1175,25 +1211,15 @@ def advance(state, feed, day, config, session_number, *, context=None, target_po
             book.emit(day, "targets_generated", signal_date=day, execution_not_before=feed.next_day(day),
                       targets=state["targets"], signal_source=intent.source, decision_reason=intent.reason or None,
                       **published_metadata)
-    if replay_risk_exit_policy is not None:
-        risk_intent = replay_risk_exit_policy(day, book, feed)
-        if isinstance(risk_intent, SignalUnavailable):
-            book.emit(day, "risk_exit_deferred", reason=risk_intent.reason)
-        elif risk_intent is not None:
-            if not isinstance(risk_intent, ReplayRiskExitIntent):
-                raise ValueError("Independent risk-exit policy must return a typed share-reduction intent")
-            next_index = feed.calendar.index(day) + 1
-            if (risk_intent.context != context or risk_intent.decided_on != day
-                    or next_index >= len(feed.calendar) or risk_intent.execution_on != feed.calendar[next_index]
-                    or risk_intent.execution_on != feed.next_day(day)
-                    or any(book.quantity(symbol) <= 0 for symbol in risk_intent.symbols)):
-                raise ValueError("Risk exit changed account/session identity or included a nonheld symbol")
-            state["pending_risk_exits"] = risk_intent.to_dict()
-            book.emit(day, "risk_exit_scheduled", execution_not_before=risk_intent.execution_on,
-                      symbols=list(risk_intent.symbols), source=risk_intent.source, reason=risk_intent.reason)
+    if split_binding is not None and published_receipt is None:
+        book.emit(day, "close_publication_missing", execution_not_before=feed.next_day(day),
+                  decision_not_manufactured=True)
+    _schedule_replay_risk_exit(book, feed, day, replay_risk_exit_policy)
     if exit_lifecycle is not None:
         full_exits.refresh_remaining(exit_lifecycle, book)
     state["day"] = day
+    if split_binding is not None:
+        state["last_published_close_session"] = published_session_marker(day, published_receipt)
     if preopen_receipt is not None:
         state["last_preopen_intent"] = preopen_receipt
     if router_receipt is not None:
