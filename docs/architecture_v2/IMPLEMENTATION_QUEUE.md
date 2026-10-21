@@ -12,8 +12,17 @@ window, tune parameters or compare different stopping values. Original failures
 and the pre-account reader-order bug are preserved. Actual result and two exact
 missing fields: outputs/monthly_max_vs_sigma/20261021_reader_order_fix_v2/REPORT.md
 and source_gaps.json. LowMAX has no established increment; sigma stays a baseline,
-not a validated winner. Next software work is independent eight-type daily
-input/publication, without crossing old-account publication gaps.
+not a validated winner. Next software work below is now actually completed.
+Independent advance-eight32 completed its five original stages at16:17:02,
+October21: exactday20 input appended; oldpanels/preview/sourceproof prefixes
+unchanged, only neweight32 profile inhead. Global/sourcecursor19 and original
+accounts unchanged; publication19/missing20 are explicit. No day20 backfill,
+forward32 or Engine. RealnewD source can publish independently sameD15:05+,
+using its own input and actualclock. Evidence outputs/eight32_daily/20261021_v1.
+Next paper-path gap is a narrow new-generation registration producer that uses
+an actual newfirstpublication and preserves old missing-publication accounts.
+The existing consumer accepts the paper schema statically but no actualnew
+firstpublication/registration/account has been validated; no automatic reset.
 
 The October 21 user correction is an allocation change: stop treating successive
 repairs to October 19/20 contexts as the default research task. The native cache
@@ -111,8 +120,8 @@ historical evidence, not the current data or account cursor.
   independent command receipts; same-day actual publication and immutable inputs
   are required. Saved successful children can be adopted without re-production;
   unresolved or failed attempts cannot be bypassed by another path or mode.
-- Next operational implementation: continue the same separation for eight-type context and
-  Alpha158. Eight-type can append exact day-20 inputs without a day-20 paper
+- Completed operational implementation: eight-type independent context/publication
+  is now connected and actual20context completed. Remaining: Alpha158. Eight-type can append exact day-20 inputs without a day-20 paper
   publication. Alpha needs its own provider-through-20 and frozen score context,
   followed by the new day's separate provider/score/publication; do not backfill
   an old score from a later provider. Original accounts remain unable to cross
