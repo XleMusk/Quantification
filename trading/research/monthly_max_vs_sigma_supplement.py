@@ -122,7 +122,7 @@ def _pair(original, amendment_receipt):
                 or any(current["files"].get(name) != sha for name, sha in prior["files"].items() if name not in changed)):
             raise ValueError("Source scope, raw/canonical identity or inherited evidence changed")
         refs.append(pin(folders[i] / "result.json"))
-        for name in changed | (set(current["files"]) - set(prior["files"])):
+        for name in sorted(changed | (set(current["files"]) - set(prior["files"]))):
             refs.append(pin(checked_file(folders[i], name, current["files"][name])))
     def frame(i, roots, metadata, name):
         return pd.read_parquet(checked_file(roots[i], name, metadata[i]["files"][name])).fillna("")

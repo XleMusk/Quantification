@@ -1,7 +1,10 @@
 """Synthetic one-round source supplement checks; never read actual market data."""
 from copy import deepcopy
 import json
+import os
 from pathlib import Path
+import subprocess
+import sys
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -239,3 +242,66 @@ def test_changed_registered_source_reference_rejects_before_original_or_executio
     with pytest.raises(ValueError, match="source artifact changed"):
         method.run(registration, out)
     assert not out.exists()
+
+
+def test_saved_registration_json_roundtrip_across_hash_seeds_keeps_exact_source_refs(tmp_path, monkeypatch):
+    """Only tiny synthetic sources: real register/JSON/read in distinct processes."""
+    fixture = pair_fixture(tmp_path, monkeypatch)
+    # Multiple new amendment payloads make the old set iteration order differ
+    # across processes; their content/hash checks remain part of the real _pair.
+    event = method.v1.read(fixture.event / "result.json")
+    for number in range(12):
+        name = f"reviewed_amendments/synthetic/payload_{number:02}.json"
+        write(fixture.event / name, {"synthetic_review_payload": number})
+        event["files"][name] = method.v1.digest(fixture.event / name)
+    write(fixture.event / "result.json", event)
+    write(fixture.reference / "input_events.json", event)
+    reference = method.v1.read(fixture.reference / "result.json")
+    reference["files"]["input_events.json"] = method.v1.digest(fixture.reference / "input_events.json")
+    write(fixture.reference / "result.json", reference)
+    original_result = tmp_path / "sealed_original" / "result.json"
+    write(original_result, {"synthetic_saved_original": True})
+    original = {**fixture.original,
+        "inputs": {**fixture.original["inputs"], **{key: str(tmp_path / "sources" / key)
+            for key in ("price_view", "raw_view", "listing_master")}},
+        "source_clock": {"actual_source_clock": "2026-10-21T15:00:00+08:00"},
+        "source_inventory": {"synthetic": True}, "source_limitations": ["synthetic_only"]}
+    write(tmp_path / "original_stub.json", original)
+    script = r'''
+from copy import deepcopy
+from pathlib import Path
+import sys
+from trading.research import monthly_max_vs_sigma_supplement as method
+
+root, operation = Path(sys.argv[1]), sys.argv[2]
+original_result = root / "sealed_original/result.json"
+method._original = lambda result: (method.v1.read(root / "original_stub.json"), {}, [method.pin(original_result)])
+method._code = lambda: {"synthetic_implementation": "unchanged"}
+resolutions = method.v1.read(root / "reviewed/supplements/provider_action_resolutions.json")
+method.PRIMARY_SHA = {row["symbol"]: row["source_sha256"] for row in resolutions}
+method.load_action_resolutions = lambda *args: deepcopy(resolutions)
+def corrected(frame, *args):
+    result = frame.copy(deep=True)
+    mask = [(symbol, day) in method.EVENTS for symbol, day in zip(result.symbol, result.dividOperateDate)]
+    result.loc[mask, "dividReserveToStockPs"] = "0"
+    return result, []
+method.action_reviewed_amendment.corrected_actions = corrected
+registration = root / "registered/registration.json"
+if operation == "register":
+    method.register(original_result, root / "amendment_receipt.json", registration.parent, root / "fresh_accounts")
+else:
+    saved, original, batches = method._registration(registration)
+    assert saved["source_refs"]
+    assert not (root / "fresh_accounts").exists()
+print("synthetic-registration-roundtrip-ok")
+'''
+    repo = Path(method.__file__).resolve().parents[2]
+    for seed, operation in (("17", "register"), ("43", "read")):
+        environment = {**os.environ, "PYTHONHASHSEED": seed}
+        result = subprocess.run([sys.executable, "-c", script, str(tmp_path), operation],
+            cwd=repo, env=environment, text=True, capture_output=True, timeout=30)
+        assert result.returncode == 0, result.stderr
+        assert "synthetic-registration-roundtrip-ok" in result.stdout
+    saved = method.v1.read(tmp_path / "registered/registration.json")
+    assert len(saved["source_refs"]) == 21
+    assert not (tmp_path / "fresh_accounts").exists()
