@@ -41,6 +41,6 @@ def test_opening_needs_no_execution_close_and_closing_marks_the_same_ledger_sepa
     assert observed == [(book, day)]
     state["intraday_open_session"] = {"day": day}
     before = deepcopy(state)
-    with pytest.raises(ValueError, match="intraday session"):
+    with pytest.raises(ValueError, match="intraday account"):
         advance(state, None, following, config, 0, context=book.context)
     assert state == before

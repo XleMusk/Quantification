@@ -26,9 +26,16 @@ Git 保存源码、测试、可复用配置、文档、少量架构基线回执�
 指定位置。这些数据不在 Git 中，克隆仓库不会自动恢复历史研究或纸面账户。
 需要完整迁移时，应另外迁移相应数据、模型和研究结果。
 
-依赖安装以各子项目已有说明及锁文件为准；`webapp/setup.ps1` 用于重建网页环境。
-根目录 `env/python.exe` 尚无统一的可移植依赖锁，不能把“代码已克隆”视为整个
-研究运行环境已恢复。研究工作台可按其 README 使用 `-NoWorkers` 启动，保持交易
-worker 关闭。第三方 `vendor/` 工具按各模块已有说明单独配置。
+已安装 Python 3.11 和 `uv` 时，可在项目根目录执行：
+
+```powershell
+./webapp/setup.ps1 -BackendOnly
+& ./webapp/.venv/Scripts/python.exe -B ./run_committee.py --help
+```
+
+这会按现有锁文件恢复 CLI 离线入口及 Engine/Ledger 纸面核心，安装脚本不启动服务。
+完整网页安装方式见 [工作台说明](webapp/README.md)。根目录旧 `env/python.exe`、
+Qlib、行情供应商和第三方 `vendor/` 工具仍需按实际使用的模块单独恢复，不能把
+核心可运行视为全部历史研究环境已恢复。工作台启动时使用 `-NoWorkers`。
 
 `.gitattributes` 保留文件原始换行字节，避免迁移时改变研究登记引用的源码摘要。

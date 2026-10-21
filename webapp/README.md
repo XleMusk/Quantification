@@ -28,9 +28,22 @@
 启动和停止核对项目、命令行以及新记录的进程创建时点；失效或被复用的进程号不会被停止。
 旧进程记录保留到 `.runtime/archive`。`stop.ps1` 不删除交易数据；建议先让任务完成再停止。
 
-需要重建依赖时执行 `D:\Quantification\webapp\setup.ps1`。
-它使用已存在的学习环境 Python 创建 `webapp/.venv`，通过 `uv` 同步锁定依赖，并在 `frontend/node_modules` 安装前端依赖。
-不会向原 `D:\Quantification\env` 或学习环境安装包；独立 worker 复用原环境已有的数据科学依赖。
+首次克隆或重建依赖前，安装 Python 3.11 和 `uv`；完整网页还需要 Node.js 20.19+ 或 22.12+。
+在项目根目录执行 `./webapp/setup.ps1`，它通过 `uv` 创建 `webapp/.venv`、同步已有锁定依赖，
+并安装、构建前端。无需先创建教学环境，也不会自动下载 Python 或修改原 `env`。
+可以用 `-Python 'C:\路径\python.exe'` 指定已经安装的 Python 3.11。
+
+只恢复 CLI 与纸面核心、不安装 Node.js 或构建前端时：
+
+```powershell
+./webapp/setup.ps1 -BackendOnly
+& ./webapp/.venv/Scripts/python.exe -B ./run_committee.py --help
+```
+
+安装脚本不会启动服务或 worker。包安装需要网络，或已准备好的完整 `uv` 缓存；
+有缓存时可设置 `$env:UV_OFFLINE='1'` 离线安装。历史行情、冻结模型、持久账户另行迁移。
+此环境覆盖 CLI 离线入口及 Engine/Ledger 核心，不代表 Qlib、行情供应商 SDK 和原 worker
+所用主环境已全部恢复；独立 worker 仍复用原 `env`，迁移后先使用 `-NoWorkers`。
 
 ## 交易页面
 
@@ -113,4 +126,4 @@ npm.cmd run build
 npm.cmd audit
 ```
 
-原主环境缺少 pytest，测试使用新应用隔离环境；不为测试改动原环境。验收细节见 [verification/ACCEPTANCE.md](verification/ACCEPTANCE.md)。
+上述测试使用应用隔离环境，不为测试改动原主环境。验收细节见 [verification/ACCEPTANCE.md](verification/ACCEPTANCE.md)。
