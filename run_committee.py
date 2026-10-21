@@ -5,6 +5,9 @@ import sys
 
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
+    if argv[:1] == ["monthly-max-vs-sigma"]:
+        from trading.research.monthly_max_vs_sigma import main as monthly_max_sigma_main
+        return monthly_max_sigma_main(argv[1:])
     if argv[:1] == ["leader-eight-type-secondary-supplement"]:
         from trading.research.leader_eight_type_secondary_supplement import main as secondary_supplement_main
         return secondary_supplement_main(argv[1:])

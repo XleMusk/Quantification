@@ -9,7 +9,7 @@ for partial 2023, full 2024/2025 and segmented 2026. Reuse these results. Broad
 data coverage does not establish a strong strategy; the completed studies retain
 weak, negative, empty and source-stopped cases. No strategy is validated.
 
-- Current actual study: one continuous January 5--September 21, 2026 original32
+- Completed at 14:45:39: one continuous January 5--September 21, 2026 original32
   account path, plus six tail sessions through September 30. Registration and
   the once-only command driver are in
   `outputs/leader_cross_year/20261021_2026_continuous_v1`. This addresses monthly
@@ -17,10 +17,27 @@ weak, negative, empty and source-stopped cases. No strategy is validated.
   first-day native-observed scope differs from the 2024/2025 annual61-valid
   cohort, so this is neither a blind holdout nor an only-year-changed comparison.
   Preserve both capacities, both guards, all 32 outcomes and original fees.
-- After that readback, use broad stored evidence to choose the next distinct
-  strategy question. Do not repeat annual/monthly studies, parameter searches,
-  old model evaluation or profitable subwindows. A negative complete result is
-  grounds to stop that formulation, not to retune the same inspected window.
+  All32 are terminal: 11 complete conditional returns (6 positive / 5 negative),
+  16 no possible entry and 5 source-stopped with null returns. ASSESSMENT.md and
+  case_summary.csv in that directory retain the decisions and every outcome.
+  Keep only the space/environment and liquidity/environment hypotheses for
+  inexpensive future observation; stop new historical tuning of the current
+  relay, rebound and turnover expressions. Trend, crossing and catch-up remain
+  untested because of input/identity gaps. No type qualifies for selection.
+  Original registered prospective books continue unchanged, including losers.
+- Next distinct comparison: fixed previous-complete-month lowMAX versus same-
+  month sample sigma, one common main-board/non-ST complete-history pool, same
+  raw execution/fees/shared Engine, two independent 140,000 books and monthly
+  20-stock targets at 4% each (80% gross; shortage leaves cash). Source2023 is
+  warmup; accounts2024-01-02..2026-09-30, first decision2024-01-31 and execution
+  February1, last decision August2026. January2024 is cash in both arms. Use the
+  original matched canonical/raw/action source pair, not a mixed extended pair.
+  Preregister exact inputs and economics before the run; no MAX-window search.
+  All dates were already inspected, so this is a mechanism replication, not a
+  blind holdout. Require complete paired books, positive lowMAX net return and
+  net increment, and positive increment in at least two of the three year slices
+  before considering future observation. Source failures remain unknown; they
+  do not stop the other arm or daily production. Do not repeat old studies.
 - Keep scheduled collection/publication and concrete production failures on the
   operational track. Once a repair is adequate, return to research; additional
   context separation, reports and UI checks cannot substitute for strategy
