@@ -2626,6 +2626,14 @@ def main(argv=None):
     leader_mode = leader_only.add_mutually_exclusive_group(required=True)
     leader_mode.add_argument("--source-only", action="store_true")
     leader_mode.add_argument("--publish-current", action="store_true")
+    eight_only = commands.add_parser("advance-eight32",
+        help="Continue original eight-type inputs/current publication without consuming accounts or the core cursor")
+    eight_only.add_argument("--run-dir", type=Path, required=True)
+    eight_only.add_argument("--day", required=True)
+    eight_only.add_argument("--package", type=Path, required=True)
+    eight_mode = eight_only.add_mutually_exclusive_group(required=True)
+    eight_mode.add_argument("--source-only", action="store_true")
+    eight_mode.add_argument("--publish-current", action="store_true")
     recover = commands.add_parser("recover-step")
     recover.add_argument("--run-dir", type=Path, required=True)
     recover.add_argument("--day", required=True)
@@ -2669,6 +2677,9 @@ def main(argv=None):
         result = advance_native(args.run_dir, args.day, args.package, source_only=args.source_only)
     elif args.action == "advance-leader20":
         from .leader_close_daily import advance
+        result = advance(args.run_dir, args.day, args.package, source_only=args.source_only)
+    elif args.action == "advance-eight32":
+        from .leader_eight_type_daily import advance
         result = advance(args.run_dir, args.day, args.package, source_only=args.source_only)
     elif args.action == "recover-route":
         from .system_daily_route_recovery import recover_route

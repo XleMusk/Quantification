@@ -2,6 +2,19 @@
 
 ## Current priority: strategy evidence and a usable daily research path
 
+Latest actual source-only result (16:03:45, October21): saved32 formations /
+93,188 stock-months were reused without rescoring or rule/cost changes. LowMAX
+now completed106 sessions and stopped on600120/June14 reserve terms; sigma115
+stopped on600033/June27. Both keep20 residual positions; full-window returns,
+yearly increment and selection remain null. The bounded two-primary-document
+source correction is finished. Do not expand notice collection, retry this old
+window, tune parameters or compare different stopping values. Original failures
+and the pre-account reader-order bug are preserved. Actual result and two exact
+missing fields: outputs/monthly_max_vs_sigma/20261021_reader_order_fix_v2/REPORT.md
+and source_gaps.json. LowMAX has no established increment; sigma stays a baseline,
+not a validated winner. Next software work is independent eight-type daily
+input/publication, without crossing old-account publication gaps.
+
 The October 21 user correction is an allocation change: stop treating successive
 repairs to October 19/20 contexts as the default research task. The native cache
 already covers 908 sessions / 4,641,571 rows, and eight-type studies already exist

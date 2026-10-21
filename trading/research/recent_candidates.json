@@ -3,6 +3,77 @@
   "execution_policy": "Research only. No installation, training, orders or positive performance claim from this catalog.",
   "candidates": [
     {
+      "strategy_id": "same_calendar_month_low_max_vs_low_sigma_mainboard_v1",
+      "display_name": "低MAX与同月低波固定对照",
+      "reviewed_at": "2026-10-21T16:08:49.084929+08:00",
+      "source": [
+        "https://pages.stern.nyu.edu/~rwhitela/papers/max%20jfe11.pdf",
+        "D:/Quantification/trading/research/monthly_max_vs_sigma.py",
+        "D:/Quantification/outputs/monthly_max_vs_sigma/20261021_reader_order_fix_v2/REPORT.md"
+      ],
+      "market": "A-share source-covered ordinary mainboard, not allA or historical PIT certified",
+      "universe": "source_covered_60xxxx_SSE_and_00xxxx_SZSE_ordinary_main_board_only_not_all_A_or_historical_roster",
+      "signal": "Same previous complete calendar-month daily adjusted returns: negative single maximum daily return versus negative sample sigma(ddof1). Fixed ranks and original commonpool; no parameter search.",
+      "rebalance_frequency": "Monthend decision for exactnextsession rawopen;32batches Jan2024..Aug2026",
+      "entry_rule": "Original top20 retained within rank30; common qualifiedpool, no refill after unavailabletargets",
+      "exit_rule": "Monthlyreplacement; Sep30 marked endpoint without forcedliquidation",
+      "position_rule": "Two independent140000CNY books;20slots4percent each,80percentgross, shortagecash; same original fees/T1/limits/lot/participation/sharedEngine",
+      "required_data": [
+        "Matchedcanonical/raw/event/reference/master2023..Sep2026",
+        "Exactdated corporate-action terms and referencefacts forheld names"
+      ],
+      "original_period": "2023warmup; planned666sessions2024Jan2..2026Sep30; inspectedhistory not blindholdout",
+      "A_share_reproduction_status": "two_arm_source_only_attempt_finished_full_paired_returns_unknown_no_more_old_window_runs",
+      "result": {
+        "actual_result": "D:\\QuantificationData\\trading\\research\\monthly_max_vs_sigma_source_review\\20261021_reader_order_fix_v2\\result.json",
+        "report": "D:/Quantification/outputs/monthly_max_vs_sigma/20261021_reader_order_fix_v2/REPORT.md",
+        "formation_rows": 93188,
+        "formation_days": 32,
+        "scores_recomputed": false,
+        "cases": [
+          {
+            "arm": "low_max",
+            "completed_sessions": 106,
+            "error": "ValueError: Unresolved held corporate action: 600120.SSE 2024-06-14; missing=dividReserveToStockPs",
+            "cumulative_orders": 158,
+            "cumulative_fills": 307,
+            "net_return": null,
+            "max_drawdown": null
+          },
+          {
+            "arm": "low_sigma",
+            "completed_sessions": 115,
+            "error": "ValueError: Unresolved held corporate action: 600033.SSE 2024-06-27; missing=dividReserveToStockPs",
+            "cumulative_orders": 132,
+            "cumulative_fills": 252,
+            "net_return": null,
+            "max_drawdown": null
+          }
+        ],
+        "full_paired_account_comparison": false,
+        "economic_assessment": {
+          "status": "unknown_incomplete_account_evidence",
+          "future_observation_candidate": null
+        },
+        "candidate_panel_only": true,
+        "strategy_validated": false,
+        "selection_enabled": false,
+        "execution_admitted": false,
+        "returns_reportable": false
+      },
+      "known_gaps": [
+        "LowMAX stopped2024Jun14 on600120 reserve terms; sigmaJun27 on600033 samefield; separate residual positions retained",
+        "Lateprimary evidence is posthoc source repair, nothistorical PIT; sourcecoverage/qualification/reference are notfullyverified",
+        "Differentstopdates: markedvalues cannot be compared as fullstrategyreturns"
+      ],
+      "next_test": "Boundedsourcepassfinished. Recordexactmissingterms separately; no furthernoticecampaign, oldwindowreplays or threshold tuning. No established lowMAX increment; retain sigma as researchbaseline only. Continue independent systemsdevelopment and originalcurrentdaily routes.",
+      "candidate_panel_only": true,
+      "strategy_validated": false,
+      "selection_enabled": false,
+      "execution_admitted": false,
+      "returns_reportable": false
+    },
+    {
       "strategy_id": "adjusted_52week_high_vs_matched_12_1_monthly_positive_pool_v1",
       "reviewed_at": "2026-10-18T23:04:58.705522+08:00",
       "source": [
@@ -1818,7 +1889,7 @@
     },
     {
       "strategy_id": "native_fixed_eight_leaders_environment_comparison_v1",
-      "reviewed_at": "2026-10-19T04:52:46.979661+08:00",
+      "reviewed_at": "2026-10-21T16:08:49.084929+08:00",
       "source": [
         "D:/Quantification/trading/research/leader_eight_type_historical_native.py",
         "D:/Quantification/trading/research/leader_eight_type_panel_replay.py",
@@ -2144,7 +2215,7 @@
           }
         }
       },
-      "next_test": "固定环境在三个已有区间未形成稳定风险排序，不能把低仓位效果称为看大盘能力。保留原规则和全部负数/null/残仓，沿实际新收盘与原发表连续前缀积累纸面证据。后续新候选须提出独立选股或持有机制并用同源成本对照，不能在已看窗口调整环境阈值或容量；不再扩展旧公告补洞。",
+      "next_test": "Original32 continuous2026 is terminal. Follow research_allocation: retain only space/environment and liquidity/environment hypotheses for inexpensive genuinely new-date observation; stop relay/rebound/turnover current-expression tuning. Trend/crossing/catchup remain unknown. Do not alter original registered prospective accounts, including losing groups; no replays of old windows or parameter/capacity search.",
       "execution_method_extension": {
         "method_id": "leader_eight_type_residual_full_exit_paper_v1",
         "source": "D:/Quantification/trading/research/leader_eight_type_residual_exit.py",
@@ -2672,6 +2743,43 @@
         "selection_enabled": false,
         "strategy_validated": false,
         "execution_admitted": false
+      },
+      "independent_continuous_2026_evidence": {
+        "report": "D:/Quantification/outputs/leader_cross_year/20261021_2026_continuous_v1/ASSESSMENT.md",
+        "case_summary": "D:/Quantification/outputs/leader_cross_year/20261021_2026_continuous_v1/case_summary.csv",
+        "completed_at": "2026-10-21T14:45:39+08:00",
+        "decisions": "2026-01-05..2026-09-21",
+        "tail_through": "2026-09-30",
+        "initial_observed_scope": 5181,
+        "same_cohort_as_2024_2025": false,
+        "case_count": 32,
+        "complete_with_fills": 11,
+        "complete_positive": 6,
+        "complete_negative": 5,
+        "no_possible_entry": 16,
+        "source_stopped": 5,
+        "independent_holdout": false,
+        "selection_enabled": false
+      },
+      "research_allocation": {
+        "decision_recorded_at": "2026-10-21T16:08:49.084929+08:00",
+        "retain_future_observation_only": [
+          "space_height_leader",
+          "liquidity_capacity_proxy"
+        ],
+        "stop_new_historical_tuning_of_current_expression": [
+          "relay_continuation_leader",
+          "rebound_repair_candidate",
+          "turnover_leader"
+        ],
+        "insufficient_evidence": [
+          "trend_leader",
+          "cross_regime_candidate",
+          "sector_catchup_leader"
+        ],
+        "no_strategy_qualified_for_selection": true,
+        "original_registered_prospective_cases_unchanged": true,
+        "reason": "Original continuous2026 and savedcrossyear evidence do not establish robust excellent strategy. Keep all capacities, losses, empty and failed cases; do not rerun inspected windows or choose profitable versions."
       }
     },
     {
@@ -4527,5 +4635,5 @@
     }
   ],
   "last_updated_at": "2026-10-18T17:09:47.350430+08:00",
-  "last_catalog_updated_at": "2026-10-19T05:38:36.518783+08:00"
+  "last_catalog_updated_at": "2026-10-21T16:08:49.084929+08:00"
 }
