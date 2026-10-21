@@ -25,6 +25,7 @@ GRID_SCOPE = "every_pinned_provider_symbol_times_requested_dates_full_prefix_for
 RANK_SCOPE = "within_each_date_seed_percentile_mean_no_cross_date_ranking"
 CASE_IDS = {"causal_first_seen_cap20", "uncapped"}
 SYSTEM_DAILY_RUN = "20261017_v1"
+SYSTEM_ARTIFACT_ROOTS = ("operations", "alpha158_context", "alpha158_production")
 ROLE_LEGACY = {"alpha_score": "research/recent_source_alpha158",
     "alpha_provider": "research/recent_source_qlib_provider"}
 
@@ -55,22 +56,24 @@ def _role_path(path, role, data_root, project_root=None):
                 return path
         except ValueError:
             pass
-    operations = data_root / "research/system_daily" / SYSTEM_DAILY_RUN / "operations"
-    try:
-        relative = path.relative_to(operations)
-        parts = relative.parts
-        if (len(parts) == 4 and parts[1:] == ("artifacts", role, "result.json")
-                and datetime.strptime(parts[0], "%Y%m%d").strftime("%Y%m%d") == parts[0]):
-            return path
-    except ValueError:
-        pass
+    for root_name in SYSTEM_ARTIFACT_ROOTS:
+        operations = data_root / "research/system_daily" / SYSTEM_DAILY_RUN / root_name
+        try:
+            relative = path.relative_to(operations)
+            parts = relative.parts
+            if (len(parts) == 4 and parts[1:] == ("artifacts", role, "result.json")
+                    and datetime.strptime(parts[0], "%Y%m%d").strftime("%Y%m%d") == parts[0]):
+                return path
+        except ValueError:
+            pass
     raise ValueError(f"Saved Alpha158 {role} result escapes its exact registered artifact role")
 
 
 def _role_extra_paths(data_root, role, project_root=None):
-    operations = data_root / "research/system_daily" / SYSTEM_DAILY_RUN / "operations"
     return [_role_path(p, role, data_root, project_root)
-        for p in sorted(operations.glob("*/artifacts/" + role + "/result.json"))]
+        for root_name in SYSTEM_ARTIFACT_ROOTS
+        for p in sorted((data_root / "research/system_daily" / SYSTEM_DAILY_RUN / root_name
+            ).glob("*/artifacts/" + role + "/result.json"))]
 
 
 def _latest(folder, filename, key, *, extra_paths=(), path_check=None):

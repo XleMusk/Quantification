@@ -2686,6 +2686,14 @@ def main(argv=None):
     leader_mode = leader_only.add_mutually_exclusive_group(required=True)
     leader_mode.add_argument("--source-only", action="store_true")
     leader_mode.add_argument("--publish-current", action="store_true")
+    alpha_only = commands.add_parser("advance-alpha158",
+        help="Continue frozen Alpha158 provider/scores or current publication without consuming accounts")
+    alpha_only.add_argument("--run-dir", type=Path, required=True)
+    alpha_only.add_argument("--day", required=True)
+    alpha_only.add_argument("--package", type=Path, required=True)
+    alpha_mode = alpha_only.add_mutually_exclusive_group(required=True)
+    alpha_mode.add_argument("--source-only", action="store_true")
+    alpha_mode.add_argument("--publish-current", action="store_true")
     eight_only = commands.add_parser("advance-eight32",
         help="Continue original eight-type inputs/current publication without consuming accounts or the core cursor")
     eight_only.add_argument("--run-dir", type=Path, required=True)
@@ -2751,6 +2759,9 @@ def main(argv=None):
     elif args.action == "advance-leader20":
         from .leader_close_daily import advance
         result = advance(args.run_dir, args.day, args.package, source_only=args.source_only)
+    elif args.action == "advance-alpha158":
+        from .recent_alpha158_daily import advance
+        result = advance(args.run_dir, args.day, args.package, source_only=args.source_only)
     elif args.action == "advance-eight32":
         from .leader_eight_type_daily import advance
         result = advance(args.run_dir, args.day, args.package, source_only=args.source_only)
@@ -2798,6 +2809,6 @@ def main(argv=None):
             refresh_seat_disclosures=args.refresh_seat_disclosures, native_paper_closes=args.native_paper_close)
     print(json.dumps(result, ensure_ascii=False))
     return 1 if result.get("status") in {
-        "partial_research_routes", "partial_native_settlement_no_automatic_retry", "partial_native_only_production_no_retry", "partial_leader20_production_no_retry", "unknown_no_successful_child_terminal",
+        "partial_research_routes", "partial_native_settlement_no_automatic_retry", "partial_native_only_production_no_retry", "partial_leader20_production_no_retry", "partial_alpha158_production_no_retry", "unknown_no_successful_child_terminal",
         "recovered_saved_route_partial", "unknown_saved_route_publication_incomplete",
         "unknown_interrupted_route_projection_no_retry"} else 0

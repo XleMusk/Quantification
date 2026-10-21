@@ -56,10 +56,29 @@ context, conversion fixture or previous publication substitutes for new data.
 Do not fetch merger notices or rerun the stopped Ridge/lowMAX windows to exercise
 this capability. The remaining concrete daily software gap is Alpha158's frozen
 provider/score/publication producer still sharing the broken global publication
-cursor. After the scheduled path, decouple its current production as already done
-for the other routes, preserving original weights, source lineage and actual
-publication clock; never backfill old signals or cross their absence in original
-accounts. Check for an existing completed implementation first. Do not keep
+cursor. This is now implemented as `system-daily-refresh advance-alpha158` with
+explicit source-only/current-publication modes and its own production profile.
+It reuses the original provider, datewise frozen scorer, causal capacity prefix
+and publisher; original accounts/global cursor do not advance. Exact successful
+child terminals can be adopted, failed/pending producers are not retried, and
+missed publications stay missing. The existing read-only API recognizes these
+saved artifacts without new frontend work or a service restart.
+Actual first source-only20 finished at18:23:41, October21: one new20 score batch,
+5,024 active observations from5,324 native grid codes,675 observed provider dates.
+No model refit, old-score recomputation, publication, account or Engine session
+was performed. Source context is20; latest actual publication remains19 and20 is
+missing. The original successful command and terminal receipts were reused by
+the final read-only validator; no duplicate artifact registry or head migration.
+See outputs/alpha158_daily/20261021_v1/{REPORT.md,actual_readback.json}.
+Do not repeat this20 context or the completed checks. Accurate newD sources can
+now produce their ownD frozen batch/publication independently. The remaining
+Alpha paper gap is explicit: old books cannot cross missing20publication, and
+the original forward consumer requires successor raw before inception and its
+own publication on each settled day. Next reuse the generic split-session Engine
+for a newly registered original two-case generation: seed fromD without future
+Eraw, settleE independently, attach only genuineEpublication without redoing the
+session. Preserve original books and all source/model/cost/capacity rules. Alpha
+five holdings is a count, not an eight-type five-session expiry. Do not keep
 generalizing conversions or producing repeated audits without an actual use case.
 The saved strategy registry already covers many weak/negative price strategies;
 do not call another inspected-window variant an untouched holdout. Continue

@@ -10,7 +10,8 @@ from trading.research import recent_alpha158_view as m
 from trading.research.tests.test_recent_alpha158_view import save
 
 
-def test_system_roles_share_latest_ordering_with_legacy_and_reject_foreign_paths(tmp_path):
+@pytest.mark.parametrize("operation_root", ["operations", "alpha158_context", "alpha158_production"])
+def test_system_roles_share_latest_ordering_with_legacy_and_reject_foreign_paths(tmp_path, operation_root):
     def write(path, record):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(record), encoding="utf-8")
@@ -41,7 +42,7 @@ def test_system_roles_share_latest_ordering_with_legacy_and_reject_foreign_paths
     legacy = m.recent_alpha158_view(tmp_path, project_root=project, now=now)
     assert legacy["source_file"] == str(legacy_score)
     assert legacy["latest_publication"]["matches_displayed_score_batch"] is True
-    artifacts = tmp_path / "research/system_daily/20261017_v1/operations/20261019/artifacts"
+    artifacts = tmp_path / "research/system_daily/20261017_v1" / operation_root / "20261019/artifacts"
     provider = json.loads(legacy_provider.read_text())
     provider.update(created_at="2026-10-19T18:00:00+08:00", recent_source_days=["2026-10-19"])
     provider_path = write(artifacts / "alpha_provider/result.json", provider)
