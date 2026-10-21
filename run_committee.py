@@ -515,6 +515,9 @@ def main(argv=None):
     if argv[:1] == ["recent-source-alpha158-forward-run"]:
         from trading.research.recent_alpha158_forward_run import main as recent_alpha158_forward_main
         return recent_alpha158_forward_main(argv[1:])
+    if argv[:1] == ["recent-source-alpha158-split-forward"]:
+        from trading.research.recent_alpha158_split_forward import main as recent_alpha158_split_main
+        return recent_alpha158_split_main(argv[1:])
     if argv[:1] == ["recent-source-shortline-panel"]:
         from trading.research.recent_shortline_panel import main as recent_shortline_panel_main
         return recent_shortline_panel_main(argv[1:])
