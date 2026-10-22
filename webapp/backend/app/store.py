@@ -44,7 +44,7 @@ def initialize():
 
 
 def decode_dataset(row):
-    return None if row is None else {"id": row["id"], "name": row["name"],
+    return None if row is None else {"id": row["id"], "name": row["name"], "fingerprint": row["fingerprint"],
                                      "created_at": row["created_at"], **json.loads(row["metadata"])}
 
 

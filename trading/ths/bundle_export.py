@@ -1,5 +1,6 @@
 """Materialize structured THS journal observations as four-file exports."""
 import csv
+import io
 import json
 from pathlib import Path
 import shutil
@@ -117,16 +118,21 @@ def export_observations(values, root):
         kind = value["kind"]
         if not _target_is_replaceable(paths[kind], kind):
             raise ValueError(f"Refusing to overwrite non-template export: {paths[kind]}")
+    # A later malformed view must not refresh an earlier file or truncate its
+    # own destination. Render every member before opening any export for write.
+    rendered = {}
     for value in values:
         kind = value["kind"]
         if kind == "account":
-            paths[kind].write_text(json.dumps(_account_payload(value), ensure_ascii=False, indent=2) + "\n",
-                                   encoding="utf-8")
+            rendered[kind] = json.dumps(_account_payload(value), ensure_ascii=False, indent=2) + "\n"
         else:
-            with paths[kind].open("w", encoding="utf-8", newline="") as stream:
-                writer = csv.DictWriter(stream, fieldnames=HEADERS[kind])
-                writer.writeheader()
-                writer.writerows(_csv_rows(kind, value))
+            stream = io.StringIO(newline="")
+            writer = csv.DictWriter(stream, fieldnames=HEADERS[kind])
+            writer.writeheader()
+            writer.writerows(_csv_rows(kind, value))
+            rendered[kind] = stream.getvalue()
+    for kind, content in rendered.items():
+        paths[kind].write_text(content, encoding="utf-8", newline=None if kind == "account" else "")
     kinds = sorted(value["kind"] for value in values)
     missing_kinds = [kind for kind in KINDS if kind not in kinds]
     return {

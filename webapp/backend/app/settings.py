@@ -6,6 +6,7 @@ PROJECT = ROOT.parent
 STORAGE = Path(os.environ.get("QUANT_WEB_STORAGE", ROOT / "storage")).resolve()
 UI_ORIGIN = os.environ.get("QUANT_UI_ORIGIN", "http://127.0.0.1:5175")
 MAX_UPLOAD = 12 * 1024 * 1024
+MAX_RESEARCH_GRID_CELLS = 5_000_000
 
 
 def prepare_storage():

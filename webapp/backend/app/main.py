@@ -1,17 +1,18 @@
 from contextlib import asynccontextmanager
 import io
 import json
+import socket
 from typing import Literal
 
-from fastapi import FastAPI, File, Form, Header, HTTPException, Request, UploadFile
+from fastapi import BackgroundTasks, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel, Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 import pandas as pd
 
-from . import data, store
-from .settings import MAX_UPLOAD, STORAGE, UI_ORIGIN
+from . import chart_data, data, stockdb_registry, store
+from .settings import MAX_RESEARCH_GRID_CELLS, MAX_UPLOAD, STORAGE, UI_ORIGIN
 from trading import store as trading_store
 from trading.api import router as trading_router
 
@@ -73,6 +74,69 @@ def list_datasets():
     return store.datasets()
 
 
+@app.get("/api/operations")
+def operations_workspace():
+    from .operations import workspace
+    return workspace()
+
+
+@app.get("/api/research-workspace")
+def research_workspace():
+    from .research_workspace import workspace
+    return workspace()
+
+
+@app.get("/api/execution-review")
+def execution_review_workspace(run_id: str | None = None):
+    from .execution_review import workspace
+    return workspace(run_id)
+
+
+@app.post("/api/execution-review/calibration")
+def execution_calibration(body: dict):
+    from .execution_review import calibrate
+    return calibrate(body)
+
+
+@app.get("/api/minute-datasets")
+def minute_datasets():
+    from .minute_data import list_minute_datasets
+    return list_minute_datasets()
+
+
+@app.get("/api/minute-datasets/{identifier}/chart")
+def minute_chart(identifier: str, symbol: str | None = None, period: str = "1m", as_of: str | None = None):
+    from .minute_data import minute_chart
+    return minute_chart(identifier, symbol, period, as_of)
+
+
+class MinuteCaptureInput(BaseModel):
+    symbols: list[str] = Field(min_length=1, max_length=5)
+    start: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    end: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    name: str | None = Field(default=None, min_length=1, max_length=80)
+
+
+@app.post("/api/minute-captures", status_code=202)
+def minute_capture(body: MinuteCaptureInput, background: BackgroundTasks):
+    from .minute_data import create_capture, run_capture
+    item = create_capture(body.symbols, body.start, body.end, body.name)
+    background.add_task(run_capture, item["id"])
+    return item
+
+
+@app.get("/api/minute-captures/{identifier}")
+def minute_capture_status(identifier: str):
+    from .minute_data import capture_status
+    return capture_status(identifier)
+
+
+@app.post("/api/minute-execution/preview")
+def minute_execution_preview(body: dict):
+    from .minute_execution import preview
+    return preview(body)
+
+
 @app.get("/api/datasets/example.csv")
 def example():
     from quant_learning_starter.factor_lab import synthetic_panel
@@ -84,6 +148,31 @@ def example():
 @app.post("/api/datasets/sync-cache")
 def sync_cache():
     return data.sync_local_cache()
+
+
+@app.get("/api/data-sources/stockdb")
+def stockdb_inventory():
+    # Availability of the service and availability of saved research versions
+    # are independent. No query enumerates the live database here.
+    try:
+        with socket.create_connection(("127.0.0.1", 7899), timeout=.35):
+            status = "online"
+    except OSError:
+        status = "offline"
+    saved = stockdb_registry.inventory()
+    return {"service": {"status": status, "endpoint": "http://127.0.0.1:7899/",
+                        "message": "本机端口可连接，行情日期以保存版本为准" if status == "online" else "服务未连接，仍可使用已保存版本"},
+            "inventory": saved["items"], "warnings": saved["warnings"]}
+
+
+class StockDBRegistration(BaseModel):
+    inventory_id: str = Field(min_length=1, max_length=128)
+    name: str | None = Field(default=None, min_length=1, max_length=80)
+
+
+@app.post("/api/data-sources/stockdb/register")
+def register_stockdb(body: StockDBRegistration):
+    return stockdb_registry.register_inventory(body.inventory_id, body.name)
 
 
 @app.post("/api/datasets")
@@ -119,10 +208,32 @@ def preview(identifier: str, symbol: str | None = None):
     symbol = symbol or item["symbols"][0]
     if symbol not in item["symbols"]:
         raise ValueError("证券代码不在此数据集中")
-    frame = data.read_bars(identifier)
-    frame = frame.loc[frame.symbol.eq(symbol)].sort_values("date")
+    frame = data.read_bars(identifier, symbol=symbol).sort_values("date")
     return {"dataset": item, "symbol": symbol, "prices": data.records(frame.tail(800)),
             "recent": data.records(frame.tail(10).iloc[::-1])}
+
+
+@app.get("/api/datasets/{identifier}/snapshot")
+def dataset_snapshot(identifier: str):
+    item = require_dataset(identifier)
+    rows = data.read_latest(identifier)
+    return {"dataset": item, "rows": rows, "status": "available" if rows else "empty",
+            "price_change_basis": "previous_observed_row", "realtime": False}
+
+
+@app.get("/api/datasets/{identifier}/chart")
+def dataset_chart(identifier: str, symbol: str | None = None, as_of: str | None = None):
+    return chart_data.dataset_chart(identifier, symbol, as_of)
+
+
+@app.get("/api/jobs/{identifier}/chart-signals")
+def chart_signals(identifier: str, symbol: str | None = None, as_of: str | None = None):
+    return chart_data.job_signals(identifier, symbol, as_of)
+
+
+@app.get("/api/trading/runs/{identifier}/chart")
+def run_chart(identifier: str, symbol: str | None = None, as_of: str | None = None):
+    return chart_data.run_chart(identifier, symbol, as_of)
 
 
 class JobInput(BaseModel):
@@ -147,6 +258,11 @@ def submit_job(body: JobInput, idempotency_key: str = Header(..., min_length=8, 
         raise ValueError("数据质量阻断：请先修复 OHLC / 成交量异常")
     if len(item["symbols"]) < body.min_pairs:
         raise ValueError("证券数量不足，至少需要 min_pairs 个证券")
+    calendar = pd.DatetimeIndex(pd.read_parquet(STORAGE / "datasets" / item["id"] / "calendar.parquet").date)
+    first = max(0, calendar.searchsorted(start, side="left") - 20)
+    last = calendar.searchsorted(end, side="right")
+    if (last - first) * len(item["symbols"]) > MAX_RESEARCH_GRID_CELLS:
+        raise ValueError("研究窗口加预热超过 500 万日期 × 证券格点，请缩短日期范围后分别研究")
     config = {"start": body.start, "end": body.end, "min_pairs": body.min_pairs,
               "factors": ["reversal_5", "momentum_20", "relative_volume_20"], "holding_sessions": 5}
     return store.create_job(body.dataset_id, config, idempotency_key)

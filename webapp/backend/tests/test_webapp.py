@@ -61,6 +61,66 @@ def test_csv_import_preview_and_source_flags(client, panel):
     assert preview["prices"][0]["close"] == pytest.approx(frame.iloc[0].close)
 
 
+def test_snapshot_retains_source_and_returns_each_symbols_latest_observed_pair(client, dataset, panel):
+    response = client.get(f"/api/datasets/{dataset['id']}/snapshot")
+    assert response.status_code == 200
+    value = response.json()
+    assert value["dataset"] == dataset
+    assert value["dataset"]["kind"] == "synthetic"
+    assert value["price_change_basis"] == "previous_observed_row"
+    assert value["realtime"] is False
+    assert value["status"] == "available"
+    assert [row["symbol"] for row in value["rows"]] == dataset["symbols"]
+    for row in value["rows"]:
+        source = panel[0].loc[panel[0].symbol.eq(row["symbol"])].sort_values("date")
+        assert pd.Timestamp(row["date"]) == source.iloc[-1].date
+        assert row["close"] == pytest.approx(source.iloc[-1].close)
+        assert pd.Timestamp(row["previous_date"]) == source.iloc[-2].date
+        assert row["previous_close"] == pytest.approx(source.iloc[-2].close)
+        assert row["change_pct"] == pytest.approx(source.iloc[-1].close / source.iloc[-2].close - 1)
+        assert "amount" not in row and "name" not in row
+
+
+def test_snapshot_preserves_gaps_and_null_change_for_single_observation(client):
+    rows = [
+        {"date": "2025-01-06", "symbol": "ONE", "open": 10, "high": 10, "low": 10, "close": 10, "volume": 100},
+        {"date": "2025-01-08", "symbol": "ONE", "open": 12, "high": 12, "low": 12, "close": 12, "volume": 200},
+        {"date": "2025-01-07", "symbol": "SINGLE", "open": 20, "high": 20, "low": 20, "close": 20, "volume": 300},
+    ]
+    item = data.register(pd.DataFrame(rows), "gapped", "synthetic", "test", "synthetic",
+                         pd.date_range("2025-01-06", "2025-01-08"))
+    before = data.read_bars(item["id"])
+    value = client.get(f"/api/datasets/{item['id']}/snapshot").json()
+    one, single = value["rows"]
+    assert one["symbol"] == "ONE" and one["change_pct"] == pytest.approx(.2)
+    assert pd.Timestamp(one["previous_date"]) == pd.Timestamp("2025-01-06")
+    assert single["symbol"] == "SINGLE"
+    assert pd.Timestamp(single["date"]) == pd.Timestamp("2025-01-07")
+    assert single["previous_date"] is None and single["previous_close"] is None
+    assert single["change_pct"] is None
+    pd.testing.assert_frame_equal(before, data.read_bars(item["id"]))
+
+
+def test_snapshot_empty_storage_and_unknown_dataset_remain_honest(client, dataset, monkeypatch):
+    assert client.get("/api/datasets/unknown/snapshot").status_code == 404
+    monkeypatch.setattr(data, "read_latest", lambda identifier: [])
+    value = client.get(f"/api/datasets/{dataset['id']}/snapshot").json()
+    assert value["rows"] == [] and value["status"] == "empty"
+    assert value["realtime"] is False
+
+
+def test_snapshot_does_not_turn_invalid_prices_into_percentage_changes(client):
+    frame = pd.DataFrame([
+        {"date": "2025-01-06", "symbol": "BAD", "open": 0, "high": 0, "low": 0, "close": 0, "volume": 100},
+        {"date": "2025-01-07", "symbol": "BAD", "open": 10, "high": 10, "low": 10, "close": 10, "volume": 200},
+    ])
+    item = data.register(frame, "invalid", "synthetic", "test", "synthetic")
+    value = client.get(f"/api/datasets/{item['id']}/snapshot").json()
+    assert value["dataset"]["quality"]["invalid_rows"] == 1
+    assert value["rows"][0]["previous_close"] == 0
+    assert value["rows"][0]["change_pct"] is None
+
+
 def test_end_to_end_real_worker_function(client, dataset):
     response = submit(client, dataset)
     assert response.status_code == 202

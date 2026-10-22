@@ -76,14 +76,28 @@ def step(identifier, feed, current=None):
             sessions = [day for day in sessions if day < cutoff or (day == cutoff and (current.hour, current.minute) >= (16, 15))]
         if run["cursor"] >= len(sessions):
             if run["mode"] == "replay" or current.date().isoformat() > run["end"]:
+                if run["mode"] == "paper":
+                    from .paper_market_versions import validate_completion
+                    saved_daily = [json.loads(row[0]) for row in db.execute(
+                        "SELECT payload FROM daily WHERE run_id=? ORDER BY date", (identifier,))]
+                    validate_completion(run, feed, saved_daily)
                 complete = True
             else:
                 return False
         else:
             day = sessions[run["cursor"]]
+            source, market_version = feed, None
+            if run["mode"] == "paper":
+                from .paper_market_versions import capture
+                prior = db.execute("SELECT payload FROM daily WHERE run_id=? ORDER BY date DESC LIMIT 1", (identifier,)).fetchone()
+                previous = json.loads(prior[0]).get("market_version") if prior else None
+                source, market_version = capture(identifier, feed, day, previous)
             context = RunContext(identifier, {"paper": TradingMode.PAPER, "replay": TradingMode.REPLAY}[run["mode"]])
-            daily = advance(run["state"], feed, day, StrategyConfig(**run["config"]), run["cursor"], context=context)
-            daily["dataset"] = str(getattr(feed, "folder", run["dataset"]))
+            daily = advance(run["state"], source, day, StrategyConfig(**run["config"]), run["cursor"], context=context)
+            daily["dataset"] = str(getattr(source, "folder", run["dataset"]))
+            if run["mode"] == "paper":
+                daily["market_version"] = market_version
+                daily["market_version_status"] = "captured_before_advance" if market_version else "unsupported_feed_type"
             db.execute("INSERT INTO daily VALUES(?,?,?)", (identifier, day, json.dumps(daily, ensure_ascii=False, allow_nan=False)))
             db.execute("UPDATE runs SET state=?,cursor=cursor+1,updated_at=?,error=NULL WHERE id=?",
                        (json.dumps(run["state"], ensure_ascii=False, allow_nan=False), store.now(), identifier))

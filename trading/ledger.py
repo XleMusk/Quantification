@@ -252,7 +252,11 @@ class Ledger:
         if price_unit != "cent":
             order["notional_minor"] = total_minor
         order["fees"] = new_fees
-        order["status"] = "filled" if order["filled"] == order["qty"] else "partial"
+        fill_status = "filled" if order["filled"] == order["qty"] else "partial"
+        # A partial execution can arrive while cancellation is still pending.
+        # It changes the filled quantity, not the outstanding cancel request.
+        cancel_pending = order["status"] == "cancel_pending" and fill_status == "partial"
+        order["status"] = "cancel_pending" if cancel_pending else fill_status
         remaining = order["qty"] - order["filled"]
         future_notional = notional_cents(total_minor + remaining * order["limit_price"], 1, price_unit) - order["notional"]
         future_fee = 0 if _broker else self.fee(order["notional"] + future_notional, "buy", symbol, day) - new_fees
@@ -260,13 +264,15 @@ class Ledger:
         self.state["fills"][execution_id] = {**signature, "fees": fee_delta, "symbol": symbol, "side": side,
                                               "available_day": available_day}
         extra = {}
+        if cancel_pending:
+            extra["order_status"] = "cancel_pending"
         if _broker:
             extra.update(source="broker_observation", fee_basis="cumulative_order_statement", notional=notional, fees=None)
             self.state["fills"][execution_id].update(extra)
         if price_unit != "cent":
             extra.update(price_unit=price_unit, notional=notional)
             self.state["fills"][execution_id].update(extra)
-        self.emit(day, order["status"], order_id=order_id, execution_id=execution_id, symbol=symbol, qty=qty, price=price, **extra)
+        self.emit(day, fill_status, order_id=order_id, execution_id=execution_id, symbol=symbol, qty=qty, price=price, **extra)
         return True
 
     def apply_security_conversion(self, receipt):
@@ -541,7 +547,7 @@ class Ledger:
     def request_cancel(self, order_id, day):
         self._execution_source(False)
         order = self.state["orders"][order_id]
-        if order["status"] in ACTIVE:
+        if order["status"] in {"submitted", "partial"}:
             order["status"] = "cancel_pending"
             self.emit(day, "cancel_pending", order_id=order_id)
 
