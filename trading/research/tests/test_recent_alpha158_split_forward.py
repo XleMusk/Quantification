@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from trading.research import recent_alpha158_split_forward as split
+from trading.research import system_daily_refresh as daily
 from trading.research.tests import test_recent_alpha158_forward_run as fixtures
 
 
@@ -18,11 +19,15 @@ def test_split_settles_raw_day_then_attaches_late_publication(evidence):
     run_dir.parent.mkdir(parents=True, exist_ok=True)
     ipo, master = run_dir.parent / "ipo.json", run_dir.parent / "master.json"
     ipo.write_text("{}", encoding="utf-8"); master.write_text("{}", encoding="utf-8")
-    split.register(first, evidence["calendar"], ipo, master, run_dir)
-    settled = split.run([first], evidence["providers"]["2026-10-19"], evidence["calendar"],
-        ipo, master, run_dir, through="2026-10-16")
-    assert settled["newly_committed_phases"] == 4
-    assert all(case["missing_publication_days"] == ["2026-10-16"] for case in settled["cases"])
+    daily.main(["start-alpha158-generation", "--run-dir", str(run_dir), "--first-publication", str(first),
+        "--calendar", str(evidence["calendar"]), "--ipo-evidence", str(ipo),
+        "--research-master-run", str(master), "--generation-id", "alpha_split_test"])
+    daily.main(["advance-alpha158-generation", "--run-dir", str(run_dir),
+        "--provider-view", str(evidence["providers"]["2026-10-19"]), "--calendar", str(evidence["calendar"]),
+        "--ipo-evidence", str(ipo), "--research-master-run", str(master), "--publication", str(first),
+        "--through", "2026-10-16"])
+    settled_head = json.loads((run_dir / "head.json").read_text(encoding="utf-8"))
+    assert all(case["missing_publication_days"] == ["2026-10-16"] for case in settled_head["cases"].values())
     attached = split.run([first, second], evidence["providers"]["2026-10-19"], evidence["calendar"],
         ipo, master, run_dir, through="2026-10-16")
     assert attached["newly_committed_phases"] == 2

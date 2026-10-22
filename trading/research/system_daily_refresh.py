@@ -2715,6 +2715,17 @@ def main(argv=None):
         help="Consume only this generation's contiguous actual-publication prefix with the existing Engine")
     generation_advance.add_argument("--run-dir", type=Path, required=True)
     generation_advance.add_argument("--day", required=True)
+    alpha_generation_start = commands.add_parser("start-alpha158-generation",
+        help="Register an independent Alpha158 split-settlement paper generation")
+    for name in ("run-dir", "first-publication", "calendar", "ipo-evidence", "research-master-run"):
+        alpha_generation_start.add_argument("--" + name, type=Path, required=True)
+    alpha_generation_start.add_argument("--generation-id", required=True)
+    alpha_generation_advance = commands.add_parser("advance-alpha158-generation",
+        help="Settle raw days and attach genuine Alpha158 close publications for a split generation")
+    for name in ("run-dir", "provider-view", "calendar", "ipo-evidence", "research-master-run"):
+        alpha_generation_advance.add_argument("--" + name, type=Path, required=True)
+    alpha_generation_advance.add_argument("--publication", type=Path, action="append", required=True)
+    alpha_generation_advance.add_argument("--through")
     recover = commands.add_parser("recover-step")
     recover.add_argument("--run-dir", type=Path, required=True)
     recover.add_argument("--day", required=True)
@@ -2774,6 +2785,14 @@ def main(argv=None):
     elif args.action == "advance-eight32-generation":
         from .eight32_paper_generation import advance
         result = advance(args.run_dir, args.day)
+    elif args.action == "start-alpha158-generation":
+        from .recent_alpha158_split_forward import register
+        result = register(args.first_publication, args.calendar, args.ipo_evidence,
+            args.research_master_run, args.run_dir, generation_id=args.generation_id)
+    elif args.action == "advance-alpha158-generation":
+        from .recent_alpha158_split_forward import run
+        result = run(args.publication, args.provider_view, args.calendar, args.ipo_evidence,
+            args.research_master_run, args.run_dir, through=args.through)
     elif args.action == "recover-route":
         from .system_daily_route_recovery import recover_route
         result = recover_route(args.run_dir, args.day, args.route)
