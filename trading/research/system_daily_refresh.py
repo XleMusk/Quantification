@@ -2726,6 +2726,9 @@ def main(argv=None):
         alpha_generation_advance.add_argument("--" + name, type=Path, required=True)
     alpha_generation_advance.add_argument("--publication", type=Path, action="append", required=True)
     alpha_generation_advance.add_argument("--through")
+    alpha_generation_status = commands.add_parser("status-alpha158-generation",
+        help="Read Alpha158 split-generation registration and checkpoint without running it")
+    alpha_generation_status.add_argument("--run-dir", type=Path, required=True)
     recover = commands.add_parser("recover-step")
     recover.add_argument("--run-dir", type=Path, required=True)
     recover.add_argument("--day", required=True)
@@ -2793,6 +2796,9 @@ def main(argv=None):
         from .recent_alpha158_split_forward import run
         result = run(args.publication, args.provider_view, args.calendar, args.ipo_evidence,
             args.research_master_run, args.run_dir, through=args.through)
+    elif args.action == "status-alpha158-generation":
+        from .recent_alpha158_split_forward import status
+        result = status(args.run_dir)
     elif args.action == "recover-route":
         from .system_daily_route_recovery import recover_route
         result = recover_route(args.run_dir, args.day, args.route)

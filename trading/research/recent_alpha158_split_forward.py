@@ -131,6 +131,69 @@ def _load_registration(run_dir):
     return path, value
 
 
+def status(run_dir):
+    """Read split-generation state without producing, advancing or mutating it."""
+    run_dir = Path(run_dir).resolve()
+    registration_path = _registration_path(run_dir)
+    result = {
+        "schema": "recent_alpha158_split_forward_status_v1",
+        "run_directory": str(run_dir),
+        "registration": None,
+        "checkpoint": None,
+        "cases": [],
+        "research_only": True,
+        "candidate_panel_only": True,
+        "execution_admitted": False,
+        "selection_enabled": False,
+        "strategy_validated": False,
+        "network_accessed": False,
+    }
+    if not registration_path.exists():
+        result["status"] = "unregistered"
+        return result
+    try:
+        registration_file, registration = _load_registration(run_dir)
+    except (OSError, ValueError, json.JSONDecodeError) as error:
+        result["status"] = "registration_error"
+        result["error"] = f"{type(error).__name__}: {error}"
+        return result
+    result["registration"] = _reference(registration_file)
+    result["generation_id"] = registration.get("generation_id")
+    checkpoint = run_dir / "head.json"
+    if not checkpoint.exists():
+        result["status"] = "registered_waiting_first_run"
+        return result
+    try:
+        head = json.loads(checkpoint.read_text(encoding="utf-8-sig"))
+        if (head.get("schema") != SCHEMA
+                or head.get("generation_method_id") != GENERATION_METHOD
+                or head.get("registration") != _reference(registration_file)
+                or head.get("binding") != registration
+                or set(head.get("cases", {})) != set(CASE_IDS)):
+            raise ValueError("Alpha split checkpoint binding or case set changed")
+    except (OSError, ValueError, KeyError, json.JSONDecodeError) as error:
+        result["status"] = "checkpoint_error"
+        result["error"] = f"{type(error).__name__}: {error}"
+        result["checkpoint"] = _reference(checkpoint)
+        return result
+    result["checkpoint"] = _reference(checkpoint)
+    for case_id, case in head["cases"].items():
+        state = case.get("state", {})
+        result["cases"].append({
+            "case": case_id,
+            "last_processed_day": state.get("day"),
+            "processed_days": len(case.get("daily", [])),
+            "last_publication_day": case.get("last_publication_day"),
+            "missing_publication_days": list(case.get("missing_publication_days", [])),
+            "attachments": len(case.get("attachments", [])),
+            "orders": len(state.get("orders", [])),
+            "fills": len(state.get("fills", [])),
+            "error": case.get("error"),
+        })
+    result["status"] = "ready"
+    return result
+
+
 def _append_journal(directory, case_id, attempt, pre_state, post_state, row, phase):
     attempt_hash = _hash(attempt)
     path = Path(directory) / "journal" / case_id / (attempt["day"] + "_" + phase + "_" + attempt_hash[:24] + ".json")
@@ -321,6 +384,8 @@ def main(argv=None):
     reg.add_argument("--research-master-run", type=Path, required=True)
     reg.add_argument("--run-dir", type=Path, required=True)
     reg.add_argument("--generation-id", default="alpha158_prospective_v1")
+    status_parser = sub.add_parser("status")
+    status_parser.add_argument("--run-dir", type=Path, required=True)
     run_parser = sub.add_parser("run")
     run_parser.add_argument("--publication", type=Path, action="append", required=True)
     run_parser.add_argument("--provider-view", type=Path, required=True)
@@ -333,6 +398,8 @@ def main(argv=None):
     if args.action == "register":
         result = register(args.first_publication, args.calendar, args.ipo_evidence,
             args.research_master_run, args.run_dir, args.generation_id)
+    elif args.action == "status":
+        result = status(args.run_dir)
     else:
         result = run(args.publication, args.provider_view, args.calendar, args.ipo_evidence,
             args.research_master_run, args.run_dir, through=args.through)

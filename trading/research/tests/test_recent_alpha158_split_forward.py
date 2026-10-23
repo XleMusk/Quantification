@@ -35,6 +35,12 @@ def test_split_settles_raw_day_then_attaches_late_publication(evidence):
     head = json.loads((run_dir / "head.json").read_text(encoding="utf-8"))
     assert all(len(case["daily"]) == 2 and len(case["attachments"]) == 1
                for case in head["cases"].values())
+    readback = split.status(run_dir)
+    assert readback["status"] == "ready"
+    assert readback["research_only"] is True
+    assert readback["execution_admitted"] is False
+    assert {case["case"] for case in readback["cases"]} == set(split.CASE_IDS)
+    assert all(case["missing_publication_days"] == [] for case in readback["cases"])
     original = (run_dir / "head.json").read_bytes()
     again = split.run([first, second], evidence["providers"]["2026-10-16"], evidence["calendar"],
         "ipo", "master", run_dir, through="2026-10-16")
@@ -51,3 +57,10 @@ def test_split_requires_immutable_registration(evidence):
     split.register(first, evidence["calendar"], ipo, master, run_dir)
     with pytest.raises(ValueError, match="registration"):
         split.register(evidence["pubs"][1], evidence["calendar"], ipo, master, run_dir)
+
+
+def test_split_status_is_read_only_for_unregistered_run(tmp_path):
+    readback = split.status(tmp_path / "missing")
+    assert readback["status"] == "unregistered"
+    assert readback["network_accessed"] is False
+    assert readback["candidate_panel_only"] is True
