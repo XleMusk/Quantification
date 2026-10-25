@@ -10,9 +10,13 @@
       "status": "VERIFIED_LOCAL_RESEARCH",
       "evidence": [
         "outputs/recovery_rehearsals/20261024_lowvol_current/receipt.json",
-        "trading/research/paper_account_recovery.py"
+        "trading/research/paper_account_recovery.py",
+        "trading/research/continuous_paper_acceptance.py",
+        "trading/research/tests/test_continuous_paper_acceptance.py",
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
       ],
-      "gap": "External raw inputs are hash-pinned but not copied; no broker or personal account is restored",
+      "gap": "Local two-session continuity now covers partial fill, restart and idempotency; next real close still must prove the same behavior on StockDB/fixed_daily inputs.",
       "next_acceptance": "repeat after the next closed-session paper advance and keep live-channel evidence blocked"
     },
     {
@@ -86,7 +90,11 @@
         "outputs/pipeline_receipts/20261026_workbench_whole_flow_acceptance_v1.json",
         "outputs/research_reports/20261026_workbench_whole_flow_acceptance_v1.md",
         "outputs/pipeline_receipts/20261026_target_preview_boundary_v1.json",
-        "outputs/research_reports/20261026_target_preview_boundary_v1.md"
+        "outputs/research_reports/20261026_target_preview_boundary_v1.md",
+        "trading/research/continuous_paper_acceptance.py",
+        "trading/research/tests/test_continuous_paper_acceptance.py",
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
       ],
       "gap": "Target-preview projection is now explicitly bounded; continuous D0/D1 persistence still requires the next real close.",
       "next_acceptance": "keep the local engineering acceptance receipt current; BrokerAdapter/THS and account scope remain closed until external read-only evidence exists"

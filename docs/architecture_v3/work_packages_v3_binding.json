@@ -98,8 +98,25 @@
       "domain": "development",
       "result": "Shared object, error and state meanings have one consumer-facing definition.",
       "state": "PARTIAL",
-      "next": "Extend existing contracts only when a real V3 scenario requires a missing field.",
-      "prohibition": "Do not silently reinterpret an existing field or empty target."
+      "next": "Extend the same narrow core contract only when another real Engine/Ledger boundary needs a missing field; keep research evidence loading outside the account consumers.",
+      "prohibition": "Do not silently reinterpret an existing field or empty target.",
+      "actual_paths": [
+        "trading/corporate_action_binding.py",
+        "trading/engine.py",
+        "trading/intraday_session.py",
+        "trading/research/research_corporate_action_view.py",
+        "trading/tests/test_corporate_action_binding.py",
+        "outputs/pipeline_receipts/20261026_engine_action_binding_boundary_v1.json",
+        "outputs/research_reports/20261026_engine_action_binding_boundary_v1.md"
+      ],
+      "evidence_updated_on": "2026-10-26",
+      "evidence": [
+        "trading/tests/test_corporate_action_binding.py",
+        "trading/tests/test_architecture.py",
+        "trading/research/tests/test_research_corporate_action_view.py",
+        "outputs/pipeline_receipts/20261026_engine_action_binding_boundary_v1.json",
+        "outputs/research_reports/20261026_engine_action_binding_boundary_v1.md"
+      ]
     },
     {
       "id": "F04",
@@ -890,7 +907,20 @@
         "trading/research/next_close_d0_d1.py",
         "trading/research/tests/test_next_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_next_close_plan_binding_v1.json",
-        "outputs/research_reports/20261026_next_close_plan_binding_v1.md"
+        "outputs/research_reports/20261026_next_close_plan_binding_v1.md",
+        "trading/research/continuous_paper_acceptance.py",
+        "trading/research/tests/test_continuous_paper_acceptance.py",
+        "run_committee.py",
+        "trading/tests/test_run_committee_dispatch.py",
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_one_state.json",
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
       ]
     },
     {
@@ -970,8 +1000,22 @@
         "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v5/paper_batch/batch_receipt.json",
         "trading/research/next_close_d0_d1.py",
         "trading/research/tests/test_next_close_d0_d1.py",
-        "run_committee.py next-close-d0-d1"
-      ]
+        "run_committee.py next-close-d0-d1",
+        "trading/research/continuous_paper_acceptance.py",
+        "trading/research/tests/test_continuous_paper_acceptance.py",
+        "run_committee.py",
+        "trading/tests/test_run_committee_dispatch.py",
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_one_state.json",
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
+      ],
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "O05",
@@ -1222,19 +1266,30 @@
       "domain": "workbench",
       "result": "Whole-flow local engineering acceptance is recorded separately from blocked market/account scope.",
       "state": "PARTIAL",
-      "next": "Keep the local acceptance receipt current; do not upgrade market/account scope until authorized current quotes, account evidence and THS observation exist.",
+      "next": "Keep the local two-session continuity acceptance current; after the next closed session upgrade only with real StockDB/account scope evidence.",
       "prohibition": "Do not claim full UI acceptance while account/channel gates are blocked.",
       "actual_paths": [
         "trading/research/workbench_whole_flow_acceptance.py",
         "trading/research/tests/test_workbench_whole_flow_acceptance.py",
         "outputs/pipeline_receipts/20261026_workbench_whole_flow_acceptance_v1.json",
-        "outputs/research_reports/20261026_workbench_whole_flow_acceptance_v1.md"
+        "outputs/research_reports/20261026_workbench_whole_flow_acceptance_v1.md",
+        "trading/research/continuous_paper_acceptance.py",
+        "trading/research/tests/test_continuous_paper_acceptance.py",
+        "run_committee.py",
+        "trading/tests/test_run_committee_dispatch.py",
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_one_state.json",
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
       ],
       "evidence": [
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
         "trading/research/workbench_whole_flow_acceptance.py",
         "trading/research/tests/test_workbench_whole_flow_acceptance.py",
         "outputs/pipeline_receipts/20261026_workbench_whole_flow_acceptance_v1.json",
-        "outputs/research_reports/20261026_workbench_whole_flow_acceptance_v1.md"
+        "outputs/research_reports/20261026_workbench_whole_flow_acceptance_v1.md",
+        "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },

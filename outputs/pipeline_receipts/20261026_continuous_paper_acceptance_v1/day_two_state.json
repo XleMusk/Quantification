@@ -1,0 +1,45 @@
+{
+  "schema": "research_paper_account_state_v1",
+  "account_id": "continuous-paper-acceptance",
+  "mode": "end_of_day_paper",
+  "day": "2026-10-28",
+  "target_day": "2026-10-28",
+  "cash_cents": 9599496,
+  "positions": {
+    "000001.SZSE": [
+      {
+        "qty": 400,
+        "available": "2026-10-28"
+      }
+    ]
+  },
+  "orders": {
+    "acceptance-order-20261027": {
+      "id": "acceptance-order-20261027",
+      "day": "2026-10-27",
+      "symbol": "000001.SZSE",
+      "side": "buy",
+      "qty": 1000,
+      "limit_price": 1000,
+      "filled": 400,
+      "notional": 400000,
+      "fees": 504,
+      "reserve": 600006,
+      "status": "partial",
+      "reason": null
+    }
+  },
+  "fills": {
+    "acceptance-fill-20261027-partial": {
+      "order_id": "acceptance-order-20261027",
+      "qty": 400,
+      "price": 1000,
+      "day": "2026-10-27",
+      "fees": 504,
+      "symbol": "000001.SZSE",
+      "side": "buy",
+      "available_day": "2026-10-28"
+    }
+  },
+  "execution_admitted": false
+}

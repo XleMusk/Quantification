@@ -1,0 +1,33 @@
+{
+  "schema": "continuous_paper_acceptance_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "synthetic_fixture": true,
+  "sessions": [
+    "2026-10-27",
+    "2026-10-28"
+  ],
+  "target_days": [
+    "2026-10-27",
+    "2026-10-28"
+  ],
+  "order_count": 1,
+  "fill_count": 1,
+  "cash_after_partial_rmb": 95994.96,
+  "position_quantity_after_partial": 400,
+  "checks": {
+    "partial_fill_recorded": true,
+    "cash_carried_across_restart": true,
+    "position_carried_across_restart": true,
+    "no_new_target_date_mutation": true,
+    "repeat_order_is_same_record": true,
+    "repeat_fill_is_idempotent": true,
+    "repeat_state_unchanged": true,
+    "t1_available_on_day_two": true,
+    "execution_closed": true
+  },
+  "scope": "two-session local continuity acceptance; does not prove StockDB or market-forward operation"
+}
