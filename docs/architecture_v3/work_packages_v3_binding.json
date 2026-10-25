@@ -263,7 +263,7 @@
       "domain": "data",
       "result": "Historical security rules and entitlement inputs are date-aware and sourced.",
       "state": "PARTIAL",
-      "next": "Bind existing action/status/qualification receipts to the target scenario.",
+      "next": "Keep target/action binding diagnostic; obtain per-event publication/retrieval/revision evidence before any action-adjusted replay or PIT admission.",
       "prohibition": "Raw adjustment factors are not automatically cash/share events.",
       "actual_paths": [
         "outputs/pipeline_receipts/20261024_publication_event_contract_local_receipt.json",
@@ -286,8 +286,13 @@
         "outputs/pipeline_receipts/20261024_stockdb_dated_action_context_sidecar_v4_receipt.json",
         "outputs/stockdb_action_context_views/20261024_sidecar_v4/run.json",
         "outputs/pipeline_receipts/20261024_action_publication_sidecar_v5.json",
-        "outputs/research_reports/20261024_action_publication_sidecar_v5.md"
-      ]
+        "outputs/research_reports/20261024_action_publication_sidecar_v5.md",
+        "trading/research/action_context_target_binding.py",
+        "trading/research/tests/test_action_context_target_binding.py",
+        "outputs/pipeline_receipts/20261026_action_context_target_binding_v1.json",
+        "outputs/research_reports/20261026_action_context_target_binding_v1.md"
+      ],
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "D05",

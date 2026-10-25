@@ -1,6 +1,6 @@
 {
   "schema": "quantification_goal_completion_audit_v1",
-  "audited_at": "2026-10-26T03:08:00+08:00",
+  "audited_at": "2026-10-26T03:20:00+08:00",
   "execution_admitted": false,
   "overall_status": "INCOMPLETE_ACTIVE",
   "items": [
@@ -43,10 +43,13 @@
         "trading/research/tests/test_f2_issuer_source_evidence.py",
         "outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v1.json",
         "outputs/research_reports/20261026_f2_issuer_source_capture_v1.md",
-        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json"
+        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json",
+        "outputs/pipeline_receipts/20261026_action_context_target_binding_v1.json",
+        "outputs/research_reports/20261026_action_context_target_binding_v1.md",
+        "trading/research/action_context_target_binding.py"
       ],
       "gap": "124 recent rows missing; PIT membership/corporate actions not verified; action sidecar now retains event and per-artifact timing metadata (177 artifacts), 31 event rows with explicit retrieval fields, but has 0 asof_at and 0 PIT-safe rows",
-      "next_acceptance": "next close capture updates coverage and preserves missing rows"
+      "next_acceptance": "obtain per-event PIT/revision evidence; target/action binding remains diagnostic until then"
     },
     {
       "id": "shared_pipeline",
@@ -135,7 +138,10 @@
         "trading/research/common_cost_pressure.py",
         "trading/research/tests/test_common_cost_pressure.py",
         "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
-        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md",
+        "outputs/pipeline_receipts/20261026_action_context_target_binding_v1.json",
+        "outputs/research_reports/20261026_action_context_target_binding_v1.md",
+        "trading/research/action_context_target_binding.py"
       ],
       "gap": "shared shadow packages and action-sidecar mapping are reproducible; v4 retains 138 events/177 artifacts and integrates into 180,948-row action context, but as-of history yields 0 PIT-safe rows and no action-adjusted replay",
       "next_acceptance": "recompute common-window cost pressure after a changed snapshot or cost contract; keep PIT/forward/adoption gates separate"
@@ -501,7 +507,10 @@
         "trading/research/common_cost_pressure.py",
         "trading/research/tests/test_common_cost_pressure.py",
         "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
-        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md",
+        "outputs/pipeline_receipts/20261026_action_context_target_binding_v1.json",
+        "outputs/research_reports/20261026_action_context_target_binding_v1.md",
+        "trading/research/action_context_target_binding.py"
       ],
       "gap": "catalog and one-to-one fixed specs are bound; actual per-event PIT/revision evidence, shortline and public-seat timing gates remain open",
       "next_acceptance": "after the next complete close, refresh common snapshot, cost pressure and retained candidate evidence before any candidate rerun"

@@ -1,0 +1,490 @@
+{
+  "schema": "quantification_action_context_target_binding_v1",
+  "status": "BOUND_TARGET_CONTEXT_PIT_BLOCKED",
+  "created_at": "2026-10-26T03:10:32.597160+08:00",
+  "decision_day": "2026-10-13",
+  "strategy_ids": [
+    "trend_low_vol_half_momentum_20",
+    "stockdb_factor_monthly_ridge_v1"
+  ],
+  "target_count": 22,
+  "rows": [
+    {
+      "symbol": "600985.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 100,
+      "target_notional_cents": 159900,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 4,
+          "plan_announce_present": 4,
+          "operate_date_present": 4,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "002066.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 100,
+      "target_notional_cents": 182400,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 3,
+          "plan_announce_present": 3,
+          "operate_date_present": 3,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "002064.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 200,
+      "target_notional_cents": 196000,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 5,
+          "plan_announce_present": 5,
+          "operate_date_present": 5,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "600236.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 200,
+      "target_notional_cents": 200000,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 8,
+          "plan_announce_present": 8,
+          "operate_date_present": 8,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "002452.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 200,
+      "target_notional_cents": 215400,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 5,
+          "plan_announce_present": 5,
+          "operate_date_present": 5,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "600428.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 200,
+      "target_notional_cents": 216400,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 4,
+          "plan_announce_present": 4,
+          "operate_date_present": 4,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "601918.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 200,
+      "target_notional_cents": 222000,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 4,
+          "plan_announce_present": 4,
+          "operate_date_present": 4,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "600989.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 100,
+      "target_notional_cents": 223600,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 6,
+          "plan_announce_present": 6,
+          "operate_date_present": 6,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "601339.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 300,
+      "target_notional_cents": 228900,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 6,
+          "plan_announce_present": 6,
+          "operate_date_present": 6,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "000792.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 100,
+      "target_notional_cents": 231300,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 0,
+          "plan_announce_present": 0,
+          "operate_date_present": 0,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "002135.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 400,
+      "target_notional_cents": 235600,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 4,
+          "plan_announce_present": 4,
+          "operate_date_present": 4,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "600201.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 200,
+      "target_notional_cents": 238600,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 4,
+          "plan_announce_present": 4,
+          "operate_date_present": 4,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "002493.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 200,
+      "target_notional_cents": 243000,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 4,
+          "plan_announce_present": 4,
+          "operate_date_present": 4,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "000301.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 200,
+      "target_notional_cents": 249200,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 2,
+          "plan_announce_present": 2,
+          "operate_date_present": 2,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "603012.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 300,
+      "target_notional_cents": 253800,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 5,
+          "plan_announce_present": 5,
+          "operate_date_present": 5,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "601886.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 200,
+      "target_notional_cents": 257800,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 7,
+          "plan_announce_present": 7,
+          "operate_date_present": 7,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "002648.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 100,
+      "target_notional_cents": 262900,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 3,
+          "plan_announce_present": 3,
+          "operate_date_present": 3,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "002832.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 100,
+      "target_notional_cents": 264400,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 5,
+          "plan_announce_present": 5,
+          "operate_date_present": 5,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "605098.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 100,
+      "target_notional_cents": 554500,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 10,
+          "plan_announce_present": 10,
+          "operate_date_present": 10,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "603391.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_quantity": 100,
+      "target_notional_cents": 744000,
+      "action_context": [
+        {
+          "strategy_id": "trend_low_vol_half_momentum_20",
+          "coverage_strategy_id": "trend_low_vol_half_momentum_20",
+          "action_events": 0,
+          "plan_announce_present": 0,
+          "operate_date_present": 0,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "301586.SZSE",
+      "contributors": [
+        "stockdb_factor_monthly_ridge_v1"
+      ],
+      "target_quantity": 300,
+      "target_notional_cents": 865800,
+      "action_context": [
+        {
+          "strategy_id": "stockdb_factor_monthly_ridge_v1",
+          "coverage_strategy_id": "mature_factor_balanced_ridge",
+          "action_events": 3,
+          "plan_announce_present": 3,
+          "operate_date_present": 3,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    },
+    {
+      "symbol": "603197.SSE",
+      "contributors": [
+        "stockdb_factor_monthly_ridge_v1"
+      ],
+      "target_quantity": 300,
+      "target_notional_cents": 882300,
+      "action_context": [
+        {
+          "strategy_id": "stockdb_factor_monthly_ridge_v1",
+          "coverage_strategy_id": "mature_factor_balanced_ridge",
+          "action_events": 7,
+          "plan_announce_present": 7,
+          "operate_date_present": 7,
+          "source_artifact_complete": 0
+        }
+      ],
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "status": "BOUND_CONTEXT_PIT_BLOCKED"
+    }
+  ],
+  "summary": {
+    "target_rows": 22,
+    "rows_with_action_event": 20,
+    "pit_asof_safe_rows": 0,
+    "company_action_applied_rows": 0,
+    "source_artifact_complete_rows": 0
+  },
+  "execution_admitted": false,
+  "ledger_mutated": false,
+  "broker_or_ths_interacted": false,
+  "limitations": [
+    "The binding joins target identity to saved action coverage only.",
+    "No company-action cash/share adjustment is applied.",
+    "Publication/as-of/revision evidence remains incomplete, so no row is PIT-safe."
+  ]
+}
