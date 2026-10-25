@@ -140,9 +140,10 @@
         "D:/Quantification/outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/manifest_shape_failure.txt",
         "D:/Quantification/outputs/pipeline_receipts/20261025_long_window_strategy_comparison_h60_v1.json",
         "D:/Quantification/outputs/research_reports/20261025_long_window_strategy_comparison_h60_v1.md",
-        "D:/Quantification/trading/tests/test_long_window_strategy_comparison.py"
+        "D:/Quantification/trading/tests/test_long_window_strategy_comparison.py",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v1/joint_paper_receipt.json"
       ],
-      "result": "Same-snapshot candidate comparison and aligned Ridge+Alpha158 joint target reach research-only shared paper orders/fills. The six-row h60 receipt now gives deterministic continue/stop research routing; Ridge baseline and h60 preserve positive return/Sharpe signs while promotion remains closed."
+      "result": "Same-snapshot comparison, deterministic research routing, and aligned Ridge+Alpha158/target routes now reach research-only paper orders. The two CONTINUE_RESEARCH_ONLY candidates also produce a 22-order budgeted joint package from the 2026-10-13 Target+Quote bundle; 3 rows are explicitly capacity-dropped."
     },
     {
       "id": "W4",

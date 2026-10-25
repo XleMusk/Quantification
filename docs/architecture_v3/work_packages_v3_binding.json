@@ -1028,6 +1028,25 @@
         "D:/Quantification/outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/manifest_shape_failure.txt"
       ],
       "acceptance": "Saved public-seat target day 2026-09-24 projects 5 paper orders through the shared route with execution_admitted=false; the original separate-gate status and one blocked route remain explicit."
+    },
+    {
+      "id": "P13",
+      "domain": "portfolio",
+      "result": "The two candidates routed as CONTINUE_RESEARCH_ONLY form one same-day Target+Quote joint paper package with budgeted board-aware orders.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Use the same selected bundle after the next real close when fresh same-day StockDB targets and quotes exist.",
+      "prohibition": "The historical joint projection does not promote either candidate or authorize channel actions.",
+      "actual_paths": [
+        "outputs/paper_plans/20261025_candidate_batch_v1/generated_inputs_v2/stockdb_low_vol_half_momentum_20/target_payload.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/generated_inputs_v2/factor_candidate_family_balanced_ridge/target_payload.json",
+        "trading/research/joint_portfolio_paper_package.py",
+        "trading/research/tests/test_joint_portfolio_paper_package.py",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v1/joint_paper_receipt.json"
+      ],
+      "evidence": [
+        "D:/Quantification/outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v1/joint_paper_receipt.json"
+      ],
+      "acceptance": "The 2026-10-13 aligned bundle produces 22 budgeted paper orders, retains 3 capacity_max_target_rows drops, and keeps execution_admitted=false."
     }
   ]
 }

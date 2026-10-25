@@ -203,3 +203,8 @@ Ridge h60 相对基线的净收益差为 -4.7997 个百分点、最大回撤差�
 ## 2026-10-25 unified long-window launcher
 
 将长窗研究比较接入统一入口 `run_committee.py long-window-strategy-comparison --include-h60`，修正模块入口的 argv 契约后已从统一入口成功重生成 h60 回执和报告。长窗比较测试与联合/F2/D0-D1 回归合计 `21 passed`，执行资格保持关闭。
+
+
+## 2026-10-25 continue-candidate joint paper bundle
+
+按长窗回执中的 `CONTINUE_RESEARCH_ONLY` 路由，将低波/半动量与成熟因子 Ridge 的同日 `2026-10-13` Target+Quote 输入合并进入联合纸面流水线。预算策略生成 22 笔纸面订单、21 条可用路由，3 行因 `capacity_max_target_rows` 明确裁剪，期末权益投影 CNY 139,889.29；回执为 `outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v1/joint_paper_receipt.json`，`execution_admitted=false`。该包把研究去留直接落到目标持仓与订单结果，等待下一真实闭市日用新鲜同日输入重跑。
