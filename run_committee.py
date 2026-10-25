@@ -518,6 +518,9 @@ def main(argv=None):
     if argv[:1] == ["post-close-d0-d1"]:
         from trading.research.post_close_d0_d1 import main as post_close_d0_d1_main
         return post_close_d0_d1_main(argv[1:])
+    if argv[:1] == ["internal-release-candidate"]:
+        from trading.research.internal_release_candidate import main as internal_release_candidate_main
+        return internal_release_candidate_main(argv[1:])
     if argv[:1] == ["virtual-strategy-sleeves"]:
         from trading.research.virtual_strategy_sleeves import main as virtual_strategy_sleeves_main
         return virtual_strategy_sleeves_main(argv[1:])

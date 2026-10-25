@@ -797,9 +797,21 @@
       "id": "O06",
       "domain": "operations",
       "result": "Internal stable release has versioned inputs and an operations guide.",
-      "state": "UNBOUND",
-      "next": "Release only after the first two business slices are evidence-complete.",
-      "prohibition": "Do not call a partial internal build the full live system."
+      "state": "VERIFIED_LOCAL",
+      "next": "Keep the research-only release manifest and operations guide synchronized after each substantive pipeline change.",
+      "prohibition": "Do not call the internal research release the full live system.",
+      "actual_paths": [
+        "D:/Quantification/trading/research/internal_release_candidate.py",
+        "D:/Quantification/trading/research/tests/test_internal_release_candidate.py",
+        "D:/Quantification/docs/architecture_v3/OPERATIONS_RUNBOOK.md",
+        "D:/Quantification/run_committee.py internal-release-candidate",
+        "D:/QuantificationData/trading/research/releases/20261025_v1/release_manifest.json"
+      ],
+      "evidence": [
+        "D:/Quantification/trading/research/tests/test_internal_release_candidate.py",
+        "D:/QuantificationData/trading/research/releases/20261025_v1/release_manifest.json"
+      ],
+      "acceptance": "A hash-bound research-only release manifest lists the required pipeline/code inputs and a runnable operations guide, with execution_admitted=false and live_execution_ready=false."
     },
     {
       "id": "U01",
