@@ -71,6 +71,16 @@ def next_exchange_session(
     open_overrides = {_parse_day(value) for value in payload.get("open_sessions", [])}
     current = day + timedelta(days=1)
     for _ in range(370):
+        # A year-scoped artifact must never manufacture a session in the next
+        # year just because the weekday fallback still matches.  Callers need
+        # an explicit unresolved result so a D0/D1 plan can wait for a newer
+        # calendar instead of silently crossing the coverage boundary.
+        if current.year != day.year:
+            return None, {
+                "status": "calendar_coverage_exhausted",
+                "calendar_id": str(payload.get("calendar_id", "")),
+                "calendar_year": str(payload.get("year", "")),
+            }
         if current in open_overrides or (
             current.weekday() < 5 and current not in closed
         ):

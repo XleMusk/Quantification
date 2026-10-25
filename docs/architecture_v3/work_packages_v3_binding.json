@@ -56,8 +56,13 @@
         "outputs/research_reports/20261024_f01_publication_sidecar_network_v2.md",
         "trading/research/f01_publication_sidecar.py",
         "trading/research/tests/test_f01_publication_sidecar.py",
-        "run_committee.py f01-publication-sidecar --retrieval-receipt"
-      ]
+        "run_committee.py f01-publication-sidecar --retrieval-receipt",
+        "trading/research/f2_fact_bridge.py",
+        "trading/research/tests/test_f2_fact_bridge.py",
+        "outputs/pipeline_receipts/20261026_f2_bridge_revalidated_v1.json",
+        "outputs/research_reports/20261026_f2_bridge_revalidated_v1.md"
+      ],
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "F02",
@@ -131,8 +136,13 @@
         "outputs/pipeline_receipts/20261024_f01_publication_sidecar_v1.json",
         "trading/research/f01_coverage_funnel.py",
         "trading/tests/test_f01_coverage_funnel.py",
-        "outputs/financials/f01_coverage_funnel_with_sidecar_20261024.json"
-      ]
+        "outputs/financials/f01_coverage_funnel_with_sidecar_20261024.json",
+        "trading/research/f2_fact_bridge.py",
+        "trading/research/tests/test_f2_fact_bridge.py",
+        "outputs/pipeline_receipts/20261026_f2_bridge_revalidated_v1.json",
+        "outputs/research_reports/20261026_f2_bridge_revalidated_v1.md"
+      ],
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "D03",
@@ -162,8 +172,13 @@
         "outputs/pipeline_receipts/20261024_stockdb_dated_action_context_sidecar_v4_receipt.json",
         "outputs/stockdb_action_context_views/20261024_sidecar_v4/run.json",
         "outputs/pipeline_receipts/20261024_action_publication_sidecar_v5.json",
-        "outputs/research_reports/20261024_action_publication_sidecar_v5.md"
-      ]
+        "outputs/research_reports/20261024_action_publication_sidecar_v5.md",
+        "trading/research/f2_fact_bridge.py",
+        "trading/research/tests/test_f2_fact_bridge.py",
+        "outputs/pipeline_receipts/20261026_f2_bridge_revalidated_v1.json",
+        "outputs/research_reports/20261026_f2_bridge_revalidated_v1.md"
+      ],
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "D04",
@@ -968,15 +983,15 @@
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/paper_package/target_holdings.csv",
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/paper_package/order_plan.csv",
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/paper_package/projected_account.json",
-    "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_lot_mismatch_failure_v1.json",
-    "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/joint_paper_receipt.json",
-    "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/ths_readonly_reference.json"
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_lot_mismatch_failure_v1.json",
+        "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/joint_paper_receipt.json",
+        "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/ths_readonly_reference.json"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/joint_paper_receipt.json",
-    "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_lot_mismatch_failure_v1.json",
-    "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/joint_paper_receipt.json",
-    "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/ths_readonly_reference.json"
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_lot_mismatch_failure_v1.json",
+        "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/joint_paper_receipt.json",
+        "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/ths_readonly_reference.json"
       ],
       "acceptance": "Two aligned saved research accounts produce one date-aligned joint target and 7 paper orders/fills through the shared package with explicit cost/benchmark binding, projected cash/equity and execution_admitted=false."
     },
@@ -1236,24 +1251,31 @@
     {
       "id": "P21",
       "domain": "operations",
-      "result": "Next-close D0/D1 binds optional versioned SSE calendar, separates source_day/decision_cutoff/quote_observed_at/artifact time semantics, and rejects non-adjacent dates when the calendar is available.",
+      "result": "Next-close D0/D1 uses a year-scoped pinned calendar and now returns an explicit coverage-exhausted result instead of inventing a next-year session.",
       "state": "VERIFIED_LOCAL",
-      "next": "At the next real close, pass the registered fixed_daily run directory so D0/D1 resolves the current fixed target from its committed head; use the pinned calendar and same-day candidate payloads.",
+      "next": "At the next real close, pass the registered fixed_daily run directory and a calendar covering the required execution window; preserve unresolved evidence when the pinned calendar ends.",
       "prohibition": "Machine weekday inference and missing-calendar fallback cannot authorize a paper rollover or broker action.",
       "actual_paths": [
         "D:/Quantification/trading/research/next_close_d0_d1.py",
         "D:/Quantification/trading/research/post_close_d0_d1.py",
         "D:/Quantification/trading/research/stockdb_fixed_daily.py",
         "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
-        "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json"
+        "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json",
+        "trading/research/exchange_calendar.py",
+        "trading/research/tests/test_exchange_calendar.py",
+        "outputs/pipeline_receipts/20261026_exchange_calendar_boundary_v1.json"
       ],
       "evidence": [
         "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
         "D:/Quantification/trading/research/tests/test_post_close_d0_d1.py",
         "D:/Quantification/trading/research/tests/test_stockdb_fixed_daily.py",
-        "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json"
+        "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json",
+        "trading/research/exchange_calendar.py",
+        "trading/research/tests/test_exchange_calendar.py",
+        "outputs/pipeline_receipts/20261026_exchange_calendar_boundary_v1.json"
       ],
-      "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence."
+      "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence.",
+      "evidence_updated_on": "2026-10-26"
     }
   ]
 }
