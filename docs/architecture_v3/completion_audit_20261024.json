@@ -14,10 +14,15 @@
         "trading/research/continuous_paper_acceptance.py",
         "trading/research/tests/test_continuous_paper_acceptance.py",
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
-        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md",
+        "webapp/backend/app/main.py",
+        "webapp/backend/tests/test_webapp.py",
+        "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
       ],
       "gap": "Local two-session continuity now covers partial fill, restart and idempotency; next real close still must prove the same behavior on StockDB/fixed_daily inputs.",
-      "next_acceptance": "repeat after the next closed-session paper advance and keep live-channel evidence blocked"
+      "next_acceptance": "repeat after the next closed-session paper advance and keep live-channel evidence blocked",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "data_stockdb",
@@ -98,7 +103,11 @@
         "trading/research/next_close_d0_d1.py",
         "trading/research/post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
-        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md",
+        "webapp/backend/app/main.py",
+        "webapp/backend/tests/test_webapp.py",
+        "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
       ],
       "gap": "Local scope boundary is explicit; real close input and external channel evidence remain separate.",
       "next_acceptance": "keep the local engineering acceptance receipt current; BrokerAdapter/THS and account scope remain closed until external read-only evidence exists",
@@ -214,10 +223,14 @@
       "status": "BLOCKED_EXTERNAL_EVIDENCE",
       "evidence": [
         "outputs/paper_plans/20261024_lowvol_current_ths_readonly_request/receipt.json",
-        "outputs/paper_plans/20261024_lowvol_current_continuity_receipt.json"
+        "outputs/paper_plans/20261024_lowvol_current_continuity_receipt.json",
+        "trading/ths/adapter.py",
+        "outputs/pipeline_receipts/20261026_ths_adapter_code_style_v1.json",
+        "outputs/research_reports/20261026_ths_adapter_code_style_v1.md"
       ],
       "gap": "no external account/quote/readback capture",
-      "next_acceptance": "authorized read-only capture with same reference generation"
+      "next_acceptance": "authorized read-only capture with same reference generation",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "trend_momentum",

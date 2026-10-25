@@ -897,7 +897,18 @@
       "result": "Isolated channel and exception substitute calls are independently checked.",
       "state": "PARTIAL",
       "next": "Reuse the guarded THS adapter and synthetic broker receipts.",
-      "prohibition": "Synthetic adapter success is not real client evidence."
+      "prohibition": "Synthetic adapter success is not real client evidence.",
+      "actual_paths": [
+        "trading/ths/adapter.py",
+        "outputs/pipeline_receipts/20261026_ths_adapter_code_style_v1.json",
+        "outputs/research_reports/20261026_ths_adapter_code_style_v1.md"
+      ],
+      "evidence": [
+        "trading/ths/adapter.py",
+        "outputs/pipeline_receipts/20261026_ths_adapter_code_style_v1.json",
+        "outputs/research_reports/20261026_ths_adapter_code_style_v1.md"
+      ],
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "E03",
@@ -913,7 +924,24 @@
       "result": "Windows isolated integration and recovery are evidenced.",
       "state": "PARTIAL",
       "next": "Keep local read-only workbench and process evidence separate from account evidence.",
-      "prohibition": "Do not open or write a real client during this phase."
+      "prohibition": "Do not open or write a real client during this phase.",
+      "actual_paths": [
+        "webapp/backend/app/main.py",
+        "webapp/backend/tests/test_webapp.py",
+        "webapp/frontend/src/pages/Tasks.tsx",
+        "webapp/frontend/src/types.ts",
+        "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
+      ],
+      "evidence": [
+        "webapp/backend/app/main.py",
+        "webapp/backend/tests/test_webapp.py",
+        "webapp/frontend/src/pages/Tasks.tsx",
+        "webapp/frontend/src/types.ts",
+        "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
+      ],
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "E05",
@@ -1259,7 +1287,9 @@
         "trading/research/workbench_recovery_evidence.py",
         "trading/research/tests/test_workbench_recovery_evidence.py",
         "outputs/pipeline_receipts/20261026_workbench_recovery_evidence_v1.json",
-        "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md"
+        "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
       ],
       "evidence": [
         "webapp/backend/app/main.py",
@@ -1274,7 +1304,9 @@
         "trading/research/workbench_recovery_evidence.py",
         "trading/research/tests/test_workbench_recovery_evidence.py",
         "outputs/pipeline_receipts/20261026_workbench_recovery_evidence_v1.json",
-        "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md"
+        "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -1298,7 +1330,9 @@
         "trading/research/workbench_recovery_evidence.py",
         "trading/research/tests/test_workbench_recovery_evidence.py",
         "outputs/pipeline_receipts/20261026_workbench_recovery_evidence_v1.json",
-        "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md"
+        "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
       ],
       "evidence": [
         "webapp/backend/app/main.py",
@@ -1313,7 +1347,9 @@
         "trading/research/workbench_recovery_evidence.py",
         "trading/research/tests/test_workbench_recovery_evidence.py",
         "outputs/pipeline_receipts/20261026_workbench_recovery_evidence_v1.json",
-        "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md"
+        "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
