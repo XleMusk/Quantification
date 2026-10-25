@@ -11,7 +11,7 @@ from datetime import date, datetime, timezone
 import json
 from hashlib import sha256
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 import pandas as pd
 
@@ -128,6 +128,109 @@ def build_sidecar(root: str | Path, *, decision_day: str) -> dict[str, Any]:
     }
 
 
+def build_single_source_decision(
+    sidecar: str | Path,
+    bridge: str | Path,
+    *,
+    symbol: str,
+    period: str,
+) -> dict[str, Any]:
+    """Bind one source row to its typed bridge decision.
+
+    This is a small evidence projection, not another financial-data adapter.
+    It keeps the provider's field timing, unit/scope uncertainty and bridge
+    reason codes together so a source decision can be reviewed once without
+    implying PIT eligibility or computing a factor.
+    """
+
+    sidecar_path = Path(sidecar).expanduser().resolve()
+    bridge_path = Path(bridge).expanduser().resolve()
+    sidecar_payload = _json(sidecar_path)
+    bridge_payload = _json(bridge_path)
+    if sidecar_payload.get("schema") != SCHEMA:
+        raise ValueError(f"expected {SCHEMA}")
+    if bridge_payload.get("schema") != "f2_sidecar_fact_bridge_v1":
+        raise ValueError("expected f2_sidecar_fact_bridge_v1")
+    if sidecar_payload.get("execution_admitted") is not False:
+        raise ValueError("sidecar execution_admitted must remain false")
+    if bridge_payload.get("execution_admitted") is not False:
+        raise ValueError("bridge execution_admitted must remain false")
+
+    source_row = next(
+        (
+            row
+            for row in sidecar_payload.get("rows", [])
+            if isinstance(row, Mapping)
+            and row.get("symbol") == symbol
+            and row.get("period") == period
+        ),
+        None,
+    )
+    bridge_row = next(
+        (
+            row
+            for row in bridge_payload.get("rows", [])
+            if isinstance(row, Mapping)
+            and row.get("symbol") == symbol
+            and row.get("period") == period
+        ),
+        None,
+    )
+    if source_row is None or bridge_row is None:
+        raise ValueError(f"source row is missing: {symbol}:{period}")
+
+    bridge_status = str(bridge_row.get("status") or "BLOCKED_DATA")
+    action = (
+        "READY_FOR_F01_FACT_ASSEMBLY"
+        if bridge_status == "FACTS_READY_NO_FACTOR"
+        else "BLOCKED_DATA"
+    )
+    reason_codes = list(bridge_row.get("reason_codes") or [])
+    return {
+        "schema": "f2_single_source_decision_v1",
+        "status": action,
+        "execution_admitted": False,
+        "decision_day": sidecar_payload.get("decision_day"),
+        "identity": {"symbol": symbol, "period": period},
+        "source": {
+            "kind": source_row.get("source_kind"),
+            "root": source_row.get("source_root"),
+            "sidecar": _ref(sidecar_path),
+            "bridge": _ref(bridge_path),
+            "retrieved_at": source_row.get("retrieved_at"),
+            "asof_at": source_row.get("asof_at"),
+            "revision_id": source_row.get("revision_id"),
+        },
+        "fact_contract": {
+            "required_fields": sorted(REQUIRED),
+            "field_values_present": all(field in source_row for field in REQUIRED),
+            "field_publication_dates": source_row.get("field_publication_dates"),
+            "field_provider_update_times": source_row.get("field_provider_update_times"),
+            "publication_date": source_row.get("publication_date"),
+            "unit": source_row.get("unit"),
+            "currency": source_row.get("currency"),
+            "scope_group": source_row.get("scope_group"),
+            "contract_evaluation": source_row.get("contract_evaluation"),
+        },
+        "bridge_decision": {
+            "status": bridge_status,
+            "reason_codes": reason_codes,
+            "fact_count": len(bridge_row.get("facts") or []),
+            "factor_status": bridge_row.get("factor_status"),
+        },
+        "next_action": (
+            "Obtain authoritative issuer evidence for historical retrieval/as-of, "
+            "units, scope and revision identity before F01 assembly."
+            if action == "BLOCKED_DATA"
+            else "Bind the verified fact to the existing F01 consumer; do not compute a factor until the fixed specification is selected."
+        ),
+        "limitations": [
+            "This receipt binds one source row to its existing bridge decision; it does not upgrade PIT evidence.",
+            "No factor, target, order, fill or account replay is created.",
+        ],
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
@@ -148,4 +251,4 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
-__all__ = ["SCHEMA", "STATUS", "build_sidecar", "main"]
+__all__ = ["SCHEMA", "STATUS", "build_sidecar", "build_single_source_decision", "main"]
