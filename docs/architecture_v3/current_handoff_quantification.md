@@ -177,3 +177,10 @@ Focused regression covering the new joint paper route, existing P06 contract, F2
 `next_close_d0_d1.py` 现在可选开启 `joint_capacity_policy=budgeted`，在同一冻结 StockDB close snapshot 下，把 fixed target 和候选 Target+Quote payload 送进联合容量分配，再复用共享纸面 Orders/Fill/Cash/Position；原有 fixed 单腿和 candidate batch 回执继续保留。输入指纹包含联合模式和最大目标数，重复运行仍按同一输入复用。
 
 新增 D0/D1 fixture 验收后，联合目标、联合纸面包和 D0/D1 测试为 `13 passed`，模块编译通过。下一个真实收盘只需在命令中加 `--joint-capacity-policy budgeted`，不访问券商或同花顺。
+
+
+## 2026-10-25 shortline LR shared paper route
+
+已将保存的短线 LR 目标接入现有联合纸面流水线：输入 `D:/QuantificationData/trading/research/shortline_native_selection_replay/20261018_v1/lr/account.json`，终止日为 `2026-06-10`，在严格容量策略下生成 5 笔纸面订单，5 条路由均可用，回执为 `outputs/pipeline_receipts/20261025_shortline_lr_joint_paper_v1/joint_paper_receipt.json`。该结果实际复用了 Target Portfolio→Orders→BrokerAdapter→Fill→Cash/Position 路径，`execution_admitted=false`，没有真实登录、券商/同花顺写入或持久账户变更。
+
+这次接线只证明保存目标可以进入共享纸面路径；短线 LR/LGBM 的 `UNASSESSED_SEPARATE_GATE`、`paper_allowed=false`、完整窗口缺失和既有 score-gate 阻断均保持不变，不把 5 笔纸面订单解释为策略收益或晋级证据。P11 已绑定到工作包清单，W3 与候选目录同步了该回执。

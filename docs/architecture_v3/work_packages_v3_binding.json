@@ -986,6 +986,24 @@
         "trading/research/tests/test_next_close_d0_d1.py"
       ],
       "acceptance": "The fixture D0/D1 run captures one same-day snapshot, projects fixed and candidate legs, and emits a two-order joint paper receipt under the budgeted policy with execution_admitted=false."
+    },
+    {
+      "id": "P11",
+      "domain": "research",
+      "result": "The saved shortline LR target reaches the shared research-only paper Orders, Fill and Cash/Position path.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Keep shortline LR/LGBM under the separate research gate; rerun only after a new saved selection or complete panel source is available.",
+      "prohibition": "The saved partial shortline replay is not a full strategy return, paper eligibility decision or promotion signal.",
+      "actual_paths": [
+        "D:/QuantificationData/trading/research/shortline_native_selection_replay/20261018_v1/lr/account.json",
+        "trading/research/joint_portfolio_paper_package.py",
+        "trading/research/tests/test_joint_portfolio_paper_package.py",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lr_joint_paper_v1/joint_paper_receipt.json"
+      ],
+      "evidence": [
+        "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lr_joint_paper_v1/joint_paper_receipt.json"
+      ],
+      "acceptance": "Saved LR target day 2026-06-10 projects 5 paper orders with execution_admitted=false; the original incomplete-window and score-gate stop points remain unchanged."
     }
   ]
 }
