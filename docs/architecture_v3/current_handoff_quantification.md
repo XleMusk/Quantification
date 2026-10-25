@@ -184,3 +184,10 @@ Focused regression covering the new joint paper route, existing P06 contract, F2
 已将保存的短线 LR 目标接入现有联合纸面流水线：输入 `D:/QuantificationData/trading/research/shortline_native_selection_replay/20261018_v1/lr/account.json`，终止日为 `2026-06-10`，在严格容量策略下生成 5 笔纸面订单，5 条路由均可用，回执为 `outputs/pipeline_receipts/20261025_shortline_lr_joint_paper_v1/joint_paper_receipt.json`。该结果实际复用了 Target Portfolio→Orders→BrokerAdapter→Fill→Cash/Position 路径，`execution_admitted=false`，没有真实登录、券商/同花顺写入或持久账户变更。
 
 这次接线只证明保存目标可以进入共享纸面路径；短线 LR/LGBM 的 `UNASSESSED_SEPARATE_GATE`、`paper_allowed=false`、完整窗口缺失和既有 score-gate 阻断均保持不变，不把 5 笔纸面订单解释为策略收益或晋级证据。P11 已绑定到工作包清单，W3 与候选目录同步了该回执。
+
+
+## 2026-10-25 public-seat Target+Quote shared paper route
+
+已将保存的公开席位/游资候选 `public_seat_lag2_trend_any_lhb` 的 Target+Quote payload 接入联合纸面路径。输入决策日 `2026-09-24`、执行日 `2026-09-25`，严格容量策略产生 5 笔纸面订单，4 条路由可用、1 条保留为阻断，回执为 `outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/joint_paper_receipt.json`；共享 Orders→Fill→Cash/Position 投影的期末权益为 CNY 999,753.38，`execution_admitted=false`。
+
+首次清单格式错误已保存为 `outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/manifest_shape_failure.txt`，修正为现有 `strategies` 数组契约后重跑成功。该接线只增加可复现的主线纸面证据，公开席位候选仍保持 `UNASSESSED_SEPARATE_GATE`，不改变 `paper_allowed=false` 或晋级结论。P12、W3 和候选目录已绑定回执。

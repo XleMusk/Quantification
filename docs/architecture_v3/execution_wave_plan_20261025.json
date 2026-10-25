@@ -135,9 +135,11 @@
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/capacity_2m/joint_paper_receipt.json",
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/budgeted_140k/joint_paper_receipt.json",
         "outputs/pipeline_receipts/20261025_joint_payload_paper_integration_v1/joint_paper_receipt.json",
-        "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lr_joint_paper_v1/joint_paper_receipt.json"
+        "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lr_joint_paper_v1/joint_paper_receipt.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/joint_paper_receipt.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/manifest_shape_failure.txt"
       ],
-      "result": "Same-snapshot candidate comparison and aligned Ridge+Alpha158 joint target reach research-only shared paper orders/fills. A current-date fixed/trend/momentum three-strategy target reaches 22 board-valid paper orders under the explicit 140k budgeted capacity policy; the same-day Target+Quote payload route also produces a 22-order package for the next-close handoff. Saved shortline LR target day 2026-06-10 also reaches the shared research-only paper route in 5 orders; its separate research gate and incomplete-window stop points remain unchanged."
+      "result": "Same-snapshot candidate comparison and aligned Ridge+Alpha158 joint target reach research-only shared paper orders/fills. A current-date fixed/trend/momentum three-strategy target reaches 22 board-valid paper orders under the explicit 140k budgeted capacity policy; the same-day Target+Quote payload route also produces a 22-order package for the next-close handoff. Saved shortline LR target day 2026-06-10 also reaches the shared research-only paper route in 5 orders; its separate research gate and incomplete-window stop points remain unchanged. Saved public-seat Target+Quote payload day 2026-09-24 reaches the same route in 5 paper orders; its separate gate and one blocked route remain explicit."
     },
     {
       "id": "W4",

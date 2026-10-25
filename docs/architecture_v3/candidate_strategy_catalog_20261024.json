@@ -624,14 +624,17 @@
         "outputs/paper_plans/20261025_public_seat_lag2_shadow_v2/shadow_receipt.json",
         "trading/research/tests/test_candidate_shadow_paper.py",
         "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v3/pipeline_receipt.json",
-        "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v3/paper_batch/public_seat_trend_hypotheses/result.json"
+        "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v3/paper_batch/public_seat_trend_hypotheses/result.json",
+        "outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/joint_paper_receipt.json",
+        "outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/manifest_shape_failure.txt"
       ],
       "limits": [
         "publication timestamps unknown",
         "no causal seat alpha or live account evidence",
         "five cases complete 241-session diagnostics; four cases stop on unresolved held/execution price references and have no complete-window return",
         "historical replay is research-only with no untouched holdout, PIT membership proof or strategy adoption",
-        "lag2_TREND_ANY_LHB shadow projection is research-only and remains outside the follow-up queue until the separate timing/attribution gate passes"
+        "lag2_TREND_ANY_LHB shadow projection is research-only and remains outside the follow-up queue until the separate timing/attribution gate passes",
+        "joint paper route is a saved historical Target+Quote projection; public-seat eligibility and return validation remain separate-gate"
       ],
       "research_selection": {
         "decision": "UNASSESSED_SEPARATE_GATE",
