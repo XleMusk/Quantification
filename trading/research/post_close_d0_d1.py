@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any, Sequence
 
 from . import next_close_d0_d1, stockdb_fixed_daily
+from .candidate_daily_input_bundle import build_input_bundle
 
 
 SCHEMA = "stockdb_post_close_d0_d1_orchestration_v1"
@@ -45,7 +46,9 @@ def _ref(path: Path) -> dict[str, str]:
     return {"path": str(path), "sha256": _sha256(path)}
 
 
-def _input_fingerprint(*, source_manifest: Path, fixed_run_dir: Path,
+def _input_fingerprint(*, source_manifest: Path | None,
+                       candidate_replay_manifest: Path | None,
+                       fixed_run_dir: Path,
                        packages: Sequence[Path], close_date: str,
                        execution_day: str, settlement_day: str,
                        initial_cash: float, stockdb_root: Path,
@@ -63,7 +66,9 @@ def _input_fingerprint(*, source_manifest: Path, fixed_run_dir: Path,
             "receipt": _ref(package / "receipt.json"),
         })
     refs: dict[str, Any] = {
-        "source_manifest": _ref(source_manifest),
+        "source_manifest": _ref(source_manifest) if source_manifest is not None else None,
+        "candidate_replay_manifest": (_ref(candidate_replay_manifest)
+                                      if candidate_replay_manifest is not None else None),
         "fixed_run_dir": str(fixed_run_dir.resolve()),
         "packages": package_refs,
         "stockdb_root": str(stockdb_root.resolve()),
@@ -89,18 +94,23 @@ def _assert_unadmitted(payload: dict[str, Any], label: str) -> None:
         raise ValueError(f"{label} crossed execution boundary")
 
 
-def run_pipeline(source_manifest: str | Path, output_dir: str | Path, *,
+def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
                  fixed_run_dir: str | Path, packages: Sequence[str | Path],
                  close_date: str, execution_day: str, settlement_day: str,
                  initial_cash: float, stockdb_root: str | Path,
                  catalog_path: str | Path | None = None,
+                 candidate_replay_manifest: str | Path | None = None,
                  calendar_path: str | Path | None = None,
                  research_decision_receipt: str | Path | None = None,
                  supplemental_raw_view: str | Path | None = None,
                  minute_time: str = "", gate_mode: str = "research_followup",
                  joint_capacity_policy: str | None = None,
                  joint_max_target_rows: int = 22) -> dict[str, Any]:
-    source = Path(source_manifest).resolve()
+    source = Path(source_manifest).resolve() if source_manifest is not None else None
+    replay_manifest = (Path(candidate_replay_manifest).resolve()
+                       if candidate_replay_manifest is not None else None)
+    if (source is None) == (replay_manifest is None):
+        raise ValueError("Provide exactly one of source_manifest or candidate_replay_manifest")
     output = Path(output_dir).resolve()
     fixed_dir = Path(fixed_run_dir).resolve()
     packages_resolved = [Path(item).resolve() for item in packages]
@@ -109,7 +119,10 @@ def run_pipeline(source_manifest: str | Path, output_dir: str | Path, *,
     calendar = Path(calendar_path).resolve() if calendar_path is not None else None
     decision = Path(research_decision_receipt).resolve() if research_decision_receipt is not None else None
     supplement = Path(supplemental_raw_view).resolve() if supplemental_raw_view is not None else None
-    for path, label in ((source, "source manifest"), (fixed_dir, "fixed daily run directory")):
+    for path, label in ((source, "source manifest"), (replay_manifest, "candidate replay manifest"),
+                        (fixed_dir, "fixed daily run directory")):
+        if path is None:
+            continue
         if not path.exists():
             raise ValueError(f"{label} does not exist: {path}")
     for package in packages_resolved:
@@ -121,7 +134,8 @@ def run_pipeline(source_manifest: str | Path, output_dir: str | Path, *,
         if path is not None and not path.is_file():
             raise ValueError(f"{label} does not exist: {path}")
     fingerprint, fingerprint_inputs = _input_fingerprint(
-        source_manifest=source, fixed_run_dir=fixed_dir, packages=packages_resolved,
+        source_manifest=source, candidate_replay_manifest=replay_manifest,
+        fixed_run_dir=fixed_dir, packages=packages_resolved,
         close_date=close_date, execution_day=execution_day,
         settlement_day=settlement_day, initial_cash=initial_cash,
         stockdb_root=stockdb, catalog_path=catalog, calendar_path=calendar,
@@ -163,6 +177,22 @@ def run_pipeline(source_manifest: str | Path, output_dir: str | Path, *,
             return receipt
         if fixed_result.get("last_completed_day") != close_date:
             raise ValueError("Fixed daily did not reach the requested close date")
+        candidate_bundle = None
+        if replay_manifest is not None:
+            raw = json.loads(replay_manifest.read_text(encoding="utf-8"))
+            candidates = raw if isinstance(raw, list) else raw.get("candidates") if isinstance(raw, dict) else None
+            if not isinstance(candidates, list):
+                raise ValueError("Candidate replay manifest must contain a candidates list")
+            candidate_bundle = build_input_bundle(
+                candidates, output / "candidate_inputs",
+                catalog_path=catalog, gate_mode=gate_mode)
+            source = Path(candidate_bundle["manifest"]["path"]).resolve()
+            base["candidate_input_bundle"] = {
+                "receipt": candidate_bundle["receipt_path"],
+                "manifest": candidate_bundle["manifest"],
+            }
+        if source is None:
+            raise ValueError("Candidate source manifest was not resolved")
         d0_result = next_close_d0_d1.run_contract(
             source, output / "next_close", fixed_run_dir=fixed_dir,
             stockdb_root=stockdb, catalog_path=catalog,
@@ -189,7 +219,10 @@ def run_pipeline(source_manifest: str | Path, output_dir: str | Path, *,
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source-manifest", type=Path, required=True)
+    source_group = parser.add_mutually_exclusive_group(required=True)
+    source_group.add_argument("--source-manifest", type=Path)
+    source_group.add_argument("--candidate-replay-manifest", type=Path,
+                              help="replay-result manifest; generates Target inputs before D0/D1")
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--fixed-run-dir", type=Path, required=True)
     parser.add_argument("--package", type=Path, action="append", default=[],
@@ -214,6 +247,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         close_date=args.close_date, execution_day=args.execution_day,
         settlement_day=args.settlement_day, initial_cash=args.initial_cash,
         stockdb_root=args.stockdb_root, catalog_path=args.catalog,
+        candidate_replay_manifest=args.candidate_replay_manifest,
         calendar_path=args.calendar, research_decision_receipt=args.research_decision_receipt,
         supplemental_raw_view=args.supplemental_raw_view, minute_time=args.minute_time,
         gate_mode=args.gate_mode, joint_capacity_policy=args.joint_capacity_policy,

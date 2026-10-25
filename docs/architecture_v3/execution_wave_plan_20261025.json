@@ -73,7 +73,7 @@
         "D:/Quantification/outputs/pipeline_receipts/20261025_long_window_strategy_comparison_h60_v1.json",
         "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json"
       ],
-      "result": "The post-close coordinator now advances the registered fixed_daily head before invoking the next-close contract; incomplete source packages stop with a waiting receipt, while complete same-day inputs reach D0/D1 using the pinned calendar and committed fixed target."
+      "result": "The post-close coordinator now advances the registered fixed_daily head before invoking the next-close contract; it can build Target inputs directly from a candidate replay manifest, incomplete source packages stop with a waiting receipt, and complete same-day inputs reach D0/D1 using the pinned calendar and committed fixed target."
     },
     {
       "id": "W2",

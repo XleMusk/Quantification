@@ -273,3 +273,8 @@ D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `de
 ## 2026-10-25 post-close D0/D1 coordinator
 
 新增 `trading/research/post_close_d0_d1.py` 与 `run_committee.py post-close-d0-d1`。该命令先调用已注册 fixed_daily 的 `run` 推进指定收市日，再调用 `next-close-d0-d1` 消费同日候选 Target 输入；固定源包不完整时只写 `WAITING_FIXED_DAILY_SOURCES`，不会进入目标/订单投影；任一阶段失败都保留失败回执。新增三项编排测试，候选编排、fixed_daily、D0/D1、联合纸面与新编排聚焦回归为 `28 passed`，`execution_admitted=false` 未改变。
+
+
+## 2026-10-25 replay manifest fan-in
+
+`post-close-d0-d1` 新增互斥入口 `--candidate-replay-manifest`：直接消费候选 replay 结果清单，调用现有 `candidate_daily_input_bundle` 生成 Target 输入，再交给 D0/D1 用真实收市 StockDB 价格重建 Quote；原有 `--source-manifest` 仍可直接使用。新增回放清单夹具后聚焦回归为 `29 passed`，未新增账户或外部写操作。

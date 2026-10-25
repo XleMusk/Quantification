@@ -72,6 +72,44 @@ def test_post_close_waits_for_complete_fixed_source_without_d0_projection(tmp_pa
     assert receipt["execution_admitted"] is False
 
 
+def test_post_close_builds_candidate_targets_from_replay_manifest(tmp_path: Path, monkeypatch) -> None:
+    _, fixed_dir, package, stockdb = _inputs(tmp_path)
+    replay = tmp_path / "candidate_replay.json"
+    replay.write_text(json.dumps({
+        "strategy_id": "candidate_close", "end_date": CLOSE,
+        "execution_admitted": False, "strategy_validated": False,
+        "selected_events": [{"date": CLOSE, "symbol": "000001.SZSE", "score": 1.0}],
+        "state": {"day": CLOSE, "targets": {"000001.SZSE": 0.2}, "prices": {"000001.SZSE": 1000}},
+    }), encoding="utf-8")
+    replay_manifest = tmp_path / "replays.json"
+    replay_manifest.write_text(json.dumps({"candidates": [{
+        "candidate_id": "candidate_close", "replay_result": str(replay),
+    }]}), encoding="utf-8")
+    catalog = tmp_path / "catalog.json"
+    catalog.write_text(json.dumps({"entries": [{"id": "candidate_close",
+        "research_selection": {"research_followup_allowed": True}}]}), encoding="utf-8")
+    monkeypatch.setattr(orchestrator.stockdb_fixed_daily, "run", lambda *args, **kwargs: {
+        "status": "continued_research_only", "last_completed_day": CLOSE,
+        "execution_admitted": False,
+    })
+    observed: dict[str, Path] = {}
+
+    def d0_run(source, *args, **kwargs):
+        observed["source"] = Path(source)
+        return {"status": "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1",
+                "execution_admitted": False}
+
+    monkeypatch.setattr(orchestrator.next_close_d0_d1, "run_contract", d0_run)
+    receipt = orchestrator.run_pipeline(
+        None, tmp_path / "run", fixed_run_dir=fixed_dir, packages=[package],
+        candidate_replay_manifest=replay_manifest, catalog_path=catalog,
+        close_date=CLOSE, execution_day="2026-10-27", settlement_day="2026-10-28",
+        initial_cash=100000.0, stockdb_root=stockdb)
+    assert receipt["status"] == orchestrator.STATUS
+    assert observed["source"] == tmp_path / "run" / "candidate_inputs" / "manifest.json"
+    assert receipt["candidate_input_bundle"]["manifest"]["candidate_count"] == 1
+
+
 def test_post_close_preserves_d0_failure_receipt(tmp_path: Path, monkeypatch) -> None:
     source, fixed_dir, package, stockdb = _inputs(tmp_path)
     monkeypatch.setattr(orchestrator.stockdb_fixed_daily, "run", lambda *args, **kwargs: {
