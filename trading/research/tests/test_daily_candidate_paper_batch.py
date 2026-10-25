@@ -51,6 +51,12 @@ def test_batch_projects_each_candidate_with_closed_execution_boundary(tmp_path: 
     assert all(row["target_count"] == 1 and row["paper_order_count"] == 1 for row in result["candidates"])
     assert result["execution_admitted"] is False
     assert result["broker_interacted"] is False
+    assert result["projection_mode"] == "TARGET_PREVIEW"
+    assert result["ledger_scope"] == "ephemeral_projection"
+    assert result["continuous_account_consumer"] is False
+    assert all(row["projection_mode"] == "TARGET_PREVIEW" for row in result["candidates"])
+    assert all(row["ledger_scope"] == "ephemeral_projection" for row in result["candidates"])
+    assert all(row["continuous_account_consumer"] is False for row in result["candidates"])
     assert all(row["catalog_selection"]["research_followup_allowed"] is True for row in result["candidates"])
     assert result["manifest"]["path"] == str(manifest.resolve())
     assert result["manifest"]["candidate_count"] == 2

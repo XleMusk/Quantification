@@ -1266,7 +1266,7 @@
       "domain": "workbench",
       "result": "Whole-flow local engineering acceptance is recorded separately from blocked market/account scope.",
       "state": "PARTIAL",
-      "next": "Keep the local two-session continuity acceptance current; after the next closed session upgrade only with real StockDB/account scope evidence.",
+      "next": "Keep local continuity and candidate TARGET_PREVIEW receipts separate; after the next closed session upgrade only with real StockDB/account scope evidence.",
       "prohibition": "Do not claim full UI acceptance while account/channel gates are blocked.",
       "actual_paths": [
         "trading/research/workbench_whole_flow_acceptance.py",
@@ -1280,7 +1280,12 @@
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_one_state.json",
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
-        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md",
+        "trading/research/daily_candidate_paper_batch.py",
+        "trading/research/tests/test_daily_candidate_paper_batch.py",
+        "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/boundary_receipt.json",
+        "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/run/batch_receipt.json",
+        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1289,7 +1294,12 @@
         "outputs/pipeline_receipts/20261026_workbench_whole_flow_acceptance_v1.json",
         "outputs/research_reports/20261026_workbench_whole_flow_acceptance_v1.md",
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
-        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md",
+        "trading/research/daily_candidate_paper_batch.py",
+        "trading/research/tests/test_daily_candidate_paper_batch.py",
+        "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/boundary_receipt.json",
+        "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/run/batch_receipt.json",
+        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -1385,12 +1395,22 @@
         "trading/research/stockdb_paper_target_package.py",
         "tests/test_stockdb_paper_target_package.py",
         "outputs/pipeline_receipts/20261026_target_preview_boundary_v1.json",
-        "outputs/research_reports/20261026_target_preview_boundary_v1.md"
+        "outputs/research_reports/20261026_target_preview_boundary_v1.md",
+        "trading/research/daily_candidate_paper_batch.py",
+        "trading/research/tests/test_daily_candidate_paper_batch.py",
+        "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/boundary_receipt.json",
+        "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/run/batch_receipt.json",
+        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md"
       ],
       "evidence": [
         "trading/research/tests/test_next_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_target_preview_boundary_v1.json",
-        "outputs/research_reports/20261026_target_preview_boundary_v1.md"
+        "outputs/research_reports/20261026_target_preview_boundary_v1.md",
+        "trading/research/daily_candidate_paper_batch.py",
+        "trading/research/tests/test_daily_candidate_paper_batch.py",
+        "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/boundary_receipt.json",
+        "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/run/batch_receipt.json",
+        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md"
       ],
       "acceptance": "The fixture D0/D1 run captures one same-day snapshot, projects fixed and candidate legs, and emits a two-order joint paper receipt under the budgeted policy with execution_admitted=false.",
       "evidence_updated_on": "2026-10-26"
@@ -1443,19 +1463,30 @@
       "domain": "portfolio",
       "result": "The two candidates routed as CONTINUE_RESEARCH_ONLY form one same-day Target+Quote joint paper package with budgeted board-aware orders.",
       "state": "VERIFIED_LOCAL",
-      "next": "Use the same selected bundle after the next real close when fresh same-day StockDB targets and quotes exist.",
+      "next": "Use the same selected bundle after the next real close when fresh same-day StockDB targets and quotes exist; retain TARGET_PREVIEW scope until fixed_daily consumes the plan.",
       "prohibition": "The historical joint projection does not promote either candidate or authorize channel actions.",
       "actual_paths": [
         "outputs/paper_plans/20261025_candidate_batch_v1/generated_inputs_v2/stockdb_low_vol_half_momentum_20/target_payload.json",
         "outputs/paper_plans/20261025_candidate_batch_v1/generated_inputs_v2/factor_candidate_family_balanced_ridge/target_payload.json",
         "trading/research/joint_portfolio_paper_package.py",
         "trading/research/tests/test_joint_portfolio_paper_package.py",
-        "D:/Quantification/outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v1/joint_paper_receipt.json"
+        "D:/Quantification/outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v1/joint_paper_receipt.json",
+        "trading/research/daily_candidate_paper_batch.py",
+        "trading/research/tests/test_daily_candidate_paper_batch.py",
+        "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/boundary_receipt.json",
+        "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/run/batch_receipt.json",
+        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md"
       ],
       "evidence": [
-        "D:/Quantification/outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v1/joint_paper_receipt.json"
+        "D:/Quantification/outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v1/joint_paper_receipt.json",
+        "trading/research/daily_candidate_paper_batch.py",
+        "trading/research/tests/test_daily_candidate_paper_batch.py",
+        "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/boundary_receipt.json",
+        "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/run/batch_receipt.json",
+        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md"
       ],
-      "acceptance": "The 2026-10-13 aligned bundle produces 22 budgeted paper orders, retains 3 capacity_max_target_rows drops, and keeps execution_admitted=false."
+      "acceptance": "The 2026-10-13 aligned bundle produces 22 budgeted paper orders, retains 3 capacity_max_target_rows drops, and keeps execution_admitted=false.",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "P14",

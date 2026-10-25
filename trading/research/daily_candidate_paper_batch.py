@@ -16,7 +16,7 @@ import json
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
-from .stockdb_paper_target_package import build_paper_target_package
+from .stockdb_paper_target_package import TARGET_PREVIEW, build_paper_target_package
 
 
 SCHEMA = "daily_candidate_paper_batch_v2"
@@ -154,7 +154,11 @@ def build_batch(candidates: Sequence[Mapping[str, Any]], output_dir: str | Path,
             output_dir=candidate_output,
         )
         result = package["result"]
-        if result.get("execution_admitted") is not False or result.get("submitted") is not False:
+        if (result.get("execution_admitted") is not False
+                or result.get("submitted") is not False
+                or result.get("projection_mode") != TARGET_PREVIEW
+                or result.get("ledger_scope") != "ephemeral_projection"
+                or result.get("continuous_account_consumer") is not False):
             raise ValueError(f"Paper package crossed execution boundary: {candidate_id}")
         records.append({
             "candidate_id": candidate_id,
@@ -167,6 +171,9 @@ def build_batch(candidates: Sequence[Mapping[str, Any]], output_dir: str | Path,
             "modeled_fees_rmb": result.get("modeled_fees_rmb"),
             "projected_final_cash_rmb": result.get("projected_final_cash_rmb"),
             "projected_final_equity_rmb": result.get("projected_final_equity_rmb"),
+            "projection_mode": result.get("projection_mode"),
+            "ledger_scope": result.get("ledger_scope"),
+            "continuous_account_consumer": result.get("continuous_account_consumer"),
             "cost_model_id": (result.get("cost_model") or {}).get("id"),
             "benchmark_binding_id": (result.get("benchmark_binding") or {}).get("id"),
             "target": target_ref, "quotes": quote_ref,
@@ -184,12 +191,16 @@ def build_batch(candidates: Sequence[Mapping[str, Any]], output_dir: str | Path,
         "manifest": manifest_ref,
         "catalog": catalog_ref,
         "gate_mode": gate_mode,
+        "projection_mode": TARGET_PREVIEW,
+        "ledger_scope": "ephemeral_projection",
+        "continuous_account_consumer": False,
         "candidate_count": len(records), "candidates": records,
         "output_dir": str(output),
         "limitations": [
             "Targets and quotes are explicit strategy-adapter inputs; this batch does not create signals or fetch market data.",
             "Projected fills are local shared-Ledger paper projections and are not broker fills.",
             "The batch is separate from the persistent fixed_daily account and is not a THS prefill payload.",
+            "Every candidate is TARGET_PREVIEW only; the batch cannot publish a frozen plan or roll a continuous paper account.",
         ],
     }
     receipt_path = output / "batch_receipt.json"

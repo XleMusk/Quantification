@@ -1,0 +1,32 @@
+{
+  "schema": "daily_candidate_paper_preview_boundary_receipt_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "source_kind": "synthetic_fixture",
+  "projection_mode": "TARGET_PREVIEW",
+  "ledger_scope": "ephemeral_projection",
+  "continuous_account_consumer": false,
+  "execution_admitted": false,
+  "candidate_count": 2,
+  "candidate_modes": [
+    "TARGET_PREVIEW",
+    "TARGET_PREVIEW"
+  ],
+  "candidate_ledger_scopes": [
+    "ephemeral_projection",
+    "ephemeral_projection"
+  ],
+  "acceptance": {
+    "batch_propagates_target_preview": true,
+    "batch_propagates_ephemeral_ledger": true,
+    "batch_not_continuous_consumer": true,
+    "candidate_rows_match_batch": true,
+    "focused_tests": "D:\\Quantification\\env\\python.exe -m pytest -q trading/research/tests/test_daily_candidate_paper_batch.py",
+    "focused_tests_passed": 6
+  },
+  "batch_receipt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_candidate_batch_preview_boundary_v1\\run\\batch_receipt.json",
+  "limitations": [
+    "Synthetic/local candidate inputs only.",
+    "This batch cannot publish a frozen plan or update the fixed_daily continuous account.",
+    "No StockDB service, broker, THS client or persistent Ledger was contacted."
+  ]
+}
