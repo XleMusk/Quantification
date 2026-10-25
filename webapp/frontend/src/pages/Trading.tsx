@@ -11,6 +11,7 @@ import { CurrentResearchEvidence } from '../components/CurrentResearchEvidence';
 import { LeaderEnvironmentWorkbench } from '../components/LeaderEnvironmentWorkbench';
 import { TradeCaseLearning } from '../components/TradeCaseLearning';
 import { OpeningDailyStatus } from '../components/OpeningDailyStatus';
+import { PaperAccountContinuity } from '../components/PaperAccountContinuity';
 import { ResearchCandidateEvidence } from '../components/ResearchCandidateEvidence';
 import { PortfolioRealization } from '../components/PortfolioRealization';
 import { ErrorMessage, Warning } from '../components/Common';
@@ -89,6 +90,7 @@ export function Trading({ page }: { page: string }) {
     {overview && <div className="trade-source">{page === 'comparison' && <strong>默认运行样本（各项研究范围见对应结果）</strong>}历史成分日期 {overview.dataset.selection_date || '--'}<span>数据截止 {overview.dataset.end || '--'}</span><span>{overview.dataset.symbols?.length || 0} 只证券</span><span>{fmt(overview.dataset.rows || 0, 0)} 条日线</span></div>}
     {overview?.dataset.status !== 'ready' && overview && <Warning>行情未就绪：{overview.dataset.error || overview.dataset.status}</Warning>}
     {page === 'comparison' && <><ResearchCandidateEvidence /><PortfolioRealization /><OpeningDailyStatus /><LeaderEnvironmentWorkbench /><TradeCaseLearning /><CurrentResearchEvidence /><OfflineOperatorBoard /><AnnualQualityResearch /><ResearchReplays /></>}
+    {page === 'overview' && <PaperAccountContinuity />}
     <label className="inline-field trade-run-select">运行<select aria-label="当前策略运行" value={detail?.id || active} onChange={e => { setDetail(null); setActive(e.target.value); }}><option value="" disabled>选择运行</option>{overview?.runs.map(run => <option key={run.id} value={run.id}>{run.name} · {runStatuses[run.status]} · {run.id.slice(0, 6)}</option>)}</select></label>
     {!detail ? <div className="empty">{overview?.runs.length ? '读取账户状态' : '暂无策略运行'}</div> : <>
       <div className="trade-run-state"><span className={`status ${detail.status}`}><i />{runStatuses[detail.status]}</span><span>{brokerBound ? '券商模拟账户观察' : detail.mode === 'paper' ? '日终纸面模拟' : '历史回放'}</span><span>{brokerBound ? `估值观察 ${detail.valuation_observed_at || '--'}` : `已处理 ${detail.cursor} 个交易日`}</span><span>账户日期 {detail.day || '尚无成交日'}</span>{!brokerBound && ['running', 'paused'].includes(detail.status) && <button className="icon-button" aria-label={detail.status === 'paused' ? '恢复运行' : '暂停运行'} title={detail.status === 'paused' ? '恢复运行' : '暂停运行'} onClick={control} disabled={busy}>{detail.status === 'paused' ? <CirclePlay size={19} /> : <CirclePause size={19} />}</button>}</div>
