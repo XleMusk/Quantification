@@ -1,0 +1,141 @@
+{
+  "schema": "quantification_candidate_adoption_decision_v1",
+  "status": "COMPLETED_RESEARCH_ONLY_ADOPTION_GATE",
+  "execution_admitted": false,
+  "paper_allowed": false,
+  "promotion_allowed": false,
+  "common_window": {
+    "start": "2024-01-31",
+    "end": "2026-10-13",
+    "sessions": 648,
+    "basis": "intersection_of_saved_daily_account_dates"
+  },
+  "stockdb_snapshot": "D:\\QuantificationData\\trading\\research\\full_market\\stockdb_2024_0101_1013_current_cutoff_v1",
+  "inputs": {
+    "common_window_receipt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_common_window_strategy_comparison_v1.json",
+    "common_window_sha256": "614010765791378b2e498e8c7b69cce57aadb40019bad6f45c1246bd4243b8fc",
+    "cost_pressure_receipt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_common_window_cost_pressure_v1.json",
+    "cost_pressure_sha256": "5d3eb8bae559526f04bbbb97b8a5beddbd8b5b7f220a7d001aae37e7c5e9a5e1",
+    "selection_receipt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_candidate_research_selection_v2.json",
+    "selection_sha256": "5c5afa1915cbbfe2d4b1b889fd66ba0667bd528cdd8e66adef88796be256774a"
+  },
+  "strategies": [
+    {
+      "strategy_id": "low_vol_half_momentum_20",
+      "label": "低波/半动量",
+      "candidate_spec_id": "stockdb_low_vol_half_momentum_20",
+      "research_action": "CONTINUE_RESEARCH_ONLY",
+      "decision_reason": "common-window evidence is research-only and not strategy validated",
+      "selection_strategy_id": "low_vol_half_momentum_20",
+      "selection_catalog_id": "stockdb_low_vol_half_momentum_20",
+      "selection_research_followup_allowed": true,
+      "paper_allowed": false,
+      "promotion_allowed": false,
+      "common_window_metrics": {
+        "sessions": 648,
+        "window_start_equity": 140000.0,
+        "window_end_equity": 160692.37,
+        "net_return": 0.14780264285714284,
+        "max_drawdown": -0.16580549050519688,
+        "sharpe_zero_rf_252": 0.518747484849727,
+        "window_turnover_value": 1994906.9300000002,
+        "orders": 390,
+        "fills": 656,
+        "fees_rmb": 2448.16
+      },
+      "max_cost_pressure": {
+        "sessions": 648,
+        "extra_cost_rmb": 19949.0693,
+        "window_start_equity": 140000.0,
+        "window_end_equity": 140743.3007,
+        "net_return": 0.005309290714285764,
+        "max_drawdown": -0.20200975358964013,
+        "sharpe_zero_rf_252": 0.0792194002617486,
+        "bps": 100.0
+      },
+      "strategy_validated": false
+    },
+    {
+      "strategy_id": "mature_factor_balanced_ridge",
+      "label": "成熟因子 Ridge",
+      "candidate_spec_id": "factor_candidate_family_balanced_ridge",
+      "research_action": "CONTINUE_RESEARCH_ONLY",
+      "decision_reason": "common-window evidence is research-only and not strategy validated",
+      "selection_strategy_id": "mature_factor_balanced_ridge",
+      "selection_catalog_id": "factor_candidate_family_balanced_ridge",
+      "selection_research_followup_allowed": true,
+      "paper_allowed": false,
+      "promotion_allowed": false,
+      "common_window_metrics": {
+        "sessions": 648,
+        "window_start_equity": 140000.0,
+        "window_end_equity": 191766.89,
+        "net_return": 0.36976350000000013,
+        "max_drawdown": -0.18138374409643643,
+        "sharpe_zero_rf_252": 0.7619955842284162,
+        "window_turnover_value": 8227019.859999999,
+        "orders": 281,
+        "fills": 562,
+        "fees_rmb": 4584.21
+      },
+      "max_cost_pressure": {
+        "sessions": 648,
+        "extra_cost_rmb": 82270.19859999999,
+        "window_start_equity": 140000.0,
+        "window_end_equity": 109496.69140000003,
+        "net_return": -0.21788077571428555,
+        "max_drawdown": -0.381769030282717,
+        "sharpe_zero_rf_252": -0.2858926491361611,
+        "bps": 100.0
+      },
+      "strategy_validated": false
+    },
+    {
+      "strategy_id": "mature_factor_balanced_ridge_h60",
+      "label": "成熟因子 Ridge（60-session variant）",
+      "candidate_spec_id": "factor_candidate_family_balanced_ridge",
+      "research_action": "CONTINUE_RESEARCH_ONLY",
+      "decision_reason": "common-window evidence is research-only and not strategy validated",
+      "selection_strategy_id": "mature_factor_balanced_ridge",
+      "selection_catalog_id": "factor_candidate_family_balanced_ridge",
+      "selection_research_followup_allowed": true,
+      "paper_allowed": false,
+      "promotion_allowed": false,
+      "common_window_metrics": {
+        "sessions": 648,
+        "window_start_equity": 140000.0,
+        "window_end_equity": 185047.35,
+        "net_return": 0.32176678571428585,
+        "max_drawdown": -0.1910393802223842,
+        "sharpe_zero_rf_252": 0.7400693769873982,
+        "window_turnover_value": 7416800.9399999995,
+        "orders": 279,
+        "fills": 556,
+        "fees_rmb": 4129.55
+      },
+      "max_cost_pressure": {
+        "sessions": 648,
+        "extra_cost_rmb": 74168.00939999998,
+        "window_start_equity": 140000.0,
+        "window_end_equity": 110879.34060000003,
+        "net_return": -0.20800470999999987,
+        "max_drawdown": -0.3632305958436691,
+        "sharpe_zero_rf_252": -0.31607491862545517,
+        "bps": 100.0
+      },
+      "strategy_validated": false
+    }
+  ],
+  "summary": {
+    "continue_research_only": 3,
+    "stop_research_only": 0,
+    "blocked_coverage": 0,
+    "unassessed_separate_gate": 0,
+    "strategy_validated": 0
+  },
+  "limitations": [
+    "This gate joins saved research receipts; it does not rerun a strategy or mutate a ledger.",
+    "PIT completeness, forward validation, broker observations and execution authorization remain separate gates.",
+    "A CONTINUE_RESEARCH_ONLY result is not paper or live adoption."
+  ]
+}

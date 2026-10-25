@@ -99,3 +99,20 @@ def test_f2_source_snapshot_cli_runs_gate_and_writes_receipt(tmp_path):
     assert receipt["status"] == "HISTORICAL_EVIDENCE_READY"
     assert receipt["source_checks"] == {"verified": 1, "failed": 0}
     assert receipt["execution_admitted"] is False
+
+
+def test_candidate_adoption_decision_route_is_registered_once():
+    source = (ROOT / "run_committee.py").read_text(encoding="utf-8")
+    assert source.count('if argv[:1] == ["candidate-adoption-decision"]:') == 1
+
+
+def test_candidate_adoption_decision_help_is_available():
+    result = subprocess.run(
+        [sys.executable, "-Xutf8", str(ROOT / "run_committee.py"),
+         "candidate-adoption-decision", "--help"],
+        cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
+    )
+    assert result.returncode == 0
+    assert "--common-window" in result.stdout
+    assert "--cost-pressure" in result.stdout
+    assert "--selection" in result.stdout

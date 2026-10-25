@@ -254,6 +254,9 @@ def main(argv=None):
     if argv[:1] == ["common-window-strategy-comparison"]:
         from trading.research.common_window_strategy_comparison import main as common_window_strategy_comparison_main
         return common_window_strategy_comparison_main(argv[1:])
+    if argv[:1] == ["candidate-adoption-decision"]:
+        from trading.research.candidate_adoption_decision import main as candidate_adoption_decision_main
+        return candidate_adoption_decision_main(argv[1:])
     if argv[:1] == ["research-decision-matrix"]:
         from trading.research.research_decision_matrix import main as research_decision_matrix_main
         return research_decision_matrix_main(argv[1:])

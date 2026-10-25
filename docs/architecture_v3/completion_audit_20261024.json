@@ -557,10 +557,17 @@
         "outputs/research_reports/20261026_common_window_cost_pressure_v1.md",
         "outputs/pipeline_receipts/20261026_action_context_target_binding_v1.json",
         "outputs/research_reports/20261026_action_context_target_binding_v1.md",
-        "trading/research/action_context_target_binding.py"
+        "trading/research/action_context_target_binding.py",
+        "trading/research/candidate_adoption_decision.py",
+        "trading/research/tests/test_candidate_adoption_decision.py",
+        "run_committee.py candidate-adoption-decision",
+        "trading/tests/test_run_committee_dispatch.py",
+        "outputs/pipeline_receipts/20261026_candidate_adoption_decision_v1.json",
+        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md"
       ],
-      "gap": "catalog and one-to-one fixed specs are bound; actual per-event PIT/revision evidence, shortline and public-seat timing gates remain open",
-      "next_acceptance": "after the next complete close, refresh common snapshot, cost pressure and retained candidate evidence before any candidate rerun"
+      "gap": "Candidate catalog now has a reproducible adoption-gate receipt joining common-window, cost-pressure and latest selection evidence; real PIT/forward/channel gates remain open.",
+      "next_acceptance": "After the next complete close, regenerate the same gate from the fresh snapshot before any candidate promotion decision.",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "execution_gate",

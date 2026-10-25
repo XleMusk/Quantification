@@ -428,7 +428,13 @@
         "trading/research/common_cost_pressure.py",
         "trading/research/tests/test_common_cost_pressure.py",
         "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
-        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md",
+        "trading/research/candidate_adoption_decision.py",
+        "trading/research/tests/test_candidate_adoption_decision.py",
+        "run_committee.py candidate-adoption-decision",
+        "trading/tests/test_run_committee_dispatch.py",
+        "outputs/pipeline_receipts/20261026_candidate_adoption_decision_v1.json",
+        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261024_research_decision_matrix_v1.json",
@@ -444,7 +450,13 @@
         "trading/research/common_cost_pressure.py",
         "trading/research/tests/test_common_cost_pressure.py",
         "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
-        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md",
+        "trading/research/candidate_adoption_decision.py",
+        "trading/research/tests/test_candidate_adoption_decision.py",
+        "run_committee.py candidate-adoption-decision",
+        "trading/tests/test_run_committee_dispatch.py",
+        "outputs/pipeline_receipts/20261026_candidate_adoption_decision_v1.json",
+        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md"
       ],
       "acceptance": "Completed public-seat cases expose post-event return/opportunity, order/fill enterability, and fixed continue/stop research decisions; incomplete cases remain blocked with their error; all promotion and execution gates remain closed.",
       "evidence_updated_on": "2026-10-26"
@@ -542,7 +554,13 @@
         "trading/research/common_cost_pressure.py",
         "trading/research/tests/test_common_cost_pressure.py",
         "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
-        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md",
+        "trading/research/candidate_adoption_decision.py",
+        "trading/research/tests/test_candidate_adoption_decision.py",
+        "run_committee.py candidate-adoption-decision",
+        "trading/tests/test_run_committee_dispatch.py",
+        "outputs/pipeline_receipts/20261026_candidate_adoption_decision_v1.json",
+        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261024_strategy_robustness_matrix_v1.json",
@@ -563,7 +581,13 @@
         "trading/research/common_cost_pressure.py",
         "trading/research/tests/test_common_cost_pressure.py",
         "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
-        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md",
+        "trading/research/candidate_adoption_decision.py",
+        "trading/research/tests/test_candidate_adoption_decision.py",
+        "run_committee.py candidate-adoption-decision",
+        "trading/tests/test_run_committee_dispatch.py",
+        "outputs/pipeline_receipts/20261026_candidate_adoption_decision_v1.json",
+        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md"
       ],
       "acceptance": "Saved long-window, untouched-forward and capacity/cost artifacts produce explicit continue, mixed, stop or coverage-blocked research decisions; those decisions are bound into the candidate library with a research-only follow-up queue and closed paper/promotion gates.",
       "evidence_updated_on": "2026-10-26"
@@ -654,7 +678,13 @@
         "trading/research/common_cost_pressure.py",
         "trading/research/tests/test_common_cost_pressure.py",
         "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
-        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md",
+        "trading/research/candidate_adoption_decision.py",
+        "trading/research/tests/test_candidate_adoption_decision.py",
+        "run_committee.py candidate-adoption-decision",
+        "trading/tests/test_run_committee_dispatch.py",
+        "outputs/pipeline_receipts/20261026_candidate_adoption_decision_v1.json",
+        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md"
       ],
       "acceptance": "The h60 receipt has six rows, each with a fixed research decision; Ridge baseline and h60 preserve positive return/Sharpe signs; the unified launcher regenerates the receipt; focused comparison tests pass.",
       "evidence": [
@@ -669,7 +699,13 @@
         "trading/research/common_cost_pressure.py",
         "trading/research/tests/test_common_cost_pressure.py",
         "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
-        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md",
+        "trading/research/candidate_adoption_decision.py",
+        "trading/research/tests/test_candidate_adoption_decision.py",
+        "run_committee.py candidate-adoption-decision",
+        "trading/tests/test_run_committee_dispatch.py",
+        "outputs/pipeline_receipts/20261026_candidate_adoption_decision_v1.json",
+        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
