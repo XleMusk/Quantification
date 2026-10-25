@@ -114,8 +114,8 @@ def _source_target(item: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str, A
 def _candidate_items(path: Path) -> list[Mapping[str, Any]]:
     raw = _read(path)
     values = raw if isinstance(raw, list) else raw.get("candidates")
-    if not isinstance(values, list) or not values or not all(isinstance(item, Mapping) for item in values):
-        raise ValueError("Candidate source manifest must contain a non-empty candidates list")
+    if not isinstance(values, list) or not all(isinstance(item, Mapping) for item in values):
+        raise ValueError("Candidate source manifest must contain a candidates list")
     return list(values)
 
 
@@ -157,6 +157,7 @@ def _input_fingerprint(*, close_date: str, execution_day: str, settlement_day: s
                        minute_time: str, gate_mode: str,
                        research_decision_receipt: Path | None,
                        calendar_path: Path | None,
+                       stockdb_snapshot: Path | None,
                        joint_capacity_policy: str | None, joint_max_target_rows: int) -> tuple[str, dict[str, Any]]:
     refs = {
         "source_manifest": _ref(source_manifest),
@@ -168,13 +169,16 @@ def _input_fingerprint(*, close_date: str, execution_day: str, settlement_day: s
         refs["research_decision_receipt"] = _ref(research_decision_receipt)
     if calendar_path is not None and calendar_path.is_file():
         refs["calendar"] = _ref(calendar_path)
+    if stockdb_snapshot is not None:
+        refs["stockdb_snapshot"] = _ref(stockdb_snapshot / "snapshot.json")
     body = {"close_date": close_date, "execution_day": execution_day,
             "settlement_day": settlement_day, "stockdb_root": str(stockdb_root.resolve()),
             "sources": refs, "initial_cash": float(initial_cash),
             "minute_time": minute_time, "gate_mode": gate_mode,
             "joint_capacity_policy": joint_capacity_policy,
             "joint_max_target_rows": joint_max_target_rows,
-            "calendar_path": str(calendar_path) if calendar_path else None}
+            "calendar_path": str(calendar_path) if calendar_path else None,
+            "stockdb_snapshot": str(stockdb_snapshot) if stockdb_snapshot else None}
     fingerprint = sha256(json.dumps(body, sort_keys=True, ensure_ascii=False,
                                     separators=(",", ":")).encode("utf-8")).hexdigest()
     return fingerprint, body
@@ -272,6 +276,7 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
                  fixed_run_dir: str | Path | None = None,
                  fixed_strategy_id: str | None = None,
                  stockdb_root: str | Path = DEFAULT_STOCKDB,
+                 stockdb_snapshot: str | Path | None = None,
                  catalog_path: str | Path | None = DEFAULT_CATALOG,
                  close_date: str, execution_day: str, settlement_day: str,
                  initial_cash: float, minute_time: str = "",
@@ -291,6 +296,7 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
         fixed_run_dir=fixed_run_dir,
         fixed_strategy_id=fixed_strategy_id)
     stockdb_root = Path(stockdb_root).resolve()
+    stockdb_snapshot_dir = Path(stockdb_snapshot).resolve() if stockdb_snapshot is not None else None
     catalog = Path(catalog_path).resolve() if catalog_path is not None else None
     decision_receipt = Path(research_decision_receipt).resolve() if research_decision_receipt is not None else None
     calendar_file = Path(calendar_path).resolve() if calendar_path is not None else None
@@ -300,6 +306,8 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
         raise ValueError(f"Candidate catalog does not exist: {catalog}")
     if decision_receipt is not None and not decision_receipt.is_file():
         raise ValueError(f"Research decision receipt does not exist: {decision_receipt}")
+    if stockdb_snapshot_dir is not None and not (stockdb_snapshot_dir / "snapshot.json").is_file():
+        raise ValueError(f"StockDB snapshot directory has no snapshot.json: {stockdb_snapshot_dir}")
     fingerprint, fingerprint_inputs = _input_fingerprint(
         close_date=close_date, execution_day=execution_day, settlement_day=settlement_day,
         stockdb_root=stockdb_root, source_manifest=source_manifest, catalog=catalog,
@@ -307,6 +315,7 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
         initial_cash=initial_cash, minute_time=minute_time, gate_mode=gate_mode,
         research_decision_receipt=decision_receipt,
         calendar_path=calendar_file,
+        stockdb_snapshot=stockdb_snapshot_dir,
         joint_capacity_policy=joint_capacity_policy, joint_max_target_rows=joint_max_target_rows)
     output = Path(output_dir).resolve()
     receipt_path = output / "contract_receipt.json"
@@ -345,12 +354,16 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
             candidate_targets.append((candidate_id, target, source_ref))
         all_targets = [fixed_target, *(item[1] for item in candidate_targets)]
         symbols = list(dict.fromkeys(symbol for target in all_targets for symbol in target["weights"]))
-        snapshot_dir = output / "snapshot"
-        metadata = freeze_snapshot(stockdb_root, snapshot_dir, symbols, [close_date], minute_time)
+        snapshot_dir = stockdb_snapshot_dir or (output / "snapshot")
+        metadata = (_read(snapshot_dir / "snapshot.json") if stockdb_snapshot_dir is not None
+                    else freeze_snapshot(stockdb_root, snapshot_dir, symbols, [close_date], minute_time))
+        if metadata.get("execution_admitted") is not False:
+            raise ValueError("StockDB snapshot crossed execution boundary")
         snapshot_ref = _ref(snapshot_dir / "snapshot.json")
         quote, missing = _snapshot_quote(snapshot_dir, symbols, close_date,
                                          observed_at=metadata["captured_at"])
         receipt_base.update({"close_date": close_date, "snapshot": snapshot_ref,
+                             "stockdb_snapshot_source": str(snapshot_dir),
                              "requested_symbol_count": len(symbols), "missing_symbols": missing,
                              "fixed_source": fixed_source_ref,
                              "candidate_source_manifest": _ref(source_manifest),
@@ -392,10 +405,30 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
             _read(Path(fixed_paths["target"])), _read(Path(fixed_paths["quotes"])), initial_cash,
             execution_day=execution_day, settlement_day=settlement_day,
             output_dir=output / "fixed")
-        batch = build_batch(manifest["candidates"], output / "candidate_batch",
-                            initial_cash=initial_cash, execution_day=execution_day,
-                            settlement_day=settlement_day, catalog_path=catalog,
-                            manifest_path=manifest_path, gate_mode=gate_mode)
+        if manifest["candidates"]:
+            batch = build_batch(manifest["candidates"], output / "candidate_batch",
+                                initial_cash=initial_cash, execution_day=execution_day,
+                                settlement_day=settlement_day, catalog_path=catalog,
+                                manifest_path=manifest_path, gate_mode=gate_mode)
+        else:
+            candidate_dir = output / "candidate_batch"
+            candidate_dir.mkdir(parents=True, exist_ok=True)
+            skipped_receipt = candidate_dir / "batch_receipt.json"
+            skipped_receipt.write_text(json.dumps({
+                "schema": "daily_candidate_paper_batch_v2",
+                "status": "SKIPPED_NO_REGISTERED_CANDIDATES",
+                "execution_admitted": False, "broker_interacted": False,
+                "ths_interacted": False, "persistent_ledger_mutated": False,
+                "execution_day": execution_day, "settlement_day": settlement_day,
+                "candidate_count": 0, "candidates": [],
+                "manifest": {"path": str(manifest_path), "sha256": _sha256(manifest_path),
+                             "candidate_count": 0},
+                "output_dir": str(candidate_dir),
+                "limitations": ["No registered candidate entered this fixed-leg-only paper run."],
+            }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            batch = {"status": "SKIPPED_NO_REGISTERED_CANDIDATES",
+                     "receipt_path": str(skipped_receipt), "candidate_count": 0,
+                     "candidates": []}
         joint_result = None
         if joint_capacity_policy is not None:
             payloads = {fixed_target["strategy_id"]: (fixed_target, fixed_quote)}
@@ -461,6 +494,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--fixed-strategy-id",
                         help="optional with --fixed-run-dir; required with --fixed-terminal-account")
     parser.add_argument("--stockdb-root", type=Path, default=DEFAULT_STOCKDB)
+    parser.add_argument("--stockdb-snapshot", type=Path,
+                        help="optional pinned local snapshot directory; avoids live StockDB capture")
     parser.add_argument("--catalog", type=Path, default=DEFAULT_CATALOG)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--close-date", required=True)
@@ -481,7 +516,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         args.source_manifest, args.output_dir,
         fixed_terminal_account=args.fixed_terminal_account, fixed_run_dir=args.fixed_run_dir,
         fixed_strategy_id=args.fixed_strategy_id,
-        stockdb_root=args.stockdb_root, catalog_path=args.catalog,
+        stockdb_root=args.stockdb_root, stockdb_snapshot=args.stockdb_snapshot,
+        catalog_path=args.catalog,
         close_date=args.close_date, execution_day=args.execution_day,
         settlement_day=args.settlement_day, initial_cash=args.initial_cash,
         minute_time=args.minute_time, gate_mode=args.gate_mode,

@@ -307,3 +307,7 @@ D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `de
 基于该真实固定回放又生成了 2026-10-22 的研究纸面预览：`D:\Quantification\outputs\paper_rebalance\20261025_132805_277fa0eb\result.json`。预览保留 19 个持仓目标、0 个订单，原因是固定月末 rank 尚未到 10 月 21 日且缺少用户账户/可卖数量/可执行 BrokerQuote；它是纸面目标证据，不是 THS 预填或真实订单。10 月 22–23 日完整收市源仍未取得，10 月 26 日继续等待真实收市输入。
 
 同一 append-only 输入下尝试把 `low_vol_half_momentum_20` 候选重跑到 2026-10-21，回执 `D:\Quantification\outputs\stockdb_rolling_low_volatility\20261025_213102_eed7414b\run.json` 在 2026-10-08 停止：`000301.SZSE` 的 StockDB execution reference 与 independent native raw stream 不一致。该失败已保留为 `blocked_research_only`，不把部分 22 个会话结果送入 D0/D1，也不重复同一混合源。
+
+## 2026-10-25 pinned snapshot fixed-only D0/D1 proof
+
+`next-close-d0-d1` 新增 `--stockdb-snapshot`，可直接消费已保存的 `snapshot.json`，不依赖 live StockDB 服务；同时允许候选清单为空，固定腿仍进入完整纸面链。使用 `stockdb_20261021_full_v1` 快照实际生成回执 `D:\QuantificationData\trading\research\next_close_d0_d1\20261021_fixed_only_v1\run_pinned\contract_receipt.json`：固定目标 20 个、纸面订单 20 个、joint paper 20 个，候选批次 `SKIPPED_NO_REGISTERED_CANDIDATES`，THS 只读参考已生成，缺失行情 0，所有执行标志关闭。受影响聚焦回归为 `38 passed`。

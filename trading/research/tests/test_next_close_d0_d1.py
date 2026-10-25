@@ -94,6 +94,40 @@ def test_next_close_contract_captures_same_day_quotes_and_shared_bindings(tmp_pa
     assert reused["reused_existing_run"] is True
 
 
+def test_next_close_allows_fixed_leg_when_candidate_manifest_is_empty(tmp_path, monkeypatch):
+    fixed, _, catalog = _setup(tmp_path)
+    empty_sources = _write(tmp_path / "empty_sources.json", {"candidates": []})
+    monkeypatch.setattr(contract, "freeze_snapshot", _fake_capture)
+    receipt = contract.run_contract(
+        empty_sources, tmp_path / "run", fixed_terminal_account=fixed,
+        fixed_strategy_id="fixed_close", stockdb_root=tmp_path / "stockdb",
+        catalog_path=catalog, close_date=DAY, execution_day="2026-10-27",
+        settlement_day="2026-10-28", initial_cash=100000.0,
+        joint_capacity_policy="budgeted")
+    assert receipt["status"] == contract.STATUS
+    assert receipt["candidate_batch"]["candidate_count"] == 0
+    assert receipt["joint_paper"]["paper_order_count"] == 1
+    skipped = json.loads((tmp_path / "run" / "candidate_batch" / "batch_receipt.json").read_text())
+    assert skipped["status"] == "SKIPPED_NO_REGISTERED_CANDIDATES"
+    assert skipped["execution_admitted"] is False
+
+
+def test_next_close_can_use_pinned_snapshot_without_live_capture(tmp_path, monkeypatch):
+    fixed, sources, catalog = _setup(tmp_path)
+    snapshot = tmp_path / "pinned_snapshot"
+    _fake_capture(tmp_path / "stockdb", snapshot, ["600000.SSE", "000001.SZSE"], [DAY])
+    monkeypatch.setattr(contract, "freeze_snapshot",
+                        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("live capture must not run")))
+    receipt = contract.run_contract(
+        sources, tmp_path / "run", fixed_terminal_account=fixed,
+        fixed_strategy_id="fixed_close", stockdb_root=tmp_path / "stockdb",
+        stockdb_snapshot=snapshot, catalog_path=catalog, close_date=DAY,
+        execution_day="2026-10-27", settlement_day="2026-10-28",
+        initial_cash=100000.0)
+    assert receipt["status"] == contract.STATUS
+    assert receipt["stockdb_snapshot_source"] == str(snapshot.resolve())
+
+
 def test_next_close_accepts_same_day_prebuilt_target_payload(tmp_path, monkeypatch):
     fixed, _, catalog = _setup(tmp_path)
     target = _write(tmp_path / "target_payload.json", {

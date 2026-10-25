@@ -198,7 +198,9 @@
     "fixed_daily_real_catchup_20261021": "D:/QuantificationData/trading/research/fixed_daily/20261017_engineering_v1/head.json",
     "fixed_daily_append_supplement_20261021": "D:/QuantificationData/trading/research/lowvol_supplements/20261025_append1021_v1/result.json",
     "fixed_daily_next_session_preview_20261022": "D:/Quantification/outputs/paper_rebalance/20261025_132805_277fa0eb/result.json",
-    "candidate_half_momentum_mixed_source_block": "D:/Quantification/outputs/stockdb_rolling_low_volatility/20261025_213102_eed7414b/run.json"
+    "candidate_half_momentum_mixed_source_block": "D:/Quantification/outputs/stockdb_rolling_low_volatility/20261025_213102_eed7414b/run.json",
+    "next_close_pinned_snapshot_module": "D:/Quantification/trading/research/next_close_d0_d1.py",
+    "next_close_fixed_only_pinned_receipt": "D:/QuantificationData/trading/research/next_close_d0_d1/20261021_fixed_only_v1/run_pinned/contract_receipt.json"
   },
   "project_handoff_file": "D:\\Quantification\\docs\\architecture_v3\\current_handoff_quantification.md",
   "handoff_file_collision_note": "The global capability_lab current_handoff is concurrently used by D:\\muse; resume D:\\Quantification from project_handoff_file."
