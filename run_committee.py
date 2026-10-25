@@ -239,6 +239,9 @@ def main(argv=None):
     if argv[:1] == ["joint-portfolio-paper-package"]:
         from trading.research.joint_portfolio_paper_package import main as joint_portfolio_paper_package_main
         return joint_portfolio_paper_package_main(argv[1:])
+    if argv[:1] == ["ths-target-readback"]:
+        from trading.ths.target_readback import main as ths_target_readback_main
+        return ths_target_readback_main(argv[1:])
     if argv[:1] == ["long-window-strategy-comparison"]:
         from trading.research.long_window_strategy_comparison import main as long_window_strategy_comparison_main
         return long_window_strategy_comparison_main(argv[1:])

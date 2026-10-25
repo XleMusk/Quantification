@@ -228,3 +228,8 @@ Ridge h60 相对基线的净收益差为 -4.7997 个百分点、最大回撤差�
 ## 2026-10-25 joint THS read-only reference output
 
 联合纸面包现在在每次成功投影后生成 `ths_readonly_reference.json`，按目标行记录目标权重、目标数量，以及 `quote_status=awaiting_authorized_ths_read_only_observation`、`account_status=awaiting_authorized_ths_read_only_observation`、`readback_status=not_observed`、`prefill_status=reference_only_not_prefillable`。短线 LGBM 实测回执 `outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v2/joint_paper_receipt.json` 仍为 5 笔纸面订单，并生成 5 行只读参考；没有登录、预填、提交、撤单或 Ledger 写入。P17 与 W4 已绑定。
+
+
+## 2026-10-25 THS target readback comparator
+
+新增 `trading/ths/target_readback.py` 与统一命令 `run_committee.py ths-target-readback`。它读取联合纸面生成的只读参考和授权后导出的行，按 symbol/qty 返回 `readback_verified`、`readback_mismatch_stop` 或 `readback_incomplete_stop`；所有结果都保持 `submitted=false`、`execution_admitted=false`。合成夹具回执为 `outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json`，只证明契约，不代表真实 THS 观察。P18 与 W4 已绑定。

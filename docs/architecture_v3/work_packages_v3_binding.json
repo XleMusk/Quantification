@@ -1121,6 +1121,24 @@
         "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v2/ths_readonly_reference.json"
       ],
       "acceptance": "A saved joint paper run emits one readonly reference row per target with prefill_allowed=false, readback_observed=false and execution_admitted=false."
+    },
+    {
+      "id": "P18",
+      "domain": "execution",
+      "result": "An explicit read-only target reference can be compared with a captured row export and returns verified, mismatch-stop or incomplete-stop outcomes.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Use the comparator only after an authorized read-only export exists; preserve mismatch/incomplete outputs and never resend automatically.",
+      "prohibition": "Synthetic readback verification is a contract test, not real THS observation or execution evidence.",
+      "actual_paths": [
+        "D:/Quantification/trading/ths/target_readback.py",
+        "D:/Quantification/trading/tests/test_ths_target_readback.py",
+        "run_committee.py ths-target-readback",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json"
+      ],
+      "evidence": [
+        "D:/Quantification/outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json"
+      ],
+      "acceptance": "A complete synthetic row export returns readback_verified with submitted=false and execution_admitted=false; mismatch and missing-row cases stop explicitly."
     }
   ]
 }

@@ -172,9 +172,13 @@
         "D:/Quantification/trading/research/joint_portfolio_paper_package.py",
         "D:/Quantification/trading/research/tests/test_joint_portfolio_paper_package.py",
         "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v2/joint_paper_receipt.json",
-        "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v2/ths_readonly_reference.json"
+        "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v2/ths_readonly_reference.json",
+        "D:/Quantification/trading/ths/target_readback.py",
+        "D:/Quantification/trading/tests/test_ths_target_readback.py",
+        "D:/Quantification/run_committee.py ths-target-readback",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json"
       ],
-      "result": "Research-only joint paper packages now emit a target-bound THS read-only reference; account/quote/readback remain explicitly pending until an authorized external observation exists."
+      "result": "Joint paper packages emit a target-bound THS read-only reference, and the explicit readback comparator now preserves verified, mismatch-stop and incomplete-stop outcomes without client or Ledger actions."
     },
     {
       "id": "W5",
