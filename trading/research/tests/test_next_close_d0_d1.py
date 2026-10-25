@@ -176,6 +176,25 @@ def test_next_close_contract_rejects_stale_target_before_capture(tmp_path, monke
     assert json.loads((tmp_path / "run" / "contract_receipt.json").read_text())["status"] == contract.FAILED_STATUS
 
 
+def test_next_close_binds_adjacent_dates_to_pinned_calendar(tmp_path, monkeypatch):
+    fixed, sources, catalog = _setup(tmp_path)
+    calendar = _write(tmp_path / "calendar.json", {
+        "schema": "cn_a_share_exchange_calendar_v1", "calendar_id": "fixture_2026",
+        "year": 2026, "closed_ranges": [], "open_sessions": [],
+    })
+    monkeypatch.setattr(contract, "freeze_snapshot", _fake_capture)
+    try:
+        contract.run_contract(
+            sources, tmp_path / "run", fixed_terminal_account=fixed, fixed_strategy_id="fixed_close",
+            stockdb_root=tmp_path / "stockdb", catalog_path=catalog, calendar_path=calendar,
+            close_date=DAY, execution_day="2026-10-28", settlement_day="2026-10-29", initial_cash=100000.0)
+    except ValueError as error:
+        assert "adjacent sessions" in str(error)
+    else:
+        raise AssertionError("non-adjacent D0/D1 dates must be rejected")
+    assert json.loads((tmp_path / "run" / "contract_receipt.json").read_text())["status"] == contract.FAILED_STATUS
+
+
 def test_next_close_decision_bound_filter_keeps_only_continue_candidates(tmp_path):
     items = [
         {"candidate_id": "keep", "decision_id": "keep", "target": "keep.json"},

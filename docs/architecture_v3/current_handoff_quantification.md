@@ -248,3 +248,8 @@ Ridge h60 相对基线的净收益差为 -4.7997 个百分点、最大回撤差�
 ## 2026-10-25 alternate financial source hash binding
 
 备用 F2 sidecar v2 绑定了 `result.json`、`statement_items.parquet` 和实现文件的 SHA-256/字节数；sidecar/bridge 回执更新为 `outputs/pipeline_receipts/20261025_f2_alternate_financials_sidecar_v2.json` 与 `outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v2.json`。18 行、0 facts、`BLOCKED_DATA` 结果不变，旧 v1 失败/运行证据保留。
+
+
+## 2026-10-25 next-close pinned calendar binding
+
+`next_close_d0_d1.py` 现在可选绑定版本化 SSE 日历 `D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json`。日历可用时，close→execution→settlement 必须是相邻交易日；日历缺失只记录 `calendar_artifact_unavailable`，不使用机器星期推断。新增契约测试后 D0/D1 测试为 `7 passed`，P21/W1 已绑定。

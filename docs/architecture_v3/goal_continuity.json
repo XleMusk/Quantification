@@ -178,7 +178,10 @@
     "f2_alternate_financials_module": "D:/Quantification/trading/research/f2_alternate_financials.py",
     "f2_alternate_financials_test": "D:/Quantification/trading/research/tests/test_f2_alternate_financials.py",
     "f2_alternate_financials_sidecar": "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_sidecar_v2.json",
-    "f2_alternate_financials_bridge": "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v2.json"
+    "f2_alternate_financials_bridge": "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v2.json",
+    "next_close_calendar_module": "D:/Quantification/trading/research/next_close_d0_d1.py",
+    "next_close_calendar_test": "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
+    "next_close_calendar_file": "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json"
   },
   "project_handoff_file": "D:\\Quantification\\docs\\architecture_v3\\current_handoff_quantification.md",
   "handoff_file_collision_note": "The global capability_lab current_handoff is concurrently used by D:\\muse; resume D:\\Quantification from project_handoff_file."

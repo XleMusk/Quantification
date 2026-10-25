@@ -1177,6 +1177,24 @@
         "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v2.json"
       ],
       "acceptance": "The hash-bound alternate sidecar records result/statement_items/implementation artifacts; 18 rows reach the existing bridge, which returns BLOCKED_DATA with 0 facts and execution_admitted=false."
+    },
+    {
+      "id": "P21",
+      "domain": "operations",
+      "result": "Next-close D0/D1 binds optional versioned SSE calendar evidence and rejects non-adjacent execution/settlement sessions when the artifact is available.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Use the pinned calendar with the next real close; if unavailable, keep the calendar status unresolved and do not infer dates.",
+      "prohibition": "Machine weekday inference and missing-calendar fallback cannot authorize a paper rollover or broker action.",
+      "actual_paths": [
+        "D:/Quantification/trading/research/next_close_d0_d1.py",
+        "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
+        "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json"
+      ],
+      "evidence": [
+        "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
+        "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json"
+      ],
+      "acceptance": "Fixture D0/D1 accepts adjacent calendar sessions, rejects a non-adjacent execution date, and preserves FAILED_D0_D1 evidence with execution_admitted=false."
     }
   ]
 }

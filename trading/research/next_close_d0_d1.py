@@ -32,6 +32,7 @@ from .joint_portfolio_paper_package import (
     build_joint_paper_from_payloads,
 )
 from .stockdb_paper_target_package import build_paper_target_package
+from .exchange_calendar import load_calendar, next_exchange_session
 
 
 SCHEMA = "stockdb_next_close_d0_d1_contract_v1"
@@ -59,6 +60,21 @@ def _sha256(path: Path) -> str:
 def _ref(path: Path) -> dict[str, str]:
     path = path.resolve()
     return {"path": str(path), "sha256": _sha256(path)}
+
+
+def _calendar_contract(close_date: str, execution_day: str, settlement_day: str,
+                       calendar_path: Path | None) -> dict[str, Any]:
+    """Bind adjacent D0/D1 dates to the pinned calendar when available."""
+    payload = load_calendar(calendar_path)
+    if payload is None:
+        return {"status": "calendar_artifact_unavailable", "path": str(calendar_path) if calendar_path else None}
+    next_execution, execution_meta = next_exchange_session(close_date, calendar_path)
+    next_settlement, settlement_meta = next_exchange_session(execution_day, calendar_path)
+    if next_execution != execution_day or next_settlement != settlement_day:
+        raise ValueError("D0/D1 dates are not adjacent sessions in the pinned exchange calendar")
+    return {"status": "resolved_authoritative_static_calendar", "calendar_id": payload.get("calendar_id"),
+            "path": str((calendar_path or Path()).resolve()) if calendar_path else None,
+            "execution": execution_meta, "settlement": settlement_meta}
 
 
 def _source_path(item: Mapping[str, Any]) -> tuple[Path, bool]:
@@ -139,6 +155,7 @@ def _input_fingerprint(*, close_date: str, execution_day: str, settlement_day: s
                        fixed_source: Path, fixed_strategy_id: str, initial_cash: float,
                        minute_time: str, gate_mode: str,
                        research_decision_receipt: Path | None,
+                       calendar_path: Path | None,
                        joint_capacity_policy: str | None, joint_max_target_rows: int) -> tuple[str, dict[str, Any]]:
     refs = {
         "source_manifest": _ref(source_manifest),
@@ -148,12 +165,15 @@ def _input_fingerprint(*, close_date: str, execution_day: str, settlement_day: s
         refs["catalog"] = _ref(catalog)
     if research_decision_receipt is not None:
         refs["research_decision_receipt"] = _ref(research_decision_receipt)
+    if calendar_path is not None and calendar_path.is_file():
+        refs["calendar"] = _ref(calendar_path)
     body = {"close_date": close_date, "execution_day": execution_day,
             "settlement_day": settlement_day, "stockdb_root": str(stockdb_root.resolve()),
             "sources": refs, "initial_cash": float(initial_cash),
             "minute_time": minute_time, "gate_mode": gate_mode,
             "joint_capacity_policy": joint_capacity_policy,
-            "joint_max_target_rows": joint_max_target_rows}
+            "joint_max_target_rows": joint_max_target_rows,
+            "calendar_path": str(calendar_path) if calendar_path else None}
     fingerprint = sha256(json.dumps(body, sort_keys=True, ensure_ascii=False,
                                     separators=(",", ":")).encode("utf-8")).hexdigest()
     return fingerprint, body
@@ -233,6 +253,7 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
                  initial_cash: float, minute_time: str = "",
                  gate_mode: str = "research_followup",
                  research_decision_receipt: str | Path | None = None,
+                 calendar_path: str | Path | None = None,
                  joint_capacity_policy: str | None = None,
                  joint_max_target_rows: int = 22) -> dict[str, Any]:
     close_date = _canonical_day(close_date, "close_date")
@@ -247,6 +268,7 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
     stockdb_root = Path(stockdb_root).resolve()
     catalog = Path(catalog_path).resolve() if catalog_path is not None else None
     decision_receipt = Path(research_decision_receipt).resolve() if research_decision_receipt is not None else None
+    calendar_file = Path(calendar_path).resolve() if calendar_path is not None else None
     if not source_manifest.is_file() or not fixed_source.is_file():
         raise ValueError("Source manifest and fixed terminal account must exist")
     if catalog is not None and not catalog.is_file():
@@ -259,6 +281,7 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
         fixed_source=fixed_source, fixed_strategy_id=fixed_strategy_id,
         initial_cash=initial_cash, minute_time=minute_time, gate_mode=gate_mode,
         research_decision_receipt=decision_receipt,
+        calendar_path=calendar_file,
         joint_capacity_policy=joint_capacity_policy, joint_max_target_rows=joint_max_target_rows)
     output = Path(output_dir).resolve()
     receipt_path = output / "contract_receipt.json"
@@ -279,6 +302,7 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
         "fingerprint_inputs": fingerprint_inputs, "reused_existing_run": False,
     }
     try:
+        receipt_base["calendar"] = _calendar_contract(close_date, execution_day, settlement_day, calendar_file)
         fixed_target, fixed_source_ref = _source_target({"terminal_account": str(fixed_source),
                                                            "strategy_id": fixed_strategy_id})
         _assert_target_day(fixed_target, close_date, "fixed")
@@ -410,6 +434,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--gate-mode", choices=("research_followup", "separate_gate"), default="research_followup")
     parser.add_argument("--research-decision-receipt", type=Path,
                         help="optional receipt; only CONTINUE_RESEARCH_ONLY candidates enter D0/D1")
+    parser.add_argument("--calendar", type=Path,
+                        help="optional pinned SSE calendar JSON for adjacent D0/D1 validation")
     parser.add_argument("--joint-capacity-policy", choices=("strict", "budgeted"), default=None,
                         help="optional direct fixed+candidate joint paper projection")
     parser.add_argument("--joint-max-target-rows", type=int, default=22)
@@ -422,6 +448,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         settlement_day=args.settlement_day, initial_cash=args.initial_cash,
         minute_time=args.minute_time, gate_mode=args.gate_mode,
         research_decision_receipt=args.research_decision_receipt,
+        calendar_path=args.calendar,
         joint_capacity_policy=args.joint_capacity_policy,
         joint_max_target_rows=args.joint_max_target_rows)
     print(json.dumps({"status": receipt["status"], "execution_admitted": receipt["execution_admitted"],
