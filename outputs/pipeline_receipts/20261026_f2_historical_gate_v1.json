@@ -1,0 +1,49 @@
+{
+  "schema": "f2_historical_evidence_contract_v1",
+  "status": "BLOCKED_DATA",
+  "decision_day": "2024-05-01",
+  "source_description": "2023Q1 issuer source current fetch classifier",
+  "rows": [
+    {
+      "schema": "f2_historical_evidence_contract_v1",
+      "status": "BLOCKED_DATA",
+      "evidence_kind": "current_network_fetch",
+      "historical_retrieval_asof_verified": false,
+      "revision_history_verified": false,
+      "source_provenance_verified": true,
+      "pit_asof_safe": false,
+      "reason_codes": [
+        "historical_evidence_kind_missing_or_current",
+        "historical_retrieval_asof_unproven",
+        "revision_history_unproven",
+        "contract:retrieval_asof_invalid:asof_at must be an offset-aware ISO timestamp",
+        "contract:revision_id_missing"
+      ],
+      "publication_contract": {
+        "publication_evidence_present": true,
+        "publication_event_proven": true,
+        "retrieved_asof_proven": false,
+        "revision_identity_proven": false,
+        "source_provenance_proven": true,
+        "pit_asof_safe": false,
+        "publication_evidence_reasons": [
+          "retrieval_asof_invalid:asof_at must be an offset-aware ISO timestamp",
+          "revision_id_missing"
+        ]
+      },
+      "execution_admitted": false
+    }
+  ],
+  "summary": {
+    "rows": 1,
+    "ready_rows": 0,
+    "blocked_rows": 1
+  },
+  "execution_admitted": false,
+  "factor_computed": false,
+  "account_replay": false,
+  "limitations": [
+    "A current network fetch is not historical retrieval/as-of evidence.",
+    "A ready gate still requires the downstream F2 period, scope and unit contract."
+  ]
+}
