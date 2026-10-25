@@ -155,3 +155,7 @@ Focused regression covering the new joint paper route, existing P06 contract, F2
 将 2026-10-23 同一终止日的固定低波、半动量和 12-1 动量三条账户接入 `joint_portfolio_paper_package`。这次接线暴露并修复了两个主线问题：联合目标的板块最小交易单位此前统一按 100 股，导致科创板 688498.SSE 的 200 股规则在 Orders 阶段被拒；联合目标此前只传可执行权重，浮点向下取整又可能把已接受的最小手数变回非法数量。现在 `joint_portfolio_acceptance.py` 按板块规则生成数量，`joint_portfolio_paper_package.py` 将数量写入目标，`stockdb_paper_target_package.py` 在目标携带显式数量时直接复用并仍由共享 Ledger 校验。
 
 聚焦测试：联合目标、联合纸面包和 D0/D1 共 `9 passed`，改动模块 `py_compile` 通过。当前三策略包在明确的 CNY 10,000,000 容量诊断下生成 `60` 个纸面订单；CNY 2,000,000 运行保留为 `BLOCKED_JOINT_TARGET` 容量回执，未静默放宽约束。两份回执均 `execution_admitted=false`，没有持久 Ledger、券商或同花顺写入。
+
+## 2026-10-25 joint paper rejection receipt
+
+联合纸面包现在把共享 Orders/Ledger 的 `ValueError` 转为 `BLOCKED_PAPER_TARGET_ORDER` 回执，并保留已构建的目标、报价和原始拒绝原因；这样容量、板块或现金约束不会以无上下文的 CLI traceback 结束，且不会写入持久账户。新增回执契约测试后，联合纸面包、联合目标与 D0/D1 聚焦测试为 `10 passed`，改动模块编译通过。

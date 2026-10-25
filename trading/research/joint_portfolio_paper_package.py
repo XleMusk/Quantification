@@ -21,6 +21,7 @@ from .stockdb_paper_target_package import build_paper_target_package
 SCHEMA = "quantification_joint_portfolio_paper_package_v1"
 STATUS = "COMPLETED_RESEARCH_ONLY_JOINT_PAPER_PACKAGE"
 BLOCKED = "BLOCKED_JOINT_TARGET"
+BLOCKED_PAPER = "BLOCKED_PAPER_TARGET_ORDER"
 
 
 def _write_json(path: Path, value: Mapping[str, Any]) -> None:
@@ -120,11 +121,25 @@ def build_joint_paper_package(account_paths: Mapping[str, Path] = DEFAULT_SELECT
 
     target, quote = _target_payload(joint)
     package_dir = Path(output_dir).expanduser().resolve() / "paper_package" if output_dir else None
-    package = build_paper_target_package(
-        target, quote, initial_cash_cny,
-        execution_day=execution_day, settlement_day=settlement_day,
-        output_dir=package_dir,
-    )
+    try:
+        package = build_paper_target_package(
+            target, quote, initial_cash_cny,
+            execution_day=execution_day, settlement_day=settlement_day,
+            output_dir=package_dir,
+        )
+    except (ValueError, TypeError) as error:
+        # Preserve the target and the exact paper-path rejection so a single
+        # board, cash or quantity constraint is recoverable as evidence rather
+        # than an unstructured CLI traceback.
+        receipt = {
+            "schema": SCHEMA, "status": BLOCKED_PAPER,
+            "reason": str(error), "joint": joint,
+            "target_payload": target, "quote_payload": quote,
+            "execution_admitted": False, "broker_interacted": False,
+            "ths_interacted": False, "persistent_ledger_mutated": False,
+            "paper_package": None,
+        }
+        return _persist(receipt, output_dir)
     result = package["result"]
     receipt: dict[str, Any] = {
         "schema": SCHEMA,
@@ -195,7 +210,7 @@ def main(argv=None) -> int:
     return 0 if result["status"] == STATUS else 1
 
 
-__all__ = ["BLOCKED", "SCHEMA", "STATUS", "build_joint_paper_package", "main"]
+__all__ = ["BLOCKED", "BLOCKED_PAPER", "SCHEMA", "STATUS", "build_joint_paper_package", "main"]
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@ import json
 import pytest
 
 from trading.research.joint_portfolio_paper_package import (
+    BLOCKED_PAPER,
     STATUS,
     build_joint_paper_package,
 )
@@ -54,3 +55,25 @@ def test_joint_paper_rejects_execution_before_terminal_day(tmp_path):
             execution_day="2026-10-13", settlement_day="2026-10-14",
             initial_cash_cny=100000,
         )
+
+
+def test_joint_paper_preserves_shared_path_rejection(tmp_path, monkeypatch):
+    first, second = tmp_path / "first.json", tmp_path / "second.json"
+    _account(first, "2026-10-13", "000001.SZSE", 1000)
+    _account(second, "2026-10-13", "000002.SZSE", 500)
+
+    def reject(*args, **kwargs):
+        raise ValueError("paper order rejected for 000001.SZSE: insufficient_cash")
+
+    monkeypatch.setattr(
+        "trading.research.joint_portfolio_paper_package.build_paper_target_package", reject
+    )
+    result = build_joint_paper_package(
+        {"first": first, "second": second},
+        execution_day="2026-10-14", settlement_day="2026-10-15",
+        initial_cash_cny=100000, output_dir=tmp_path / "run",
+    )
+    assert result["status"] == BLOCKED_PAPER
+    assert result["execution_admitted"] is False
+    assert "insufficient_cash" in result["reason"]
+    assert result["target_payload"]["quantities"]
