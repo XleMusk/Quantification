@@ -185,6 +185,11 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
             candidates = raw if isinstance(raw, list) else raw.get("candidates") if isinstance(raw, dict) else None
             if not isinstance(candidates, list):
                 raise ValueError("Candidate replay manifest must contain a candidates list")
+            decision_selection = None
+            if decision is not None:
+                candidates, decision_selection = next_close_d0_d1._decision_bound_candidates(
+                    candidates, decision)
+                base["research_decision_selection"] = decision_selection
             candidate_bundle = build_input_bundle(
                 candidates, output / "candidate_inputs",
                 catalog_path=catalog, gate_mode=gate_mode)

@@ -288,3 +288,8 @@ D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `de
 ## 2026-10-25 replay manifest catalog binding
 
 `post-close-d0-d1 --candidate-replay-manifest` 现在要求注册候选目录，CLI 默认使用 `candidate_strategy_catalog_20261024.json`；未登记的 replay 不会进入 D0/D1。显式 Target manifest 入口保持兼容。聚焦回归为 `35 passed`。
+
+
+## 2026-10-25 decision filter before replay bundle
+
+修正 replay 清单直连路径的研究去留顺序：若提供 `research_decision_receipt`，`post-close-d0-d1` 先过滤 `CONTINUE_RESEARCH_ONLY`，再调用 candidate input bundle 生成 Target/Quote；STOP 候选不会再生成中间目标文件，纳入/排除记录保留在总回执中。聚焦回归为 `36 passed`。

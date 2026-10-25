@@ -122,6 +122,58 @@ def test_post_close_replay_manifest_requires_registered_catalog(tmp_path: Path) 
             initial_cash=100000.0, stockdb_root=stockdb)
 
 
+def test_post_close_filters_stop_replay_before_target_bundle(tmp_path: Path, monkeypatch) -> None:
+    _, fixed_dir, package, stockdb = _inputs(tmp_path)
+    replay_paths = []
+    for candidate_id in ("keep", "stop"):
+        replay = tmp_path / f"{candidate_id}.json"
+        replay.write_text(json.dumps({
+            "strategy_id": candidate_id, "end_date": CLOSE,
+            "execution_admitted": False, "strategy_validated": False,
+            "selected_events": [{"date": CLOSE, "symbol": "000001.SZSE", "score": 1.0}],
+            "state": {"day": CLOSE, "targets": {"000001.SZSE": 0.2}, "prices": {"000001.SZSE": 1000}},
+        }), encoding="utf-8")
+        replay_paths.append(replay)
+    replay_manifest = tmp_path / "replays.json"
+    replay_manifest.write_text(json.dumps({"candidates": [
+        {"candidate_id": "keep", "decision_id": "keep", "replay_result": str(replay_paths[0])},
+        {"candidate_id": "stop", "decision_id": "stop", "replay_result": str(replay_paths[1])},
+    ]}), encoding="utf-8")
+    catalog = tmp_path / "catalog.json"
+    catalog.write_text(json.dumps({"entries": [
+        {"id": "keep", "research_selection": {"research_followup_allowed": True}},
+        {"id": "stop", "research_selection": {"research_followup_allowed": True}},
+    ]}), encoding="utf-8")
+    decision = tmp_path / "decisions.json"
+    decision.write_text(json.dumps({"strategies": [
+        {"id": "keep", "research_decision": "CONTINUE_RESEARCH_ONLY"},
+        {"id": "stop", "research_decision": "STOP_RESEARCH_ONLY"},
+    ]}), encoding="utf-8")
+    monkeypatch.setattr(orchestrator.stockdb_fixed_daily, "run", lambda *args, **kwargs: {
+        "status": "continued_research_only", "last_completed_day": CLOSE,
+        "execution_admitted": False,
+    })
+    observed: dict[str, list[str]] = {}
+
+    def d0_run(source, *args, **kwargs):
+        payload = json.loads(Path(source).read_text(encoding="utf-8"))
+        observed["candidates"] = [row["candidate_id"] for row in payload["candidates"]]
+        return {"status": "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1",
+                "execution_admitted": False}
+
+    monkeypatch.setattr(orchestrator.next_close_d0_d1, "run_contract", d0_run)
+    receipt = orchestrator.run_pipeline(
+        None, tmp_path / "run", fixed_run_dir=fixed_dir, packages=[package],
+        candidate_replay_manifest=replay_manifest, catalog_path=catalog,
+        research_decision_receipt=decision, close_date=CLOSE,
+        execution_day="2026-10-27", settlement_day="2026-10-28",
+        initial_cash=100000.0, stockdb_root=stockdb)
+    assert observed["candidates"] == ["keep"]
+    assert (tmp_path / "run" / "candidate_inputs" / "keep").is_dir()
+    assert not (tmp_path / "run" / "candidate_inputs" / "stop").exists()
+    assert receipt["research_decision_selection"]["excluded"][0]["candidate_id"] == "stop"
+
+
 def test_post_close_preserves_d0_failure_receipt(tmp_path: Path, monkeypatch) -> None:
     source, fixed_dir, package, stockdb = _inputs(tmp_path)
     monkeypatch.setattr(orchestrator.stockdb_fixed_daily, "run", lambda *args, **kwargs: {
