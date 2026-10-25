@@ -9,10 +9,10 @@
 | stockdb_low_vol_half_momentum_20 | 趋势/动量 | RESEARCH_DIAGNOSTIC_COMPLETE | 与固定控制同快照，未采用 |
 | alpha158_lgbm_candidate_panel_v1 | Alpha158/LightGBM | FULL_NATIVE_AND_UNTOUCHED_FORWARD_COMPLETE_RESEARCH_ONLY | native cap500 回放和 2026-10-14..23 完整未触碰标记已完成；PIT/策略验证未完成 |
 | factor_candidate_family_balanced_ridge | 成熟因子 | ACTION_CONTEXT_BOUND_UNTOUCHED_FORWARD_COMPLETE_RESEARCH_ONLY | 行动上下文与 8 日未触碰标记完成；PIT/公司行动未应用 |
-| stockdb_value_size_activity_2023 | 成熟因子 | EXISTING_SHARED_LEDGER_DIAGNOSTIC | 2023 回溯开发样本，非当前信号 |
+| stockdb_value_size_activity_2023 | 成熟因子 | EXISTING_SHARED_LEDGER_DIAGNOSTIC_WITH_PAPER_PROOF | 2023 回溯开发样本，历史共享纸面投影，非当前信号 |
 | shortline_native_lr_lgbm | 短线连板 | RESEARCH_ACCOUNT_PARTIAL_WITH_STOP_POINTS | 完整收益未知，停止点保留 |
 | public_seat_trend_hypotheses | 公开席位/游资风格 | PARTIAL_NO_TRADE | 9 个假设中 5 个完成、4 个因持仓/执行价参考停止；公告时点未验证 |
-| leader_eight_type_replay_engine | 龙头风格 | ENGINE_ONLY_NO_NEW_MARKET_RUN | 当前只有工程恢复证据 |
+| leader_eight_type_replay_engine | 龙头风格 | PARTIAL_CROSS_YEAR_RESOURCE_STOP_WITH_PAPER_PROOF | 跨年资源停止，已有历史共享纸面投影，仍为独立闸门 |
 
 详细指标、证据路径和限制见同名 JSON 文件。
 
@@ -128,3 +128,9 @@ Evidence: `outputs/pipeline_receipts/20261024_shortline_score_gate_audit_v1.json
 已把完整的 `lag2_TREND_ANY_LHB` 公开席位案例（241 个会话、757 个历史订单、1,140 个历史成交）接入共享本地纸面包，生成 5 个目标、5 个纸面订单、4 个可用路由，模拟费用 RMB 246.62，终态研究权益 RMB 999,753.38。该包只证明候选能进入 `Data→Signal→Target Portfolio→Orders→Fill→Cash/Position` 的本地投影，`public_seat_trend_hypotheses` 仍为 `UNASSESSED_SEPARATE_GATE`，没有进入 D1 follow-up 队列。
 
 证据：`outputs/pipeline_receipts/20261025_public_seat_candidate_shared_paper_receipt_v1.json`、`outputs/paper_plans/20261025_public_seat_lag2_shadow_v2/shadow_receipt.json`。回执新增明确的 `validation` 实际边界值和 `boundary_assertions`，均证明 `account_observed/client_interacted/submitted/cancelled/ledger_persisted=false`；没有券商或同花顺操作。
+
+## 2026-10-25 additional shared paper evidence
+
+The value_size_activity_2023 account at terminal day 2023-12-29 now reaches the shared paper path with 20 targets, 20 paper orders, 19 available routes and 20 THS read-only reference rows. Receipt: D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/joint_paper_receipt.json. It remains UNASSESSED_SEPARATE_GATE and retrospective-only.
+
+The saved leader_turnover_eight_type target at terminal day 2026-10-15 now reaches the same path with 5 targets, 5 paper orders, 5 available routes and 5 THS read-only reference rows. Receipt: D:/Quantification/outputs/pipeline_receipts/20261026_leader_eight_type_turnover_joint_paper_v1/joint_paper_receipt.json. Its separate gate and PIT/resource boundaries remain unchanged.

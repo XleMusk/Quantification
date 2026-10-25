@@ -532,11 +532,15 @@
         "outputs/stockdb_factor_replay/20261010_235904_5850f05e/run.json",
         "outputs/stockdb_factor_replay/20261010_235904_5850f05e/REPORT.md",
         "outputs/pipeline_receipts/20261024_candidate_spec_registry.json",
-        "docs/architecture_v3/candidate_strategy_specs_20261024.json"
+    "docs/architecture_v3/candidate_strategy_specs_20261024.json",
+    "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/joint_paper_receipt.json",
+    "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/ths_readonly_reference.json"
       ],
       "limits": [
         "2023 retrospective development sample",
-        "not an untouched test or current signal"
+    "not an untouched test or current signal",
+    "historical shared paper projection only; 19 routes available and one route blocked",
+    "THS rows are read-only references and not observed account or quote state"
       ],
       "research_selection": {
         "decision": "UNASSESSED_SEPARATE_GATE",
@@ -680,14 +684,18 @@
         "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_liquidity_case_bounded_memory_v3/abort_receipt.json",
         "outputs/leader_cross_year/20261024_2025_2026_liquidity_case_bounded_memory_v3/ABORT.md",
         "outputs/pipeline_receipts/20261024_candidate_spec_registry.json",
-        "docs/architecture_v3/candidate_strategy_specs_20261024.json"
+    "docs/architecture_v3/candidate_strategy_specs_20261024.json",
+    "D:/Quantification/outputs/pipeline_receipts/20261026_leader_eight_type_turnover_joint_paper_v1/joint_paper_receipt.json",
+    "D:/Quantification/outputs/pipeline_receipts/20261026_leader_eight_type_turnover_joint_paper_v1/ths_readonly_reference.json"
       ],
       "limits": [
         "engineering resume checks only",
         "no new market strategy result",
         "one fixed case completed over 424 source sessions; full 32-case cross-year run stopped by ~12 GB working-set guard; no orders/fills for the completed case",
         "bounded liquidity case stopped before commit; no fabricated target/order/fill/equity output",
-        "bounded raw-feed retry still stopped before case progress at 7.39/8.08 GiB; no target/order/fill/equity output was claimed"
+    "bounded raw-feed retry still stopped before case progress at 7.39/8.08 GiB; no target/order/fill/equity output was claimed",
+    "shared paper projection is historical only; the candidate remains under the separate research gate",
+    "THS rows are read-only references and not observed account or quote state"
       ],
       "cross_year_partial": {
         "start": "2025-01-02",
