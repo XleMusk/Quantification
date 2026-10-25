@@ -223,3 +223,8 @@ Ridge h60 相对基线的净收益差为 -4.7997 个百分点、最大回撤差�
 ## 2026-10-25 shortline LGBM shared paper route
 
 已将保存的短线 LGBM 目标 `D:/QuantificationData/trading/research/shortline_native_selection_replay/20261018_v1/lgbm/account.json` 接入联合纸面路径。终止日 `2026-05-29`，严格容量策略生成 5 笔订单、5 条路由全部可用，回执为 `outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v1/joint_paper_receipt.json`，`execution_admitted=false`。LR 与 LGBM 现在均有共享 Orders→Fill→Cash/Position 证据，但各自终止日不同，仍保持短线独立闸门、完整窗口缺失和 score-gate 限制。P16、W3 与候选目录已绑定。
+
+
+## 2026-10-25 joint THS read-only reference output
+
+联合纸面包现在在每次成功投影后生成 `ths_readonly_reference.json`，按目标行记录目标权重、目标数量，以及 `quote_status=awaiting_authorized_ths_read_only_observation`、`account_status=awaiting_authorized_ths_read_only_observation`、`readback_status=not_observed`、`prefill_status=reference_only_not_prefillable`。短线 LGBM 实测回执 `outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v2/joint_paper_receipt.json` 仍为 5 笔纸面订单，并生成 5 行只读参考；没有登录、预填、提交、撤单或 Ledger 写入。P17 与 W4 已绑定。

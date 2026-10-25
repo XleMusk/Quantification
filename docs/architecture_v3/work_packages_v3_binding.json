@@ -1102,6 +1102,25 @@
         "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v1/joint_paper_receipt.json"
       ],
       "acceptance": "Saved LGBM target day 2026-05-29 projects 5 paper orders with 5 available routes and execution_admitted=false; the shortline separate-gate state remains unchanged."
+    },
+    {
+      "id": "P17",
+      "domain": "execution",
+      "result": "Joint paper packages now emit a target-bound THS read-only reference with explicit quote/account/readback waiting states.",
+      "state": "VERIFIED_LOCAL",
+      "next": "When an authorized external observation exists, compare it against this reference generation and preserve mismatches without resubmission.",
+      "prohibition": "The reference file is not a prefill payload and cannot log in, submit, cancel, transfer or mutate a Ledger.",
+      "actual_paths": [
+        "trading/research/joint_portfolio_paper_package.py",
+        "trading/research/tests/test_joint_portfolio_paper_package.py",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v2/joint_paper_receipt.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v2/ths_readonly_reference.json"
+      ],
+      "evidence": [
+        "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v2/joint_paper_receipt.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v2/ths_readonly_reference.json"
+      ],
+      "acceptance": "A saved joint paper run emits one readonly reference row per target with prefill_allowed=false, readback_observed=false and execution_admitted=false."
     }
   ]
 }

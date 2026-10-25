@@ -167,7 +167,14 @@
         "target/reconciliation evidence",
         "THS read-only evidence when externally authorized"
       ],
-      "acceptance": "Paper state is recoverable and traceable; no live login, prefill submission, order, cancel or transfer."
+      "acceptance": "Paper state is recoverable and traceable; no live login, prefill submission, order, cancel or transfer.",
+      "evidence": [
+        "D:/Quantification/trading/research/joint_portfolio_paper_package.py",
+        "D:/Quantification/trading/research/tests/test_joint_portfolio_paper_package.py",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v2/joint_paper_receipt.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v2/ths_readonly_reference.json"
+      ],
+      "result": "Research-only joint paper packages now emit a target-bound THS read-only reference; account/quote/readback remain explicitly pending until an authorized external observation exists."
     },
     {
       "id": "W5",

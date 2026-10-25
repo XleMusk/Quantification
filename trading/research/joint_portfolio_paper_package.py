@@ -97,6 +97,43 @@ def _target_payload(joint: Mapping[str, Any], *, quote_source: str = "saved_alig
     return target, quote
 
 
+def _ths_readonly_reference(target: Mapping[str, Any], joint: Mapping[str, Any]) -> dict[str, Any]:
+    """Describe the next authorized THS observation without creating a prefill."""
+    rows = []
+    quantities = target.get("quantities") or {}
+    for signal in target.get("signal_frame", {}).get("signals", []):
+        security = signal.get("security") or {}
+        symbol = f"{security.get('code')}.{security.get('exchange')}"
+        rows.append({
+            "symbol": symbol,
+            "target_weight": float(target.get("weights", {}).get(symbol, 0.0)),
+            "target_quantity": int(quantities.get(symbol, 0)),
+            "quote_status": "awaiting_authorized_ths_read_only_observation",
+            "account_status": "awaiting_authorized_ths_read_only_observation",
+            "readback_status": "not_observed",
+            "prefill_status": "reference_only_not_prefillable",
+            "execution_admitted": False,
+        })
+    return {
+        "schema": "quantification_ths_readonly_target_reference_v1",
+        "status": "READONLY_REFERENCE_REQUEST_CREATED",
+        "source_joint_strategy_ids": list(joint.get("strategy_ids", [])),
+        "reference_day": joint.get("common_terminal_day"),
+        "rows": rows,
+        "execution_admitted": False,
+        "client_interacted": False,
+        "prefill_allowed": False,
+        "submitted": False,
+        "cancelled": False,
+        "readback_observed": False,
+        "limitations": [
+            "This is a local reference for a future authorized THS read-only observation.",
+            "Historical StockDB marks and projected quantities are not current THS quotes or account state.",
+            "No login, prefill, submission, cancellation, transfer or Ledger mutation occurred.",
+        ],
+    }
+
+
 def _build_paper_from_joint(joint: Mapping[str, Any], *, initial_cash_cny: float,
                             execution_day: str, settlement_day: str,
                             output_dir: str | Path | None,
@@ -149,6 +186,7 @@ def _build_paper_from_joint(joint: Mapping[str, Any], *, initial_cash_cny: float
         "joint": joint,
         "target_payload": target,
         "quote_payload": quote,
+        "ths_readonly_reference": _ths_readonly_reference(target, joint),
         "paper_package": {
             "result": result,
             "target_count": result["target_count"],
@@ -276,6 +314,10 @@ def _persist(receipt: dict[str, Any], output_dir: str | Path | None) -> dict[str
     if receipt.get("target_payload") is not None:
         _write_json(root / "target_payload.json", receipt["target_payload"])
         _write_json(root / "quote_payload.json", receipt["quote_payload"])
+    if receipt.get("ths_readonly_reference") is not None:
+        readonly_path = root / "ths_readonly_reference.json"
+        _write_json(readonly_path, receipt["ths_readonly_reference"])
+        receipt["ths_readonly_reference_path"] = str(readonly_path)
     path = root / "joint_paper_receipt.json"
     receipt["receipt_path"] = str(path)
     _write_json(path, receipt)

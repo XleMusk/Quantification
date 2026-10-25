@@ -45,6 +45,11 @@ def test_joint_target_reaches_shared_paper_package(tmp_path):
     }
     assert (tmp_path / "run" / "joint_paper_receipt.json").is_file()
     assert (tmp_path / "run" / "paper_package" / "projected_account.json").is_file()
+    readonly = json.loads((tmp_path / "run" / "ths_readonly_reference.json").read_text())
+    assert readonly["prefill_allowed"] is False
+    assert readonly["readback_observed"] is False
+    assert readonly["execution_admitted"] is False
+    assert result["ths_readonly_reference_path"].endswith("ths_readonly_reference.json")
 
 
 def test_joint_paper_rejects_execution_before_terminal_day(tmp_path):
