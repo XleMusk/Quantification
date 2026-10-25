@@ -30,6 +30,30 @@ def _bool(value: Any) -> bool:
     return value is True
 
 
+def _source_provenance(row: Mapping[str, Any], publication_evidence: Mapping[str, Any] | None) -> dict[str, Any]:
+    """Carry source identity into the event master without inventing a snapshot."""
+
+    evidence = publication_evidence if isinstance(publication_evidence, Mapping) else {}
+    source = row.get("report_source") if isinstance(row.get("report_source"), Mapping) else {}
+    source_snapshot_id = evidence.get("source_snapshot_id") or evidence.get("snapshot_id")
+    if source_snapshot_id in (None, ""):
+        source_snapshot_id = evidence.get("source_snapshot")
+    pdf_hash = evidence.get("source_sha256") or source.get("pdf_sha256")
+    text_hash = evidence.get("source_text_sha256") or source.get("text_sha256")
+    pdf_hash_verified = evidence.get("source_sha256_verified") is True
+    text_hash_verified = evidence.get("source_text_sha256_verified") is True
+    # A scoped receipt predates the sidecar's verification flags, so its
+    # explicit hash fields are retained as identity but not marked verified.
+    return {
+        "source_snapshot_id": source_snapshot_id,
+        "source_file_sha256": pdf_hash,
+        "source_text_sha256": text_hash,
+        "source_file_hash_verified": pdf_hash_verified,
+        "source_text_hash_verified": text_hash_verified,
+        "source_hashes_verified": pdf_hash_verified and text_hash_verified,
+    }
+
+
 def classify_scoped_row(row: Mapping[str, Any], *, market_symbols: set[str] | None = None,
                         as_of: str | None = None,
                         publication_evidence: Mapping[str, Any] | None = None) -> dict[str, Any]:
@@ -69,6 +93,7 @@ def classify_scoped_row(row: Mapping[str, Any], *, market_symbols: set[str] | No
     elif not market_join:
         reasons.append("market_symbol_not_found")
 
+    provenance = _source_provenance(row, publication_evidence)
     return {
         "symbol": row.get("symbol"),
         "period": row.get("period"),
@@ -78,6 +103,7 @@ def classify_scoped_row(row: Mapping[str, Any], *, market_symbols: set[str] | No
         "revision_safe_pit_verified": revision_safe,
         "retrieval_asof_verified": retrieval_asof,
         "publication_sidecar_attached": bool(publication_evidence),
+        **provenance,
         "market_join_verified": market_join,
         "eligible_for_f01": not reasons,
         "reasons": reasons,
@@ -101,6 +127,8 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "units_scope_rows": count("units_scope_verified"),
         "revision_safe_pit_rows": count("revision_safe_pit_verified"),
         "retrieval_asof_rows": count("retrieval_asof_verified"),
+        "source_snapshot_id_rows": sum(bool(row.get("source_snapshot_id")) for row in rows),
+        "source_hashes_verified_rows": count("source_hashes_verified"),
         "market_join_rows": count("market_join_verified"),
         "f01_eligible_rows": count("eligible_for_f01"),
         "reason_counts": dict(sorted(reasons.items())),
@@ -121,14 +149,21 @@ def from_scoped_receipt(receipt_path: str | Path = DEFAULT_RECEIPT, *,
     symbols = set(market_symbols) if market_symbols is not None else None
     sidecar_path = Path(publication_sidecar).resolve() if publication_sidecar else None
     sidecar_index: dict[tuple[str, str], Mapping[str, Any]] = {}
+    sidecar_snapshot_id: str | None = None
     if sidecar_path:
         sidecar = json.loads(sidecar_path.read_text(encoding="utf-8"))
         if sidecar.get("schema") != "f01_publication_sidecar_v1":
             raise ValueError("publication sidecar schema mismatch")
+        candidate_snapshot_id = sidecar.get("source_snapshot_id") or sidecar.get("snapshot_id")
+        if candidate_snapshot_id not in (None, ""):
+            sidecar_snapshot_id = str(candidate_snapshot_id)
         for evidence in sidecar.get("rows", []):
             if isinstance(evidence, Mapping):
                 key = (str(evidence.get("symbol", "")).upper(), str(evidence.get("period", "")))
-                sidecar_index[key] = evidence
+                sidecar_index[key] = {
+                    **evidence,
+                    **({"source_snapshot_id": sidecar_snapshot_id} if sidecar_snapshot_id else {}),
+                }
     rows = [classify_scoped_row(row, market_symbols=symbols, as_of=as_of)
             for row in source.get("rows_detail", [])]
     if sidecar_index:

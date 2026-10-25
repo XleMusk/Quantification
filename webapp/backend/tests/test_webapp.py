@@ -109,6 +109,28 @@ def test_job_lifecycle_exposes_manual_recovery_without_retry(client, dataset):
         "automatic": False,
         "next_action": "确认失败原因后重新提交一个新任务",
     }
+    assert lifecycle["recovery_evidence"]["decision"] == "MANUAL_RESUBMIT_REQUIRED"
+    assert lifecycle["recovery_evidence"]["automatic_retry"] is False
+    assert lifecycle["recovery_evidence"]["broker_or_ths_interacted"] is False
+
+
+def test_recovery_endpoint_is_read_only_and_preserves_external_boundary(client, dataset):
+    item = submit(client, dataset).json()
+    store.claim_job()
+    store.recover_interrupted()
+
+    response = client.get(f"/api/jobs/{item['id']}/recovery")
+
+    assert response.status_code == 200
+    evidence = response.json()
+    assert evidence["schema"] == "quantification_workbench_recovery_evidence_v1"
+    assert evidence["job_id"] == item["id"]
+    assert evidence["observed_status"] == "interrupted"
+    assert evidence["decision"] == "MANUAL_RESUBMIT_REQUIRED"
+    assert evidence["automatic_retry"] is False
+    assert evidence["execution_admitted"] is False
+    assert evidence["broker_or_ths_interacted"] is False
+    assert store.job(item["id"])["status"] == "interrupted"
 
 
 def test_idempotent_submit_and_conflicting_payload(client, dataset):

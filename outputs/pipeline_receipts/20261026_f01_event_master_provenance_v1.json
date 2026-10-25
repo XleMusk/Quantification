@@ -1,0 +1,34 @@
+{
+  "schema": "f01_event_master_provenance_v1",
+  "status": "BLOCKED_DATA",
+  "execution_admitted": false,
+  "source_funnel": "D:\\Quantification\\outputs\\financials\\f01_coverage_funnel_provenance_20261026.json",
+  "source_funnel_sha256": "19d3226e97eb41a59789e8cecf8c11b33f537b27dee19443509b426e7b5aa4e6",
+  "scope": "event_master_provenance_only",
+  "summary": {
+    "event_master_rows": 3,
+    "required_fields_rows": 3,
+    "publication_date_rows": 3,
+    "units_scope_rows": 3,
+    "revision_safe_pit_rows": 0,
+    "retrieval_asof_rows": 0,
+    "source_snapshot_id_rows": 0,
+    "source_hashes_verified_rows": 3,
+    "market_join_rows": 3,
+    "f01_eligible_rows": 0,
+    "reason_counts": {
+      "retrieval_asof_evidence_missing": 3,
+      "revision_safe_pit_unverified": 3
+    }
+  },
+  "changes": [
+    "Event-master rows now carry source_snapshot_id when explicitly supplied by the sidecar.",
+    "PDF and extracted-text SHA256 identities are propagated without backdating retrieval/as-of/revision evidence.",
+    "Missing snapshot identity remains null; no PIT row is unlocked by provenance alone."
+  ],
+  "tests": {
+    "command": "D:\\Quantification\\env\\python.exe -m pytest -q trading/tests/test_f01_coverage_funnel.py trading/research/tests/test_f2_fact_bridge.py trading/research/tests/test_f2_source_snapshot.py",
+    "result": "17 passed"
+  },
+  "next_acceptance": "Provide a real pre-decision source_snapshot_id with retrieval/as-of/revision payload before F01 admission."
+}

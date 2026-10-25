@@ -25,7 +25,7 @@ export function Tasks({ jobs, datasets, active, select, reload, openResult }: { 
       {item.error && <ErrorMessage message={item.error} />}
       <ol className="logs">{item.logs.map((log, index) => <li key={index}><Check size={14} /><time>{new Date(log.time).toLocaleTimeString('zh-CN', { hour12: false })}</time><span>{log.message}</span></li>)}</ol>
       {!item.logs.length && <p className="subtle">等待计算进程领取任务</p>}
-      {lifecycle && <section className="task-lifecycle"><h3>交付链路</h3><div className="task-lifecycle-stages">{lifecycle.stages.map(stage => <span key={stage.id} className={`task-lifecycle-stage ${stage.status}`}><strong>{({ submitted: '已提交', compute: '计算', result: '结果', download: '下载' } as Record<string, string>)[stage.id] || stage.id}</strong><small>{stage.detail}</small></span>)}</div><p className="subtle">{lifecycle.recovery.next_action} · 自动恢复：{lifecycle.recovery.automatic ? '允许' : '关闭'} · 执行准入：关闭</p></section>}
+      {lifecycle && <section className="task-lifecycle"><h3>交付链路</h3><div className="task-lifecycle-stages">{lifecycle.stages.map(stage => <span key={stage.id} className={`task-lifecycle-stage ${stage.status}`}><strong>{({ submitted: '已提交', compute: '计算', result: '结果', download: '下载' } as Record<string, string>)[stage.id] || stage.id}</strong><small>{stage.detail}</small></span>)}</div><p className="subtle">{lifecycle.recovery.next_action} · 自动恢复：{lifecycle.recovery.automatic ? '允许' : '关闭'} · 执行准入：关闭</p>{lifecycle.recovery_evidence && <p className="subtle">恢复判定：{lifecycle.recovery_evidence.decision} · 外部订单状态：{lifecycle.recovery_evidence.external_order_state} · 同花顺/券商交互：{lifecycle.recovery_evidence.broker_or_ths_interacted ? '有' : '无'}</p>}</section>}
     </section>}
   </>;
 }

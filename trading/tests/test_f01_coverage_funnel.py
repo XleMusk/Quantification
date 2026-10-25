@@ -62,6 +62,31 @@ def test_publication_sidecar_is_consumed_but_real_rows_remain_blocked():
     assert sum(row["publication_sidecar_attached"] for row in result["rows"]) == 3
     assert result["summary"]["retrieval_asof_rows"] == 0
     assert result["summary"]["f01_eligible_rows"] == 0
+    assert result["summary"]["source_snapshot_id_rows"] == 0
+    assert result["summary"]["source_hashes_verified_rows"] == 3
+    for row in result["rows"]:
+        assert row["source_file_sha256"]
+        assert row["source_text_sha256"]
+        assert row["source_hashes_verified"] is True
+        assert row["source_snapshot_id"] is None
+
+
+def test_event_master_carries_sidecar_snapshot_identity_without_unlocking_pit(tmp_path):
+    source = json.loads(
+        open("outputs/pipeline_receipts/20261024_f01_publication_sidecar_v1.json", encoding="utf-8").read()
+    )
+    source["source_snapshot_id"] = "financial-run-20260930-v1"
+    sidecar = tmp_path / "sidecar.json"
+    sidecar.write_text(json.dumps(source), encoding="utf-8")
+    result = from_scoped_receipt(
+        publication_sidecar=sidecar,
+        market_symbols={"600004.SSE", "688008.SSE", "000002.SZSE"},
+        as_of="2024-05-01",
+    )
+    assert result["summary"]["source_snapshot_id_rows"] == 3
+    assert result["summary"]["source_hashes_verified_rows"] == 3
+    assert {row["source_snapshot_id"] for row in result["rows"]} == {"financial-run-20260930-v1"}
+    assert result["summary"]["f01_eligible_rows"] == 0
 
 
 def test_complete_publication_contract_can_unlock_row_classification():

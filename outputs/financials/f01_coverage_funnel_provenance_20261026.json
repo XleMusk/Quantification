@@ -1,0 +1,109 @@
+{
+  "schema": "f01_coverage_funnel_v1",
+  "status": "BLOCKED_DATA",
+  "source_kind": "scoped_quarterly_receipt_with_publication_sidecar",
+  "source_receipt": "D:\\Quantification\\outputs\\financials\\f01_scoped_field_coverage_20261024.json",
+  "source_receipt_sha256": "c419f656a2097e394a2e59f68e1852cf04a02100e90a8be738e08769ca6d60c0",
+  "publication_sidecar": "D:\\Quantification\\outputs\\pipeline_receipts\\20261024_f01_publication_sidecar_v1.json",
+  "publication_sidecar_sha256": "e5fd817905af88c6dd64613a4d842c8aeddacac4e57f95319e0013432782ce81",
+  "rows": [
+    {
+      "symbol": "600004.SSE",
+      "period": "2024Q1",
+      "required_fields_observed": true,
+      "publication_date_observed": true,
+      "units_scope_verified": true,
+      "revision_safe_pit_verified": false,
+      "retrieval_asof_verified": false,
+      "publication_sidecar_attached": true,
+      "source_snapshot_id": null,
+      "source_file_sha256": "ffc401f32d1bc972b70c0721bfd5d8937bd3202de60a32f6ecfac749056fc6dd",
+      "source_text_sha256": "e302e7978abb322b7a37a43b24881257d17e31a7b98d8fd42c745a291f7692ed",
+      "source_file_hash_verified": true,
+      "source_text_hash_verified": true,
+      "source_hashes_verified": true,
+      "market_join_verified": true,
+      "eligible_for_f01": false,
+      "reasons": [
+        "revision_safe_pit_unverified",
+        "retrieval_asof_evidence_missing"
+      ],
+      "as_of_requested": "2024-05-01",
+      "execution_admitted": false
+    },
+    {
+      "symbol": "688008.SSE",
+      "period": "2024Q1",
+      "required_fields_observed": true,
+      "publication_date_observed": true,
+      "units_scope_verified": true,
+      "revision_safe_pit_verified": false,
+      "retrieval_asof_verified": false,
+      "publication_sidecar_attached": true,
+      "source_snapshot_id": null,
+      "source_file_sha256": "e9f1afee7ba8315738cbff4bddaba6dc71516a2fa567c737420b8f8b2cfb1911",
+      "source_text_sha256": "a762a267ff8e25ebb66e9ca37bd7c590561e3c81afdaead5ca71476a113d441f",
+      "source_file_hash_verified": true,
+      "source_text_hash_verified": true,
+      "source_hashes_verified": true,
+      "market_join_verified": true,
+      "eligible_for_f01": false,
+      "reasons": [
+        "revision_safe_pit_unverified",
+        "retrieval_asof_evidence_missing"
+      ],
+      "as_of_requested": "2024-05-01",
+      "execution_admitted": false
+    },
+    {
+      "symbol": "000002.SZSE",
+      "period": "2024Q1",
+      "required_fields_observed": true,
+      "publication_date_observed": true,
+      "units_scope_verified": true,
+      "revision_safe_pit_verified": false,
+      "retrieval_asof_verified": false,
+      "publication_sidecar_attached": true,
+      "source_snapshot_id": null,
+      "source_file_sha256": "9b6448abe7897ee462f905fb1273630d1c157fa4f5cd2d73c8ac8ef3cd551341",
+      "source_text_sha256": "95cb26e10cff7eafdb1103328a45a6a4cb1fab243c4f4285a0f48325cba59805",
+      "source_file_hash_verified": true,
+      "source_text_hash_verified": true,
+      "source_hashes_verified": true,
+      "market_join_verified": true,
+      "eligible_for_f01": false,
+      "reasons": [
+        "revision_safe_pit_unverified",
+        "retrieval_asof_evidence_missing"
+      ],
+      "as_of_requested": "2024-05-01",
+      "execution_admitted": false
+    }
+  ],
+  "summary": {
+    "event_master_rows": 3,
+    "required_fields_rows": 3,
+    "publication_date_rows": 3,
+    "units_scope_rows": 3,
+    "revision_safe_pit_rows": 0,
+    "retrieval_asof_rows": 0,
+    "source_snapshot_id_rows": 0,
+    "source_hashes_verified_rows": 3,
+    "market_join_rows": 3,
+    "f01_eligible_rows": 0,
+    "reason_counts": {
+      "retrieval_asof_evidence_missing": 3,
+      "revision_safe_pit_unverified": 3
+    }
+  },
+  "pit_verified": false,
+  "factor_ready": false,
+  "execution_admitted": false,
+  "zero_fill_applied": false,
+  "limitations": [
+    "Publication day is evidence of disclosure identity, not revision-safe availability.",
+    "Retrieval/as-of history is accepted only from the explicit publication sidecar contract.",
+    "No market-data join was supplied; no row is promoted to F01.",
+    "This funnel is a coverage diagnostic, not a factor or account replay."
+  ]
+}

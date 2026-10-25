@@ -1,0 +1,28 @@
+{
+  "schema": "quantification_workbench_recovery_evidence_v1",
+  "created_at": "2026-10-26T04:05:31.533355+08:00",
+  "job_id": "workbench-recovery-api-fixture-20261026",
+  "observed_status": "interrupted",
+  "observed_error": "计算进程中断；未标记完成，可重新提交",
+  "decision": "MANUAL_RESUBMIT_REQUIRED",
+  "recovery_status": "ready_for_resubmit",
+  "automatic_retry": false,
+  "next_action": "确认失败原因后重新提交一个新任务",
+  "execution_admitted": false,
+  "live_trading": false,
+  "broker_or_ths_interacted": false,
+  "external_order_state": "not_applicable_paper_job",
+  "limitations": [
+    "This receipt describes a local research job only; it does not resubmit or mutate a job.",
+    "A failed paper job has no broker order state to reconcile.",
+    "This receipt uses a seeded interrupted local job fixture; it is not a broker or Tonghuashun observation.",
+    "The endpoint exposes the persisted job decision and does not create a replacement job."
+  ],
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "api_surface": "GET /api/jobs/{job_id}/recovery",
+  "lifecycle_surface": "GET /api/jobs/{job_id}/lifecycle.recovery_evidence",
+  "read_only_endpoint": true,
+  "job_state_unchanged": true,
+  "fixture_only": true,
+  "test_command": "D:\\Quantification\\env\\python.exe -m pytest -q webapp/backend/tests/test_webapp.py"
+}

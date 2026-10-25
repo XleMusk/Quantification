@@ -241,7 +241,7 @@
       "domain": "data",
       "result": "Event master, U value, exclusions and source links are reproducible.",
       "state": "PARTIAL",
-      "next": "Carry source_snapshot_id and verified file hashes into the real event master; keep missing publication/retrieval/revision facts explicit.",
+      "next": "Carry a real source_snapshot_id and verified file hashes into the event master; keep missing publication/retrieval/revision facts explicit.",
       "prohibition": "Do not turn missing event evidence into zero return or exclusion without reason.",
       "actual_paths": [
         "outputs/pipeline_receipts/20261024_publication_event_contract_local_receipt.json",
@@ -287,7 +287,12 @@
         "trading/research/f2_source_snapshot.py",
         "trading/research/tests/test_f2_source_snapshot.py",
         "outputs/pipeline_receipts/20261026_f2_source_snapshot_adapter_v1/boundary_receipt.json",
-        "outputs/research_reports/20261026_f2_source_snapshot_adapter_v1.md"
+        "outputs/research_reports/20261026_f2_source_snapshot_adapter_v1.md",
+        "trading/research/f01_coverage_funnel.py",
+        "trading/tests/test_f01_coverage_funnel.py",
+        "outputs/financials/f01_coverage_funnel_provenance_20261026.json",
+        "outputs/pipeline_receipts/20261026_f01_event_master_provenance_v1.json",
+        "outputs/research_reports/20261026_f01_event_master_provenance_v1.md"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -298,7 +303,12 @@
         "trading/research/f2_source_snapshot.py",
         "trading/research/tests/test_f2_source_snapshot.py",
         "outputs/pipeline_receipts/20261026_f2_source_snapshot_adapter_v1/boundary_receipt.json",
-        "outputs/research_reports/20261026_f2_source_snapshot_adapter_v1.md"
+        "outputs/research_reports/20261026_f2_source_snapshot_adapter_v1.md",
+        "trading/research/f01_coverage_funnel.py",
+        "trading/tests/test_f01_coverage_funnel.py",
+        "outputs/financials/f01_coverage_funnel_provenance_20261026.json",
+        "outputs/pipeline_receipts/20261026_f01_event_master_provenance_v1.json",
+        "outputs/research_reports/20261026_f01_event_master_provenance_v1.md"
       ]
     },
     {
