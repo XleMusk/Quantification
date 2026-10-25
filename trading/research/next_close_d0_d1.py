@@ -251,17 +251,22 @@ def _snapshot_coverage(metadata: Mapping[str, Any], *, close_date: str,
                        symbols: Sequence[str], missing: Sequence[str]) -> dict[str, Any]:
     """Describe date and symbol coverage without treating missing data as zero."""
 
-    effective_dates = metadata.get("effective_session_dates")
-    if not isinstance(effective_dates, list):
-        effective_dates = []
-    effective_dates = [str(value) for value in effective_dates]
-    if close_date not in effective_dates:
+    raw_effective_dates = metadata.get("effective_session_dates")
+    if not isinstance(raw_effective_dates, list) or not raw_effective_dates:
+        effective_dates: list[str] = []
+        status = "UNKNOWN_COVERAGE"
+        reason = "effective_session_dates_missing"
+    else:
+        effective_dates = [str(value) for value in raw_effective_dates]
+        status = None
+        reason = None
+    if status is None and close_date not in effective_dates:
         status = "STALE_SNAPSHOT"
         reason = "close_date_not_in_effective_session_dates"
-    elif missing:
+    elif status is None and missing:
         status = "INCOMPLETE"
         reason = "same_day_symbols_missing"
-    else:
+    elif status is None:
         status = "COMPLETE"
         reason = None
     return {

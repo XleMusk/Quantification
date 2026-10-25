@@ -153,6 +153,15 @@ def test_next_close_marks_pinned_snapshot_without_requested_date_as_stale(tmp_pa
     assert receipt["snapshot_coverage"]["missing_symbols"] == ["000001.SZSE", "600000.SSE"]
 
 
+def test_snapshot_coverage_without_effective_dates_is_unknown():
+    coverage = contract._snapshot_coverage(
+        {"captured_at": "2026-10-26T15:05:00+08:00"},
+        close_date=DAY, symbols=["000001.SZSE"], missing=[],
+    )
+    assert coverage["status"] == "UNKNOWN_COVERAGE"
+    assert coverage["reason"] == "effective_session_dates_missing"
+
+
 def test_next_close_classifies_live_capture_connection_failure(tmp_path, monkeypatch):
     fixed, sources, catalog = _setup(tmp_path)
     from urllib.error import URLError

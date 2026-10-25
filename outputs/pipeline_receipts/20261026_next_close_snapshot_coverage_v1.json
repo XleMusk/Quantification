@@ -7,11 +7,12 @@
     "Receipt now records requested close date versus effective snapshot session dates.",
     "A snapshot without the requested date is marked STALE_SNAPSHOT.",
     "A snapshot with the date but missing symbols is marked INCOMPLETE.",
-    "No price carry-forward or execution admission is introduced."
+    "No price carry-forward or execution admission is introduced.",
+    "A snapshot without effective_session_dates is marked UNKNOWN_COVERAGE rather than guessed stale or complete."
   ],
   "tests": {
     "command": "D:\\Quantification\\env\\python.exe -m pytest -q trading/research/tests/test_next_close_d0_d1.py",
-    "result": "17 passed"
+    "result": "25 passed (next-close + post-close)"
   },
   "acceptance_examples": [
     {
@@ -23,6 +24,10 @@
       "status": "STALE_SNAPSHOT",
       "reason": "close_date_not_in_effective_session_dates",
       "missing_symbols": "all requested symbols"
+    },
+    {
+      "status": "UNKNOWN_COVERAGE",
+      "reason": "effective_session_dates_missing"
     }
   ],
   "next_acceptance": "Run after the actual 2026-10-26 close with a StockDB snapshot whose effective session dates include 2026-10-26."
