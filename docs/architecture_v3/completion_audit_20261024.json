@@ -406,10 +406,12 @@
         "trading/research/tests/test_f2_issuer_source_evidence.py",
         "outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v1.json",
         "outputs/research_reports/20261026_f2_issuer_source_capture_v1.md",
-        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json"
+        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json",
+        "outputs/pipeline_receipts/20261026_f2_issuer_scope_mapping_v1.json",
+        "outputs/research_reports/20261026_f2_issuer_scope_mapping_v1.md"
       ],
       "gap": "The locked 000002.SZSE/2023Q1 CNINFO issuer PDF is now identified and hash-matched on current retrieval; historical retrieval/as-of, revision history and explicit scope mapping remain unproven, so PIT-safe and F01-eligible rows remain blocked.",
-      "next_acceptance": "obtain historical retrieval/as-of/revision and issuer scope evidence for the captured 2023Q1 artifact before factor or account replay"
+      "next_acceptance": "obtain historical retrieval/as-of/revision evidence for the captured 2023Q1 artifact before factor or account replay; scope/period/unit mapping is now explicit"
     },
     {
       "id": "candidate_catalog",

@@ -25,6 +25,24 @@ from urllib.request import Request, urlopen
 SCHEMA = "f2_issuer_source_evidence_v1"
 BLOCKED = "BLOCKED_DATA"
 
+# The report table uses different semantic scopes for flows and balance-sheet
+# stocks.  Keep this mapping explicit so a later F2 consumer does not infer a
+# common scope from the fact that both values appear on the same page.
+_FIELD_SCOPE_CONTRACTS: dict[str, dict[str, Any]] = {
+    "parent_net_profit": {
+        "scope": "parent_attributable",
+        "period_kind": "single_quarter",
+        "statement_role": "flow",
+        "evidence_terms": ("归属于上市公司股东的净利润",),
+    },
+    "total_assets": {
+        "scope": "consolidated_group",
+        "period_kind": "instant",
+        "statement_role": "stock",
+        "evidence_terms": ("本集团", "总资产", "报告期末"),
+    },
+}
+
 
 def _now() -> str:
     return datetime.now(timezone.utc).astimezone().isoformat()
@@ -118,6 +136,50 @@ def _identity_checks(text: str, symbol: str, period: str) -> dict[str, bool]:
     }
 
 
+def map_field_scope(text: str, field_candidates: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
+    """Map report fields to explicit scope/period semantics.
+
+    This validates the report wording and the candidate metadata together.  It
+    deliberately does not evaluate historical retrieval/as-of or revision
+    history; callers must keep those independent PIT gates closed.
+    """
+
+    normalized = re.sub(r"\s+", "", text)
+    unit_verified = "单位：元" in normalized or "人民币" in normalized
+    fields: dict[str, dict[str, Any]] = {}
+    for metric, contract in _FIELD_SCOPE_CONTRACTS.items():
+        candidate = field_candidates.get(metric, {})
+        expected_scope = contract["scope"]
+        expected_period_kind = contract["period_kind"]
+        expected_role = contract["statement_role"]
+        terms = list(contract["evidence_terms"])
+        evidence_terms = [term for term in terms if term in normalized]
+        metadata_match = (
+            candidate.get("scope") == expected_scope
+            and candidate.get("period_kind", expected_period_kind) == expected_period_kind
+            and candidate.get("statement_role", expected_role) == expected_role
+            and candidate.get("unit", "yuan") == "yuan"
+            and candidate.get("currency", "CNY") == "CNY"
+        )
+        fields[metric] = {
+            "status": "verified" if unit_verified and metadata_match and len(evidence_terms) == len(terms) else "blocked",
+            "scope": expected_scope,
+            "period_kind": expected_period_kind,
+            "statement_role": expected_role,
+            "unit": "yuan" if unit_verified else None,
+            "currency": "CNY" if unit_verified else None,
+            "evidence_terms": evidence_terms,
+            "required_evidence_terms": terms,
+            "metadata_match": metadata_match,
+        }
+    return {
+        "status": "verified" if fields and all(item["status"] == "verified" for item in fields.values()) else "blocked",
+        "all_verified": bool(fields) and all(item["status"] == "verified" for item in fields.values()),
+        "unit_currency_verified": unit_verified,
+        "fields": fields,
+    }
+
+
 def capture_issuer_source(
     *,
     symbol: str,
@@ -141,6 +203,16 @@ def capture_issuer_source(
     hash_matches = bool(response_hash and response_hash == saved_hash)
     text, text_engine = extract_pdf_text(pdf_path)
     identity = _identity_checks(text, symbol, period)
+    field_scope = map_field_scope(text, {
+        "parent_net_profit": {
+            "scope": "parent_attributable", "period_kind": "single_quarter",
+            "statement_role": "flow", "unit": "yuan", "currency": "CNY",
+        },
+        "total_assets": {
+            "scope": "consolidated_group", "period_kind": "instant",
+            "statement_role": "stock", "unit": "yuan", "currency": "CNY",
+        },
+    })
     publication = date.fromisoformat(publication_date)
     decision = date.fromisoformat(decision_day)
     reasons: list[str] = []
@@ -153,7 +225,9 @@ def capture_issuer_source(
     if publication >= decision:
         reasons.append("publication_not_before_decision_cutoff")
     # A current fetch is deliberately never treated as historical as-of proof.
-    reasons.extend(["historical_retrieval_asof_unproven", "revision_history_unproven", "issuer_scope_semantics_require_mapping"])
+    reasons.extend(["historical_retrieval_asof_unproven", "revision_history_unproven"])
+    if not field_scope["all_verified"]:
+        reasons.append("issuer_scope_semantics_require_mapping")
     metadata = response.get("server_last_modified_at")
     metadata_before_publication = bool(metadata and str(metadata)[:10] <= publication_date)
     return {
@@ -175,7 +249,8 @@ def capture_issuer_source(
         "server_metadata_before_publication": metadata_before_publication,
         "historical_retrieval_asof_verified": False,
         "revision_history_verified": False,
-        "scope_verified": False,
+        "scope_verified": field_scope["all_verified"],
+        "field_scope_mapping": field_scope,
         "reason_codes": reasons,
         "field_candidates": {
             "parent_net_profit": {"value": "1445811341.87", "unit": "yuan", "scope": "parent_attributable", "page": 2},
@@ -213,4 +288,4 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
-__all__ = ["BLOCKED", "SCHEMA", "capture_issuer_source", "extract_pdf_text", "fetch_source"]
+__all__ = ["BLOCKED", "SCHEMA", "capture_issuer_source", "extract_pdf_text", "fetch_source", "map_field_scope"]

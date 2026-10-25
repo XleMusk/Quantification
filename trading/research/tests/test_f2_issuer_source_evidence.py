@@ -5,6 +5,39 @@ from pathlib import Path
 from trading.research import f2_issuer_source_evidence as evidence
 
 
+def test_map_field_scope_distinguishes_flow_and_instant_stock():
+    result = evidence.map_field_scope(
+        "单位：元 本集团 报告期末 总资产 归属于上市公司股东的净利润 人民币",
+        {
+            "parent_net_profit": {
+                "scope": "parent_attributable", "period_kind": "single_quarter",
+                "statement_role": "flow", "unit": "yuan", "currency": "CNY",
+            },
+            "total_assets": {
+                "scope": "consolidated_group", "period_kind": "instant",
+                "statement_role": "stock", "unit": "yuan", "currency": "CNY",
+            },
+        },
+    )
+
+    assert result["all_verified"] is True
+    assert result["fields"]["parent_net_profit"]["period_kind"] == "single_quarter"
+    assert result["fields"]["total_assets"]["period_kind"] == "instant"
+
+
+def test_map_field_scope_keeps_missing_group_word_blocked():
+    result = evidence.map_field_scope(
+        "单位：元 报告期末 总资产 归属于上市公司股东的净利润 人民币",
+        {
+            "parent_net_profit": {"scope": "parent_attributable"},
+            "total_assets": {"scope": "consolidated_group"},
+        },
+    )
+
+    assert result["all_verified"] is False
+    assert result["fields"]["total_assets"]["status"] == "blocked"
+
+
 def test_capture_records_hash_and_keeps_current_fetch_blocked(tmp_path: Path, monkeypatch):
     pdf = tmp_path / "000002.SZSE_2023Q1.pdf"
     pdf.write_bytes(b"fixture-pdf")

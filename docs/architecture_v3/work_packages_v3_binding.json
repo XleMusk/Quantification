@@ -28,7 +28,7 @@
       "domain": "development",
       "result": "Bind existing entries, successful commands, commits, artifacts and only the remaining differences.",
       "state": "CODE_INTEGRATED",
-      "next": "Use the captured 2023Q1 issuer artifact for identity and content-hash provenance, then obtain historical retrieval/as-of/revision and explicit scope evidence before PIT admission.",
+      "next": "Field scope/period/unit mapping is now explicit for the locked 2023Q1 issuer artifact; obtain historical retrieval/as-of/revision evidence before PIT admission.",
       "prohibition": "Do not repeat a full inventory or treat a plan checker as production evidence.",
       "actual_paths": [
         "trading/research/f01_scoped_field_coverage.py",
@@ -65,7 +65,9 @@
         "trading/research/tests/test_f2_issuer_source_evidence.py",
         "outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v1.json",
         "outputs/research_reports/20261026_f2_issuer_source_capture_v1.md",
-        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json"
+        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json",
+        "outputs/pipeline_receipts/20261026_f2_issuer_scope_mapping_v1.json",
+        "outputs/research_reports/20261026_f2_issuer_scope_mapping_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -114,7 +116,7 @@
       "domain": "data",
       "result": "First-disclosure event samples have source locations and unknown-coverage reasons.",
       "state": "PARTIAL",
-      "next": "The locked 2023Q1 issuer PDF is now identified and hash-matched; keep F2 BLOCKED_DATA until historical as-of/revision and scope semantics are proven.",
+      "next": "Scope/period/unit mapping is explicit for the locked 2023Q1 issuer artifact; keep BLOCKED_DATA until historical retrieval/as-of/revision evidence is proven.",
       "prohibition": "UNKNOWN prior coverage is not no prior information.",
       "actual_paths": [
         "outputs/financials/f01_scoped_field_coverage_20261024.json",
@@ -126,7 +128,9 @@
         "trading/research/tests/test_f2_issuer_source_evidence.py",
         "outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v1.json",
         "outputs/research_reports/20261026_f2_issuer_source_capture_v1.md",
-        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json"
+        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json",
+        "outputs/pipeline_receipts/20261026_f2_issuer_scope_mapping_v1.json",
+        "outputs/research_reports/20261026_f2_issuer_scope_mapping_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -135,7 +139,7 @@
       "domain": "data",
       "result": "A callable point-in-time versioned read returns only facts available at the requested cutoff.",
       "state": "PARTIAL",
-      "next": "The locked 2023Q1 issuer PDF is now identified and hash-matched; keep F2 BLOCKED_DATA until historical as-of/revision and scope semantics are proven.",
+      "next": "Scope/period/unit mapping is explicit for the locked 2023Q1 issuer artifact; keep BLOCKED_DATA until historical retrieval/as-of/revision evidence is proven.",
       "prohibition": "Do not read the latest file implicitly.",
       "actual_paths": [
         "outputs/financials/f01_scoped_field_coverage_20261024.json",
@@ -156,7 +160,9 @@
         "trading/research/tests/test_f2_issuer_source_evidence.py",
         "outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v1.json",
         "outputs/research_reports/20261026_f2_issuer_source_capture_v1.md",
-        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json"
+        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json",
+        "outputs/pipeline_receipts/20261026_f2_issuer_scope_mapping_v1.json",
+        "outputs/research_reports/20261026_f2_issuer_scope_mapping_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -165,7 +171,7 @@
       "domain": "data",
       "result": "Event master, U value, exclusions and source links are reproducible.",
       "state": "PARTIAL",
-      "next": "The locked 2023Q1 issuer PDF is now identified and hash-matched; keep F2 BLOCKED_DATA until historical as-of/revision and scope semantics are proven.",
+      "next": "Scope/period/unit mapping is explicit for the locked 2023Q1 issuer artifact; keep BLOCKED_DATA until historical retrieval/as-of/revision evidence is proven.",
       "prohibition": "Do not turn missing event evidence into zero return or exclusion without reason.",
       "actual_paths": [
         "outputs/pipeline_receipts/20261024_publication_event_contract_local_receipt.json",
@@ -197,7 +203,9 @@
         "trading/research/tests/test_f2_issuer_source_evidence.py",
         "outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v1.json",
         "outputs/research_reports/20261026_f2_issuer_source_capture_v1.md",
-        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json"
+        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json",
+        "outputs/pipeline_receipts/20261026_f2_issuer_scope_mapping_v1.json",
+        "outputs/research_reports/20261026_f2_issuer_scope_mapping_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
