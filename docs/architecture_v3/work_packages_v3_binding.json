@@ -735,8 +735,15 @@
       "domain": "operations",
       "result": "Calendar and business schedule calculate windows and classify missing inputs.",
       "state": "PARTIAL",
-      "next": "Reuse the versioned SSE calendar and daily-refresh receipts.",
-      "prohibition": "Do not use machine timezone or weekday inference."
+      "next": "After the actual 2026-10-26 close, run the registered fixed_daily D0/D1 path and verify account_version plus local plan publication timing.",
+      "prohibition": "Do not use machine timezone or weekday inference.",
+      "evidence_updated_on": "2026-10-26",
+      "actual_paths": [
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_plan_binding_v1.json",
+        "outputs/research_reports/20261026_next_close_plan_binding_v1.md"
+      ]
     },
     {
       "id": "O02",

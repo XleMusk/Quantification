@@ -303,6 +303,49 @@ def _resolve_fixed_source(*, fixed_terminal_account: str | Path | None,
     return Path(fixed_terminal_account).resolve(), fixed_strategy_id
 
 
+def _fixed_account_binding(*, fixed_run_dir: str | Path | None,
+                           fixed_source: Path) -> dict[str, Any]:
+    """Bind a frozen plan to the committed paper-account head when available.
+
+    A direct terminal-account payload remains a valid research input, but it
+    cannot claim a persistent account version.  Registered ``fixed_daily``
+    runs expose their generation and last completed day in ``head.json``;
+    carrying that identity into the D0/D1 receipt prevents a plan from being
+    mistaken for a fresh account reset.
+    """
+    if fixed_run_dir is None:
+        return {
+            "binding": "direct_terminal_account",
+            "account_version": None,
+            "reason": "direct terminal payload has no committed fixed_daily head",
+            "terminal_account": str(fixed_source),
+        }
+    run_dir = Path(fixed_run_dir).resolve()
+    head_path = run_dir / "head.json"
+    if not head_path.is_file():
+        return {
+            "binding": "registered_fixed_daily",
+            "account_version": None,
+            "reason": "fixed_daily head is unavailable",
+            "run_dir": str(run_dir),
+            "terminal_account": str(fixed_source),
+        }
+    head = _read(head_path)
+    generation = head.get("generation")
+    last_completed_day = head.get("last_completed_day")
+    if not isinstance(generation, int) or not isinstance(last_completed_day, str):
+        raise ValueError("fixed_daily head must expose generation and last_completed_day")
+    return {
+        "binding": "registered_fixed_daily",
+        "account_version": f"generation-{generation}:{last_completed_day}",
+        "generation": generation,
+        "last_completed_day": last_completed_day,
+        "run_dir": str(run_dir),
+        "head": _ref(head_path),
+        "terminal_account": str(fixed_source),
+    }
+
+
 def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
                  fixed_terminal_account: str | Path | None = None,
                  fixed_run_dir: str | Path | None = None,
@@ -372,6 +415,8 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
         fixed_input = _source_target({"terminal_account": str(fixed_source),
                                       "strategy_id": fixed_strategy_id})
         fixed_target, fixed_source_ref = fixed_input.target, fixed_input.source_ref
+        fixed_account_binding = _fixed_account_binding(
+            fixed_run_dir=fixed_run_dir, fixed_source=fixed_source)
         _assert_target_day(fixed_target, close_date, "fixed")
         candidates = _candidate_items(source_manifest)
         decision_selection = None
@@ -400,6 +445,7 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
                              "stockdb_snapshot_source": str(snapshot_dir),
                              "requested_symbol_count": len(symbols), "missing_symbols": missing,
                              "fixed_source": fixed_source_ref,
+                             "fixed_account": fixed_account_binding,
                              "candidate_source_manifest": _ref(source_manifest),
                              "time_semantics": {
                                  "source_day": close_date,
@@ -431,9 +477,20 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
         manifest = {"schema": "next_close_d0_d1_target_quote_manifest_v1",
                     "close_date": close_date, "execution_admitted": False,
                     "broker_interacted": False, "ths_interacted": False,
+                    "fixed_account": fixed_account_binding,
                     "candidates": [{k: row[k] for k in ("candidate_id", "strategy_id", "target", "quotes")}
                                    for row in candidate_rows]}
         manifest_path = inputs_dir / "candidate_manifest.json"
+        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        # This is the local publication time of the frozen plan artifact.  It
+        # is intentionally distinct from the StockDB quote observation and
+        # decision cutoff, and does not claim external user/broker delivery.
+        plan_published_at = datetime.now(timezone.utc).isoformat()
+        receipt_base["time_semantics"]["plan_published_at"] = plan_published_at
+        receipt_base["time_semantics"]["interpretation"] = (
+            "plan_published_at is the local frozen-artifact publication time; "
+            "it is not a broker or Tonghuashun submission timestamp.")
+        manifest["plan_published_at"] = plan_published_at
         manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         fixed_package = build_paper_target_package(
             _read(Path(fixed_paths["target"])), _read(Path(fixed_paths["quotes"])), initial_cash,

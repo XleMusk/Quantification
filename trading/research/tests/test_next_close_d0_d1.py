@@ -87,7 +87,10 @@ def test_next_close_contract_captures_same_day_quotes_and_shared_bindings(tmp_pa
     assert quote["prices"]["000001.SZSE"]["observed_date"] == DAY
     assert receipt["time_semantics"]["source_day"] == DAY
     assert receipt["time_semantics"]["decision_cutoff_at"] == "2026-10-26T15:05:00+08:00"
-    assert receipt["time_semantics"]["plan_published_at"] is None
+    assert isinstance(receipt["time_semantics"]["plan_published_at"], str)
+    assert receipt["fixed_account"]["binding"] == "direct_terminal_account"
+    manifest = json.loads((tmp_path / "run" / "inputs" / "candidate_manifest.json").read_text())
+    assert manifest["plan_published_at"] == receipt["time_semantics"]["plan_published_at"]
     reused = contract.run_contract(
         sources, tmp_path / "run", fixed_terminal_account=fixed, fixed_strategy_id="fixed_close",
         stockdb_root=tmp_path / "stockdb", catalog_path=catalog, close_date=DAY,
@@ -223,6 +226,27 @@ def test_next_close_can_resolve_registered_fixed_daily_head(tmp_path, monkeypatc
     assert receipt["status"] == contract.STATUS
     assert receipt["fixed"]["strategy_id"] == "fixed_close"
     assert receipt["execution_admitted"] is False
+
+
+def test_next_close_binds_registered_account_generation_when_head_exists(tmp_path, monkeypatch):
+    fixed, sources, catalog = _setup(tmp_path)
+    run_dir = tmp_path / "fixed_daily"
+    run_dir.mkdir()
+    _write(run_dir / "head.json", {
+        "schema": "stockdb_fixed_daily_v1",
+        "generation": 3,
+        "last_completed_day": "2026-10-23",
+    })
+    monkeypatch.setattr(contract.stockdb_fixed_daily, "resolve_terminal_account",
+                        lambda _run_dir: (fixed, "fixed_close"))
+    monkeypatch.setattr(contract, "freeze_snapshot", _fake_capture)
+    receipt = contract.run_contract(
+        sources, tmp_path / "run", fixed_run_dir=run_dir,
+        stockdb_root=tmp_path / "stockdb", catalog_path=catalog,
+        close_date=DAY, execution_day="2026-10-27", settlement_day="2026-10-28",
+        initial_cash=100000.0)
+    assert receipt["fixed_account"]["account_version"] == "generation-3:2026-10-23"
+    assert receipt["fixed_account"]["head"]["path"].endswith("head.json")
 
 
 def test_next_close_can_emit_budgeted_joint_paper_package(tmp_path, monkeypatch):
