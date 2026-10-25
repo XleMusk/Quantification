@@ -50,7 +50,7 @@ def evaluate_historical_evidence(row: Mapping[str, Any], decision_day: str) -> d
     reasons.extend(f"contract:{value}" for value in detail_reasons)
     unique_reasons = list(dict.fromkeys(reasons))
     ready = not unique_reasons
-    return {
+    result = {
         "schema": SCHEMA,
         "status": READY if ready else BLOCKED,
         "symbol": row.get("symbol"),
@@ -64,6 +64,16 @@ def evaluate_historical_evidence(row: Mapping[str, Any], decision_day: str) -> d
         "publication_contract": publication,
         "execution_admitted": False,
     }
+    # Preserve source identity for downstream fact bridges.  The gate still
+    # decides PIT eligibility from the contract above; these fields are only
+    # provenance and are never used to relax a blocked row.
+    for key in (
+        "source_snapshot_id", "source_file", "source_sha256",
+        "snapshot_source_check", "snapshot_source_check_passed",
+    ):
+        if key in row:
+            result[key] = row[key]
+    return result
 
 
 def build_historical_gate_receipt(

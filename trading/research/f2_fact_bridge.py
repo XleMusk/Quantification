@@ -191,6 +191,13 @@ def _row_facts(row: Mapping[str, Any], *, source_row: Mapping[str, Any] | None =
             reasons = [value for value in reasons if value != "currency_missing"]
 
     facts: list[dict[str, Any]] = []
+    provenance = {
+        "source_snapshot_id": historical_row.get("source_snapshot_id") if isinstance(historical_row, Mapping) else None,
+        "source_file": historical_row.get("source_file") if isinstance(historical_row, Mapping) else None,
+        "source_sha256": historical_row.get("source_sha256") if isinstance(historical_row, Mapping) else None,
+        "source_hash_verified": (historical_row.get("snapshot_source_check_passed") is True
+                                  if isinstance(historical_row, Mapping) else False),
+    }
     if not reasons:
         assert period_start is not None and period_end is not None and availability is not None
         for metric in _REQUIRED_FIELDS:
@@ -218,6 +225,7 @@ def _row_facts(row: Mapping[str, Any], *, source_row: Mapping[str, Any] | None =
                 "raw_value": str(normalized["raw_value"]),
                 "raw_unit": normalized["raw_unit"],
                 "conversion": normalized["conversion"],
+                "source_provenance": provenance,
             })
 
     status = READY if not reasons and len(facts) == len(_REQUIRED_FIELDS) else BLOCKED
@@ -230,6 +238,7 @@ def _row_facts(row: Mapping[str, Any], *, source_row: Mapping[str, Any] | None =
         "reason_codes": reasons,
         "event_window": event_window.to_dict() if event_window else None,
         "available_at": availability.to_dict() if availability else None,
+        "source_provenance": provenance,
         "facts": facts,
         "factor_status": "NOT_COMPUTED",
         "execution_admitted": False,

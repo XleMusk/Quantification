@@ -1,0 +1,25 @@
+{
+  "schema": "f2_bridge_source_snapshot_provenance_receipt_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "execution_admitted": false,
+  "acceptance": {
+    "source_snapshot_id_preserved_through_historical_gate": true,
+    "source_file_and_sha256_preserved": true,
+    "hash_verification_flag_preserved_on_each_materialized_fact": true,
+    "pit_gate_semantics_unchanged": true,
+    "focused_tests": {
+      "command": "D:\\Quantification\\env\\python.exe -m pytest -q trading/research/tests/test_f2_historical_evidence.py trading/research/tests/test_f2_source_snapshot.py trading/research/tests/test_f2_fact_bridge.py",
+      "passed": 15
+    }
+  },
+  "provenance_fields": [
+    "source_snapshot_id",
+    "source_file",
+    "source_sha256",
+    "source_hash_verified"
+  ],
+  "limitations": [
+    "Synthetic fixture only; real CNINFO 2023Q1 retrieval/as-of/revision remains BLOCKED_DATA.",
+    "No factor, target, order, fill, account or external channel action was created."
+  ]
+}
