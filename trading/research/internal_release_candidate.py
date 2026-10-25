@@ -36,6 +36,14 @@ EVIDENCE_FILES = (
     "outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json",
 )
 
+PAPER_EVIDENCE_FILES = (
+    "D:/QuantificationData/trading/research/releases/20261025_v1/release_manifest.json",
+    "D:/QuantificationData/trading/research/candidate_shadow/alpha158_lgbm_20261025_v1/paper_batch/batch_receipt.json",
+    "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/joint_paper_receipt.json",
+    "D:/Quantification/outputs/pipeline_receipts/20261026_leader_eight_type_turnover_joint_paper_v1/joint_paper_receipt.json",
+    "D:/Quantification/outputs/pipeline_receipts/20261026_public_seat_joint_paper_v2/joint_paper_receipt.json",
+)
+
 
 def _sha256(path: Path) -> str:
     digest = sha256()
@@ -68,7 +76,8 @@ def _git(root: Path) -> dict[str, Any]:
         return {"commit": None, "worktree_clean": None, "error": str(error)}
 
 
-def build_release(root: str | Path, output_dir: str | Path, *, version: str) -> dict[str, Any]:
+def build_release(root: str | Path, output_dir: str | Path, *, version: str,
+                  paper_evidence_files: Iterable[str] | None = None) -> dict[str, Any]:
     root = Path(root).resolve()
     output = Path(output_dir).resolve()
     if not root.is_dir():
@@ -77,6 +86,8 @@ def build_release(root: str | Path, output_dir: str | Path, *, version: str) -> 
         raise ValueError("version must be a non-empty identifier without whitespace")
     required, missing_required = _refs(root, REQUIRED_FILES)
     evidence, missing_evidence = _refs(root, EVIDENCE_FILES)
+    paper_evidence, missing_paper_evidence = _refs(
+        root, PAPER_EVIDENCE_FILES if paper_evidence_files is None else paper_evidence_files)
     output.mkdir(parents=True, exist_ok=True)
     manifest_path = output / "release_manifest.json"
     payload = {
@@ -92,8 +103,19 @@ def build_release(root: str | Path, output_dir: str | Path, *, version: str) -> 
         "live_execution_ready": False,
         "required_code": required,
         "evidence": evidence,
+        "paper_evidence": paper_evidence,
         "missing_required_code": missing_required,
         "missing_evidence": missing_evidence,
+        "missing_paper_evidence": missing_paper_evidence,
+        "account_readiness": {
+            "research_paper_account": "BOUND_RESEARCH_ONLY",
+            "current_broker_quote": "MISSING",
+            "four_table_account_export": "MISSING",
+            "t_plus_1_sellable_export": "MISSING",
+            "ths_readonly_observation": "REFERENCE_ONLY_NOT_OBSERVED",
+            "execution_admitted": False,
+            "live_execution_ready": False,
+        },
         "git": _git(root),
         "validation_commands": [
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_next_close_d0_d1.py trading/research/tests/test_post_close_d0_d1.py",

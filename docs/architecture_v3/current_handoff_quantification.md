@@ -348,3 +348,8 @@ Reused the saved leader_turnover_eight_type Target+Quote at terminal day 2026-10
 ## 2026-10-25 value-size-activity shared paper route
 
 Reused the saved stockdb_value_size_activity_2023 account at terminal day 2023-12-29 through run_committee.py joint-portfolio-paper-package. The package contains 20 targets, 20 paper orders, 19 available routes, projected equity CNY 139,898.96, and 20 THS read-only reference rows. Receipt: D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/joint_paper_receipt.json. execution_admitted=false; no broker or THS client was contacted and no persistent Ledger was mutated. The candidate remains UNASSESSED_SEPARATE_GATE and the historical 2023 retrospective limitations remain explicit.
+
+
+## 2026-10-25 internal research release v2 and L06 readiness
+
+Extended internal_release_candidate.py to bind paper evidence and an explicit account_readiness matrix. The matrix records the research paper account as BOUND_RESEARCH_ONLY, current BrokerQuote/four-table export/sellable T+1 export as MISSING, and THS as REFERENCE_ONLY_NOT_OBSERVED; execution_admitted=false and live_execution_ready=false remain closed. L06 is now PARTIAL with the release evidence path reserved at D:/QuantificationData/trading/research/releases/20261025_v2/release_manifest.json.
