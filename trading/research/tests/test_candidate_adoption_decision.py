@@ -29,11 +29,16 @@ def _write_receipts(tmp_path, *, same_window=True):
     }
     selection = {
         "schema": "quantification_candidate_research_selection_v1",
-        "rows": [{
-            "strategy_id": "candidate-a", "research_action": "CONTINUE_RESEARCH_ONLY",
-            "catalog_id": "spec-a",
-            "research_followup_allowed": True,
-        }],
+        "rows": [
+            {
+                "strategy_id": "candidate-a", "research_action": "CONTINUE_RESEARCH_ONLY",
+                "catalog_id": "spec-a", "research_followup_allowed": True,
+            },
+            {
+                "strategy_id": None, "research_action": "STOP_RESEARCH_ONLY",
+                "catalog_id": "stopped-family", "rationale": "preserve negative evidence",
+            },
+        ],
     }
     paths = []
     for name, payload in (("common.json", common), ("cost.json", cost), ("selection.json", selection)):
@@ -53,6 +58,9 @@ def test_gate_preserves_research_only_boundary_and_cost_pressure(tmp_path):
     assert row["strategy_validated"] is False
     assert row["paper_allowed"] is False
     assert result["promotion_allowed"] is False
+    assert result["summary"]["stop_research_only"] == 1
+    assert any(item["selection_catalog_id"] == "stopped-family" and item["common_window_metrics"] is None
+               for item in result["strategies"])
 
 
 def test_gate_rejects_mismatched_comparison_inputs(tmp_path):

@@ -51,8 +51,9 @@ def _selection_index(receipt: Mapping[str, Any]) -> dict[str, Mapping[str, Any]]
         if not isinstance(row, Mapping):
             raise ValueError("selection receipt row must be an object")
         strategy_id = row.get("strategy_id")
-        if isinstance(strategy_id, str) and strategy_id:
-            indexed[strategy_id] = row
+        key = strategy_id if isinstance(strategy_id, str) and strategy_id else row.get("catalog_id")
+        if isinstance(key, str) and key:
+            indexed[key] = row
     return indexed
 
 
@@ -70,6 +71,14 @@ def _resolve_selection_row(strategy: Mapping[str, Any], selected: Mapping[str, M
     if len(matches) == 1:
         return matches[0]
     raise ValueError(f"strategy missing from latest selection: {strategy_id}")
+
+
+def _selection_key(row: Mapping[str, Any]) -> str | None:
+    strategy_id = row.get("strategy_id")
+    if isinstance(strategy_id, str) and strategy_id:
+        return strategy_id
+    catalog_id = row.get("catalog_id")
+    return catalog_id if isinstance(catalog_id, str) and catalog_id else None
 
 
 def _pressure_index(receipt: Mapping[str, Any]) -> dict[str, Mapping[str, Any]]:
@@ -127,6 +136,7 @@ def build_decision(common_path: Path = DEFAULT_COMMON, cost_path: Path = DEFAULT
     selected = _selection_index(selection)
     pressured = _pressure_index(cost)
     decisions: list[dict[str, Any]] = []
+    used_selection_keys: set[str] = set()
     for strategy in common.get("strategies", []):
         if not isinstance(strategy, Mapping):
             raise ValueError("common-window strategy row is malformed")
@@ -134,6 +144,9 @@ def build_decision(common_path: Path = DEFAULT_COMMON, cost_path: Path = DEFAULT
         if not isinstance(strategy_id, str):
             raise ValueError(f"strategy missing from latest selection: {strategy_id}")
         selection_row = _resolve_selection_row(strategy, selected)
+        selection_key = _selection_key(selection_row)
+        if selection_key:
+            used_selection_keys.add(selection_key)
         if strategy_id not in pressured:
             raise ValueError(f"strategy missing from cost-pressure receipt: {strategy_id}")
         action, reason = _decision(selection_row, strategy)
@@ -152,6 +165,28 @@ def build_decision(common_path: Path = DEFAULT_COMMON, cost_path: Path = DEFAULT
             "common_window_metrics": strategy.get("metrics"),
             "max_cost_pressure": pressure,
             "strategy_validated": strategy.get("strategy_validated") is True,
+        })
+    for selection_key, selection_row in selected.items():
+        if selection_key in used_selection_keys:
+            continue
+        action = selection_row.get("research_action")
+        if action not in {"STOP_RESEARCH_ONLY", "BLOCKED_COVERAGE", "UNASSESSED_SEPARATE_GATE", "CONTINUE_RESEARCH_ONLY"}:
+            raise ValueError(f"unsupported research action: {action}")
+        reason = selection_row.get("rationale") or selection_row.get("next_step") or "separate candidate gate"
+        decisions.append({
+            "strategy_id": selection_row.get("strategy_id"),
+            "label": selection_row.get("catalog_id"),
+            "candidate_spec_id": selection_row.get("catalog_id"),
+            "research_action": action,
+            "decision_reason": reason,
+            "selection_strategy_id": selection_row.get("strategy_id"),
+            "selection_catalog_id": selection_row.get("catalog_id"),
+            "selection_research_followup_allowed": selection_row.get("research_followup_allowed") is True,
+            "paper_allowed": False,
+            "promotion_allowed": False,
+            "common_window_metrics": None,
+            "max_cost_pressure": None,
+            "strategy_validated": False,
         })
     return {
         "schema": SCHEMA,
@@ -198,9 +233,10 @@ def render_markdown(receipt: Mapping[str, Any]) -> str:
     ]
     for row in receipt["strategies"]:
         pressure = row["max_cost_pressure"]
+        pressure_text = "n/a" if pressure is None else f"{float(pressure.get('bps', 0.0)):.0f} bps"
         lines.append(
             f"| {row['label']} (`{row['strategy_id']}`) | {row['research_action']} | {row['decision_reason']} | "
-            f"{float(pressure.get('bps', 0.0)):.0f} bps | {'yes' if row['strategy_validated'] else 'no'} |"
+            f"{pressure_text} | {'yes' if row['strategy_validated'] else 'no'} |"
         )
     lines += ["", "All rows keep `paper_allowed=false`, `promotion_allowed=false`, and `execution_admitted=false`.", ""]
     return "\n".join(lines)
