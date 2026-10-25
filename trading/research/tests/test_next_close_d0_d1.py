@@ -122,6 +122,22 @@ def test_next_close_accepts_same_day_prebuilt_target_payload(tmp_path, monkeypat
     assert json.loads((tmp_path / "run" / "inputs" / "candidate_a" / "target_payload.json").read_text())["strategy_id"] == "candidate_close"
 
 
+def test_next_close_can_resolve_registered_fixed_daily_head(tmp_path, monkeypatch):
+    _, sources, catalog = _setup(tmp_path)
+    monkeypatch.setattr(contract.stockdb_fixed_daily, "status", lambda _run_dir: {
+        "terminal_account": str(tmp_path / "fixed.json"), "signal": "fixed_close",
+    })
+    monkeypatch.setattr(contract, "freeze_snapshot", _fake_capture)
+    receipt = contract.run_contract(
+        sources, tmp_path / "run", fixed_run_dir=tmp_path / "fixed_daily",
+        fixed_strategy_id=None, stockdb_root=tmp_path / "stockdb", catalog_path=catalog,
+        close_date=DAY, execution_day="2026-10-27", settlement_day="2026-10-28",
+        initial_cash=100000.0)
+    assert receipt["status"] == contract.STATUS
+    assert receipt["fixed"]["strategy_id"] == "fixed_close"
+    assert receipt["execution_admitted"] is False
+
+
 def test_next_close_can_emit_budgeted_joint_paper_package(tmp_path, monkeypatch):
     fixed, sources, catalog = _setup(tmp_path)
     monkeypatch.setattr(contract, "freeze_snapshot", _fake_capture)

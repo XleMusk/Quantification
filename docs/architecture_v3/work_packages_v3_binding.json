@@ -1183,15 +1183,17 @@
       "domain": "operations",
       "result": "Next-close D0/D1 binds optional versioned SSE calendar, separates source_day/decision_cutoff/quote_observed_at/artifact time semantics, and rejects non-adjacent dates when the calendar is available.",
       "state": "VERIFIED_LOCAL",
-      "next": "Use the pinned calendar with the next real close; if unavailable, keep the calendar status unresolved and do not infer dates.",
+      "next": "At the next real close, pass the registered fixed_daily run directory so D0/D1 resolves the current fixed target from its committed head; use the pinned calendar and same-day candidate payloads.",
       "prohibition": "Machine weekday inference and missing-calendar fallback cannot authorize a paper rollover or broker action.",
       "actual_paths": [
         "D:/Quantification/trading/research/next_close_d0_d1.py",
+        "D:/Quantification/trading/research/stockdb_fixed_daily.py",
         "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
         "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json"
       ],
       "evidence": [
         "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
+        "D:/Quantification/trading/research/tests/test_stockdb_fixed_daily.py",
         "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json"
       ],
       "acceptance": "Fixture D0/D1 accepts adjacent calendar sessions, rejects a non-adjacent execution date, records explicit time_semantics, and preserves FAILED_D0_D1 evidence with execution_admitted=false."

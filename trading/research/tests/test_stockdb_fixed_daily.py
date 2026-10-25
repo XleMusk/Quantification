@@ -68,6 +68,7 @@ def test_registered_saved_account_advances_once_and_duplicate_is_read_only(daily
     assert head_after != head_before and old_account.read_bytes() == old_bytes
     observed = m.status(d["directory"])
     assert observed["last_completed_day"] == NEXT
+    assert observed["terminal_account"] == read(d["directory"] / "head.json")["source"]["account"]["path"]
     assert observed["cash"] is not None
     monkeypatch.setattr(m.rolling, "run", lambda *a, **kw: pytest.fail("No replay on an already committed cutoff"))
     monkeypatch.setattr(m, "load_complete", lambda *a: pytest.fail("No source reload on duplicate cutoff"))

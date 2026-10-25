@@ -33,6 +33,7 @@ from .joint_portfolio_paper_package import (
 )
 from .stockdb_paper_target_package import build_paper_target_package
 from .exchange_calendar import load_calendar, next_exchange_session
+from . import stockdb_fixed_daily
 
 
 SCHEMA = "stockdb_next_close_d0_d1_contract_v1"
@@ -250,8 +251,32 @@ def _assert_target_day(target: Mapping[str, Any], close_date: str, label: str) -
         raise ValueError(f"{label} target must remain research-only/unadmitted")
 
 
+def _resolve_fixed_source(*, fixed_terminal_account: str | Path | None,
+                          fixed_run_dir: str | Path | None,
+                          fixed_strategy_id: str | None) -> tuple[Path, str]:
+    """Resolve the registered fixed daily head without creating another account path."""
+    if (fixed_terminal_account is None) == (fixed_run_dir is None):
+        raise ValueError("Provide exactly one of fixed_terminal_account or fixed_run_dir")
+    if fixed_run_dir is not None:
+        current = stockdb_fixed_daily.status(fixed_run_dir)
+        source = current.get("terminal_account")
+        signal = fixed_strategy_id or current.get("signal")
+        if not isinstance(source, str) or not source:
+            raise ValueError("Saved fixed_daily status has no terminal account")
+        if not isinstance(signal, str) or not signal:
+            raise ValueError("Saved fixed_daily status has no strategy signal")
+        return Path(source).resolve(), signal
+    if not isinstance(fixed_terminal_account, (str, Path)):
+        raise ValueError("fixed_terminal_account is required")
+    if not isinstance(fixed_strategy_id, str) or not fixed_strategy_id.strip():
+        raise ValueError("fixed_strategy_id is required with fixed_terminal_account")
+    return Path(fixed_terminal_account).resolve(), fixed_strategy_id
+
+
 def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
-                 fixed_terminal_account: str | Path, fixed_strategy_id: str,
+                 fixed_terminal_account: str | Path | None = None,
+                 fixed_run_dir: str | Path | None = None,
+                 fixed_strategy_id: str | None = None,
                  stockdb_root: str | Path = DEFAULT_STOCKDB,
                  catalog_path: str | Path | None = DEFAULT_CATALOG,
                  close_date: str, execution_day: str, settlement_day: str,
@@ -266,10 +291,11 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
     settlement_day = _canonical_day(settlement_day, "settlement_day")
     if not close_date < execution_day < settlement_day:
         raise ValueError("Require close_date < execution_day < settlement_day")
-    if not isinstance(fixed_strategy_id, str) or not fixed_strategy_id.strip():
-        raise ValueError("fixed_strategy_id is required")
     source_manifest = Path(source_manifest).resolve()
-    fixed_source = Path(fixed_terminal_account).resolve()
+    fixed_source, fixed_strategy_id = _resolve_fixed_source(
+        fixed_terminal_account=fixed_terminal_account,
+        fixed_run_dir=fixed_run_dir,
+        fixed_strategy_id=fixed_strategy_id)
     stockdb_root = Path(stockdb_root).resolve()
     catalog = Path(catalog_path).resolve() if catalog_path is not None else None
     decision_receipt = Path(research_decision_receipt).resolve() if research_decision_receipt is not None else None
@@ -434,8 +460,12 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-manifest", type=Path, required=True)
-    parser.add_argument("--fixed-terminal-account", type=Path, required=True)
-    parser.add_argument("--fixed-strategy-id", required=True)
+    fixed_source = parser.add_mutually_exclusive_group(required=True)
+    fixed_source.add_argument("--fixed-terminal-account", type=Path)
+    fixed_source.add_argument("--fixed-run-dir", type=Path,
+                              help="registered stockdb-fixed-daily directory; uses its current head")
+    parser.add_argument("--fixed-strategy-id",
+                        help="optional with --fixed-run-dir; required with --fixed-terminal-account")
     parser.add_argument("--stockdb-root", type=Path, default=DEFAULT_STOCKDB)
     parser.add_argument("--catalog", type=Path, default=DEFAULT_CATALOG)
     parser.add_argument("--output-dir", type=Path, required=True)
@@ -455,7 +485,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     receipt = run_contract(
         args.source_manifest, args.output_dir,
-        fixed_terminal_account=args.fixed_terminal_account, fixed_strategy_id=args.fixed_strategy_id,
+        fixed_terminal_account=args.fixed_terminal_account, fixed_run_dir=args.fixed_run_dir,
+        fixed_strategy_id=args.fixed_strategy_id,
         stockdb_root=args.stockdb_root, catalog_path=args.catalog,
         close_date=args.close_date, execution_day=args.execution_day,
         settlement_day=args.settlement_day, initial_cash=args.initial_cash,

@@ -258,3 +258,8 @@ Ridge h60 相对基线的净收益差为 -4.7997 个百分点、最大回撤差�
 ## 2026-10-25 next-close time semantics
 
 D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `decision_cutoff_at`、`quote_observed_at`、本地 `artifact_created_at` 和明确为空的 `plan_published_at`。目标若自带 `source_day` 或 `decision_cutoff_at` 也会被校验；这区分资料归属、决策界限、报价观察和本地产物生成，避免把日期混用。D0/D1 测试仍为 `7 passed`。
+
+
+## 2026-10-25 registered fixed_daily handoff into D0/D1
+
+为让下一个真实闭市日可以直接落地，`stockdb-fixed-daily status` 现在返回当前已提交的 `terminal_account`，`next-close-d0-d1` 新增 `--fixed-run-dir`。该入口先读取现有 fixed_daily 的权威 head/status，再复用同一账户文件和策略信号进入 D0/D1；不会创建第二个账户、复制状态或改写 fixed_daily。原有 `--fixed-terminal-account --fixed-strategy-id` 入口保持兼容。新增夹具覆盖 registered head 解析，D0/D1 与 fixed_daily 聚焦测试为 `15 passed`；10 月 26 日仍须等真实收市输入后运行。
