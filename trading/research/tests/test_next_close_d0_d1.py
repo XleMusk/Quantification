@@ -88,6 +88,9 @@ def test_next_close_contract_captures_same_day_quotes_and_shared_bindings(tmp_pa
     assert receipt["time_semantics"]["source_day"] == DAY
     assert receipt["time_semantics"]["decision_cutoff_at"] == "2026-10-26T15:05:00+08:00"
     assert isinstance(receipt["time_semantics"]["plan_published_at"], str)
+    assert receipt["snapshot_coverage"]["status"] == "COMPLETE"
+    assert receipt["snapshot_coverage"]["requested_close_date"] == DAY
+    assert receipt["snapshot_coverage"]["missing_symbols"] == []
     assert receipt["fixed_account"]["binding"] == "direct_terminal_account"
     manifest = json.loads((tmp_path / "run" / "inputs" / "candidate_manifest.json").read_text())
     assert manifest["plan_published_at"] == receipt["time_semantics"]["plan_published_at"]
@@ -130,6 +133,24 @@ def test_next_close_can_use_pinned_snapshot_without_live_capture(tmp_path, monke
         initial_cash=100000.0)
     assert receipt["status"] == contract.STATUS
     assert receipt["stockdb_snapshot_source"] == str(snapshot.resolve())
+
+
+def test_next_close_marks_pinned_snapshot_without_requested_date_as_stale(tmp_path, monkeypatch):
+    fixed, sources, catalog = _setup(tmp_path)
+    snapshot = tmp_path / "stale_snapshot"
+    _fake_capture(tmp_path / "stockdb", snapshot, ["600000.SSE", "000001.SZSE"], ["2026-10-23"])
+    monkeypatch.setattr(contract, "freeze_snapshot",
+                        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("live capture must not run")))
+    receipt = contract.run_contract(
+        sources, tmp_path / "run", fixed_terminal_account=fixed,
+        fixed_strategy_id="fixed_close", stockdb_root=tmp_path / "stockdb",
+        stockdb_snapshot=snapshot, catalog_path=catalog, close_date=DAY,
+        execution_day="2026-10-27", settlement_day="2026-10-28",
+        initial_cash=100000.0)
+    assert receipt["status"] == contract.BLOCKED_STATUS
+    assert receipt["snapshot_coverage"]["status"] == "STALE_SNAPSHOT"
+    assert receipt["snapshot_coverage"]["reason"] == "close_date_not_in_effective_session_dates"
+    assert receipt["snapshot_coverage"]["missing_symbols"] == ["000001.SZSE", "600000.SSE"]
 
 
 def test_next_close_classifies_live_capture_connection_failure(tmp_path, monkeypatch):

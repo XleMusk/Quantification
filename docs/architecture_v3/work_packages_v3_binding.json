@@ -1028,7 +1028,9 @@
         "trading/research/post_close_d0_d1.py",
         "trading/research/tests/test_post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
-        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md",
+        "outputs/pipeline_receipts/20261026_next_close_snapshot_coverage_v1.json",
+        "outputs/research_reports/20261026_next_close_snapshot_coverage_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1039,7 +1041,9 @@
         "trading/research/tests/test_next_close_d0_d1.py",
         "trading/research/tests/test_post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
-        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md",
+        "outputs/pipeline_receipts/20261026_next_close_snapshot_coverage_v1.json",
+        "outputs/research_reports/20261026_next_close_snapshot_coverage_v1.md"
       ]
     },
     {
@@ -1131,7 +1135,9 @@
         "trading/research/post_close_d0_d1.py",
         "trading/research/tests/test_post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
-        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md",
+        "outputs/pipeline_receipts/20261026_next_close_snapshot_coverage_v1.json",
+        "outputs/research_reports/20261026_next_close_snapshot_coverage_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1142,7 +1148,9 @@
         "trading/research/tests/test_next_close_d0_d1.py",
         "trading/research/tests/test_post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
-        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md",
+        "outputs/pipeline_receipts/20261026_next_close_snapshot_coverage_v1.json",
+        "outputs/research_reports/20261026_next_close_snapshot_coverage_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -1808,7 +1816,11 @@
         "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json",
         "trading/research/exchange_calendar.py",
         "trading/research/tests/test_exchange_calendar.py",
-        "outputs/pipeline_receipts/20261026_exchange_calendar_boundary_v1.json"
+        "outputs/pipeline_receipts/20261026_exchange_calendar_boundary_v1.json",
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_snapshot_coverage_v1.json",
+        "outputs/research_reports/20261026_next_close_snapshot_coverage_v1.md"
       ],
       "evidence": [
         "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
@@ -1817,7 +1829,11 @@
         "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json",
         "trading/research/exchange_calendar.py",
         "trading/research/tests/test_exchange_calendar.py",
-        "outputs/pipeline_receipts/20261026_exchange_calendar_boundary_v1.json"
+        "outputs/pipeline_receipts/20261026_exchange_calendar_boundary_v1.json",
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_snapshot_coverage_v1.json",
+        "outputs/research_reports/20261026_next_close_snapshot_coverage_v1.md"
       ],
       "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence.",
       "evidence_updated_on": "2026-10-26"

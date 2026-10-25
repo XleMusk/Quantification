@@ -1,0 +1,29 @@
+{
+  "schema": "stockdb_next_close_snapshot_coverage_v1",
+  "status": "LOCAL_VERIFIED_RESEARCH_ONLY",
+  "execution_admitted": false,
+  "scope": "next_close_d0_d1_input_contract",
+  "changes": [
+    "Receipt now records requested close date versus effective snapshot session dates.",
+    "A snapshot without the requested date is marked STALE_SNAPSHOT.",
+    "A snapshot with the date but missing symbols is marked INCOMPLETE.",
+    "No price carry-forward or execution admission is introduced."
+  ],
+  "tests": {
+    "command": "D:\\Quantification\\env\\python.exe -m pytest -q trading/research/tests/test_next_close_d0_d1.py",
+    "result": "17 passed"
+  },
+  "acceptance_examples": [
+    {
+      "status": "COMPLETE",
+      "requested_close_date": "2026-10-26",
+      "missing_symbols": []
+    },
+    {
+      "status": "STALE_SNAPSHOT",
+      "reason": "close_date_not_in_effective_session_dates",
+      "missing_symbols": "all requested symbols"
+    }
+  ],
+  "next_acceptance": "Run after the actual 2026-10-26 close with a StockDB snapshot whose effective session dates include 2026-10-26."
+}

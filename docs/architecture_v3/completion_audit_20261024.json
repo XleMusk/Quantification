@@ -186,9 +186,12 @@
         "trading/research/next_close_d0_d1.py",
         "trading/research/post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
-        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md",
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_snapshot_coverage_v1.json",
+        "outputs/research_reports/20261026_next_close_snapshot_coverage_v1.md"
       ],
-      "gap": "Real 2026-10-26 close still needs execution; receipt now separates persistent fixed_daily rollover from TARGET_PREVIEW projections.",
+      "gap": "Real 2026-10-26 close still needs execution; next-close now records explicit date/symbol snapshot coverage and marks stale snapshots without price carry-forward.",
       "next_acceptance": "After the close, run the registered fixed_daily/post_close path with real StockDB inputs and verify both scope fields.",
       "evidence_updated_on": "2026-10-26"
     },

@@ -247,6 +247,34 @@ def _snapshot_quote(snapshot_dir: Path, symbols: Sequence[str], close_date: str,
     return quote, missing
 
 
+def _snapshot_coverage(metadata: Mapping[str, Any], *, close_date: str,
+                       symbols: Sequence[str], missing: Sequence[str]) -> dict[str, Any]:
+    """Describe date and symbol coverage without treating missing data as zero."""
+
+    effective_dates = metadata.get("effective_session_dates")
+    if not isinstance(effective_dates, list):
+        effective_dates = []
+    effective_dates = [str(value) for value in effective_dates]
+    if close_date not in effective_dates:
+        status = "STALE_SNAPSHOT"
+        reason = "close_date_not_in_effective_session_dates"
+    elif missing:
+        status = "INCOMPLETE"
+        reason = "same_day_symbols_missing"
+    else:
+        status = "COMPLETE"
+        reason = None
+    return {
+        "status": status,
+        "reason": reason,
+        "requested_close_date": close_date,
+        "effective_session_dates": effective_dates,
+        "requested_symbol_count": len(symbols),
+        "available_symbol_count": len(symbols) - len(missing),
+        "missing_symbols": list(missing),
+    }
+
+
 def _write_payloads(root: Path, label: str, target: dict[str, Any], quote: dict[str, Any]) -> dict[str, str]:
     folder = root / label
     folder.mkdir(parents=True, exist_ok=True)
@@ -455,9 +483,12 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
         snapshot_ref = _ref(snapshot_dir / "snapshot.json")
         quote, missing = _snapshot_quote(snapshot_dir, symbols, close_date,
                                          observed_at=metadata["captured_at"])
+        snapshot_coverage = _snapshot_coverage(metadata, close_date=close_date,
+                                                symbols=symbols, missing=missing)
         receipt_base.update({"close_date": close_date, "snapshot": snapshot_ref,
                              "stockdb_snapshot_source": str(snapshot_dir),
                              "requested_symbol_count": len(symbols), "missing_symbols": missing,
+                             "snapshot_coverage": snapshot_coverage,
                              "fixed_source": fixed_source_ref,
                              "fixed_account": fixed_account_binding,
                              "candidate_source_manifest": _ref(source_manifest),
