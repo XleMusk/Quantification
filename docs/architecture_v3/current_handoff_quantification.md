@@ -165,3 +165,9 @@ Focused regression covering the new joint paper route, existing P06 contract, F2
 为解决三策略在 140,000 元研究账户下因多标的整手约束而整包阻断，联合目标新增显式 `capacity_policy=budgeted`。它按板块最小数量、目标权重、单票上限和总现金预算确定性选择最多 22 个可执行目标，并把被容量裁掉的标的及原因留在 `dropped_rows`；默认 `strict` 模式不变。当前固定低波、半动量、12-1 动量三条 2026-10-23 账户的预算模式回执为 22 个纸面订单、38 个容量裁剪行，继续走共享 Orders/Fill/Cash/Position 路径，`execution_admitted=false`。
 
 新增预算模式 fixture 后，联合目标、联合纸面包和 D0/D1 测试为 `11 passed`，改动模块编译通过。回执：`outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/budgeted_140k/joint_paper_receipt.json`。这仍是研究纸面目标，不代表当前券商或同花顺订单。
+
+## 2026-10-25 same-day Target+Quote joint route
+
+联合目标接线已从历史账户文件扩展到候选输入清单直接提供的同日 `Target+Quote` payload。`build_joint_portfolio_from_payloads` 校验策略身份、决策日、报价日、原始人民币价格和只读标志，再交给相同的板块单位与预算分配；`joint-portfolio-paper-package --payload-manifest` 随后复用同一个纸面 Orders/Fill/Cash/Position 包。
+
+用现有候选输入清单做历史同日重放，预算模式产生 22 个纸面订单，回执为 `outputs/pipeline_receipts/20261025_joint_payload_paper_integration_v1/joint_paper_receipt.json`。联合目标、联合纸面包和 D0/D1 测试为 `12 passed`，模块编译通过；这为下个收盘后的候选 bundle 直接接入 D0/D1 留下了可执行入口，仍未访问券商或同花顺。

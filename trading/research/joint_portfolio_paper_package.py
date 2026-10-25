@@ -14,7 +14,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping
 
-from .joint_portfolio_acceptance import DEFAULT_SELECTED, VERIFIED, build_joint_portfolio
+from .joint_portfolio_acceptance import (
+    DEFAULT_SELECTED,
+    VERIFIED,
+    build_joint_portfolio,
+    build_joint_portfolio_from_payloads,
+)
 from .stockdb_paper_target_package import build_paper_target_package
 
 
@@ -41,7 +46,7 @@ def _account_paths(path: str | Path | None) -> dict[str, Path]:
     return {str(key): Path(str(item)).expanduser().resolve() for key, item in value.items()}
 
 
-def _target_payload(joint: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+def _target_payload(joint: Mapping[str, Any], *, quote_source: str = "saved_aligned_strategy_terminal_mark") -> tuple[dict[str, Any], dict[str, Any]]:
     rows = [row for row in joint.get("target_rows", [])
             if float(row.get("target_weight", 0.0)) > 0]
     if not rows:
@@ -65,7 +70,7 @@ def _target_payload(joint: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str,
                                         "contributors": list(row.get("contributors", []))}})
         prices[symbol] = {
             "price_rmb": float(row["mark_cents"]) / 100.0,
-            "source": "saved_aligned_strategy_terminal_mark",
+            "source": quote_source,
             "observed_date": joint["common_terminal_day"],
         }
     target = {
@@ -80,7 +85,7 @@ def _target_payload(joint: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str,
     }
     quote = {
         "schema": "ths_raw_quote_observation_v1",
-        "source": "saved_aligned_strategy_terminal_mark",
+        "source": quote_source,
         "observed_at": f"{joint['common_terminal_day']}T15:00:00+08:00",
         "price_basis": "raw_rmb",
         "snapshot_date": joint["common_terminal_day"],
@@ -91,22 +96,10 @@ def _target_payload(joint: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str,
     return target, quote
 
 
-def build_joint_paper_package(account_paths: Mapping[str, Path] = DEFAULT_SELECTED, *,
-                              initial_cash_cny: float = 140_000.0,
-                              gross_limit: float = 0.8,
-                              single_limit: float = 0.2,
-                              lot_size: int = 100,
-                              capacity_policy: str = "strict",
-                              max_target_rows: int = 22,
-                              execution_day: str,
-                              settlement_day: str,
-                              output_dir: str | Path | None = None) -> dict[str, Any]:
-    """Build one research-only joint target and shared paper package."""
-
-    joint = build_joint_portfolio(account_paths, initial_cash_cny=initial_cash_cny,
-                                  gross_limit=gross_limit, single_limit=single_limit,
-                                  lot_size=lot_size, capacity_policy=capacity_policy,
-                                  max_target_rows=max_target_rows)
+def _build_paper_from_joint(joint: Mapping[str, Any], *, initial_cash_cny: float,
+                            execution_day: str, settlement_day: str,
+                            output_dir: str | Path | None,
+                            quote_source: str) -> dict[str, Any]:
     if joint["status"] != VERIFIED:
         receipt = {
             "schema": SCHEMA, "status": BLOCKED,
@@ -122,7 +115,7 @@ def build_joint_paper_package(account_paths: Mapping[str, Path] = DEFAULT_SELECT
     if execution_day <= joint["common_terminal_day"]:
         raise ValueError("execution_day must be later than the common terminal day")
 
-    target, quote = _target_payload(joint)
+    target, quote = _target_payload(joint, quote_source=quote_source)
     package_dir = Path(output_dir).expanduser().resolve() / "paper_package" if output_dir else None
     try:
         package = build_paper_target_package(
@@ -174,6 +167,73 @@ def build_joint_paper_package(account_paths: Mapping[str, Path] = DEFAULT_SELECT
     return _persist(receipt, output_dir)
 
 
+def build_joint_paper_package(account_paths: Mapping[str, Path] = DEFAULT_SELECTED, *,
+                              initial_cash_cny: float = 140_000.0,
+                              gross_limit: float = 0.8,
+                              single_limit: float = 0.2,
+                              lot_size: int = 100,
+                              capacity_policy: str = "strict",
+                              max_target_rows: int = 22,
+                              execution_day: str,
+                              settlement_day: str,
+                              output_dir: str | Path | None = None) -> dict[str, Any]:
+    """Build one research-only joint target from saved account snapshots."""
+    joint = build_joint_portfolio(
+        account_paths, initial_cash_cny=initial_cash_cny, gross_limit=gross_limit,
+        single_limit=single_limit, lot_size=lot_size,
+        capacity_policy=capacity_policy, max_target_rows=max_target_rows,
+    )
+    return _build_paper_from_joint(
+        joint, initial_cash_cny=initial_cash_cny, execution_day=execution_day,
+        settlement_day=settlement_day, output_dir=output_dir,
+        quote_source="saved_aligned_strategy_terminal_mark",
+    )
+
+
+def build_joint_paper_from_payloads(
+    payloads: Mapping[str, tuple[Mapping[str, Any], Mapping[str, Any]]], *,
+    initial_cash_cny: float = 140_000.0, gross_limit: float = 0.8,
+    single_limit: float = 0.2, lot_size: int = 100,
+    capacity_policy: str = "strict", max_target_rows: int = 22,
+    execution_day: str, settlement_day: str,
+    output_dir: str | Path | None = None,
+) -> dict[str, Any]:
+    """Build the same package directly from same-day Target+Quote payloads."""
+    joint = build_joint_portfolio_from_payloads(
+        payloads, initial_cash_cny=initial_cash_cny, gross_limit=gross_limit,
+        single_limit=single_limit, lot_size=lot_size,
+        capacity_policy=capacity_policy, max_target_rows=max_target_rows,
+    )
+    return _build_paper_from_joint(
+        joint, initial_cash_cny=initial_cash_cny, execution_day=execution_day,
+        settlement_day=settlement_day, output_dir=output_dir,
+        quote_source="aligned_target_quote_payload",
+    )
+
+
+def _payload_manifest(path: str | Path) -> dict[str, tuple[dict[str, Any], dict[str, Any]]]:
+    value = json.loads(Path(path).expanduser().resolve().read_text(encoding="utf-8"))
+    items = value.get("strategies") if isinstance(value, Mapping) else value
+    if not isinstance(items, list) or not items:
+        raise ValueError("payload manifest must contain a non-empty strategies list")
+    result = {}
+    for item in items:
+        if not isinstance(item, Mapping):
+            raise ValueError("payload manifest strategy entries must be objects")
+        strategy_id = item.get("strategy_id")
+        if not isinstance(strategy_id, str) or not strategy_id:
+            raise ValueError("payload manifest strategy_id is required")
+        target_path = Path(str(item.get("target"))).expanduser().resolve()
+        quote_path = Path(str(item.get("quotes"))).expanduser().resolve()
+        if not target_path.is_file() or not quote_path.is_file():
+            raise ValueError(f"payload files do not exist: {strategy_id}")
+        result[strategy_id] = (
+            json.loads(target_path.read_text(encoding="utf-8")),
+            json.loads(quote_path.read_text(encoding="utf-8")),
+        )
+    return result
+
+
 def _persist(receipt: dict[str, Any], output_dir: str | Path | None) -> dict[str, Any]:
     if output_dir is None:
         return receipt
@@ -190,7 +250,9 @@ def _persist(receipt: dict[str, Any], output_dir: str | Path | None) -> dict[str
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--accounts-manifest", type=Path)
+    source_group = parser.add_mutually_exclusive_group()
+    source_group.add_argument("--accounts-manifest", type=Path)
+    source_group.add_argument("--payload-manifest", type=Path)
     parser.add_argument("--initial-cash", type=float, default=140_000.0)
     parser.add_argument("--gross-limit", type=float, default=0.8)
     parser.add_argument("--single-limit", type=float, default=0.2)
@@ -201,14 +263,15 @@ def main(argv=None) -> int:
     parser.add_argument("--settlement-day", required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args(argv)
-    result = build_joint_paper_package(
-        _account_paths(args.accounts_manifest),
-        initial_cash_cny=args.initial_cash, gross_limit=args.gross_limit,
-        single_limit=args.single_limit, lot_size=args.lot_size,
-        capacity_policy=args.capacity_policy, max_target_rows=args.max_target_rows,
-        execution_day=args.execution_day, settlement_day=args.settlement_day,
-        output_dir=args.output_dir,
-    )
+    common = dict(initial_cash_cny=args.initial_cash, gross_limit=args.gross_limit,
+                  single_limit=args.single_limit, lot_size=args.lot_size,
+                  capacity_policy=args.capacity_policy, max_target_rows=args.max_target_rows,
+                  execution_day=args.execution_day, settlement_day=args.settlement_day,
+                  output_dir=args.output_dir)
+    if args.payload_manifest is not None:
+        result = build_joint_paper_from_payloads(_payload_manifest(args.payload_manifest), **common)
+    else:
+        result = build_joint_paper_package(_account_paths(args.accounts_manifest), **common)
     print(json.dumps({"status": result["status"],
                       "execution_admitted": result["execution_admitted"],
                       "paper_order_count": (result.get("paper_package") or {}).get("paper_order_count", 0),
@@ -216,7 +279,8 @@ def main(argv=None) -> int:
     return 0 if result["status"] == STATUS else 1
 
 
-__all__ = ["BLOCKED", "BLOCKED_PAPER", "SCHEMA", "STATUS", "build_joint_paper_package", "main"]
+__all__ = ["BLOCKED", "BLOCKED_PAPER", "SCHEMA", "STATUS",
+           "build_joint_paper_package", "build_joint_paper_from_payloads", "main"]
 
 
 if __name__ == "__main__":

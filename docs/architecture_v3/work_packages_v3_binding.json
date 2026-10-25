@@ -948,6 +948,26 @@
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/budgeted_140k/joint_paper_receipt.json"
       ],
       "acceptance": "Three aligned 2026-10-23 fixed/trend/momentum accounts produce 22 board-valid paper orders under the explicit 140k budgeted policy with 38 capacity-dropped rows; strict capacity failures remain preserved, all target quantities are explicit, and execution_admitted=false."
+    },
+    {
+      "id": "P09",
+      "domain": "portfolio",
+      "result": "Same-day Target+Quote payloads can enter the joint capacity allocator and shared paper Orders, Fill and Cash/Position path without an intermediate account file.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Use the payload route for the next closed-session candidate bundle; keep source-day and quote-day checks explicit.",
+      "prohibition": "A payload route remains research-only and cannot imply current quotes, broker submission or THS readback.",
+      "actual_paths": [
+        "trading/research/joint_portfolio_acceptance.py",
+        "trading/research/joint_portfolio_paper_package.py",
+        "trading/research/tests/test_joint_portfolio_paper_package.py",
+        "run_committee.py joint-portfolio-paper-package",
+        "outputs/pipeline_receipts/20261025_joint_payload_paper_integration_v1/payload_manifest.json",
+        "outputs/pipeline_receipts/20261025_joint_payload_paper_integration_v1/joint_paper_receipt.json"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261025_joint_payload_paper_integration_v1/joint_paper_receipt.json"
+      ],
+      "acceptance": "The saved candidate Target+Quote manifest reaches a 22-order budgeted joint paper package with same-day decision/quote validation, aligned target quantities and execution_admitted=false."
     }
   ]
 }

@@ -73,17 +73,15 @@ def _snapshot(strategy_id: str, path: Path) -> dict[str, Any]:
             "orders": len(account.get("orders") or {}), "fills": len(account.get("fills") or {})}
 
 
-def build_joint_portfolio(account_paths: Mapping[str, Path] = DEFAULT_SELECTED, *,
-                          initial_cash_cny: float = 140_000.0, gross_limit: float = 0.8,
-                          single_limit: float = 0.2, lot_size: int = 100,
-                          capacity_policy: str = "strict", max_target_rows: int = 22) -> dict[str, Any]:
-    if not account_paths:
-        raise ValueError("At least one strategy account is required")
-    if (initial_cash_cny <= 0 or not 0 < single_limit <= gross_limit <= 1
+def _build_joint_from_snapshots(snapshots: list[dict[str, Any]], *,
+                                initial_cash_cny: float = 140_000.0, gross_limit: float = 0.8,
+                                single_limit: float = 0.2, lot_size: int = 100,
+                                capacity_policy: str = "strict", max_target_rows: int = 22) -> dict[str, Any]:
+    if (not snapshots or initial_cash_cny <= 0
+            or not 0 < single_limit <= gross_limit <= 1
             or lot_size <= 0 or capacity_policy not in CAPACITY_POLICIES
             or type(max_target_rows) is not int or not 1 <= max_target_rows <= 22):
         raise ValueError("Invalid portfolio constraints")
-    snapshots = [_snapshot(strategy_id, Path(path)) for strategy_id, path in account_paths.items()]
     days = sorted({item["day"] for item in snapshots})
     common_day = days[0] if len(days) == 1 else None
     if common_day is None:
@@ -205,6 +203,77 @@ def build_joint_portfolio(account_paths: Mapping[str, Path] = DEFAULT_SELECTED, 
             "PIT, fresh holdout and promotion gates remain separate from portfolio arithmetic.",
         ],
     }
+
+
+def build_joint_portfolio(account_paths: Mapping[str, Path] = DEFAULT_SELECTED, *,
+                          initial_cash_cny: float = 140_000.0, gross_limit: float = 0.8,
+                          single_limit: float = 0.2, lot_size: int = 100,
+                          capacity_policy: str = "strict", max_target_rows: int = 22) -> dict[str, Any]:
+    """Build a joint target from saved Engine/Ledger account snapshots."""
+    if not account_paths:
+        raise ValueError("At least one strategy account is required")
+    snapshots = [_snapshot(strategy_id, Path(path)) for strategy_id, path in account_paths.items()]
+    return _build_joint_from_snapshots(
+        snapshots, initial_cash_cny=initial_cash_cny, gross_limit=gross_limit,
+        single_limit=single_limit, lot_size=lot_size,
+        capacity_policy=capacity_policy, max_target_rows=max_target_rows,
+    )
+
+
+def build_joint_portfolio_from_payloads(
+    payloads: Mapping[str, tuple[Mapping[str, Any], Mapping[str, Any]]], *,
+    initial_cash_cny: float = 140_000.0, gross_limit: float = 0.8,
+    single_limit: float = 0.2, lot_size: int = 100,
+    capacity_policy: str = "strict", max_target_rows: int = 22,
+) -> dict[str, Any]:
+    """Build the same target from explicit same-day Target and Quote payloads."""
+    if not payloads:
+        raise ValueError("At least one strategy target/quote payload is required")
+    snapshots: list[dict[str, Any]] = []
+    for strategy_id, pair in payloads.items():
+        if not isinstance(strategy_id, str) or not strategy_id or not isinstance(pair, tuple) or len(pair) != 2:
+            raise ValueError("Payload mapping must contain strategy_id -> (target, quote) pairs")
+        target, quote = pair
+        if (target.get("execution_admitted") is not False or target.get("research_only") is not True
+                or target.get("strategy_id") != strategy_id):
+            raise ValueError(f"Target payload is not research-only or strategy_id mismatches: {strategy_id}")
+        decision_day = target.get("decision_day")
+        if not isinstance(decision_day, str) or not decision_day:
+            raise ValueError(f"Target payload has no decision_day: {strategy_id}")
+        observed_at = str(quote.get("observed_at") or "")
+        quote_day = quote.get("snapshot_date") or observed_at[:10]
+        if (quote.get("execution_admitted") is not False
+                or quote.get("client_interacted") is not False
+                or quote_day != decision_day
+                or quote.get("price_basis") != "raw_rmb"):
+            raise ValueError(f"Quote payload is not a same-day read-only raw-RMB observation: {strategy_id}")
+        weights = target.get("weights")
+        prices = quote.get("prices")
+        if not isinstance(weights, Mapping) or not weights or not isinstance(prices, Mapping):
+            raise ValueError(f"Target/quote payload is missing weights or prices: {strategy_id}")
+        if set(weights) != set(prices):
+            raise ValueError(f"Target/quote symbols do not match: {strategy_id}")
+        price_cents: dict[str, int] = {}
+        for symbol, quote_row in prices.items():
+            try:
+                price_cents[str(symbol)] = int(round(float(quote_row["price_rmb"]) * 100))
+            except (KeyError, TypeError, ValueError) as error:
+                raise ValueError(f"Invalid quote price: {strategy_id}.{symbol}") from error
+            if price_cents[str(symbol)] <= 0:
+                raise ValueError(f"Quote price must be positive: {strategy_id}.{symbol}")
+        snapshots.append({
+            "strategy_id": strategy_id, "path": "payload://" + strategy_id,
+            "day": decision_day,
+            "targets": {str(symbol): _finite(weight, f"{strategy_id}.weights.{symbol}")
+                         for symbol, weight in weights.items()},
+            "prices": price_cents, "account_cash_cents": 0,
+            "account_equity_cents": 0, "orders": 0, "fills": 0,
+        })
+    return _build_joint_from_snapshots(
+        snapshots, initial_cash_cny=initial_cash_cny, gross_limit=gross_limit,
+        single_limit=single_limit, lot_size=lot_size,
+        capacity_policy=capacity_policy, max_target_rows=max_target_rows,
+    )
 
 
 def build_report(result: Mapping[str, Any]) -> str:

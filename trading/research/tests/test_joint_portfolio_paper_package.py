@@ -6,6 +6,7 @@ from trading.research.joint_portfolio_paper_package import (
     BLOCKED_PAPER,
     STATUS,
     build_joint_paper_package,
+    build_joint_paper_from_payloads,
 )
 
 
@@ -77,3 +78,45 @@ def test_joint_paper_preserves_shared_path_rejection(tmp_path, monkeypatch):
     assert result["execution_admitted"] is False
     assert "insufficient_cash" in result["reason"]
     assert result["target_payload"]["quantities"]
+
+
+def test_joint_payloads_reach_shared_paper_package(tmp_path):
+    payloads = {
+        "first_strategy": (
+            {
+                "strategy_id": "first_strategy", "decision_day": "2026-10-13",
+                "research_only": True, "execution_admitted": False,
+                "weights": {"000001.SZSE": .16},
+            },
+            {
+                "schema": "ths_raw_quote_observation_v1", "snapshot_date": "2026-10-13",
+                "price_basis": "raw_rmb", "execution_admitted": False,
+                "client_interacted": False, "prices": {
+                    "000001.SZSE": {"price_rmb": 10.0, "observed_date": "2026-10-13"},
+                },
+            },
+        ),
+        "second_strategy": (
+            {
+                "strategy_id": "second_strategy", "decision_day": "2026-10-13",
+                "research_only": True, "execution_admitted": False,
+                "weights": {"000002.SZSE": .16},
+            },
+            {
+                "schema": "ths_raw_quote_observation_v1", "snapshot_date": "2026-10-13",
+                "price_basis": "raw_rmb", "execution_admitted": False,
+                "client_interacted": False, "prices": {
+                    "000002.SZSE": {"price_rmb": 5.0, "observed_date": "2026-10-13"},
+                },
+            },
+        ),
+    }
+    result = build_joint_paper_from_payloads(
+        payloads, initial_cash_cny=100000,
+        execution_day="2026-10-14", settlement_day="2026-10-15",
+        output_dir=tmp_path / "run",
+    )
+    assert result["status"] == STATUS
+    assert result["paper_package"]["paper_order_count"] == 2
+    assert result["quote_payload"]["source"] == "aligned_target_quote_payload"
+    assert result["execution_admitted"] is False
