@@ -194,7 +194,10 @@
     "candidate_decision_id_manifest_binding": "D:/Quantification/trading/research/candidate_daily_input_bundle.py",
     "post_close_candidate_catalog_gate": "D:/Quantification/trading/research/post_close_d0_d1.py",
     "post_close_decision_filter_before_bundle": "D:/Quantification/trading/research/post_close_d0_d1.py",
-    "post_close_joint_paper_default": "D:/Quantification/trading/research/post_close_d0_d1.py"
+    "post_close_joint_paper_default": "D:/Quantification/trading/research/post_close_d0_d1.py",
+    "fixed_daily_real_catchup_20261021": "D:/QuantificationData/trading/research/fixed_daily/20261017_engineering_v1/head.json",
+    "fixed_daily_append_supplement_20261021": "D:/QuantificationData/trading/research/lowvol_supplements/20261025_append1021_v1/result.json",
+    "fixed_daily_next_session_preview_20261022": "D:/Quantification/outputs/paper_rebalance/20261025_132805_277fa0eb/result.json"
   },
   "project_handoff_file": "D:\\Quantification\\docs\\architecture_v3\\current_handoff_quantification.md",
   "handoff_file_collision_note": "The global capability_lab current_handoff is concurrently used by D:\\muse; resume D:\\Quantification from project_handoff_file."
