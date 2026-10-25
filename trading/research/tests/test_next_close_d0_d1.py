@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from trading.research import next_close_d0_d1 as contract
 
@@ -126,6 +127,22 @@ def test_next_close_can_use_pinned_snapshot_without_live_capture(tmp_path, monke
         initial_cash=100000.0)
     assert receipt["status"] == contract.STATUS
     assert receipt["stockdb_snapshot_source"] == str(snapshot.resolve())
+
+
+def test_next_close_classifies_live_capture_connection_failure(tmp_path, monkeypatch):
+    fixed, sources, catalog = _setup(tmp_path)
+    from urllib.error import URLError
+    monkeypatch.setattr(contract, "freeze_snapshot",
+                        lambda *args, **kwargs: (_ for _ in ()).throw(URLError("connection refused")))
+    with pytest.raises(URLError):
+        contract.run_contract(
+            sources, tmp_path / "run", fixed_terminal_account=fixed,
+            fixed_strategy_id="fixed_close", stockdb_root=tmp_path / "stockdb",
+            catalog_path=catalog, close_date=DAY, execution_day="2026-10-27",
+            settlement_day="2026-10-28", initial_cash=100000.0)
+    failure = json.loads((tmp_path / "run" / "contract_receipt.json").read_text())
+    assert failure["failure_class"] == "RETRYABLE_TOOL"
+    assert failure["automatic_retry"] is False
 
 
 def test_next_close_accepts_same_day_prebuilt_target_payload(tmp_path, monkeypatch):

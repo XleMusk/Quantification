@@ -20,6 +20,7 @@ from hashlib import sha256
 import json
 from pathlib import Path
 from typing import Any, Mapping, Sequence
+from urllib.error import URLError
 
 import pandas as pd
 
@@ -255,6 +256,16 @@ def _assert_target_day(target: Mapping[str, Any], close_date: str, label: str) -
         raise ValueError(f"{label} target must remain research-only/unadmitted")
 
 
+def _failure_class(error: BaseException) -> str:
+    """Classify tool failures without enabling automatic retries."""
+    if isinstance(error, (URLError, TimeoutError, ConnectionError)):
+        return "RETRYABLE_TOOL"
+    text = str(error).lower()
+    if any(token in text for token in ("connection refused", "timed out", "temporarily unavailable")):
+        return "RETRYABLE_TOOL"
+    return "BUSINESS_FAILURE"
+
+
 def _resolve_fixed_source(*, fixed_terminal_account: str | Path | None,
                           fixed_run_dir: str | Path | None,
                           fixed_strategy_id: str | None) -> tuple[Path, str]:
@@ -478,6 +489,8 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
     except Exception as error:
         failure = {**receipt_base, "status": FAILED_STATUS,
                    "error_type": type(error).__name__, "error": str(error),
+                   "failure_class": _failure_class(error),
+                   "automatic_retry": False,
                    "failure_evidence": {"output_dir": str(output),
                                         "snapshot_dir": str(output / "snapshot")}}
         receipt_path.write_text(json.dumps(failure, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
