@@ -311,3 +311,5 @@ D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `de
 ## 2026-10-25 pinned snapshot fixed-only D0/D1 proof
 
 `next-close-d0-d1` 新增 `--stockdb-snapshot`，可直接消费已保存的 `snapshot.json`，不依赖 live StockDB 服务；同时允许候选清单为空，固定腿仍进入完整纸面链。使用 `stockdb_20261021_full_v1` 快照实际生成回执 `D:\QuantificationData\trading\research\next_close_d0_d1\20261021_fixed_only_v1\run_pinned\contract_receipt.json`：固定目标 20 个、纸面订单 20 个、joint paper 20 个，候选批次 `SKIPPED_NO_REGISTERED_CANDIDATES`，THS 只读参考已生成，缺失行情 0，所有执行标志关闭。受影响聚焦回归为 `38 passed`。
+
+同一 pinned snapshot 已通过一键 `post-close-d0-d1` 编排器复跑：`D:\QuantificationData\trading\research\next_close_d0_d1\20261021_fixed_only_v1\post_close_pinned\post_close_receipt.json` 状态 `COMPLETED_RESEARCH_ONLY_POST_CLOSE_D0_D1`，fixed_daily 返回 `no_new_session`，D0/D1 完成，候选数 0，joint paper 20 单；证明闭市编排器可以在 live StockDB 服务不可用时复用固定快照完成固定腿主线。

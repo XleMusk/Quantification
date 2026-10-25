@@ -55,6 +55,7 @@ def _input_fingerprint(*, source_manifest: Path | None,
                        catalog_path: Path | None, calendar_path: Path | None,
                        decision_receipt: Path | None,
                        supplemental_raw_view: Path | None,
+                       stockdb_snapshot: Path | None,
                        minute_time: str, gate_mode: str,
                        joint_capacity_policy: str | None,
                        joint_max_target_rows: int) -> tuple[str, dict[str, Any]]:
@@ -76,6 +77,8 @@ def _input_fingerprint(*, source_manifest: Path | None,
         "calendar": _ref(calendar_path) if calendar_path is not None else None,
         "research_decision_receipt": _ref(decision_receipt) if decision_receipt is not None else None,
         "supplemental_raw_view": _ref(supplemental_raw_view) if supplemental_raw_view is not None else None,
+        "stockdb_snapshot": (_ref(stockdb_snapshot / "snapshot.json")
+                             if stockdb_snapshot is not None else None),
     }
     body = {
         "close_date": close_date, "execution_day": execution_day,
@@ -98,6 +101,7 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
                  fixed_run_dir: str | Path, packages: Sequence[str | Path],
                  close_date: str, execution_day: str, settlement_day: str,
                  initial_cash: float, stockdb_root: str | Path,
+                 stockdb_snapshot: str | Path | None = None,
                  catalog_path: str | Path | None = None,
                  candidate_replay_manifest: str | Path | None = None,
                  calendar_path: str | Path | None = None,
@@ -115,6 +119,7 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
     fixed_dir = Path(fixed_run_dir).resolve()
     packages_resolved = [Path(item).resolve() for item in packages]
     stockdb = Path(stockdb_root).resolve()
+    snapshot_dir = Path(stockdb_snapshot).resolve() if stockdb_snapshot is not None else None
     catalog = Path(catalog_path).resolve() if catalog_path is not None else None
     if replay_manifest is not None and catalog is None:
         raise ValueError("candidate_replay_manifest requires a registered candidate catalog")
@@ -132,8 +137,11 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
             raise ValueError(f"Complete source package is missing plan/receipt: {package}")
     for path, label in ((catalog, "catalog"), (calendar, "calendar"),
                         (decision, "research decision receipt"),
-                        (supplement, "supplemental raw view")):
+                        (supplement, "supplemental raw view"),
+                        (snapshot_dir, "StockDB snapshot directory")):
         if path is not None and not path.is_file():
+            if label == "StockDB snapshot directory" and (path / "snapshot.json").is_file():
+                continue
             raise ValueError(f"{label} does not exist: {path}")
     fingerprint, fingerprint_inputs = _input_fingerprint(
         source_manifest=source, candidate_replay_manifest=replay_manifest,
@@ -142,6 +150,7 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
         settlement_day=settlement_day, initial_cash=initial_cash,
         stockdb_root=stockdb, catalog_path=catalog, calendar_path=calendar,
         decision_receipt=decision, supplemental_raw_view=supplement,
+        stockdb_snapshot=snapshot_dir,
         minute_time=minute_time, gate_mode=gate_mode,
         joint_capacity_policy=joint_capacity_policy,
         joint_max_target_rows=joint_max_target_rows)
@@ -203,6 +212,7 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
         d0_result = next_close_d0_d1.run_contract(
             source, output / "next_close", fixed_run_dir=fixed_dir,
             stockdb_root=stockdb, catalog_path=catalog,
+            stockdb_snapshot=snapshot_dir,
             close_date=close_date, execution_day=execution_day,
             settlement_day=settlement_day, initial_cash=initial_cash,
             minute_time=minute_time, gate_mode=gate_mode,
@@ -239,6 +249,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--settlement-day", required=True)
     parser.add_argument("--initial-cash", type=float, required=True)
     parser.add_argument("--stockdb-root", type=Path, required=True)
+    parser.add_argument("--stockdb-snapshot", type=Path,
+                        help="optional pinned local snapshot directory for offline D0/D1")
     parser.add_argument("--catalog", type=Path,
                         default=Path("docs/architecture_v3/candidate_strategy_catalog_20261024.json"))
     parser.add_argument("--calendar", type=Path)
@@ -255,6 +267,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         close_date=args.close_date, execution_day=args.execution_day,
         settlement_day=args.settlement_day, initial_cash=args.initial_cash,
         stockdb_root=args.stockdb_root, catalog_path=args.catalog,
+        stockdb_snapshot=args.stockdb_snapshot,
         candidate_replay_manifest=args.candidate_replay_manifest,
         calendar_path=args.calendar, research_decision_receipt=args.research_decision_receipt,
         supplemental_raw_view=args.supplemental_raw_view, minute_time=args.minute_time,
