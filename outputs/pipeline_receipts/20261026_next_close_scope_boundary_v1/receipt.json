@@ -1,0 +1,34 @@
+{
+  "schema": "stockdb_next_close_scope_boundary_receipt_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "date": "2026-10-26",
+  "work_package": "O01/O04 D0/D1 account scope boundary",
+  "execution_admitted": false,
+  "persistent_fixed_daily_account_scope": "persistent_registered_account when --fixed-run-dir is supplied; direct_terminal_account_input otherwise",
+  "target_preview_projection_scope": {
+    "fixed": "TARGET_PREVIEW",
+    "candidate": "TARGET_PREVIEW",
+    "ledger_scope": "ephemeral_projection",
+    "continuous_account_consumer": false
+  },
+  "acceptance": {
+    "registered_fixed_daily_binding_is_distinct": true,
+    "fixed_and_candidate_projections_are_target_preview": true,
+    "candidate_projection_is_not_continuous_account": true,
+    "post_close_receipt_propagates_scope": true,
+    "focused_tests": {
+      "command": "D:\\Quantification\\env\\python.exe -m pytest -q trading/research/tests/test_next_close_d0_d1.py trading/research/tests/test_post_close_d0_d1.py",
+      "passed": 22
+    }
+  },
+  "artifacts": [
+    "trading/research/next_close_d0_d1.py",
+    "trading/research/post_close_d0_d1.py",
+    "trading/research/tests/test_next_close_d0_d1.py",
+    "trading/research/tests/test_post_close_d0_d1.py"
+  ],
+  "limitations": [
+    "This is a local contract/fixture acceptance; it does not claim a real 2026-10-26 close has been consumed.",
+    "The next post-close run must use actual StockDB/fixed_daily inputs."
+  ]
+}
