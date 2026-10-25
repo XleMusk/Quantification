@@ -1169,14 +1169,14 @@
         "D:/Quantification/trading/research/tests/test_f2_alternate_financials.py",
         "run_committee.py f2-alternate-financials",
         "trading/research/f2_fact_bridge.py",
-        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_sidecar_v1.json",
-        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v1.json"
+        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_sidecar_v2.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v2.json"
       ],
       "evidence": [
-        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_sidecar_v1.json",
-        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v1.json"
+        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_sidecar_v2.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v2.json"
       ],
-      "acceptance": "18 alternate-provider rows map to parent profit/assets fields; the existing bridge returns BLOCKED_DATA with 0 facts and explicit reason counts, execution_admitted=false."
+      "acceptance": "The hash-bound alternate sidecar records result/statement_items/implementation artifacts; 18 rows reach the existing bridge, which returns BLOCKED_DATA with 0 facts and execution_admitted=false."
     }
   ]
 }

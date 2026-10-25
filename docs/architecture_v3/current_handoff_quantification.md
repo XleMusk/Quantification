@@ -243,3 +243,8 @@ Ridge h60 相对基线的净收益差为 -4.7997 个百分点、最大回撤差�
 ## 2026-10-25 alternate financial source into F2
 
 备用公开源 `alternate_financials.py` 已完成一次真实批量采集：3 个发行人、18 个报告期、54 份 statement reports、5,076 个字段行，包含 `PARENETP` 与 `TOTASSET`。新增 `f2_alternate_financials.py` 将其映射为标准 F1 sidecar，回执 `outputs/pipeline_receipts/20261025_f2_alternate_financials_sidecar_v1.json`；再由现有 `f2-fact-bridge` 消费，回执 `outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v1.json` 为 `BLOCKED_DATA`，18 行、0 facts，原因包括当前检索非历史 as-of、15 行字段出版日不一致、单位和 issuer scope 未证实。P20/W2 已绑定；同一 bridge 将来可直接消费有可靠时点和范围证明的新源。
+
+
+## 2026-10-25 alternate financial source hash binding
+
+备用 F2 sidecar v2 绑定了 `result.json`、`statement_items.parquet` 和实现文件的 SHA-256/字节数；sidecar/bridge 回执更新为 `outputs/pipeline_receipts/20261025_f2_alternate_financials_sidecar_v2.json` 与 `outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v2.json`。18 行、0 facts、`BLOCKED_DATA` 结果不变，旧 v1 失败/运行证据保留。

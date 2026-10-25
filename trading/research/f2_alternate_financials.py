@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 from datetime import date, datetime, timezone
 import json
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
@@ -37,12 +38,18 @@ def _json(path: Path) -> dict[str, Any]:
     return value
 
 
+def _ref(path: Path) -> dict[str, Any]:
+    digest = sha256(path.read_bytes()).hexdigest()
+    return {"path": str(path.resolve()), "sha256": digest, "bytes": path.stat().st_size}
+
+
 def build_sidecar(root: str | Path, *, decision_day: str) -> dict[str, Any]:
     root = Path(root).expanduser().resolve()
     result = _json(root / "result.json")
     if result.get("execution_admitted") is not False:
         raise ValueError("alternate financial cache crossed execution boundary")
-    items = pd.read_parquet(root / "statement_items.parquet")
+    items_path = root / "statement_items.parquet"
+    items = pd.read_parquet(items_path)
     rows: list[dict[str, Any]] = []
     for (symbol, report_day), group in items.groupby(["symbol", "report_day"], sort=True):
         period = _period(report_day)
@@ -103,7 +110,12 @@ def build_sidecar(root: str | Path, *, decision_day: str) -> dict[str, Any]:
         "status": STATUS,
         "execution_admitted": False,
         "decision_day": decision_day,
-        "source": {"root": str(root), "result": result, "retrieval_kind": "provider_current_history"},
+        "source": {"root": str(root), "result": result, "retrieval_kind": "provider_current_history",
+                   "artifacts": {
+                       "result": _ref(root / "result.json"),
+                       "statement_items": _ref(items_path),
+                       "implementation": _ref(root / "implementation.py") if (root / "implementation.py").is_file() else None,
+                   }},
         "rows": rows,
         "summary": {"rows": len(rows), "required_fields": sorted(REQUIRED),
                     "rows_with_both_fields": sum(all(field in row for field in REQUIRED) for row in rows),

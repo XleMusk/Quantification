@@ -103,8 +103,8 @@
         "D:/Quantification/outputs/pipeline_receipts/20261025_f01_wayback_pit_attempt_v1.json",
         "D:/Quantification/trading/research/f2_alternate_financials.py",
         "D:/Quantification/trading/research/tests/test_f2_alternate_financials.py",
-        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_sidecar_v1.json",
-        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v1.json"
+        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_sidecar_v2.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v2.json"
       ],
       "result": "The alternate public financial source now maps 18 historical report rows into the existing F2 sidecar and bridge; 0 rows are PIT-safe and 0 facts are admitted because retrieval/as-of, field timing, units and issuer scope remain unproven."
     },
