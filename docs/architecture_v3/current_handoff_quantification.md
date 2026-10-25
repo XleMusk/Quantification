@@ -263,3 +263,8 @@ D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `de
 ## 2026-10-25 registered fixed_daily handoff into D0/D1
 
 为让下一个真实闭市日可以直接落地，`stockdb-fixed-daily status` 现在返回当前已提交的 `terminal_account`，`next-close-d0-d1` 新增 `--fixed-run-dir`。该入口先读取现有 fixed_daily 的权威 head/status，再复用同一账户文件和策略信号进入 D0/D1；不会创建第二个账户、复制状态或改写 fixed_daily。原有 `--fixed-terminal-account --fixed-strategy-id` 入口保持兼容。新增夹具覆盖 registered head 解析，D0/D1 与 fixed_daily 聚焦测试为 `15 passed`；10 月 26 日仍须等真实收市输入后运行。
+
+
+## 2026-10-25 fixed_daily source reuse across candidate D1
+
+将 fixed_daily 的当前账户解析提为 `stockdb_fixed_daily.resolve_terminal_account`，候选纸面编排器 `candidate_daily_paper_run` 现在也支持 `--fixed-run-dir`，与 D0/D1 使用同一已提交 head、策略信号和账户文件。显式 `--fixed-terminal-account` 仍兼容；两条入口都不创建第二账户、不写持久 Ledger。新增候选 D1 夹具后，候选编排、D0/D1、fixed_daily 和联合纸面聚焦回归为 `25 passed`，执行资格保持关闭。

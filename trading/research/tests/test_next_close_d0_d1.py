@@ -124,9 +124,8 @@ def test_next_close_accepts_same_day_prebuilt_target_payload(tmp_path, monkeypat
 
 def test_next_close_can_resolve_registered_fixed_daily_head(tmp_path, monkeypatch):
     _, sources, catalog = _setup(tmp_path)
-    monkeypatch.setattr(contract.stockdb_fixed_daily, "status", lambda _run_dir: {
-        "terminal_account": str(tmp_path / "fixed.json"), "signal": "fixed_close",
-    })
+    monkeypatch.setattr(contract.stockdb_fixed_daily, "resolve_terminal_account",
+                        lambda _run_dir: (tmp_path / "fixed.json", "fixed_close"))
     monkeypatch.setattr(contract, "freeze_snapshot", _fake_capture)
     receipt = contract.run_contract(
         sources, tmp_path / "run", fixed_run_dir=tmp_path / "fixed_daily",

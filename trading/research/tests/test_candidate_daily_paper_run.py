@@ -5,7 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from trading.research.candidate_daily_paper_run import run_pipeline
+from trading.research import candidate_daily_paper_run as pipeline
+
+run_pipeline = pipeline.run_pipeline
 
 
 def test_pipeline_binds_input_bundle_to_shared_paper_batch(tmp_path: Path) -> None:
@@ -60,6 +62,38 @@ def test_pipeline_projects_fixed_leg_through_same_paper_package(tmp_path: Path) 
     assert Path(receipt["fixed_strategy"]["target"]["path"]).is_file()
     assert len(receipt["fixed_strategy"]["target"]["sha256"]) == 64
     assert Path(receipt["fixed_strategy"]["package_result"]).is_file()
+
+
+def test_pipeline_resolves_fixed_daily_run_dir(tmp_path: Path, monkeypatch) -> None:
+    replay = tmp_path / "replay.json"
+    replay.write_text(json.dumps({
+        "strategy_id": "candidate_a", "end_date": "2026-10-13",
+        "execution_admitted": False, "strategy_validated": False,
+        "selected_events": [{"date": "2026-10-13", "symbol": "000001.SZSE", "score": 1.0}],
+        "state": {"day": "2026-10-13", "targets": {"000001.SZSE": 0.2}, "prices": {"000001.SZSE": 1000}},
+    }), encoding="utf-8")
+    source_manifest = tmp_path / "sources.json"
+    source_manifest.write_text(json.dumps({"candidates": [
+        {"candidate_id": "candidate_a", "replay_result": str(replay)},
+    ]}), encoding="utf-8")
+    catalog = tmp_path / "catalog.json"
+    catalog.write_text(json.dumps({"entries": [{"id": "candidate_a",
+        "research_selection": {"research_followup_allowed": True}}]}), encoding="utf-8")
+    fixed = tmp_path / "fixed_account.json"
+    fixed.write_text(json.dumps({
+        "strategy_id": "fixed_close", "end_date": "2026-10-13",
+        "execution_admitted": False, "strategy_validated": False,
+        "targets": {"600000.SSE": 0.2}, "prices": {"600000.SSE": 1000},
+        "candidates": [{"date": "2026-10-13", "symbol": "600000.SSE", "score": 1.0}],
+    }), encoding="utf-8")
+    monkeypatch.setattr(pipeline.stockdb_fixed_daily, "resolve_terminal_account",
+                        lambda _run_dir: (fixed, "fixed_close"))
+    receipt = pipeline.run_pipeline(
+        source_manifest, tmp_path / "pipeline", catalog_path=catalog,
+        initial_cash=100000.0, execution_day="2026-10-14", settlement_day="2026-10-15",
+        fixed_run_dir=tmp_path / "fixed_daily")
+    assert receipt["fixed_strategy"]["strategy_id"] == "fixed_close"
+    assert receipt["execution_admitted"] is False
 
 
 def test_pipeline_projects_explicit_separate_gate_candidate(tmp_path: Path) -> None:

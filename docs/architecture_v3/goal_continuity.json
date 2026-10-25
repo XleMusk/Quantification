@@ -184,7 +184,9 @@
     "next_close_calendar_file": "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json",
     "next_close_time_semantics_module": "D:/Quantification/trading/research/next_close_d0_d1.py",
     "fixed_daily_status_module": "D:/Quantification/trading/research/stockdb_fixed_daily.py",
-    "next_close_registered_fixed_head_test": "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py"
+    "next_close_registered_fixed_head_test": "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
+    "candidate_daily_fixed_head_module": "D:/Quantification/trading/research/candidate_daily_paper_run.py",
+    "candidate_daily_fixed_head_test": "D:/Quantification/trading/research/tests/test_candidate_daily_paper_run.py"
   },
   "project_handoff_file": "D:\\Quantification\\docs\\architecture_v3\\current_handoff_quantification.md",
   "handoff_file_collision_note": "The global capability_lab current_handoff is concurrently used by D:\\muse; resume D:\\Quantification from project_handoff_file."

@@ -258,14 +258,8 @@ def _resolve_fixed_source(*, fixed_terminal_account: str | Path | None,
     if (fixed_terminal_account is None) == (fixed_run_dir is None):
         raise ValueError("Provide exactly one of fixed_terminal_account or fixed_run_dir")
     if fixed_run_dir is not None:
-        current = stockdb_fixed_daily.status(fixed_run_dir)
-        source = current.get("terminal_account")
-        signal = fixed_strategy_id or current.get("signal")
-        if not isinstance(source, str) or not source:
-            raise ValueError("Saved fixed_daily status has no terminal account")
-        if not isinstance(signal, str) or not signal:
-            raise ValueError("Saved fixed_daily status has no strategy signal")
-        return Path(source).resolve(), signal
+        source, signal = stockdb_fixed_daily.resolve_terminal_account(fixed_run_dir)
+        return source, fixed_strategy_id or signal
     if not isinstance(fixed_terminal_account, (str, Path)):
         raise ValueError("fixed_terminal_account is required")
     if not isinstance(fixed_strategy_id, str) or not fixed_strategy_id.strip():

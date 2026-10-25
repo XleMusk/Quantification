@@ -274,6 +274,18 @@ def status(run_dir):
         "signal_publication_basis": registration["signal_publication_basis"], **FLAGS}
 
 
+def resolve_terminal_account(run_dir):
+    """Return the committed fixed target source and its registered signal."""
+    observed = status(run_dir)
+    source = observed.get("terminal_account")
+    signal = observed.get("signal")
+    if not isinstance(source, str) or not source:
+        raise ValueError("Saved fixed_daily status has no terminal account")
+    if not isinstance(signal, str) or not signal:
+        raise ValueError("Saved fixed_daily status has no strategy signal")
+    return Path(source).resolve(), signal
+
+
 def _supplement_lineage(path, digest):
     """Verify existing append receipts and collect their original daily proofs."""
     proofs, nodes, visited = {}, [], set()

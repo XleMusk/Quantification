@@ -19,6 +19,7 @@ from typing import Any, Sequence
 from .candidate_shadow_paper import _target_payload
 from .candidate_daily_input_bundle import GATE_MODES, build_input_bundle
 from .daily_candidate_paper_batch import build_batch
+from . import stockdb_fixed_daily
 from .stockdb_paper_target_package import build_paper_target_package
 
 
@@ -78,6 +79,7 @@ def run_pipeline(source_manifest: str | Path, output_dir: str | Path, *,
                  execution_day: str, settlement_day: str,
                  gate_mode: str = "research_followup",
                  fixed_terminal_account: str | Path | None = None,
+                 fixed_run_dir: str | Path | None = None,
                  fixed_strategy_id: str | None = None) -> dict[str, Any]:
     try:
         initial_cash = float(initial_cash)
@@ -92,7 +94,17 @@ def run_pipeline(source_manifest: str | Path, output_dir: str | Path, *,
         raise ValueError("Pipeline output must remain separate from its source manifest")
     if gate_mode not in GATE_MODES:
         raise ValueError(f"Unsupported candidate gate mode: {gate_mode}")
-    fixed_source = Path(fixed_terminal_account).resolve() if fixed_terminal_account is not None else None
+    if (fixed_terminal_account is None) == (fixed_run_dir is None) and fixed_strategy_id is not None:
+        raise ValueError("fixed_strategy_id requires one fixed source")
+    if fixed_run_dir is not None and fixed_terminal_account is not None:
+        raise ValueError("Provide exactly one of fixed_terminal_account or fixed_run_dir")
+    resolved_signal = None
+    if fixed_run_dir is not None:
+        fixed_source, resolved_signal = stockdb_fixed_daily.resolve_terminal_account(fixed_run_dir)
+    else:
+        fixed_source = Path(fixed_terminal_account).resolve() if fixed_terminal_account is not None else None
+    if resolved_signal is not None:
+        fixed_strategy_id = fixed_strategy_id or resolved_signal
     if fixed_source is not None and not fixed_source.is_file():
         raise ValueError(f"Fixed terminal account does not exist: {fixed_source}")
     if fixed_source is not None and (not isinstance(fixed_strategy_id, str) or not fixed_strategy_id):
@@ -220,6 +232,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--gate-mode", choices=sorted(GATE_MODES), default="research_followup")
     parser.add_argument("--fixed-terminal-account", type=Path,
                         help="optional saved research terminal account for the fixed strategy leg")
+    parser.add_argument("--fixed-run-dir", type=Path,
+                        help="registered stockdb-fixed-daily directory; uses its current head")
     parser.add_argument("--fixed-strategy-id",
                         help="required with --fixed-terminal-account; remains research-only")
     args = parser.parse_args(argv)
@@ -228,6 +242,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         initial_cash=args.initial_cash, execution_day=args.execution_day,
         settlement_day=args.settlement_day, gate_mode=args.gate_mode,
         fixed_terminal_account=args.fixed_terminal_account,
+        fixed_run_dir=args.fixed_run_dir,
         fixed_strategy_id=args.fixed_strategy_id,
     )
     print(json.dumps({"status": receipt["status"], "candidate_count": receipt["candidate_count"],
