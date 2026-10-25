@@ -116,6 +116,8 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
     packages_resolved = [Path(item).resolve() for item in packages]
     stockdb = Path(stockdb_root).resolve()
     catalog = Path(catalog_path).resolve() if catalog_path is not None else None
+    if replay_manifest is not None and catalog is None:
+        raise ValueError("candidate_replay_manifest requires a registered candidate catalog")
     calendar = Path(calendar_path).resolve() if calendar_path is not None else None
     decision = Path(research_decision_receipt).resolve() if research_decision_receipt is not None else None
     supplement = Path(supplemental_raw_view).resolve() if supplemental_raw_view is not None else None
@@ -232,7 +234,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--settlement-day", required=True)
     parser.add_argument("--initial-cash", type=float, required=True)
     parser.add_argument("--stockdb-root", type=Path, required=True)
-    parser.add_argument("--catalog", type=Path)
+    parser.add_argument("--catalog", type=Path,
+                        default=Path("docs/architecture_v3/candidate_strategy_catalog_20261024.json"))
     parser.add_argument("--calendar", type=Path)
     parser.add_argument("--research-decision-receipt", type=Path)
     parser.add_argument("--supplemental-raw-view", type=Path)

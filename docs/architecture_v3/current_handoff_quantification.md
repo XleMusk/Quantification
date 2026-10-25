@@ -283,3 +283,8 @@ D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `de
 ## 2026-10-25 decision-bound replay fan-in
 
 候选输入 bundle 现在保留上游 `decision_id` 到生成的 manifest/receipt，保证 `--research-decision-receipt` 在 replay manifest 直连路径中仍能按研究去留筛选候选，而不是依赖 candidate id 恰好相同。相关候选 bundle、post-close、D0/D1、fixed_daily 与联合纸面聚焦回归为 `34 passed`。
+
+
+## 2026-10-25 replay manifest catalog binding
+
+`post-close-d0-d1 --candidate-replay-manifest` 现在要求注册候选目录，CLI 默认使用 `candidate_strategy_catalog_20261024.json`；未登记的 replay 不会进入 D0/D1。显式 Target manifest 入口保持兼容。聚焦回归为 `35 passed`。

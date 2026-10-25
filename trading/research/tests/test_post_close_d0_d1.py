@@ -110,6 +110,18 @@ def test_post_close_builds_candidate_targets_from_replay_manifest(tmp_path: Path
     assert receipt["candidate_input_bundle"]["manifest"]["candidate_count"] == 1
 
 
+def test_post_close_replay_manifest_requires_registered_catalog(tmp_path: Path) -> None:
+    _, fixed_dir, package, stockdb = _inputs(tmp_path)
+    replay_manifest = tmp_path / "replays.json"
+    replay_manifest.write_text(json.dumps({"candidates": []}), encoding="utf-8")
+    with pytest.raises(ValueError, match="registered candidate catalog"):
+        orchestrator.run_pipeline(
+            None, tmp_path / "run", fixed_run_dir=fixed_dir, packages=[package],
+            candidate_replay_manifest=replay_manifest, close_date=CLOSE,
+            execution_day="2026-10-27", settlement_day="2026-10-28",
+            initial_cash=100000.0, stockdb_root=stockdb)
+
+
 def test_post_close_preserves_d0_failure_receipt(tmp_path: Path, monkeypatch) -> None:
     source, fixed_dir, package, stockdb = _inputs(tmp_path)
     monkeypatch.setattr(orchestrator.stockdb_fixed_daily, "run", lambda *args, **kwargs: {

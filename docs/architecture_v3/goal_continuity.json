@@ -191,7 +191,8 @@
     "post_close_d0_d1_test": "D:/Quantification/trading/research/tests/test_post_close_d0_d1.py",
     "post_close_d0_d1_command": "D:/Quantification/run_committee.py post-close-d0-d1",
     "post_close_replay_manifest_input": "D:/Quantification/trading/research/post_close_d0_d1.py",
-    "candidate_decision_id_manifest_binding": "D:/Quantification/trading/research/candidate_daily_input_bundle.py"
+    "candidate_decision_id_manifest_binding": "D:/Quantification/trading/research/candidate_daily_input_bundle.py",
+    "post_close_candidate_catalog_gate": "D:/Quantification/trading/research/post_close_d0_d1.py"
   },
   "project_handoff_file": "D:\\Quantification\\docs\\architecture_v3\\current_handoff_quantification.md",
   "handoff_file_collision_note": "The global capability_lab current_handoff is concurrently used by D:\\muse; resume D:\\Quantification from project_handoff_file."
