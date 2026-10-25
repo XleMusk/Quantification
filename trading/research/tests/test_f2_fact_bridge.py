@@ -2,6 +2,7 @@ import hashlib
 import json
 
 from trading.research.f2_fact_bridge import BLOCKED, READY, build_fact_bridge
+from trading.research.f2_source_snapshot import build_source_snapshot_receipt
 
 
 def _sha(path):
@@ -25,6 +26,79 @@ def _historical(tmp_path, symbol="000001.SZSE", period="2024Q1"):
         }],
     }), encoding="utf-8")
     return path
+
+
+def _source_snapshot_receipt(tmp_path, *, pit=True):
+    source = tmp_path / "issuer.pdf"
+    source.write_bytes(b"synthetic issuer source")
+    row = {
+        "symbol": "000001.SZSE",
+        "period": "2024Q1",
+        "publication_date": "2024-04-27",
+        "revision_id": "issuer-000001-2024Q1-v1",
+        "source_file": source.name,
+        "source_sha256": _sha(source),
+    }
+    if pit:
+        row.update({
+            "retrieved_at": "2024-04-30T12:00:00+08:00",
+            "asof_at": "2024-04-30T12:00:00+08:00",
+        })
+    snapshot = tmp_path / "source_snapshot.json"
+    snapshot.write_text(json.dumps({
+        "schema": "f2_source_snapshot_v1",
+        "snapshot_id": "bridge-fixture-v1",
+        "captured_at": "2024-04-30T12:01:00+08:00",
+        "rows": [row],
+    }), encoding="utf-8")
+    receipt = tmp_path / "source_snapshot_receipt.json"
+    receipt.write_text(json.dumps(build_source_snapshot_receipt(
+        snapshot, decision_day="2024-05-01")), encoding="utf-8")
+    return receipt
+
+
+def _sidecar(tmp_path):
+    source = tmp_path / "sidecar-report.pdf"
+    source.write_bytes(b"synthetic sidecar source")
+    sidecar = tmp_path / "sidecar.json"
+    sidecar.write_text(json.dumps({
+        "schema": "f01_publication_sidecar_v1",
+        "status": "REAL_SOURCE_MAPPED_PARTIAL_PIT",
+        "execution_admitted": False,
+        "decision_day": "2024-05-01",
+        "rows": [{
+            "symbol": "000001.SZSE", "period": "2024Q1", "stat_date": "2024-03-31",
+            "publication_date": "2024-04-27", "parent_net_profit": "1000000",
+            "total_assets": "50000000", "unit": "yuan", "currency": "CNY",
+            "scope_group": "consolidated_parent",
+            "retrieved_at": "2024-04-30T12:00:00+08:00",
+            "asof_at": "2024-04-30T12:00:00+08:00",
+            "revision_id": "issuer-000001-2024Q1-v1",
+            "contract_evaluation": {
+                "pit_asof_safe": True, "publication_evidence_reasons": [],
+            },
+            "source_file": str(source), "source_sha256": _sha(source),
+        }],
+    }), encoding="utf-8")
+    return sidecar
+
+
+def test_source_snapshot_adapter_receipt_feeds_fact_bridge(tmp_path):
+    result = build_fact_bridge(
+        _sidecar(tmp_path), historical_evidence=_source_snapshot_receipt(tmp_path))
+
+    assert result["status"] == READY
+    assert result["summary"]["fact_rows"] == 2
+    assert result["summary"]["reason_counts"] == {}
+
+
+def test_source_snapshot_without_pit_fields_stays_blocked_in_fact_bridge(tmp_path):
+    result = build_fact_bridge(
+        _sidecar(tmp_path), historical_evidence=_source_snapshot_receipt(tmp_path, pit=False))
+
+    assert result["status"] == BLOCKED
+    assert result["summary"]["fact_rows"] == 0
+    assert result["summary"]["reason_counts"]["historical:historical_retrieval_asof_unproven"] == 1
 
 
 def test_real_sidecar_remains_blocked_with_machine_readable_pit_reasons():

@@ -29,6 +29,7 @@ from .f01_financial_factor import FinancialFact
 from .financial_factor_contracts import TimeWindow, publication_interval
 from .financial_units import normalize_amount
 from .f2_historical_evidence import BLOCKED as HISTORICAL_BLOCKED, READY as HISTORICAL_READY, SCHEMA as HISTORICAL_SCHEMA
+from .f2_source_snapshot import SCHEMA as SOURCE_SNAPSHOT_SCHEMA
 from .publication_event_contract import evaluate_publication_evidence
 
 
@@ -280,9 +281,19 @@ def build_fact_bridge(sidecar: str | Path, *, scoped_receipt: str | Path | None 
     if historical_evidence is not None:
         historical_path = Path(historical_evidence).expanduser().resolve()
         historical = _read_json(historical_path)
-        if not isinstance(historical, Mapping) or historical.get("schema") != HISTORICAL_SCHEMA:
-            raise ValueError(f"expected {HISTORICAL_SCHEMA}")
-        for item in historical.get("rows", []) if isinstance(historical.get("rows"), list) else []:
+        if not isinstance(historical, Mapping):
+            raise ValueError(f"expected {HISTORICAL_SCHEMA} or {SOURCE_SNAPSHOT_SCHEMA}")
+        historical_schema = historical.get("schema")
+        if historical_schema == HISTORICAL_SCHEMA:
+            historical_rows_payload = historical.get("rows", [])
+        elif historical_schema == SOURCE_SNAPSHOT_SCHEMA:
+            gate = historical.get("historical_gate")
+            if not isinstance(gate, Mapping) or gate.get("schema") != HISTORICAL_SCHEMA:
+                raise ValueError(f"{SOURCE_SNAPSHOT_SCHEMA} receipt has no historical gate")
+            historical_rows_payload = gate.get("rows", [])
+        else:
+            raise ValueError(f"expected {HISTORICAL_SCHEMA} or {SOURCE_SNAPSHOT_SCHEMA}")
+        for item in historical_rows_payload if isinstance(historical_rows_payload, list) else []:
             if isinstance(item, Mapping):
                 historical_rows[f"{item.get('symbol')}:{item.get('period')}"] = item
 
