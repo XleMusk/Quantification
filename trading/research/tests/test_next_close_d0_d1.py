@@ -119,6 +119,20 @@ def test_next_close_accepts_same_day_prebuilt_target_payload(tmp_path, monkeypat
     assert json.loads((tmp_path / "run" / "inputs" / "candidate_a" / "target_payload.json").read_text())["strategy_id"] == "candidate_close"
 
 
+def test_next_close_can_emit_budgeted_joint_paper_package(tmp_path, monkeypatch):
+    fixed, sources, catalog = _setup(tmp_path)
+    monkeypatch.setattr(contract, "freeze_snapshot", _fake_capture)
+    receipt = contract.run_contract(
+        sources, tmp_path / "run", fixed_terminal_account=fixed, fixed_strategy_id="fixed_close",
+        stockdb_root=tmp_path / "stockdb", catalog_path=catalog, close_date=DAY,
+        execution_day="2026-10-27", settlement_day="2026-10-28", initial_cash=100000.0,
+        joint_capacity_policy="budgeted", joint_max_target_rows=22)
+    assert receipt["status"] == contract.STATUS
+    assert receipt["joint_paper"]["status"] == "COMPLETED_RESEARCH_ONLY_JOINT_PAPER_PACKAGE"
+    assert receipt["joint_paper"]["paper_order_count"] == 2
+    assert (tmp_path / "run" / "joint_paper" / "joint_paper_receipt.json").is_file()
+
+
 def test_next_close_contract_preserves_missing_rows_and_blocks_batch(tmp_path, monkeypatch):
     fixed, sources, catalog = _setup(tmp_path)
 

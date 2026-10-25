@@ -968,6 +968,24 @@
         "outputs/pipeline_receipts/20261025_joint_payload_paper_integration_v1/joint_paper_receipt.json"
       ],
       "acceptance": "The saved candidate Target+Quote manifest reaches a 22-order budgeted joint paper package with same-day decision/quote validation, aligned target quantities and execution_admitted=false."
+    },
+    {
+      "id": "P10",
+      "domain": "operations",
+      "result": "The next-close D0/D1 contract can optionally emit the fixed-plus-candidate budgeted joint paper package from the same frozen StockDB quote snapshot.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Run the optional joint route on the first real same-day close after the session finishes; keep individual fixed/candidate receipts alongside it.",
+      "prohibition": "The joint projection is paper-only and does not replace the individual candidate receipts or authorize channel actions.",
+      "actual_paths": [
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/joint_portfolio_paper_package.py",
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "run_committee.py next-close-d0-d1"
+      ],
+      "evidence": [
+        "trading/research/tests/test_next_close_d0_d1.py"
+      ],
+      "acceptance": "The fixture D0/D1 run captures one same-day snapshot, projects fixed and candidate legs, and emits a two-order joint paper receipt under the budgeted policy with execution_admitted=false."
     }
   ]
 }

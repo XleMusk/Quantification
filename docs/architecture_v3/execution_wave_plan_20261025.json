@@ -63,9 +63,10 @@
       "acceptance": "One idempotent command after the 2026-10-26 close; fixed and candidates use the same Engine/Ledger, exact cost/benchmark IDs, and execution_admitted=false.",
       "evidence": [
         "trading/research/next_close_d0_d1.py",
-        "trading/research/tests/test_next_close_d0_d1.py"
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "trading/research/joint_portfolio_paper_package.py"
       ],
-      "result": "The D0/D1 contract now accepts a same-day prebuilt target payload from the candidate input manifest, copies it into the frozen run inputs, and still enforces research-only execution and strategy identity. Native 2026-10-26 capture remains pending the actual close."
+      "result": "The D0/D1 contract accepts a same-day prebuilt target payload, copies it into the frozen run inputs, and can optionally emit a budgeted fixed-plus-candidate joint paper package from the same snapshot. Native 2026-10-26 capture remains pending the actual close."
     },
     {
       "id": "W2",

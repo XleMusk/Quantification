@@ -26,6 +26,7 @@ import pandas as pd
 from ..stockdb_source import DEFAULT_STOCKDB, freeze_snapshot
 from .candidate_shadow_paper import _target_payload
 from .daily_candidate_paper_batch import build_batch
+from .joint_portfolio_paper_package import build_joint_paper_from_payloads
 from .stockdb_paper_target_package import build_paper_target_package
 
 
@@ -110,7 +111,8 @@ def _canonical_day(value: str, field: str) -> str:
 def _input_fingerprint(*, close_date: str, execution_day: str, settlement_day: str,
                        stockdb_root: Path, source_manifest: Path, catalog: Path | None,
                        fixed_source: Path, fixed_strategy_id: str, initial_cash: float,
-                       minute_time: str, gate_mode: str) -> tuple[str, dict[str, Any]]:
+                       minute_time: str, gate_mode: str,
+                       joint_capacity_policy: str | None, joint_max_target_rows: int) -> tuple[str, dict[str, Any]]:
     refs = {
         "source_manifest": _ref(source_manifest),
         "fixed_source": {**_ref(fixed_source), "strategy_id": fixed_strategy_id},
@@ -120,7 +122,9 @@ def _input_fingerprint(*, close_date: str, execution_day: str, settlement_day: s
     body = {"close_date": close_date, "execution_day": execution_day,
             "settlement_day": settlement_day, "stockdb_root": str(stockdb_root.resolve()),
             "sources": refs, "initial_cash": float(initial_cash),
-            "minute_time": minute_time, "gate_mode": gate_mode}
+            "minute_time": minute_time, "gate_mode": gate_mode,
+            "joint_capacity_policy": joint_capacity_policy,
+            "joint_max_target_rows": joint_max_target_rows}
     fingerprint = sha256(json.dumps(body, sort_keys=True, ensure_ascii=False,
                                     separators=(",", ":")).encode("utf-8")).hexdigest()
     return fingerprint, body
@@ -198,7 +202,9 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
                  catalog_path: str | Path | None = DEFAULT_CATALOG,
                  close_date: str, execution_day: str, settlement_day: str,
                  initial_cash: float, minute_time: str = "",
-                 gate_mode: str = "research_followup") -> dict[str, Any]:
+                 gate_mode: str = "research_followup",
+                 joint_capacity_policy: str | None = None,
+                 joint_max_target_rows: int = 22) -> dict[str, Any]:
     close_date = _canonical_day(close_date, "close_date")
     execution_day = _canonical_day(execution_day, "execution_day")
     settlement_day = _canonical_day(settlement_day, "settlement_day")
@@ -218,7 +224,8 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
         close_date=close_date, execution_day=execution_day, settlement_day=settlement_day,
         stockdb_root=stockdb_root, source_manifest=source_manifest, catalog=catalog,
         fixed_source=fixed_source, fixed_strategy_id=fixed_strategy_id,
-        initial_cash=initial_cash, minute_time=minute_time, gate_mode=gate_mode)
+        initial_cash=initial_cash, minute_time=minute_time, gate_mode=gate_mode,
+        joint_capacity_policy=joint_capacity_policy, joint_max_target_rows=joint_max_target_rows)
     output = Path(output_dir).resolve()
     receipt_path = output / "contract_receipt.json"
     if receipt_path.is_file():
@@ -293,6 +300,19 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
                             initial_cash=initial_cash, execution_day=execution_day,
                             settlement_day=settlement_day, catalog_path=catalog,
                             manifest_path=manifest_path, gate_mode=gate_mode)
+        joint_result = None
+        if joint_capacity_policy is not None:
+            payloads = {fixed_target["strategy_id"]: (fixed_target, fixed_quote)}
+            for candidate_id, target, _source_ref in candidate_targets:
+                payloads[target["strategy_id"]] = (
+                    target, _quote_for_target(quote, target))
+            joint_result = build_joint_paper_from_payloads(
+                payloads, initial_cash_cny=initial_cash,
+                capacity_policy=joint_capacity_policy,
+                max_target_rows=joint_max_target_rows,
+                execution_day=execution_day, settlement_day=settlement_day,
+                output_dir=output / "joint_paper",
+            )
         cost_ids = [(fixed_package["result"].get("cost_model") or {}).get("id")]
         benchmark_ids = [(fixed_package["result"].get("benchmark_binding") or {}).get("id")]
         cost_ids.extend(item.get("cost_model_id") for item in batch["candidates"])
@@ -308,6 +328,12 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
                              "result": str(output / "fixed" / "result.json")},
                    "candidate_batch": {"receipt": batch["receipt_path"],
                                        "candidate_count": batch["candidate_count"]},
+                   "joint_paper": ({
+                       "status": joint_result["status"],
+                       "receipt": joint_result.get("receipt_path"),
+                       "paper_order_count": (joint_result.get("paper_package") or {}).get("paper_order_count", 0),
+                       "capacity_policy": (joint_result.get("joint") or {}).get("capacity_policy"),
+                   } if joint_result is not None else None),
                    "cost_benchmark_binding": {"cost_model_id": cost_ids[0],
                                                "benchmark_binding_id": benchmark_ids[0]},
                    "artifacts": {"snapshot": str(snapshot_dir),
@@ -343,6 +369,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--initial-cash", type=float, required=True)
     parser.add_argument("--minute-time", default="")
     parser.add_argument("--gate-mode", choices=("research_followup", "separate_gate"), default="research_followup")
+    parser.add_argument("--joint-capacity-policy", choices=("strict", "budgeted"), default=None,
+                        help="optional direct fixed+candidate joint paper projection")
+    parser.add_argument("--joint-max-target-rows", type=int, default=22)
     args = parser.parse_args(argv)
     receipt = run_contract(
         args.source_manifest, args.output_dir,
@@ -350,7 +379,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         stockdb_root=args.stockdb_root, catalog_path=args.catalog,
         close_date=args.close_date, execution_day=args.execution_day,
         settlement_day=args.settlement_day, initial_cash=args.initial_cash,
-        minute_time=args.minute_time, gate_mode=args.gate_mode)
+        minute_time=args.minute_time, gate_mode=args.gate_mode,
+        joint_capacity_policy=args.joint_capacity_policy,
+        joint_max_target_rows=args.joint_max_target_rows)
     print(json.dumps({"status": receipt["status"], "execution_admitted": receipt["execution_admitted"],
                       "reused_existing_run": receipt.get("reused_existing_run", False),
                       "receipt": receipt.get("receipt_path", str(Path(args.output_dir).resolve() / "contract_receipt.json"))},

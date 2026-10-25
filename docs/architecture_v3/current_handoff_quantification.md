@@ -171,3 +171,9 @@ Focused regression covering the new joint paper route, existing P06 contract, F2
 联合目标接线已从历史账户文件扩展到候选输入清单直接提供的同日 `Target+Quote` payload。`build_joint_portfolio_from_payloads` 校验策略身份、决策日、报价日、原始人民币价格和只读标志，再交给相同的板块单位与预算分配；`joint-portfolio-paper-package --payload-manifest` 随后复用同一个纸面 Orders/Fill/Cash/Position 包。
 
 用现有候选输入清单做历史同日重放，预算模式产生 22 个纸面订单，回执为 `outputs/pipeline_receipts/20261025_joint_payload_paper_integration_v1/joint_paper_receipt.json`。联合目标、联合纸面包和 D0/D1 测试为 `12 passed`，模块编译通过；这为下个收盘后的候选 bundle 直接接入 D0/D1 留下了可执行入口，仍未访问券商或同花顺。
+
+## 2026-10-25 next-close joint paper handoff
+
+`next_close_d0_d1.py` 现在可选开启 `joint_capacity_policy=budgeted`，在同一冻结 StockDB close snapshot 下，把 fixed target 和候选 Target+Quote payload 送进联合容量分配，再复用共享纸面 Orders/Fill/Cash/Position；原有 fixed 单腿和 candidate batch 回执继续保留。输入指纹包含联合模式和最大目标数，重复运行仍按同一输入复用。
+
+新增 D0/D1 fixture 验收后，联合目标、联合纸面包和 D0/D1 测试为 `13 passed`，模块编译通过。下一个真实收盘只需在命令中加 `--joint-capacity-policy budgeted`，不访问券商或同花顺。
