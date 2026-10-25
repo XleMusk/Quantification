@@ -63,15 +63,17 @@
       "acceptance": "One idempotent command after the 2026-10-26 close; fixed and candidates use the same Engine/Ledger, exact cost/benchmark IDs, and execution_admitted=false.",
       "evidence": [
         "trading/research/next_close_d0_d1.py",
+        "trading/research/post_close_d0_d1.py",
         "trading/research/stockdb_fixed_daily.py",
         "trading/research/tests/test_next_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
         "trading/research/joint_portfolio_paper_package.py",
         "D:/Quantification/trading/research/next_close_d0_d1.py",
         "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
         "D:/Quantification/outputs/pipeline_receipts/20261025_long_window_strategy_comparison_h60_v1.json",
         "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json"
       ],
-      "result": "The next-close contract binds the optional versioned SSE calendar, separates source_day/decision_cutoff_at/quote_observed_at/artifact_created_at, rejects non-adjacent D0/D1 dates, and can resolve the current fixed target from a committed stockdb-fixed-daily head while preserving unresolved status when no calendar artifact is available."
+      "result": "The post-close coordinator now advances the registered fixed_daily head before invoking the next-close contract; incomplete source packages stop with a waiting receipt, while complete same-day inputs reach D0/D1 using the pinned calendar and committed fixed target."
     },
     {
       "id": "W2",

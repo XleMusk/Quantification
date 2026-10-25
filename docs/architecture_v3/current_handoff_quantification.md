@@ -268,3 +268,8 @@ D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `de
 ## 2026-10-25 fixed_daily source reuse across candidate D1
 
 将 fixed_daily 的当前账户解析提为 `stockdb_fixed_daily.resolve_terminal_account`，候选纸面编排器 `candidate_daily_paper_run` 现在也支持 `--fixed-run-dir`，与 D0/D1 使用同一已提交 head、策略信号和账户文件。显式 `--fixed-terminal-account` 仍兼容；两条入口都不创建第二账户、不写持久 Ledger。新增候选 D1 夹具后，候选编排、D0/D1、fixed_daily 和联合纸面聚焦回归为 `25 passed`，执行资格保持关闭。
+
+
+## 2026-10-25 post-close D0/D1 coordinator
+
+新增 `trading/research/post_close_d0_d1.py` 与 `run_committee.py post-close-d0-d1`。该命令先调用已注册 fixed_daily 的 `run` 推进指定收市日，再调用 `next-close-d0-d1` 消费同日候选 Target 输入；固定源包不完整时只写 `WAITING_FIXED_DAILY_SOURCES`，不会进入目标/订单投影；任一阶段失败都保留失败回执。新增三项编排测试，候选编排、fixed_daily、D0/D1、联合纸面与新编排聚焦回归为 `28 passed`，`execution_admitted=false` 未改变。
