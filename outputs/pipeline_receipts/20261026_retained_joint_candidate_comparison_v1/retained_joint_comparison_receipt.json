@@ -1,0 +1,67 @@
+{
+  "schema": "quantification_retained_joint_candidate_comparison_v1",
+  "status": "COMPLETED_RESEARCH_ONLY_RETAINED_JOINT_COMPARISON",
+  "created_at": "2026-10-26T02:39:46.587924+08:00",
+  "execution_admitted": false,
+  "broker_or_ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "shared_stockdb_snapshot": "D:\\QuantificationData\\trading\\research\\full_market\\stockdb_2024_0101_1013_current_cutoff_v1",
+  "common_window": {
+    "start": "2024-01-31",
+    "end": "2026-10-13",
+    "sessions": 648,
+    "basis": "intersection_of_saved_daily_account_dates"
+  },
+  "retained_sleeves": {
+    "low_vol_half_momentum_20": {
+      "net_return": 0.14780264285714284,
+      "max_drawdown": -0.16580549050519688,
+      "sharpe_zero_rf_252": 0.518747484849727,
+      "orders": 390,
+      "fills": 656,
+      "fees_rmb": 2448.16
+    },
+    "mature_factor_balanced_ridge": {
+      "net_return": 0.36976350000000013,
+      "max_drawdown": -0.18138374409643643,
+      "sharpe_zero_rf_252": 0.7619955842284162,
+      "orders": 281,
+      "fills": 562,
+      "fees_rmb": 4584.21
+    }
+  },
+  "sleeve_return_spread": 0.2219608571428573,
+  "sleeve_average_net_return": 0.2587830714285715,
+  "joint_target": {
+    "source_receipt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261025_continue_candidates_joint_paper_v3\\joint_paper_receipt.json",
+    "decision_day": "2026-10-13",
+    "strategy_ids": [
+      "trend_low_vol_half_momentum_20",
+      "stockdb_factor_monthly_ridge_v1"
+    ],
+    "target_count": 22,
+    "contributor_target_counts": {
+      "trend_low_vol_half_momentum_20": 20,
+      "stockdb_factor_monthly_ridge_v1": 2
+    },
+    "capacity_dropped_count": 3,
+    "actual_gross_weight": 0.5091285714285714,
+    "paper_order_count": 22,
+    "route_available_count": 21,
+    "route_blocked_count": 1,
+    "modeled_fees_rmb": 110.71,
+    "projected_final_equity_rmb": 139889.29
+  },
+  "incremental_decision": {
+    "decision": "CONTINUE_RESEARCH_ONLY",
+    "union_target_evidence": "available",
+    "return_incremental_status": "NOT_COMPARABLE_PROJECTION_ONLY",
+    "reason": "The sleeves are 648-session account results while the joint artifact is a terminal target projection; no return uplift is inferred.",
+    "promotion_allowed": false
+  },
+  "limitations": [
+    "The joint target reuses the saved 2026-10-13 terminal payload and shared paper target/order/fee path.",
+    "The joint projection is not a forward account and cannot be ranked by return against the common-window sleeves.",
+    "PIT completeness, fresh forward validation, broker/THS observation and adoption remain unproven."
+  ]
+}

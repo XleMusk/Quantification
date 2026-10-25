@@ -200,7 +200,11 @@
         "outputs/pipeline_receipts/20261026_common_window_strategy_comparison_v1.json",
         "outputs/research_reports/20261026_common_window_strategy_comparison_v1.md",
         "trading/research/common_window_strategy_comparison.py",
-        "trading/tests/test_common_window_strategy_comparison.py"
+        "trading/tests/test_common_window_strategy_comparison.py",
+        "trading/research/retained_joint_candidate_comparison.py",
+        "trading/research/tests/test_retained_joint_candidate_comparison.py",
+        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_receipt.json",
+        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md"
       ],
       "limits": [
         "same snapshot as fixed controls",
@@ -233,6 +237,13 @@
         "same_engine_ledger": true,
         "pit_safe": false,
         "forward_validated": false,
+        "promotion_allowed": false
+      },
+      "joint_retained_comparison": {
+        "receipt": "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_receipt.json",
+        "decision": "CONTINUE_RESEARCH_ONLY",
+        "return_incremental_status": "NOT_COMPARABLE_PROJECTION_ONLY",
+        "shared_snapshot": true,
         "promotion_allowed": false
       }
     },
@@ -514,7 +525,11 @@
         "outputs/pipeline_receipts/20261026_common_window_strategy_comparison_v1.json",
         "outputs/research_reports/20261026_common_window_strategy_comparison_v1.md",
         "trading/research/common_window_strategy_comparison.py",
-        "trading/tests/test_common_window_strategy_comparison.py"
+        "trading/tests/test_common_window_strategy_comparison.py",
+        "trading/research/retained_joint_candidate_comparison.py",
+        "trading/research/tests/test_retained_joint_candidate_comparison.py",
+        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_receipt.json",
+        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md"
       ],
       "limits": [
         "the dated eligibility view uses only raw-bar observation, is_st and amount >= 10,000,000 CNY; it does not prove PIT publication timing or revision safety",
@@ -552,6 +567,13 @@
         "same_engine_ledger": true,
         "pit_safe": false,
         "forward_validated": false,
+        "promotion_allowed": false
+      },
+      "joint_retained_comparison": {
+        "receipt": "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_receipt.json",
+        "decision": "CONTINUE_RESEARCH_ONLY",
+        "return_incremental_status": "NOT_COMPARABLE_PROJECTION_ONLY",
+        "shared_snapshot": true,
         "promotion_allowed": false
       }
     },
