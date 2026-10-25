@@ -1139,7 +1139,7 @@
       "domain": "workbench",
       "result": "Exception and recovery workspace exposes real task state and feedback.",
       "state": "PARTIAL",
-      "next": "Use the manual recovery boundary for failed/interrupted jobs; automatic retry and external order state remain disabled.",
+      "next": "Keep manual resubmit as the only recovery action for failed/interrupted paper jobs; automatic retry and external order state remain disabled.",
       "prohibition": "UI cancel is not broker cancel.",
       "actual_paths": [
         "webapp/backend/app/main.py",
@@ -1150,7 +1150,11 @@
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_v1.json",
         "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
-        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md"
+        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md",
+        "trading/research/workbench_recovery_evidence.py",
+        "trading/research/tests/test_workbench_recovery_evidence.py",
+        "outputs/pipeline_receipts/20261026_workbench_recovery_evidence_v1.json",
+        "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md"
       ],
       "evidence": [
         "webapp/backend/app/main.py",
@@ -1161,7 +1165,11 @@
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_v1.json",
         "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
-        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md"
+        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md",
+        "trading/research/workbench_recovery_evidence.py",
+        "trading/research/tests/test_workbench_recovery_evidence.py",
+        "outputs/pipeline_receipts/20261026_workbench_recovery_evidence_v1.json",
+        "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -1170,7 +1178,7 @@
       "domain": "workbench",
       "result": "Permission and user-flow tests cover the actual allowed scope.",
       "state": "PARTIAL",
-      "next": "Retain local-write and execution-admission guard tests while expanding only the paper workbench scope.",
+      "next": "Retain paper-only recovery receipts and execution-admission guard tests; do not connect external account state.",
       "prohibition": "No test may grant real login or order authority.",
       "actual_paths": [
         "webapp/backend/app/main.py",
@@ -1181,7 +1189,11 @@
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_v1.json",
         "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
-        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md"
+        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md",
+        "trading/research/workbench_recovery_evidence.py",
+        "trading/research/tests/test_workbench_recovery_evidence.py",
+        "outputs/pipeline_receipts/20261026_workbench_recovery_evidence_v1.json",
+        "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md"
       ],
       "evidence": [
         "webapp/backend/app/main.py",
@@ -1192,7 +1204,11 @@
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_v1.json",
         "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
-        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md"
+        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md",
+        "trading/research/workbench_recovery_evidence.py",
+        "trading/research/tests/test_workbench_recovery_evidence.py",
+        "outputs/pipeline_receipts/20261026_workbench_recovery_evidence_v1.json",
+        "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
