@@ -28,6 +28,7 @@ from typing import Any
 from .f01_financial_factor import FinancialFact
 from .financial_factor_contracts import TimeWindow, publication_interval
 from .financial_units import normalize_amount
+from .publication_event_contract import evaluate_publication_evidence
 
 
 SCHEMA = "f2_sidecar_fact_bridge_v1"
@@ -112,7 +113,8 @@ def _scope_metadata(row: Mapping[str, Any]) -> tuple[str | None, str | None, str
     return scope, currency, unit, reasons
 
 
-def _row_facts(row: Mapping[str, Any], *, source_row: Mapping[str, Any] | None = None) -> dict[str, Any]:
+def _row_facts(row: Mapping[str, Any], *, source_row: Mapping[str, Any] | None = None,
+               decision_day: str | None = None) -> dict[str, Any]:
     symbol = row.get("symbol")
     period = row.get("period")
     reasons: list[str] = []
@@ -126,7 +128,17 @@ def _row_facts(row: Mapping[str, Any], *, source_row: Mapping[str, Any] | None =
         period_start = period_end = None
         reasons.append(f"period_invalid:{exc}")
 
+    # Re-evaluate the publication contract from row-level evidence instead of
+    # trusting a cached boolean.  A caller must prove the decision cutoff,
+    # retrieval/as-of timestamps, revision identity and source hash at the
+    # bridge boundary; a forged ``pit_asof_safe`` flag cannot promote a fact.
     evaluation = row.get("contract_evaluation")
+    if isinstance(decision_day, str) and decision_day.strip():
+        try:
+            evaluation = evaluate_publication_evidence(row, decision_day)
+        except (TypeError, ValueError) as exc:
+            evaluation = {"pit_asof_safe": False,
+                          "publication_evidence_reasons": [f"contract_invalid:{exc}"]}
     if not isinstance(evaluation, Mapping):
         reasons.append("publication_contract_missing")
         evaluation = {}
@@ -252,12 +264,13 @@ def build_fact_bridge(sidecar: str | Path, *, scoped_receipt: str | Path | None 
                 source_rows[f"{item.get('symbol')}:{item.get('period')}"] = item
 
     materialized: list[dict[str, Any]] = []
+    decision_day = payload.get("decision_day")
     for row in rows:
         if not isinstance(row, Mapping):
             materialized.append({"status": BLOCKED, "reason_codes": ["row_not_mapping"], "facts": [], "execution_admitted": False})
             continue
         key = f"{row.get('symbol')}:{row.get('period')}"
-        materialized.append(_row_facts(row, source_row=source_rows.get(key)))
+        materialized.append(_row_facts(row, source_row=source_rows.get(key), decision_day=decision_day))
 
     reason_counts = Counter(reason for item in materialized for reason in item.get("reason_codes", []))
     ready = sum(item.get("status") == READY for item in materialized)

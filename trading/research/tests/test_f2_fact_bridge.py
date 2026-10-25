@@ -37,7 +37,9 @@ def test_pit_safe_explicit_metadata_materializes_two_standard_facts(tmp_path):
         "unit": "thousand_yuan",
         "currency": "CNY",
         "scope_group": "consolidated_parent",
+        "retrieved_at": "2024-04-30T12:00:00+08:00",
         "asof_at": "2024-04-30T12:00:00+08:00",
+        "revision_id": "issuer-000001-2024Q1-v1",
         "contract_evaluation": {
             "pit_asof_safe": True,
             "publication_evidence_reasons": [],
@@ -70,6 +72,32 @@ def test_pit_safe_explicit_metadata_materializes_two_standard_facts(tmp_path):
     assert all(fact["available_at"]["start"] == "2024-04-30T12:00:00+08:00" for fact in facts)
     assert result["factor_computed"] is False
     assert result["account_replay"] is False
+
+
+def test_cached_pit_flag_cannot_bypass_missing_row_level_evidence(tmp_path):
+    source = tmp_path / "report.pdf"
+    source.write_bytes(b"synthetic source")
+    sidecar = tmp_path / "sidecar.json"
+    sidecar.write_text(json.dumps({
+        "schema": "f01_publication_sidecar_v1",
+        "execution_admitted": False,
+        "decision_day": "2024-05-01",
+        "rows": [{
+            "symbol": "000001.SZSE", "period": "2024Q1", "stat_date": "2024-03-31",
+            "publication_date": "2024-04-27", "parent_net_profit": "10", "total_assets": "100",
+            "unit": "yuan", "currency": "CNY", "scope_group": "consolidated_parent",
+            "contract_evaluation": {"pit_asof_safe": True, "publication_evidence_reasons": []},
+            "source_file": str(source), "source_sha256": _sha(source),
+        }],
+    }), encoding="utf-8")
+
+    result = build_fact_bridge(sidecar)
+
+    assert result["status"] == BLOCKED
+    assert result["summary"]["fact_rows"] == 0
+    reasons = result["rows"][0]["reason_codes"]
+    assert "publication:retrieval_asof_invalid:retrieved_at must be an offset-aware ISO timestamp" in reasons
+    assert "publication:revision_id_missing" in reasons
 
 
 def test_unknown_unit_blocks_materialization_without_zero_fill(tmp_path):
