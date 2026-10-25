@@ -2,7 +2,11 @@ import json
 
 import pytest
 
-from trading.research.stockdb_paper_target_package import build_paper_target_package
+from trading.research.stockdb_paper_target_package import (
+    ONLINE_PAPER,
+    TARGET_PREVIEW,
+    build_paper_target_package,
+)
 
 
 def _target():
@@ -34,7 +38,30 @@ def test_build_paper_target_package_is_local_and_unadmitted():
     assert all(row["execution_admitted"] is False for row in package["ths_prefill_payloads"])
     assert package["result"]["execution_admitted"] is False
     assert package["result"]["submitted"] is False
+    assert package["result"]["projection_mode"] == TARGET_PREVIEW
+    assert package["result"]["ledger_scope"] == "ephemeral_projection"
+    assert package["result"]["continuous_account_consumer"] is False
+    assert package["projected_account"]["persistent_account_id"] is None
     assert package["projected_account"]["positions"]["600000.SSE"] == 100
+
+
+def test_target_preview_cannot_be_used_as_continuous_paper_mode():
+    with pytest.raises(ValueError, match="only supports TARGET_PREVIEW"):
+        build_paper_target_package(
+            _target(), _quotes(), 10000,
+            execution_day="2026-10-14", settlement_day="2026-10-15",
+            projection_mode=ONLINE_PAPER,
+        )
+
+
+def test_target_preview_rows_state_projection_fill_basis():
+    package = build_paper_target_package(
+        _target(), _quotes(), 10000,
+        execution_day="2026-10-14", settlement_day="2026-10-15",
+    )
+    assert {row["projection_mode"] for row in package["order_plan"]} == {TARGET_PREVIEW}
+    assert {row["fill_basis"] for row in package["order_plan"]} == {"observed_quote_projection"}
+    assert package["result"]["ledger_persisted"] is False
 
 
 def test_package_rejects_non_raw_quote():

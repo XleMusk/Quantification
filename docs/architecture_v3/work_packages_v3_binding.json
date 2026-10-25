@@ -1243,7 +1243,7 @@
       "domain": "portfolio",
       "result": "An aligned multi-strategy target is projected through the shared paper Orders, BrokerAdapter routing, Fill and Cash/Position path.",
       "state": "VERIFIED_LOCAL",
-      "next": "Rerun only after a changed aligned account snapshot or cost rule; keep daily close and THS evidence separate.",
+      "next": "Rerun only after a changed aligned account snapshot or cost rule; keep this TARGET_PREVIEW projection separate from the persisted D0/D1 account consumer.",
       "prohibition": "Saved terminal marks are research observations and cannot become live or current broker orders.",
       "actual_paths": [
         "trading/research/joint_portfolio_paper_package.py",
@@ -1255,15 +1255,22 @@
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/paper_package/projected_account.json",
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_lot_mismatch_failure_v1.json",
         "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/joint_paper_receipt.json",
-        "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/ths_readonly_reference.json"
+        "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/ths_readonly_reference.json",
+        "trading/research/stockdb_paper_target_package.py",
+        "tests/test_stockdb_paper_target_package.py",
+        "outputs/pipeline_receipts/20261026_target_preview_boundary_v1.json",
+        "outputs/research_reports/20261026_target_preview_boundary_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/joint_paper_receipt.json",
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_lot_mismatch_failure_v1.json",
         "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/joint_paper_receipt.json",
-        "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/ths_readonly_reference.json"
+        "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/ths_readonly_reference.json",
+        "outputs/pipeline_receipts/20261026_target_preview_boundary_v1.json",
+        "outputs/research_reports/20261026_target_preview_boundary_v1.md"
       ],
-      "acceptance": "Two aligned saved research accounts produce one date-aligned joint target and 7 paper orders/fills through the shared package with explicit cost/benchmark binding, projected cash/equity and execution_admitted=false."
+      "acceptance": "Two aligned saved research accounts produce one date-aligned joint target and 7 paper orders/fills through the shared package with explicit cost/benchmark binding, projected cash/equity and execution_admitted=false.",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "P08",
@@ -1313,18 +1320,25 @@
       "domain": "operations",
       "result": "The next-close D0/D1 contract can optionally emit the fixed-plus-candidate budgeted joint paper package from the same frozen StockDB quote snapshot.",
       "state": "VERIFIED_LOCAL",
-      "next": "Run the optional joint route on the first real same-day close after the session finishes; keep individual fixed/candidate receipts alongside it.",
+      "next": "Run the optional joint route on the first real same-day close after the session finishes; keep its TARGET_PREVIEW receipt separate from the continuous D0/D1 rollover.",
       "prohibition": "The joint projection is paper-only and does not replace the individual candidate receipts or authorize channel actions.",
       "actual_paths": [
         "trading/research/next_close_d0_d1.py",
         "trading/research/joint_portfolio_paper_package.py",
         "trading/research/tests/test_next_close_d0_d1.py",
-        "run_committee.py next-close-d0-d1"
+        "run_committee.py next-close-d0-d1",
+        "trading/research/stockdb_paper_target_package.py",
+        "tests/test_stockdb_paper_target_package.py",
+        "outputs/pipeline_receipts/20261026_target_preview_boundary_v1.json",
+        "outputs/research_reports/20261026_target_preview_boundary_v1.md"
       ],
       "evidence": [
-        "trading/research/tests/test_next_close_d0_d1.py"
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_target_preview_boundary_v1.json",
+        "outputs/research_reports/20261026_target_preview_boundary_v1.md"
       ],
-      "acceptance": "The fixture D0/D1 run captures one same-day snapshot, projects fixed and candidate legs, and emits a two-order joint paper receipt under the budgeted policy with execution_admitted=false."
+      "acceptance": "The fixture D0/D1 run captures one same-day snapshot, projects fixed and candidate legs, and emits a two-order joint paper receipt under the budgeted policy with execution_admitted=false.",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "P11",

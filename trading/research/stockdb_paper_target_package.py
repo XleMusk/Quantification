@@ -23,6 +23,12 @@ from ..rules import execution_rule
 
 COST_MODEL_ID = "cn_a_share_standard_ledger_costs_v1"
 BENCHMARK_BINDING_ID = "paper_target_projection_no_market_benchmark_v1"
+# This builder is intentionally a one-shot target projection.  The continuous
+# D0/D1 consumer lives in ``next_close_d0_d1``/``post_close_d0_d1`` and must
+# reuse its persisted account state instead of calling this function.
+TARGET_PREVIEW = "TARGET_PREVIEW"
+FROZEN_PLAN_POSTHOC = "FROZEN_PLAN_POSTHOC"
+ONLINE_PAPER = "ONLINE_PAPER"
 
 
 def _write_csv(path: Path, records: list[dict]) -> None:
@@ -41,6 +47,7 @@ def build_paper_target_package(
     execution_day: str,
     settlement_day: str,
     output_dir: str | Path | None = None,
+    projection_mode: str = TARGET_PREVIEW,
 ) -> dict:
     """Build target, order, projected-account and THS reference payloads.
 
@@ -48,6 +55,11 @@ def build_paper_target_package(
     ``quote_payload`` must be a raw RMB quote observation covering every target
     symbol. No THS client, broker adapter, or persistent ledger is touched.
     """
+    if projection_mode != TARGET_PREVIEW:
+        raise ValueError(
+            "stockdb_paper_target_package only supports TARGET_PREVIEW; "
+            "use the fixed_daily D0/D1 consumer for FROZEN_PLAN_POSTHOC or ONLINE_PAPER"
+        )
     if target_payload.get("execution_admitted") is not False or target_payload.get("research_only") is not True:
         raise ValueError("StockDB target must be explicitly research-only and unadmitted")
     if quote_payload.get("schema") != "ths_raw_quote_observation_v1" or quote_payload.get("price_basis") != "raw_rmb":
@@ -124,6 +136,8 @@ def build_paper_target_package(
             "paper_fill_status": state["orders"][order_id]["status"],
             "route_id": route.route_id, "route_status": route.status, "route_reason": route.reason,
             "execution_admitted": False,
+            "projection_mode": TARGET_PREVIEW,
+            "fill_basis": "observed_quote_projection",
         })
 
     for symbol, quote in prices.items():
@@ -144,6 +158,10 @@ def build_paper_target_package(
     } for row in rows]
     projected_account = {
         "schema": "paper_projected_account_v1", "execution_admitted": False,
+        "projection_mode": TARGET_PREVIEW,
+        "ledger_scope": "ephemeral_projection",
+        "continuity_consumer": None,
+        "persistent_account_id": None,
         "initial_cash_rmb": float(initial_cash), "cash_after_modeled_fills_rmb": round(state["cash"] / 100, 2),
         "fees_rmb": round(fees, 2), "positions": positions, "sellable_next_session": positions,
         "marks_rmb": {symbol: quote["price_rmb"] for symbol, quote in prices.items()},
@@ -152,6 +170,11 @@ def build_paper_target_package(
     }
     result = {
         "schema": "stockdb_paper_target_order_package_v1", "status": "paper_target_order_package_complete",
+        "projection_mode": TARGET_PREVIEW,
+        "ledger_scope": "ephemeral_projection",
+        "continuous_account_consumer": False,
+        "frozen_plan_published": False,
+        "online_paper": False,
         "strategy_id": target_payload.get("strategy_id"), "decision_day": target_payload.get("decision_day"),
         "execution_day": execution_day, "quote_observed_at": quote_payload.get("observed_at"),
         "quote_source": quote_payload.get("source"), "cash_assumption_rmb": float(initial_cash),
@@ -178,6 +201,7 @@ def build_paper_target_package(
             "Unsupported routes stay in the research projection but have no THS form reference fields.",
             "Settlement day is explicitly supplied by the caller; exchange-calendar admission is not inferred.",
             "No THS interaction, order submission, cancellation, transfer or persistent Ledger mutation occurred.",
+            "This package is TARGET_PREVIEW only; it cannot stand in for a published D0 plan or an ONLINE_PAPER rollover.",
         ],
     }
     package = {"target_holdings": target_holdings, "order_plan": order_plan,
@@ -202,11 +226,14 @@ def main(argv=None):
     parser.add_argument("--execution-day", required=True)
     parser.add_argument("--settlement-day", required=True)
     parser.add_argument("--output-dir", type=Path)
+    parser.add_argument("--projection-mode", default=TARGET_PREVIEW,
+                        help="one-shot mode; only TARGET_PREVIEW is accepted")
     args = parser.parse_args(argv)
     package = build_paper_target_package(json.loads(args.target.read_text(encoding="utf-8")),
                                          json.loads(args.quotes.read_text(encoding="utf-8")),
                                          args.initial_cash, execution_day=args.execution_day,
-                                         settlement_day=args.settlement_day, output_dir=args.output_dir)
+                                         settlement_day=args.settlement_day, output_dir=args.output_dir,
+                                         projection_mode=args.projection_mode)
     print(json.dumps(package["result"], ensure_ascii=False, indent=2))
     return 0
 

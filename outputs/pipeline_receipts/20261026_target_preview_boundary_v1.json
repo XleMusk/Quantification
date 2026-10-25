@@ -1,0 +1,31 @@
+{
+  "schema": "stockdb_target_preview_boundary_receipt_v1",
+  "status": "VERIFIED_LOCAL",
+  "date": "2026-10-26",
+  "work_package": "P07/P10 target preview boundary",
+  "projection_mode": "TARGET_PREVIEW",
+  "ledger_scope": "ephemeral_projection",
+  "continuous_account_consumer": false,
+  "frozen_plan_published": false,
+  "online_paper": false,
+  "execution_admitted": false,
+  "persistent_ledger_mutated": false,
+  "acceptance": {
+    "builder_rejects_online_paper_mode": true,
+    "rows_marked_projection_fill_basis": true,
+    "projected_account_has_no_persistent_id": true,
+    "focused_tests": {
+      "command": "D:\\Quantification\\env\\python.exe -m pytest -q tests/test_stockdb_paper_target_package.py trading/research/tests/test_joint_portfolio_paper_package.py",
+      "passed": 12
+    }
+  },
+  "artifacts": [
+    "trading/research/stockdb_paper_target_package.py",
+    "tests/test_stockdb_paper_target_package.py",
+    "trading/research/tests/test_joint_portfolio_paper_package.py"
+  ],
+  "limitations": [
+    "This is a local target projection only; it is not a D0/D1 paper rollover.",
+    "A real closed-session run must use the fixed_daily/post_close consumer and its persisted account state."
+  ]
+}

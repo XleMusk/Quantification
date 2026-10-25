@@ -1,6 +1,6 @@
 {
   "schema": "quantification_goal_completion_audit_v1",
-  "audited_at": "2026-10-26T03:20:00+08:00",
+  "audited_at": "2026-10-26T03:21:00+08:00",
   "execution_admitted": false,
   "overall_status": "INCOMPLETE_ACTIVE",
   "items": [
@@ -84,9 +84,11 @@
         "trading/research/workbench_whole_flow_acceptance.py",
         "trading/research/tests/test_workbench_whole_flow_acceptance.py",
         "outputs/pipeline_receipts/20261026_workbench_whole_flow_acceptance_v1.json",
-        "outputs/research_reports/20261026_workbench_whole_flow_acceptance_v1.md"
+        "outputs/research_reports/20261026_workbench_whole_flow_acceptance_v1.md",
+        "outputs/pipeline_receipts/20261026_target_preview_boundary_v1.json",
+        "outputs/research_reports/20261026_target_preview_boundary_v1.md"
       ],
-      "gap": "Shared Engine/Ledger now has fixed, Alpha158, mature-factor and trend/half-momentum historical shadow target-to-order-to-fill-to-cash/position evidence; BrokerAdapter/THS read-only external evidence, PIT-safe inputs and production-shaped current inputs remain open",
+      "gap": "Target-preview projection is now explicitly bounded; continuous D0/D1 persistence still requires the next real close.",
       "next_acceptance": "keep the local engineering acceptance receipt current; BrokerAdapter/THS and account scope remain closed until external read-only evidence exists"
     },
     {
@@ -156,10 +158,12 @@
         "outputs/paper_plans/20261024_lowvol_current_continuity_receipt.json",
         "outputs/pipeline_receipts/20261024_lowvol_paper_account_provenance.json",
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
-        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md"
+        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md",
+        "outputs/pipeline_receipts/20261026_target_preview_boundary_v1.json",
+        "outputs/research_reports/20261026_target_preview_boundary_v1.md"
       ],
       "gap": "2026-10-26 session not yet available; current cutoff is idempotently verified and seven-stage paper provenance is bound",
-      "next_acceptance": "advance after next closed session; retain the workbench lifecycle UI as local research-only evidence"
+      "next_acceptance": "Advance after the next closed session; consume TARGET_PREVIEW only through the fixed_daily D0/D1 path."
     },
     {
       "id": "target_holdings",
