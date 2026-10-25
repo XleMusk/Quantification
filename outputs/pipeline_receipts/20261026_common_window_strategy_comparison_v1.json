@@ -1,0 +1,128 @@
+{
+  "schema": "quantification_common_window_strategy_comparison_v1",
+  "status": "COMPLETED_RESEARCH_ONLY_COMMON_WINDOW",
+  "created_at": "2026-10-25T18:13:30.703481+00:00",
+  "execution_admitted": false,
+  "strategy_validated": false,
+  "ledger_mutated": false,
+  "broker_or_ths_interacted": false,
+  "common_window": {
+    "start": "2024-01-31",
+    "end": "2026-10-13",
+    "sessions": 648,
+    "basis": "intersection_of_saved_daily_account_dates"
+  },
+  "comparison_contract": {
+    "shared_stockdb_snapshot": true,
+    "shared_engine_ledger_path": true,
+    "initial_cash_rmb": 140000.0,
+    "metrics": [
+      "sessions",
+      "orders",
+      "fills",
+      "net_return",
+      "max_drawdown",
+      "sharpe_zero_rf_252",
+      "fees_rmb",
+      "window_turnover_value"
+    ],
+    "research_decision_rule": "common-window net_return > 0 and Sharpe > 0 means CONTINUE_RESEARCH_ONLY",
+    "no_parameter_retuning": true
+  },
+  "stockdb_snapshot": "D:\\QuantificationData\\trading\\research\\full_market\\stockdb_2024_0101_1013_current_cutoff_v1",
+  "strategies": [
+    {
+      "id": "low_vol_half_momentum_20",
+      "label": "低波/半动量",
+      "candidate_spec_id": "stockdb_low_vol_half_momentum_20",
+      "metrics": {
+        "sessions": 648,
+        "window_start_equity": 140000.0,
+        "window_end_equity": 160692.37,
+        "net_return": 0.14780264285714284,
+        "max_drawdown": -0.16580549050519688,
+        "sharpe_zero_rf_252": 0.518747484849727,
+        "window_turnover_value": 1994906.9300000002,
+        "orders": 390,
+        "fills": 656,
+        "fees_rmb": 2448.16
+      },
+      "source_paths": {
+        "run": "D:\\Quantification\\outputs\\stockdb_rolling_low_volatility\\20261024_121737_d2456fd6\\run.json",
+        "account": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261024_121737_d2456fd6\\low_vol_half_momentum_20\\account.json",
+        "daily": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261024_121737_d2456fd6\\low_vol_half_momentum_20\\daily.csv",
+        "orders": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261024_121737_d2456fd6\\low_vol_half_momentum_20\\orders.csv",
+        "fills": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261024_121737_d2456fd6\\low_vol_half_momentum_20\\fills.csv",
+        "snapshot": "D:\\QuantificationData\\trading\\research\\full_market\\stockdb_2024_0101_1013_current_cutoff_v1",
+        "protocol": "D:\\Quantification\\outputs\\stockdb_rolling_low_volatility\\20261024_121737_d2456fd6\\protocol.json"
+      },
+      "execution_admitted": false,
+      "strategy_validated": false,
+      "ledger_mutated": false,
+      "research_decision": "CONTINUE_RESEARCH_ONLY"
+    },
+    {
+      "id": "mature_factor_balanced_ridge",
+      "label": "成熟因子 Ridge",
+      "candidate_spec_id": "factor_candidate_family_balanced_ridge",
+      "metrics": {
+        "sessions": 648,
+        "window_start_equity": 140000.0,
+        "window_end_equity": 191766.89,
+        "net_return": 0.36976350000000013,
+        "max_drawdown": -0.18138374409643643,
+        "sharpe_zero_rf_252": 0.7619955842284162,
+        "window_turnover_value": 8227019.859999999,
+        "orders": 281,
+        "fills": 562,
+        "fees_rmb": 4584.21
+      },
+      "source_paths": {
+        "result": "D:\\Quantification\\outputs\\stockdb_factor_monthly_ridge_replays\\20261024_monthly_same_lineage_cap500\\result.json",
+        "account": "D:\\Quantification\\outputs\\stockdb_factor_monthly_ridge_replays\\20261024_monthly_same_lineage_cap500\\account.json",
+        "daily": "D:\\Quantification\\outputs\\stockdb_factor_monthly_ridge_replays\\20261024_monthly_same_lineage_cap500\\daily.csv",
+        "orders": "D:\\Quantification\\outputs\\stockdb_factor_monthly_ridge_replays\\20261024_monthly_same_lineage_cap500\\orders.csv",
+        "fills": "D:\\Quantification\\outputs\\stockdb_factor_monthly_ridge_replays\\20261024_monthly_same_lineage_cap500\\fills.csv",
+        "snapshot": "D:\\QuantificationData\\trading\\research\\full_market\\stockdb_2024_0101_1013_current_cutoff_v1"
+      },
+      "execution_admitted": false,
+      "strategy_validated": false,
+      "ledger_mutated": false,
+      "research_decision": "CONTINUE_RESEARCH_ONLY"
+    },
+    {
+      "id": "mature_factor_balanced_ridge_h60",
+      "label": "成熟因子 Ridge（60-session variant）",
+      "candidate_spec_id": "factor_candidate_family_balanced_ridge",
+      "metrics": {
+        "sessions": 648,
+        "window_start_equity": 140000.0,
+        "window_end_equity": 185047.35,
+        "net_return": 0.32176678571428585,
+        "max_drawdown": -0.1910393802223842,
+        "sharpe_zero_rf_252": 0.7400693769873982,
+        "window_turnover_value": 7416800.9399999995,
+        "orders": 279,
+        "fills": 556,
+        "fees_rmb": 4129.55
+      },
+      "source_paths": {
+        "result": "D:\\Quantification\\outputs\\stockdb_factor_monthly_ridge_replays\\20261025_monthly_same_lineage_h60_cap500_v3\\result.json",
+        "account": "D:\\Quantification\\outputs\\stockdb_factor_monthly_ridge_replays\\20261025_monthly_same_lineage_h60_cap500_v3\\account.json",
+        "daily": "D:\\Quantification\\outputs\\stockdb_factor_monthly_ridge_replays\\20261025_monthly_same_lineage_h60_cap500_v3\\daily.csv",
+        "orders": "D:\\Quantification\\outputs\\stockdb_factor_monthly_ridge_replays\\20261025_monthly_same_lineage_h60_cap500_v3\\orders.csv",
+        "fills": "D:\\Quantification\\outputs\\stockdb_factor_monthly_ridge_replays\\20261025_monthly_same_lineage_h60_cap500_v3\\fills.csv",
+        "snapshot": "D:\\QuantificationData\\trading\\research\\full_market\\stockdb_2024_0101_1013_current_cutoff_v1"
+      },
+      "execution_admitted": false,
+      "strategy_validated": false,
+      "ledger_mutated": false,
+      "research_decision": "CONTINUE_RESEARCH_ONLY"
+    }
+  ],
+  "limitations": [
+    "The common window is derived from saved completed account artifacts; no strategy was rerun.",
+    "The overlap comparison does not establish PIT completeness, forward validation, or adoption permission.",
+    "Simulated fills are not broker or Tonghuashun observations; execution_admitted remains false."
+  ]
+}
