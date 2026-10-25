@@ -71,7 +71,9 @@
         "outputs/pipeline_receipts/20261024_candidate_shadow_paper_packages_v3.json",
         "outputs/research_reports/20261024_candidate_shadow_paper_packages_v3.md",
         "outputs/paper_plans/20261024_trend_low_vol_half_momentum_shadow_paper_v1/shadow_receipt.json",
-        "outputs/pipeline_receipts/20261024_trend_low_vol_half_momentum_shadow_failure_v1.json"
+        "outputs/pipeline_receipts/20261024_trend_low_vol_half_momentum_shadow_failure_v1.json",
+        "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
+        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md"
       ],
       "gap": "Shared Engine/Ledger now has fixed, Alpha158, mature-factor and trend/half-momentum historical shadow target-to-order-to-fill-to-cash/position evidence; BrokerAdapter/THS read-only external evidence, PIT-safe inputs and production-shaped current inputs remain open",
       "next_acceptance": "run fixed and candidate strategies through the same pinned Engine/Ledger with production-shaped market inputs, then keep BrokerAdapter/THS closed until external read-only evidence exists"
@@ -130,10 +132,12 @@
         "D:/QuantificationData/trading/fixed_daily/20261024_lowvol_current",
         "outputs/paper_plans/20261024_daily_refresh_status.json",
         "outputs/paper_plans/20261024_lowvol_current_continuity_receipt.json",
-        "outputs/pipeline_receipts/20261024_lowvol_paper_account_provenance.json"
+        "outputs/pipeline_receipts/20261024_lowvol_paper_account_provenance.json",
+        "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
+        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md"
       ],
       "gap": "2026-10-26 session not yet available; current cutoff is idempotently verified and seven-stage paper provenance is bound",
-      "next_acceptance": "advance after next closed session"
+      "next_acceptance": "advance after next closed session; retain the workbench lifecycle UI as local research-only evidence"
     },
     {
       "id": "target_holdings",

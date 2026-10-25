@@ -1,0 +1,51 @@
+{
+  "schema": "quantification_workbench_job_lifecycle_browser_receipt_v1",
+  "captured_at": "2026-10-26T02:28:51.915057+08:00",
+  "base_url": "http://127.0.0.1:5177",
+  "api_url": "http://127.0.0.1:8777",
+  "storage": "D:/Quantification/webapp/storage (isolated local workbench storage)",
+  "task_id": "2fed70da4c6a484499ecc1f39a3145b6",
+  "flow": [
+    {
+      "stage": "submit",
+      "action": "因子研究页面点击提交因子任务",
+      "observed": "task queued with execution_admitted=false"
+    },
+    {
+      "stage": "refresh_queued",
+      "action": "任务页刷新",
+      "observed": "lifecycle stages submitted=completed, compute=queued, result=waiting, download=waiting"
+    },
+    {
+      "stage": "compute",
+      "action": "isolated local factor worker started",
+      "observed": "task completed at 100%; no broker or THS interaction"
+    },
+    {
+      "stage": "refresh_completed",
+      "action": "任务页刷新",
+      "observed": "lifecycle stages submitted=completed, compute=completed, result=available, download=available"
+    },
+    {
+      "stage": "download",
+      "action": "结果页打开",
+      "observed": "REPORT.md, summary.csv, daily_ic.csv, groups.csv, factors.parquet and result.json links rendered"
+    }
+  ],
+  "recovery": {
+    "automatic": false,
+    "execution_admitted": false,
+    "observed_boundary": "manual resubmit only for failed/interrupted jobs"
+  },
+  "browser_console": {
+    "functional_errors": 0,
+    "known_nonfunctional": "favicon.ico 404; ECharts informational deprecation log"
+  },
+  "execution_admitted": false,
+  "live_trading": false,
+  "broker_or_ths_interacted": false,
+  "limitations": [
+    "This is an isolated local workbench UI run over seeded research data, not a market or account observation.",
+    "The result is factor research output and does not create orders, fills or account state."
+  ]
+}

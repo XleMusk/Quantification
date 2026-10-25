@@ -908,7 +908,9 @@
         "webapp/frontend/src/pages/Tasks.tsx",
         "webapp/frontend/src/styles.css",
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_v1.json",
-        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md"
+        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
+        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -918,7 +920,9 @@
         "webapp/frontend/src/pages/Tasks.tsx",
         "webapp/frontend/src/styles.css",
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_v1.json",
-        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md"
+        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
+        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md"
       ]
     },
     {
@@ -926,7 +930,7 @@
       "domain": "workbench",
       "result": "Browser task chain reaches a real result and survives reconnect.",
       "state": "PARTIAL",
-      "next": "Run browser verification of task submission, lifecycle refresh and result downloads against an isolated local worker.",
+      "next": "Keep the lifecycle endpoint and UI stage labels bound to the same job id; refresh remains read-only. Browser submit/refresh/result-link evidence is now recorded.",
       "prohibition": "A screenshot cannot prove backend persistence or broker acceptance.",
       "actual_paths": [
         "webapp/frontend/src/components/PaperAccountContinuity.tsx",
@@ -938,7 +942,9 @@
         "webapp/frontend/src/pages/Tasks.tsx",
         "webapp/frontend/src/styles.css",
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_v1.json",
-        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md"
+        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
+        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -948,7 +954,9 @@
         "webapp/frontend/src/pages/Tasks.tsx",
         "webapp/frontend/src/styles.css",
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_v1.json",
-        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md"
+        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
+        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md"
       ]
     },
     {
@@ -1026,7 +1034,7 @@
       "domain": "workbench",
       "result": "Exception and recovery workspace exposes real task state and feedback.",
       "state": "PARTIAL",
-      "next": "Exercise interrupted/failed job recovery in the isolated worker; keep resubmit manual and external order state unknown.",
+      "next": "Use the manual recovery boundary for failed/interrupted jobs; automatic retry and external order state remain disabled.",
       "prohibition": "UI cancel is not broker cancel.",
       "actual_paths": [
         "webapp/backend/app/main.py",
@@ -1035,7 +1043,9 @@
         "webapp/frontend/src/pages/Tasks.tsx",
         "webapp/frontend/src/styles.css",
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_v1.json",
-        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md"
+        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
+        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md"
       ],
       "evidence": [
         "webapp/backend/app/main.py",
@@ -1044,7 +1054,9 @@
         "webapp/frontend/src/pages/Tasks.tsx",
         "webapp/frontend/src/styles.css",
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_v1.json",
-        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md"
+        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
+        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -1062,7 +1074,9 @@
         "webapp/frontend/src/pages/Tasks.tsx",
         "webapp/frontend/src/styles.css",
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_v1.json",
-        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md"
+        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
+        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md"
       ],
       "evidence": [
         "webapp/backend/app/main.py",
@@ -1071,7 +1085,9 @@
         "webapp/frontend/src/pages/Tasks.tsx",
         "webapp/frontend/src/styles.css",
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_v1.json",
-        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md"
+        "outputs/research_reports/20261026_workbench_job_lifecycle_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
+        "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
