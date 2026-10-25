@@ -942,11 +942,15 @@
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/paper_package/target_holdings.csv",
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/paper_package/order_plan.csv",
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/paper_package/projected_account.json",
-        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_lot_mismatch_failure_v1.json"
+    "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_lot_mismatch_failure_v1.json",
+    "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/joint_paper_receipt.json",
+    "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/ths_readonly_reference.json"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/joint_paper_receipt.json",
-        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_lot_mismatch_failure_v1.json"
+    "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_lot_mismatch_failure_v1.json",
+    "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/joint_paper_receipt.json",
+    "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/ths_readonly_reference.json"
       ],
       "acceptance": "Two aligned saved research accounts produce one date-aligned joint target and 7 paper orders/fills through the shared package with explicit cost/benchmark binding, projected cash/equity and execution_admitted=false."
     },

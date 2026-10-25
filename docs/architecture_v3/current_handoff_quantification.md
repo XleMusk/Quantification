@@ -343,3 +343,8 @@ Replayed the existing dated public-seat Target+Quote payload through `run_commit
 ## 2026-10-26 leader-style shared paper route
 
 Reused the saved leader_turnover_eight_type Target+Quote at terminal day 2026-10-15 through run_committee.py joint-portfolio-paper-package. The shared paper package contains 5 targets, 5 paper orders, 5 available routes, projected equity CNY 999,754.44, and 5 THS read-only reference rows. Receipt: outputs/pipeline_receipts/20261026_leader_eight_type_turnover_joint_paper_v1/joint_paper_receipt.json; read-only reference: ths_readonly_reference.json in the same directory. execution_admitted=false; no broker or THS client was contacted and no persistent Ledger was mutated. The leader candidate separate gate, PIT boundary, and cross-year resource-stop state remain unchanged.
+
+
+## 2026-10-25 value-size-activity shared paper route
+
+Reused the saved stockdb_value_size_activity_2023 account at terminal day 2023-12-29 through run_committee.py joint-portfolio-paper-package. The package contains 20 targets, 20 paper orders, 19 available routes, projected equity CNY 139,898.96, and 20 THS read-only reference rows. Receipt: D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/joint_paper_receipt.json. execution_admitted=false; no broker or THS client was contacted and no persistent Ledger was mutated. The candidate remains UNASSESSED_SEPARATE_GATE and the historical 2023 retrospective limitations remain explicit.
