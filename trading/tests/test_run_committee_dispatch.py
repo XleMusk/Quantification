@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from pathlib import Path
 import subprocess
 import sys
@@ -61,3 +63,39 @@ def test_f2_source_snapshot_help_is_available():
     assert "--snapshot" in result.stdout
     assert "--decision-day" in result.stdout
     assert "--output" in result.stdout
+
+
+def test_f2_source_snapshot_cli_runs_gate_and_writes_receipt(tmp_path):
+    source = tmp_path / "issuer.pdf"
+    source.write_bytes(b"synthetic issuer source")
+    snapshot = tmp_path / "snapshot.json"
+    snapshot.write_text(json.dumps({
+        "schema": "f2_source_snapshot_v1",
+        "snapshot_id": "cli-fixture-v1",
+        "captured_at": "2024-04-30T14:02:00+08:00",
+        "rows": [{
+            "symbol": "000002.SZSE",
+            "period": "2023Q1",
+            "publication_date": "2023-04-29",
+            "retrieved_at": "2024-04-30T14:00:00+08:00",
+            "asof_at": "2024-04-30T14:01:00+08:00",
+            "revision_id": "cli-fixture-rev-1",
+            "source_file": "issuer.pdf",
+            "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+        }],
+    }), encoding="utf-8")
+    output = tmp_path / "receipt.json"
+    result = subprocess.run(
+        [sys.executable, "-Xutf8", str(ROOT / "run_committee.py"),
+         "f2-source-snapshot", "--snapshot", str(snapshot),
+         "--decision-day", "2024-05-01", "--output", str(output)],
+        cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
+    )
+
+    assert result.returncode == 0, result.stderr
+    summary = json.loads(result.stdout)
+    receipt = json.loads(output.read_text(encoding="utf-8"))
+    assert summary["status"] == "HISTORICAL_EVIDENCE_READY"
+    assert receipt["status"] == "HISTORICAL_EVIDENCE_READY"
+    assert receipt["source_checks"] == {"verified": 1, "failed": 0}
+    assert receipt["execution_admitted"] is False
