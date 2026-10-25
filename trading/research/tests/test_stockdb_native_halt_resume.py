@@ -74,6 +74,25 @@ def test_native_effective_status_is_not_inferred_from_volume(tmp_path, status, v
     assert feed.rows.get(HALT)["000582.SZSE"]["tradestatus"] == expected
 
 
+def test_overlapping_raw_view_only_annotates_execution_reference_without_replacing_stockdb_price(tmp_path):
+    source = snapshot(tmp_path / "source", pd.DataFrame([
+        bar(), bar(HALT, "000582", volume=321_000.),
+    ]))
+    raw = tmp_path / "supplement"
+    raw.mkdir()
+    pd.DataFrame([{
+        "date": HALT, "code": "sz.000582", "open": "7.00", "high": "7.00",
+        "low": "7.00", "close": "7.00", "preclose": "7.00", "volume": "",
+        "amount": "", "tradestatus": "0", "adjustflag": "3", "isST": "0",
+    }]).to_parquet(raw / "raw_daily.parquet", index=False)
+    _, _, frame, receipt = rolling._read_snapshot(source, raw, end=HALT)
+    row = frame.loc[frame.symbol.eq("000582.SZSE") & frame.date.eq(HALT)].iloc[0]
+    assert row["close"] == pytest.approx(8.97)
+    assert row["volume"] == pytest.approx(321_000.)
+    assert str(row["tradestatus"]) == "0" and str(row["adjustflag"]) == "3"
+    assert receipt["rows_added"] == 0 and receipt["rows_annotated"] == 1
+
+
 @pytest.mark.parametrize("adjustment", ["1", "2", "", None])
 def test_native_nonraw_or_unknown_adjustment_is_rejected(tmp_path, adjustment):
     with pytest.raises(ValueError, match="adjustflag|raw quote"):

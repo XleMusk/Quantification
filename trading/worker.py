@@ -96,52 +96,64 @@ def step(identifier, feed, current=None):
     return True
 
 
-def main():
+def main(max_cycles=None, sleep_seconds=2):
     store.initialize()
     feed, revision, last_refresh = None, None, None
     historical_feeds = {}
     with lock(), heartbeat_loop():
-        store.refresh_state("idle")
-        while True:
-            active = store.runs(active_only=True)
-            current = market_now()
-            today = current.date().isoformat()
-            if any(run["mode"] == "paper" for run in active) and current.weekday() < 5 and (current.hour, current.minute) >= (16, 15) and last_refresh != today:
-                # End-of-day paper replay, not an intraday quote/execution service.
-                last_refresh = today
-                store.refresh_state("updating")
-                try:
-                    from .prepare_data import prepare_data
-                    prepare_data(end=today)
-                    store.refresh_state("ready")
-                except Exception as error:
-                    traceback.print_exc()
-                    store.refresh_state("failed", str(error))
-            path = settings.DATASET / "manifest.json"
-            if path.exists() and path.stat().st_mtime_ns != revision:
-                try:
-                    if json.loads(path.read_text(encoding="utf-8"))["status"] == "ready":
-                        feed = HistoricalFeed()
+        # A previous process may have died after a durable daily checkpoint.
+        # A fresh database has no lease, so newly-created runs are not falsely
+        # marked interrupted when the first worker starts.
+        previous_lease = store.worker_lease()
+        store.begin_worker_lease()
+        try:
+            if previous_lease:
+                store.recover_interrupted_runs()
+            store.refresh_state("idle")
+            cycles = 0
+            while max_cycles is None or cycles < max_cycles:
+                active = store.runs(active_only=True)
+                current = market_now()
+                today = current.date().isoformat()
+                if any(run["mode"] == "paper" for run in active) and current.weekday() < 5 and (current.hour, current.minute) >= (16, 15) and last_refresh != today:
+                    # End-of-day paper replay, not an intraday quote/execution service.
+                    last_refresh = today
+                    store.refresh_state("updating")
+                    try:
+                        from .prepare_data import prepare_data
+                        prepare_data(end=today)
+                        store.refresh_state("ready")
+                    except Exception as error:
+                        traceback.print_exc()
+                        store.refresh_state("failed", str(error))
+                path = settings.DATASET / "manifest.json"
+                if path.exists() and path.stat().st_mtime_ns != revision:
+                    try:
+                        if json.loads(path.read_text(encoding="utf-8"))["status"] == "ready":
+                            feed = HistoricalFeed()
+                            revision = path.stat().st_mtime_ns
+                    except Exception as error:
+                        print(f"Feed rejected: {error}", flush=True)
                         revision = path.stat().st_mtime_ns
-                except Exception as error:
-                    print(f"Feed rejected: {error}", flush=True)
-                    revision = path.stat().st_mtime_ns
-                    feed = None
-            changed = False
-            for run in active:
-                try:
-                    source = feed
-                    if run["mode"] == "replay":
-                        if run["dataset"] not in historical_feeds:
-                            historical_feeds[run["dataset"]] = HistoricalFeed(run["dataset"])
-                        source = historical_feeds[run["dataset"]]
-                    if source:
-                        changed |= step(run["id"], source, current)
-                except Exception as error:
-                    traceback.print_exc()
-                    with store.connection() as db:
-                        db.execute("UPDATE runs SET status='failed',error=?,updated_at=? WHERE id=?", (str(error), store.now(), run["id"]))
-            time.sleep(.05 if changed else 2)
+                        feed = None
+                changed = False
+                for run in active:
+                    try:
+                        source = feed
+                        if run["mode"] == "replay":
+                            if run["dataset"] not in historical_feeds:
+                                historical_feeds[run["dataset"]] = HistoricalFeed(run["dataset"])
+                            source = historical_feeds[run["dataset"]]
+                        if source:
+                            changed |= step(run["id"], source, current)
+                    except Exception as error:
+                        traceback.print_exc()
+                        with store.connection() as db:
+                            db.execute("UPDATE runs SET status='failed',error=?,updated_at=? WHERE id=?", (str(error), store.now(), run["id"]))
+                cycles += 1
+                time.sleep(.05 if changed else sleep_seconds)
+        finally:
+            store.end_worker_lease()
 
 
 if __name__ == "__main__":

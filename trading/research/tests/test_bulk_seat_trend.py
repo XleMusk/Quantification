@@ -1,5 +1,6 @@
 import json
 import sqlite3
+from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
@@ -144,3 +145,20 @@ def test_seat_checkpoint_continuation_preserves_cash_prefix_and_filter_state(tmp
     assert json.loads((destination / "account.json").read_text())["fills"] == json.loads((tmp_path / "full/account.json").read_text())["fills"]
     with pytest.raises(ValueError, match="same terminal hypotheses"):
         module.resume_check(previous, {**protocol, "portfolio": {**config.to_dict(), "retain_rank": 30}}, manifest, days, config)
+
+
+def test_resume_allows_only_explicit_research_continuity_upgrade(tmp_path):
+    days = ["2025-09-26", "2025-09-29"]
+    config = module.portfolio()
+    case = {"signal": "lag1_TREND_H1", "mode": "TREND_H1", "lag": 1}
+    manifest = {key: "same" for key in ("price_view", "raw_view", "listing_master", "source_codes", "canonical_codes",
+                                         "unsupported_instruments", "event_view", "reference_view")}
+    protocol = {"id": module.ID, "cases": [case], "portfolio": config.to_dict(),
+                "adjusted_continuity_override": False}
+    previous = {"research_family": module.ID, "status": "partial_seat_bulk_diagnostic", "execution_admitted": False,
+                "protocol": protocol, "artifacts": str(tmp_path / "previous"), "stock_manifest": manifest,
+                "results": [{**case, "status": "failed_preparation", "completed_sessions": 1}]}
+    upgraded = {**protocol, "adjusted_continuity_override": True}
+    module.resume_check(previous, upgraded, manifest, days, config)
+    with pytest.raises(ValueError, match="same terminal hypotheses"):
+        module.resume_check({**previous, "protocol": upgraded}, protocol, manifest, days, config)

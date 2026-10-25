@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 
 from trading.research.financials import (
-    FIELDS, PERIODS, align_market, asof_panel, build_panel, collect, create, import_probe, normalize,
+    FIELDS, PERIODS, align_market, asof_panel, audit_collection, build_panel, collect, create, import_probe, normalize,
 )
 from trading.config import StrategyConfig
 from trading.research.factors import research_eligibility
@@ -78,6 +78,8 @@ def test_collector_resume_and_actual_panel_consumer_keep_all_empty_reports(tmp_p
     assert len(calls) == len(PERIODS) == 15
     assert state["complete_symbols"] == 1 and state["report_rows"] == 1
     assert sum(row["status"] == "empty_provider_result" for row in state["tasks"].values()) == 14
+    assert state["tasks"]["600000.SSE:2024Q1"]["fetch_receipt"]["completion_state"] == "COMPLETE"
+    assert state["tasks"]["600000.SSE:2022Q4"]["fetch_receipt"]["completion_state"] == "COMPLETE_EMPTY"
     collect(folder, 1)
     assert len(calls) == 15
     view, result = build_panel(folder)
@@ -124,6 +126,18 @@ def test_collection_stops_on_invalid_source_not_silently_empty(tmp_path, monkeyp
     assert recovered["last_error"] is None and recovered["failed_task"] is None
     assert len(recovered["tasks"]) == len(PERIODS) and recovered["report_rows"] == 0
     assert all(entry["status"] == "empty_provider_result" for entry in recovered["tasks"].values())
+
+
+def test_collection_audit_keeps_partial_source_as_partial(tmp_path):
+    snapshot = tmp_path / "snapshot"
+    snapshot.mkdir()
+    (snapshot / "manifest.json").write_text(json.dumps({"status": "ready", "symbols": ["600000.SSE"], "end": "2026-09-24"}))
+    pd.DataFrame({"symbol": ["600000.SSE"], "code": ["sh.600000"], "ipoDate": ["1999-11-10"], "outDate": [""]}).to_csv(snapshot / "instruments.csv", index=False)
+    folder = create(snapshot, tmp_path / "financials")
+    result = audit_collection(folder)
+    assert result["status"] == "PARTIAL_COLLECTION"
+    assert result["missing_tasks"] == len(PERIODS)
+    assert result["network_accessed"] is False and result["execution_admitted"] is False
 
 
 def test_failed_login_records_terminal_source_state_and_current_counts(tmp_path, monkeypatch):

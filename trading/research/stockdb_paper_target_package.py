@@ -21,6 +21,9 @@ from ..ledger import Ledger, new_state
 from ..routing import route_order
 from ..rules import execution_rule
 
+COST_MODEL_ID = "cn_a_share_standard_ledger_costs_v1"
+BENCHMARK_BINDING_ID = "paper_target_projection_no_market_benchmark_v1"
+
 
 def _write_csv(path: Path, records: list[dict]) -> None:
     fields = list(records[0]) if records else []
@@ -139,6 +142,12 @@ def build_paper_target_package(
         "strategy_id": target_payload.get("strategy_id"), "decision_day": target_payload.get("decision_day"),
         "execution_day": execution_day, "quote_observed_at": quote_payload.get("observed_at"),
         "quote_source": quote_payload.get("source"), "cash_assumption_rmb": float(initial_cash),
+        "cost_model": {"id": COST_MODEL_ID, "config": config.to_dict(),
+                       "price_basis": "raw_rmb_quote_observation",
+                       "fee_basis": "shared_local_ledger_rules"},
+        "benchmark_binding": {"id": BENCHMARK_BINDING_ID,
+                               "status": "NOT_APPLICABLE_TO_PAPER_TARGET_PROJECTION",
+                               "reason": "This package projects one target set; it does not evaluate market-relative returns."},
         "weight_basis": "StockDB signal-frame target weights; maximum 80% gross and 20% single-name cap",
         "lot_rounding": "existing execution_rule and shares_for_target",
         "target_count": len(rows), "paper_order_count": len(rows),

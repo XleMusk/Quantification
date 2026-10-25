@@ -15,8 +15,9 @@ from a_stock_committee.market_data import baostock_session, normalize_symbol
 from ..config import StrategyConfig
 from ..feed import HistoricalFeed
 from ..market_dataset import provider_frame, write_frame, write_json
-from ..settings import DATA_ROOT
+from ..settings import DATA_ROOT, ROOT
 from .factors import research_eligibility
+from .fetch_receipts import make_receipt
 
 
 VALUES = ("roeAvg", "npMargin", "gpMargin", "netProfit", "epsTTM", "MBRevenue", "totalShare", "liqaShare")
@@ -145,6 +146,42 @@ def collection_counts(state, plan):
             "revision_safe_pit_verified": False}
 
 
+def audit_collection(folder):
+    """Audit an existing collection without resuming or contacting its source."""
+    folder = Path(folder).resolve()
+    plan = read_plan(folder)
+    state = json.loads((folder / "receipts.json").read_text(encoding="utf-8"))
+    expected = {f"{row['symbol']}:{year}Q{quarter}"
+                for row in plan["symbols"] for year, quarter in plan["periods"]}
+    observed = set(state.get("tasks", {}))
+    if not observed <= expected:
+        raise ValueError("Financial collection contains a task outside its plan")
+    invalid, status_counts = [], {}
+    for key, receipt in state.get("tasks", {}).items():
+        path = (folder / receipt["file"]).resolve()
+        path.relative_to(folder)
+        actual = sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+        if actual != receipt.get("sha256"):
+            invalid.append(key)
+        status = receipt.get("status", "unknown")
+        status_counts[status] = status_counts.get(status, 0) + 1
+    complete = {row["symbol"] for row in plan["symbols"]
+                if all(f"{row['symbol']}:{year}Q{quarter}" in observed
+                       for year, quarter in plan["periods"])}
+    missing = sorted(expected - observed)
+    return {
+        "schema": "financial_collection_audit_v1",
+        "status": "COMPLETE_COLLECTION" if not missing and not invalid and state.get("status") == "complete_acquisition" else "PARTIAL_COLLECTION",
+        "source_folder": str(folder), "source_status": state.get("status"),
+        "expected_tasks": len(expected), "observed_tasks": len(observed), "missing_tasks": len(missing),
+        "missing_task_examples": missing[:20], "complete_symbols": len(complete),
+        "expected_symbols": len(plan["symbols"]), "invalid_files": invalid,
+        "task_status_counts": status_counts, "network_accessed": False,
+        "execution_admitted": False, "revision_safe_pit_verified": False,
+        "limitations": ["This audit reads existing files only and does not repair or resume collection.",
+                        "Provider retrieval versions are not historical disclosure versions."]}
+
+
 def collect(folder, max_symbols=8):
     if not 1 <= max_symbols <= 64:
         raise ValueError("Invalid bounded financial batch size")
@@ -169,10 +206,23 @@ def collect(folder, max_symbols=8):
                     normalize(frame, info["code"], year, quarter)
                     relative = f"quarterly/{info['symbol']}_{year}Q{quarter}.csv"
                     write_frame(folder / relative, frame)
+                    fetched_at = datetime.now().astimezone().isoformat()
+                    completion = "COMPLETE" if len(frame) else "COMPLETE_EMPTY"
+                    fetch_receipt = make_receipt(
+                        {"code": info["code"], "year": year, "quarter": quarter},
+                        source="baostock", upstream_source="baostock.query_profit_data",
+                        adapter_version="financials.collect_v1",
+                        requested_scope={"code": info["code"], "period": f"{year}Q{quarter}"},
+                        fetched_at=fetched_at, raw_content_reference=None,
+                        schema_fingerprint=sha256("|".join(FIELDS).encode("utf-8")).hexdigest(),
+                        expected_partitions=[f"{year}Q{quarter}"],
+                        completed_partitions=[f"{year}Q{quarter}"],
+                        page_receipts=[{"partition": f"{year}Q{quarter}", "rows": len(frame)}],
+                        completion_state=completion)
                     state["tasks"][key] = {"file": relative, "sha256": sha256((folder / relative).read_bytes()).hexdigest(),
                                           "code": info["code"], "year": year, "quarter": quarter,
                                           "rows": len(frame), "status": "acquired" if len(frame) else "empty_provider_result",
-                                          "retrieved_at": datetime.now().astimezone().isoformat()}
+                                          "retrieved_at": fetched_at, "fetch_receipt": fetch_receipt}
                     state.update(status="collecting", last_error=None, failed_task=None)
                     write_json(folder / "receipts.json", state)
                     print(f"{index}/{min(max_symbols, len(pending))} {key} rows={len(frame)}", flush=True)
@@ -328,7 +378,14 @@ def main(argv=None):
     parser.add_argument("--align-market", action="store_true")
     parser.add_argument("--market-snapshot", type=Path)
     parser.add_argument("--import-probe", type=Path)
+    parser.add_argument("--audit", type=Path, help="Audit an existing collection without network access")
     args = parser.parse_args(argv)
+    if args.audit:
+        result = audit_collection(args.audit)
+        destination = ROOT / "outputs/financials" / args.audit.name / "collection_audit.json"
+        write_json(destination, result)
+        print(json.dumps({"out": str(destination), **{key: result[key] for key in ("status", "missing_tasks", "complete_symbols", "network_accessed")}}, ensure_ascii=False))
+        return 0 if result["status"] == "COMPLETE_COLLECTION" else 2
     if bool(args.snapshot) == bool(args.folder):
         parser.error("Specify exactly one pinned snapshot or existing collection folder")
     if args.folder and args.universe:

@@ -1,0 +1,27 @@
+{
+  "schema": "quantification_f2_account_bridge_reference_v1",
+  "recorded_on": "2026-10-23",
+  "execution_admitted": false,
+  "account_replay": true,
+  "state": "VERIFIED_LOCAL",
+  "scope": "synthetic_f01_signal_to_existing_engine_ledger",
+  "implementation": [
+    "trading/research/f01_signal.py",
+    "trading/research/f01_account_replay.py",
+    "trading/engine.py",
+    "trading/ledger.py",
+    "trading/research/tests/test_f01_signal.py"
+  ],
+  "evidence": [
+    "F01 results are sorted deterministically and rejected statuses never become zero scores",
+    "SignalFrame is created through the shared typed contract",
+    "the Engine signal_frame hook produces pending targets on the decision session",
+    "the next session creates shared Ledger orders and fills with fees and cash changes",
+    "the adapter records Data, Signal, Target Portfolio, Orders, BrokerAdapter, Fill and Cash/Position stages"
+  ],
+  "limitations": [
+    "The feed, facts and quotes are synthetic local fixtures",
+    "No real disclosure source, StockDB snapshot, market return or broker account was used",
+    "This is not a market-evaluated strategy result or live readiness evidence"
+  ]
+}

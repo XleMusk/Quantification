@@ -1,6 +1,11 @@
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
 from types import SimpleNamespace
 
 import pandas as pd
@@ -98,6 +103,33 @@ def test_cancel_confirmation_preserves_partial_holdings(config):
     assert order["status"] == "cancel_pending" and order["reserve"] > 0
     book.confirm_cancel("a", "2024-01-02")
     assert order["status"] == "cancelled" and order["reserve"] == 0 and book.quantity("600000.SSE") == 100
+
+
+def test_partial_fill_during_cancel_pending_preserves_pending_state(config):
+    book = Ledger(new_state(10000), config)
+    order = book.submit("race", "2024-01-02", "600000.SSE", "buy", 300, 1000)
+    book.request_cancel("race", "2024-01-02")
+    book.fill("race-fill-1", "race", 100, 1000, "2024-01-02", "2024-01-03")
+    assert order["status"] == "cancel_pending"
+    assert book.state["events"][-1]["kind"] == "partial"
+    assert book.state["events"][-1]["order_status"] == "cancel_pending"
+    assert order["reserve"] > 0
+    book.confirm_cancel("race", "2024-01-02")
+    assert order["status"] == "cancelled" and order["filled"] == 100
+    events_after_first_confirmation = len(book.state["events"])
+    book.confirm_cancel("race", "2024-01-02")
+    assert order["status"] == "cancelled" and len(book.state["events"]) == events_after_first_confirmation
+
+
+def test_full_fill_during_cancel_pending_wins_over_cancel(config):
+    book = Ledger(new_state(10000), config)
+    order = book.submit("race-full", "2024-01-02", "600000.SSE", "buy", 200, 1000)
+    book.request_cancel("race-full", "2024-01-02")
+    book.fill("race-full-fill", "race-full", 200, 1000, "2024-01-02", "2024-01-03")
+    assert order["status"] == "filled" and order["filled"] == order["qty"]
+    assert book.state["events"][-1]["kind"] == "filled"
+    book.confirm_cancel("race-full", "2024-01-02")
+    assert order["status"] == "filled"
 
 
 def test_order_idempotency_conflict(config):
@@ -323,6 +355,115 @@ def test_run_persistence_resume_and_serialized_sessions(feed, config):
         step(run["id"], feed)
     assert len(store.daily(run["id"])) == 4
     assert (settings.DATA_ROOT / "results" / run["id"] / "orders.csv").exists()
+
+
+def test_worker_startup_records_interruption_receipt_and_explicit_resume(feed, config):
+    run = store.create("recoverable", config.to_dict(), feed.calendar[0], feed.calendar[-1], "recovery-receipt-key")
+    recovered_receipts = store.recover_interrupted_runs("test_worker_restart")
+    assert len(recovered_receipts) == 1
+    assert recovered_receipts[0]["run_id"] == run["id"]
+    recovered = store.get(run["id"])
+    assert recovered["status"] == "interrupted" and recovered["cursor"] == 0
+    receipts = store.recovery_receipts(run["id"])
+    assert len(receipts) == 1 and receipts[0]["reason"] == "test_worker_restart"
+    assert receipts[0]["execution_admitted"] is False and len(receipts[0]["state_sha256"]) == 64
+    assert store.recover_interrupted_runs("duplicate-recovery") == []
+    resumed = store.control(run["id"], "resume")
+    assert resumed["status"] == "running"
+
+
+def test_worker_process_restart_writes_and_reads_interruption_receipt(tmp_path):
+    project = Path(__file__).resolve().parents[2]
+    env = {**os.environ, "QUANT_TRADING_HOME": str(tmp_path / "process-restart")}
+    create_code = (
+        "from trading import store; from trading.config import StrategyConfig; "
+        "store.initialize(); r=store.create('process', StrategyConfig(initial_cash=10000).to_dict(), "
+        "'2024-01-02', '2024-01-03', 'process-key'); print(r['id'])"
+    )
+    created = subprocess.run([sys.executable, "-c", create_code], cwd=project, env=env,
+                             capture_output=True, text=True, check=True)
+    run_id = created.stdout.strip().splitlines()[-1]
+    recover_code = (
+        "from trading import store; import json; store.initialize(); "
+        "print(json.dumps(store.recover_interrupted_runs('process_restart'), ensure_ascii=False))"
+    )
+    recovered = subprocess.run([sys.executable, "-c", recover_code], cwd=project, env=env,
+                               capture_output=True, text=True, check=True)
+    receipts = json.loads(recovered.stdout.strip().splitlines()[-1])
+    assert receipts[0]["run_id"] == run_id and receipts[0]["execution_admitted"] is False
+    resume_code = (
+        "from trading import store; store.initialize(); "
+        f"print(store.control('{run_id}', 'resume')['status'])"
+    )
+    resumed = subprocess.run([sys.executable, "-c", resume_code], cwd=project, env=env,
+                             capture_output=True, text=True, check=True)
+    assert resumed.stdout.strip().splitlines()[-1] == "running"
+
+
+def test_worker_main_process_restart_replays_next_daily_checkpoint(tmp_path):
+    project = Path(__file__).resolve().parents[2]
+    trading_home = tmp_path / "worker-main"
+    dataset = trading_home / "datasets" / "hs300_20231229_pilot"
+    dataset.mkdir(parents=True)
+    days = ["2024-01-02", "2024-01-03", "2024-01-04"]
+    rows = [{"date": day, "symbol": "600000.SSE", "open": 10., "high": 10., "low": 10.,
+             "close": 10., "preclose": 10., "volume": 1000000., "amount": 10000000.,
+             "tradestatus": 1, "isST": 0, "adjustflag": "3"} for day in days]
+    frame = pd.DataFrame(rows)
+    frame.to_parquet(dataset / "raw.parquet", index=False)
+    frame.assign(adjustflag="2").to_parquet(dataset / "adjusted.parquet", index=False)
+    pd.DataFrame({"date": days}).to_csv(dataset / "calendar.csv", index=False)
+    pd.DataFrame([{"symbol": "600000.SSE", "board": "main", "instrument_type": "ordinary_equity",
+                   "ipoDate": "2000-01-01", "outDate": ""}]).to_csv(dataset / "instruments.csv", index=False)
+    pd.DataFrame([], columns=["symbol", "dividRegistDate", "dividOperateDate", "dividPayDate",
+                              "dividCashPsBeforeTax", "dividStocksPs", "dividReserveToStockPs"]).to_csv(
+        dataset / "actions.csv", index=False)
+    (dataset / "manifest.json").write_text(json.dumps({
+        "status": "ready", "start": days[0], "end": days[-1], "selection_date": "2023-12-29",
+        "scope": "synthetic_worker_restart_fixture", "execution_admitted": False,
+        "instrument_profiles": {},
+    }), encoding="utf-8")
+    env = {**os.environ, "QUANT_TRADING_HOME": str(trading_home)}
+    create_code = (
+        "from trading import store; store.initialize(); "
+        "r=store.create('worker-main', {'initial_cash':10000,'holdings':1,'retain_rank':1,'gross_limit':0.8,'single_limit':0.8,'slippage_bps':0}, "
+        f"'{days[0]}', '{days[-1]}', 'worker-main-key', dataset=r'{dataset}'); print(r['id'])"
+    )
+    created = subprocess.run([sys.executable, "-c", create_code], cwd=project, env=env,
+                             capture_output=True, text=True, check=True)
+    run_id = created.stdout.strip().splitlines()[-1]
+    crash_code = (
+        "from trading import store, worker; from trading.feed import HistoricalFeed; import os; "
+        "store.initialize(); r=store.get(" + repr(run_id) + "); store.begin_worker_lease(); "
+        "worker.step(r['id'], HistoricalFeed()); os._exit(23)"
+    )
+    crashed = subprocess.run([sys.executable, "-c", crash_code], cwd=project, env=env,
+                             capture_output=True, text=True)
+    assert crashed.returncode == 23
+    recover_code = "from trading.worker import main; main(max_cycles=1, sleep_seconds=0)"
+    subprocess.run([sys.executable, "-c", recover_code], cwd=project, env=env,
+                   capture_output=True, text=True, check=True)
+    inspect_code = (
+        "from trading import store; import json; store.initialize(); r=store.get(" + repr(run_id) + "); "
+        "print(json.dumps({'status':r['status'],'cursor':r['cursor'],'daily':len(store.daily(r['id'])),'receipts':len(store.recovery_receipts(r['id']))}))"
+    )
+    inspected = subprocess.run([sys.executable, "-c", inspect_code], cwd=project, env=env,
+                               capture_output=True, text=True, check=True)
+    checkpoint = json.loads(inspected.stdout.strip().splitlines()[-1])
+    assert checkpoint == {"status": "interrupted", "cursor": 1, "daily": 1, "receipts": 1}
+    resume_code = (
+        "from trading import store; store.initialize(); store.control(" + repr(run_id) + ", 'resume'); "
+        "from trading.worker import main; main(max_cycles=1, sleep_seconds=0)"
+    )
+    subprocess.run([sys.executable, "-c", resume_code], cwd=project, env=env,
+                   capture_output=True, text=True, check=True)
+    final_code = (
+        "from trading import store; store.initialize(); r=store.get(" + repr(run_id) + "); "
+        "print(json.dumps({'status':r['status'],'cursor':r['cursor'],'daily':len(store.daily(r['id']))}))"
+    )
+    final = subprocess.run([sys.executable, "-c", "import json; " + final_code], cwd=project, env=env,
+                           capture_output=True, text=True, check=True)
+    assert json.loads(final.stdout.strip().splitlines()[-1]) == {"status": "running", "cursor": 2, "daily": 2}
 
 
 def test_failed_session_rolls_back(feed, config, monkeypatch):

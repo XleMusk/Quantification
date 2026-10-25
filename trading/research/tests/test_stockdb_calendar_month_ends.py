@@ -52,10 +52,11 @@ def evidence(tmp_path, monkeypatch):
     return dict(calendar=calendar, frame=frame, old=old, new=new, root=tmp_path)
 
 
-def execute(e, source=None, *, end=MONTH_END, resume=None, calendar=None, enabled=True, start=START):
+def execute(e, source=None, *, end=MONTH_END, resume=None, calendar=None, enabled=True,
+            start=START, supplemental_raw_view=None):
     return m.run(e["old"] if source is None else source, start, end, variants=(VARIANT,),
         calendars=[e["calendar"] if calendar is None else calendar], resume_run=resume,
-        calendar_driven_month_ends=enabled)
+        calendar_driven_month_ends=enabled, supplemental_raw_view=supplemental_raw_view)
 
 
 def saved_account(record):
@@ -102,10 +103,18 @@ def test_pinned_holiday_skips_weekend_and_closure_without_fabricating_quotes(evi
 
 def test_next_month_append_keeps_old_month_end_target_and_account_prefix(evidence, monkeypatch):
     e = evidence
-    out, original = execute(e)
+    native = e["frame"].rename(columns={"pre_close": "preclose", "is_st": "isST"})[
+        ["date", "code", "open", "high", "low", "close", "preclose",
+         "volume", "amount", "isST"]].copy()
+    native["tradestatus"] = "1"
+    native["adjustflag"] = "3"
+    supplemental = e["root"] / "synthetic_native_raw_daily.parquet"
+    native.to_parquet(supplemental, index=False)
+    out, original = execute(e, supplemental_raw_view=supplemental)
     account_bytes = saved_account(original).read_bytes()
     monkeypatch.setattr(experiment, "new_state", lambda *args: pytest.fail("No account reset on continuation"))
-    _, continued = execute(e, e["new"], end=NEXT, resume=out / "run.json")
+    _, continued = execute(e, e["new"], end=NEXT, resume=out / "run.json",
+                           supplemental_raw_view=supplemental)
     result = continued["results"][0]
     assert result["reused_sessions"] == 2 and result["newly_completed_sessions"] == 1
     assert continued["month_end_schedule"] == original["month_end_schedule"]

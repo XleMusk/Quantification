@@ -92,20 +92,31 @@ def _read_snapshot(snapshot, supplemental_raw_view=None, end=None):
         for column in ("open", "high", "low", "close", "volume", "amount", "preclose"):
             raw[column] = pd.to_numeric(raw[column], errors="coerce")
         raw["is_st"] = raw["isST"].astype(str).str.strip().eq("1")
-        keys = pd.MultiIndex.from_frame(frame[["code", "date"]])
-        missing = ~pd.MultiIndex.from_frame(raw[["code", "date"]]).isin(keys)
-        raw = raw.loc[missing, ["code", "date", "open", "high", "low", "close", "volume", "amount",
-                                "is_st", "preclose", "tradestatus", "adjustflag"]]
-        raw = raw.rename(columns={"preclose": "pre_close"})
         if raw.duplicated(["code", "date"]).any():
             raise ValueError("Supplemental raw view contains duplicate code/date rows")
         if not raw.tradestatus.astype("string").isin(["0", "1"]).all():
             raise ValueError("Supplemental native quotes require explicit tradestatus 0 or 1")
         if not raw.adjustflag.astype("string").eq("3").fillna(False).all():
             raise ValueError("Supplemental native quotes require raw quote adjustflag 3")
-        frame = pd.concat([frame, raw], ignore_index=True)
-        supplemental = {"path": str(raw_path), "rows_added": int(len(raw)),
-                        "basis": "local raw_daily.parquet; fills missing StockDB code/date keys only"}
+        keys = pd.MultiIndex.from_frame(frame[["code", "date"]])
+        raw_keys = pd.MultiIndex.from_frame(raw[["code", "date"]])
+        missing = ~raw_keys.isin(keys)
+        # Keep StockDB's OHLCV and universe rows authoritative.  The raw view
+        # is allowed to annotate overlapping keys with an explicit execution
+        # status/adjustment so held positions can be checked against an
+        # independent native stream on the next session.  Only missing keys
+        # contribute price rows.
+        overlap = raw.loc[~missing, ["code", "date", "tradestatus", "adjustflag"]]
+        if not overlap.empty:
+            frame = frame.merge(overlap, on=["code", "date"], how="left",
+                                sort=False, validate="one_to_one")
+        additions = raw.loc[missing, ["code", "date", "open", "high", "low", "close", "volume", "amount",
+                                      "is_st", "preclose", "tradestatus", "adjustflag"]]
+        additions = additions.rename(columns={"preclose": "pre_close"})
+        frame = pd.concat([frame, additions], ignore_index=True)
+        supplemental = {"path": str(raw_path), "rows_added": int(len(additions)),
+                        "rows_annotated": int(len(overlap)),
+                        "basis": "local raw_daily.parquet; fills missing StockDB keys and annotates overlapping execution status/adjustment only"}
 
     symbols = {}
     keep = []

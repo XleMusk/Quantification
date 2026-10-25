@@ -6,7 +6,6 @@ publication, runs an Engine, or rebuilds an opening product.
 from __future__ import annotations
 
 from copy import deepcopy
-import importlib
 import json
 from pathlib import Path
 
@@ -26,7 +25,35 @@ ROUTES = {
 
 
 def _recipe(route):
-    return importlib.import_module("." + ROUTES[route], __package__)
+    """Return a reviewed route module without an unresolved dynamic import.
+
+    Route recovery only adopts saved child evidence.  Keep the imports lazy so
+    selecting one route does not initialize the other route modules, while
+    spelling every permitted module in source makes the dependency boundary
+    auditable and rejects unknown route names before any work is attempted.
+    """
+    if route == "dated_catchup":
+        from . import leader_dated_catchup_daily
+        return leader_dated_catchup_daily
+    if route == "residual_exit":
+        from . import leader_eight_type_residual_daily
+        return leader_eight_type_residual_daily
+    if route == "known_identity":
+        from . import leader_known_identity_daily
+        return leader_known_identity_daily
+    if route == "entry_comparison":
+        from . import leader_entry_comparison_daily
+        return leader_entry_comparison_daily
+    if route == "public_seat":
+        from . import seat_daily
+        return seat_daily
+    if route == "leader_type_router":
+        from . import leader_type_router_daily
+        return leader_type_router_daily
+    if route == "router_repair":
+        from . import leader_router_repair_daily
+        return leader_router_repair_daily
+    raise KeyError(route)
 
 
 def _exclusive_json(path, value):

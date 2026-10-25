@@ -11,8 +11,41 @@ import sys
 CORE = frozenset({"trading", "trading.config", "trading.contracts", "trading.engine",
                   "trading.ledger", "trading.rules", "trading.symbols", "trading.broker",
                   "trading.simulated_broker"})
+# These modules are deliberately kept outside ``CORE`` because they are
+# policy/adapter helpers rather than the canonical contract, engine, or
+# ledger owners.  They are nevertheless reviewed internal dependencies of the
+# core.  Keeping this list explicit prevents a broad ``trading.*`` exception
+# from making provider or UI imports invisible to the boundary audit.
+CORE_SUPPORT = frozenset({
+    "trading.expected_returns",
+    "trading.portfolio_allocation",
+    "trading.portfolio_allocation_comparison",
+    "trading.entry_risk",
+    "trading.rights_issue",
+    "trading.event_frontier",
+    "trading.target_exit_lifecycle",
+    "trading.published_close_router",
+    "trading.published_close_session",
+    "trading.security_conversion",
+    "trading.security_conversion_engine",
+    "trading.research.research_corporate_action_view",
+})
+# ``engine.py`` imports the research package only to resolve the reviewed
+# ``order_capacity_replay`` child module.  Keep this package bridge separate
+# from the support-module allowlist so a future non-empty research package does
+# not become a blanket core dependency.
+CORE_PACKAGE_BRIDGES = frozenset({"trading.research"})
 EXECUTION = ("trading.ths", "trading.xtquant_adapter", "bridge", "webapp")
 GUI = ("pywinauto", "win32gui", "win32api", "win32con", "uiautomation", "pyautogui")
+# These are the only research modules allowed to compose read-only workbench
+# views with the guarded THS observation/template layer.  They do not grant
+# broker I/O or execution authority; the composite modules must still retain
+# their own read-only checks and ``execution_admitted=false`` outputs.
+WORKBENCH_COMPOSITE = frozenset({
+    "trading.research.capability_gap_scan",
+    "trading.research.opening_cycle",
+    "trading.research.trader_desk_snapshot",
+})
 
 
 def _matches(module, prefixes):
@@ -55,9 +88,11 @@ def audit(root=None):
         dependencies[module] = sorted({target for target, _ in imports})
         for target, line in imports:
             rule = None
-            if module in CORE and target not in CORE and target.split(".")[0] not in sys.stdlib_module_names:
+            if (module in CORE and target not in CORE | CORE_SUPPORT | CORE_PACKAGE_BRIDGES
+                    and target.split(".")[0] not in sys.stdlib_module_names):
                 rule = "core_requires_stdlib_or_core"
-            if module.startswith("trading.research.") and _matches(target, EXECUTION + GUI):
+            if (module.startswith("trading.research.") and module not in WORKBENCH_COMPOSITE
+                    and _matches(target, EXECUTION + GUI)):
                 rule = "research_cannot_import_execution_or_gui"
             if module == "trading.signals" and _matches(target, ("a_stock_committee",) + EXECUTION + GUI):
                 rule = "signals_cannot_load_committee_provider_or_execution"

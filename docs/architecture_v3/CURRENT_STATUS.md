@@ -1,0 +1,379 @@
+# 当前实施状态（2026-10-24）
+
+这页是《A股量化系统_GitHub核查与完整落地规划_20261022.docx》的当前绑定页。它记录当前本地检出和可复核证据，不把源文档在 2026-10-22 的 GitHub、PR、测试条数或同花顺观察直接当作今天的事实。
+
+后续工作按 [`implementation_route_20261024.md`](implementation_route_20261024.md) 和 [`implementation_route_20261024.json`](implementation_route_20261024.json) 执行：先数据刷新和纸面日切，再同样本候选比较，最后推进 F01 与 THS 只读证据；防御性工程只有在直接验收失败时才增加。
+
+机器可读绑定见 [`github_plan_20261022_binding.json`](github_plan_20261022_binding.json)。V3 与 F2 的原有追溯分别见 [`TRACEABILITY.md`](TRACEABILITY.md) 和 [`F2_TRACEABILITY.md`](F2_TRACEABILITY.md)。
+
+## 当前边界
+
+- 当前检出：`main`，HEAD `a9f9f3dff12401c885ac8d272af402d1d2db7fb0`。
+- 当前执行闸门：`execution_admitted=false`。
+- 禁止动作：真实券商或同花顺登录、真实预填提交、报单、撤单、转账、付费数据购买。
+- 现有未提交改动保留在工作区；本轮没有合并、重置、推送或创建 PR。
+- 源文档中的历史分支和 PR 状态标记为 `HISTORICAL_UNVERIFIED_CURRENT`；外部 PR 状态没有被本页伪造为已知。
+
+## 已验证的本轮增量
+
+### P0 撤单竞态
+
+`trading/ledger.py` 在迟到成交时保留原有 `cancel_pending`，仍发出独立的 `partial` 成交事件并带上 `order_status`；剩余部分确认撤单后才进入 `cancelled`。全部成交优先进入 `filled`，不会被后续撤单覆盖。
+
+新增的竞态例位于 [`trading/tests/test_trading.py`](../../trading/tests/test_trading.py)：
+
+- `test_partial_fill_during_cancel_pending_preserves_pending_state`
+- `test_full_fill_during_cancel_pending_wins_over_cancel`
+
+本轮局部回归：`56 passed`（`trading/tests/test_trading.py`、`trading/tests/test_broker.py`）。
+
+成交事件的 `kind` 继续表示实际成交事件（`partial` 或 `filled`）；撤单竞态下的订单状态通过同一事件的 `order_status` 字段保留为 `cancel_pending`。读取旧事件的消费者应按订单状态字段判断待撤，而不是把成交事件当作撤单确认。
+
+### 架构边界
+
+核心仍然只通过明确的 `CORE_SUPPORT`、`CORE_PACKAGE_BRIDGES` 和 `WORKBENCH_COMPOSITE` 允许研究包桥接；没有把整个 `trading.research` 加入白名单。本轮架构审计结果为 `531 modules / 0 violations`，下一次代码改动后须重新运行同一审计。
+
+新增 [`tools/run_offline_ci.ps1`](../../tools/run_offline_ci.ps1) 作为本地候选检查入口。本轮回执为 [`offline_ci_receipt.json`](../../outputs/offline_ci/20261024_090611_645_c85210ed/offline_ci_receipt.json)：核心、F2、本地 Web API、Alpha158 split、隔离联合场景和组合目标比较聚焦测试 `210 passed`，架构审计 `536 modules / 0 violations`；回执记录的是命令范围内的自声明无网络、无账户访问，并带有工作树状态和 diff 指纹。该数字只属于本地选择的测试集合，不是源文档所述 PR 作者测试条数。
+
+F01 研究账户包新增 `restore_bundle()`，只复制源 manifest 列出的文件，并在空目录中重新校验哈希；对应测试已通过。
+
+新增 [`recovery_bundle.py`](../../trading/research/recovery_bundle.py) 将配置、策略、输入快照、纸面账本和日结游标作为带版本和哈希的同一恢复包，并使用 SQLite Backup API 生成一致备份；空目录恢复、数据库完整性和篡改拒绝测试已通过。`trading.store.recover_interrupted_runs()` 现在会在 worker 启动恢复时保留游标和状态哈希、只记录一次中断回执，并要求显式 paper/replay resume；隔离子进程和 bounded `worker.main` 已验证日切检查点不重复、恢复后从下一游标继续。该证据使用合成输入，未升级为真实市场或账户恢复。
+
+新增 [`production_receipt_audit.py`](../../trading/research/production_receipt_audit.py) 和 `run_committee.py production-receipt-audit`，对已有 Alpha158 日更实际回执及路线兼容回执做只读结构审计。当前审计结果为 `VERIFIED_LOCAL_READONLY_RECEIPT`，明确标注 `HISTORICAL_RECEIPT`、无账户推进、无客户端交互；它复核已有证据，不重跑 producer/split。
+
+新增 [`f01_worker.py`](../../trading/research/f01_worker.py) 作为 F01 的持久任务边界：每个 `run_key:attempt` 只写一份请求和终态回执，完成态必须通过共享账户包 manifest 校验；只有请求没有终态时返回 `UNKNOWN_INTERRUPTED_NO_RETRY`，不自动重跑。它可选绑定现有 [`trading/store.py`](../../trading/store.py) 的 research_attempts 表，已验证请求和终态会进入同一 SQLite store；worker 仍使用合成输入测试，尚未接入真实财报任务 API。
+
+新增 [`f01_task_binding.py`](../../trading/research/f01_task_binding.py) 作为财报任务入口闸门：`BLOCKED_DATA` 的输入不会创建任务；只有 `READY_FOR_F01_FACT_ASSEMBLY` 且 `execution_admitted=false` 才能向现有 store 注册 paper 任务。当前 readiness 仍被单季度输入和 PIT 未验证阻断，因此本地只验证了闸门与 store 绑定语义，没有伪造真实财报事件。
+
+已用当前财务 readiness 回执做了一次只读绑定：[`f01_task_binding_blocked_20261024.json`](../../outputs/financials/f01_task_binding_blocked_20261024.json) 返回 `BLOCKED_DATA`，原因是 `single_quarter_inputs_missing` 和 `pit_not_verified`，`task_created=false`。
+
+离线候选检查现在纳入现有 Alpha158 split runner 的 3 个生命周期/幂等/只读状态例；它与撤单竞态、证券转换和共享账本检查使用同一 checkout，但双分支整合候选仍未宣称完成。
+
+新增 [`integration_harness.py`](../../trading/research/integration_harness.py)、[`tools/run_integration_candidate.ps1`](../../tools/run_integration_candidate.ps1) 和 [`test_combined_integration_candidate.py`](../../trading/tests/test_combined_integration_candidate.py)，并生成 [`integration_candidate_receipt.json`](../../outputs/integration_candidate/20261024_085859_088_5f2cfcf8/integration_candidate_receipt.json)：隔离合成副本场景联合验证撤单竞态、证券转换和 Alpha158 split，共 `21 passed`，架构审计 `535/0`。回执标为 `ISOLATED_COMBINED_SCENARIO_PASS`；由于 Alpha158 持久 checkpoint 有不可变 journal/hash 链，这仍不是共享生产状态或双分支已整合证明。
+
+新增 [`portfolio_allocation_comparison.py`](../../trading/portfolio_allocation_comparison.py)，把经济目标权重与当前持仓、可卖数量、冻结委托、费用和现金拆开比较；它只生成可执行目标解释，不创建订单或修改账本。
+
+`trading.engine` 现在在生成 FULL_TARGET 后记录 `economic_executable_target_comparison`，并把比较结果保存在账户状态中；后续订单仍由原有 target → order → broker adapter → fill 路径生成。组合比较与账本分离的回归例已通过。
+
+### 数据与 F2
+
+- 66 页、6 组已有原始缓存的只读回审为 complete；没有网络访问，也不等于 PIT 已就绪。
+- 财务采集仍为 partial：`53,520 / 80,505` tasks，缺失 `26,985`，完整证券 `3,568 / 5,367`。
+- F01 readiness 仍为 `BLOCKED_DATA`，阻塞项是单季度输入和 PIT 未验证。
+- F01、fetch receipt、时间区间、标签成熟度和共享账户回放均继续沿用同一 Data → Signal → Target Portfolio → Orders → BrokerAdapter → Fill → Cash/Position 路径。
+
+### 直接回放产物
+
+复核并固定了一份已有 StockDB 低波动回放的完整账户产物：[`20261024_stockdb_lowvol_historical_pipeline.json`](../../outputs/pipeline_receipts/20261024_stockdb_lowvol_historical_pipeline.json)。对应历史回放覆盖 `2026-08-31..2026-10-16`、29 个交易日，生成 20 个目标、25 个订单和 44 个成交，净收益 `1.19%`、最大回撤 `-2.03%`，并保留现金、持仓、订单、成交和事件流水。该结果是研究诊断，不是未触碰样本或策略验证。
+
+按当前代码重新冷启动同一窗口时，回放在 `2026-09-01` 因 `000001.SZSE` 的 `Mixed StockDB execution reference basis` 被阻断；这是现行“持仓跨日必须有独立 native raw 执行引用”的数据门槛，已保留失败产物 [`20261024_091210_21577e92`](../../outputs/stockdb_rolling_low_volatility/20261024_091210_21577e92)。没有用成交量推断替代原始状态，也没有把这次失败写成策略结果。
+
+随后已把补充 raw_daily 的显式 `tradestatus/adjustflag` 标注到 StockDB 重叠行，同时保留 StockDB 的 OHLCV；专项及组合回归测试 `26 passed`。本地组合视图将 `stock_daily_bulk_extended` 的 `2026-10-13` 前原始状态与 `lowvol_supplements` 的 `2026-10-14..16` 状态拼接后，固定覆盖窗口 `2026-08-31..2026-10-16` 已成功完成共享 Engine/Ledger 回放：29 个交易日、三个候选全部完成。低波动 `+1.19% / -2.03%`、动量 `-2.93% / -3.41%`、低波动半动量 `-6.70% / -7.21%`。随后从本机 StockDB 捕获 `2026-10-19..23` 日线，合并视图推进低波动账户到 `2026-10-23`：34 个交易日、25 个订单、44 个成交，净收益 `-0.26%`、最大回撤 `-2.03%`，目标仍为 20 个等权标的。证据汇总见 [`20261024_stockdb_replay_paper_progress.json`](../../outputs/pipeline_receipts/20261024_stockdb_replay_paper_progress.json)。
+
+最新低波动结果已注册为外部 `QUANT_TRADING_HOME` 下的持续纸面研究账户 [`D:\QuantificationData\trading\fixed_daily\20261024_lowvol_current`](../../../../QuantificationData/trading/fixed_daily/20261024_lowvol_current)，当前种子日为 `2026-10-23`。近期 StockDB 捕获覆盖率为 `24,881 / 26,005`，缺失 `124` 行；当前 20 个持仓标的在这些日期均无缺失。纸面计划回执 [`20261024_lowvol_current_paper_plan_receipt.json`](../../outputs/paper_plans/20261024_lowvol_current_paper_plan_receipt.json) 保持研究-only；没有生成当前日 THS 提交内容。
+
+已基于该纸面目标生成 [THS 只读参考请求](../../outputs/paper_plans/20261024_lowvol_current_ths_readonly_request/receipt.json)：20 个标的、权重合计 `0.8`，并绑定当前纸面持仓 reconciliation（19 个标的、20,400 股）；价格、目标股数和差额仍留空，等待未来同日行情/账户只读捕获；没有伪造 action gate，也没有接触 THS 客户端。
+
+本周复盘回执见 [`20261024_weekly_review_receipt.json`](../../outputs/weekly_reviews/20261024_weekly_review_receipt.json)：最大阻碍是 THS 外部只读捕获、近期 124 行缺失数据和 F01 单季度/PIT 输入；下一闭市日优先刷新 StockDB 与纸面账户。
+
+今日（2026-10-24）为周末闭市，日切状态见 [`20261024_daily_refresh_status.json`](../../outputs/paper_plans/20261024_daily_refresh_status.json)；未重复回放，下一预期交易日为 2026-10-26。
+
+S2 已执行一次 Alpha158/LightGBM 有界候选面板回放：25 个行情日、18 个候选标的、15 个订单、30 个成交，净收益 `-1.98%`；与低波动控制的共同窗口指标和边界见 [`20261024_alpha158_route_receipt.json`](../../outputs/pipeline_receipts/20261024_alpha158_route_receipt.json)。随后在同一冻结 StockDB OHLCV 快照、同一 `2026-08-31..2026-10-09` 窗口、同一 14 万初始资金和成本配置下重跑两者，24 个共同会话的 Alpha158/LightGBM 为 `-2.00%`、低波动为 `+0.57%`；完整回执见 [`20261024_same_snapshot_strategy_comparison_receipt.json`](../../outputs/pipeline_receipts/20261024_same_snapshot_strategy_comparison_receipt.json)。低波动额外使用本地 `raw_daily` 的显式状态标注，Alpha158 未消费该状态流，因此这仍是可复现诊断，不是全市场、PIT 或策略采用结论。
+
+当前候选库索引见 [`candidate_strategy_catalog_20261024.md`](candidate_strategy_catalog_20261024.md)：固定低波动、趋势/动量、Alpha158/LightGBM、成熟因子、短线连板、公开席位和龙头风格均保留各自证据路径与不可比边界，没有把不同快照的收益混排。
+
+短线候选本轮额外保留了 [`20261024_panel_contract_blocked.json`](../../outputs/shortline_native_selection_replay/20261024_panel_contract_blocked.json)：冻结评分文件 25,150 行全部为 `paper_candidate_only=false`，因此 `shortline-panel-replay` 在输入契约阶段正确阻断；没有手改标志或伪造候选。
+新增 `trading/research/shortline_score_gate_audit.py` 与 `shortline-score-gate-audit` 命令，对该冻结评分文件做可重复的只读审计：按 `event_id+model_kind+generation_id` 识别跨模型同事件，不把合法的 LR/LightGBM 同事件行误判为重复；25,150 行中 `paper_candidate_only=true` 为 0，唯一阻断为 `paper_candidate_only.none_true`。回执 [`20261024_shortline_score_gate_audit_v1.json`](../../outputs/pipeline_receipts/20261024_shortline_score_gate_audit_v1.json) 与报告 [`20261024_shortline_score_gate_audit_v1.md`](../../outputs/research_reports/20261024_shortline_score_gate_audit_v1.md) 保留该事实，未修改输入或生成候选目标。
+
+已有的短线保存选择回放已补充机器审计 [`20261024_shortline_saved_replay_audit_v1.json`](../../outputs/pipeline_receipts/20261024_shortline_saved_replay_audit_v1.json)：LR 运行到 103/187 个会话、LightGBM 运行到 95/187 个会话，分别生成 223/190 个研究委托和 446/380 个成交回调；两套完整窗口收益均为 `null`，停止原因和未解决参考条款保留。该回执证明共享 Engine/Ledger 的研究路径和停止点，不把截断结果写成策略收益。
+
+已有公开席位/趋势批量回放已接入 `trading/research/public_seat_replay_audit.py` 与 `public-seat-replay-audit` 命令：9 个假设中 5 个完成 241 会话诊断，合计 1,205 个完成会话、3,836 个研究委托和 5,926 个成交回调；4 个假设在 145 或 167 个会话处因未解析的持仓/执行价参考停止，完整窗口收益保持未知。机器回执 [`20261024_public_seat_replay_audit_v1.json`](../../outputs/pipeline_receipts/20261024_public_seat_replay_audit_v1.json) 与报告 [`20261024_public_seat_replay_audit_v1.md`](../../outputs/research_reports/20261024_public_seat_replay_audit_v1.md) 已绑定候选目录；公告时点、PIT 成员资格、因果席位 Alpha 均保持未验证，`execution_admitted=false`。
+
+证据文件：
+
+- [`receipt_audit.json`](../../outputs/bulk_annual_financials/20261004_220836_94303b12/receipt_audit.json)
+- [`collection_audit.json`](../../outputs/financials/20260930_162448_8be1e603/collection_audit.json)
+- [`f01_readiness_20261024.json`](../../outputs/financials/f01_readiness_20261024.json)
+
+## 阶段结论
+
+|阶段|状态|当前结论|
+|---|---|---|
+|S0 可整合基线|`PARTIAL`|撤单竞态已有本地修复，离线候选检查已可重复；历史双分支整合候选尚未形成。|
+|S1 可信输入与日程|`PARTIAL`|receipt 和时点合同已在代码中；真实财务输入仍有覆盖与 PIT 阻塞。|
+|S2 研究净增量|`PARTIAL`|Alpha158/LightGBM 已完成有界候选面板共享账本诊断；与低波动控制的共同窗口比较已留证，但尚无采用结论。|
+|S3 组合与风险|`PARTIAL`|共享账本和基础整手分配可复用；成本、冻结、暴露和多策略归因仍需实证。|
+|S4 内部稳定版本|`PARTIAL`|目标连续性和失败交接已落地；浏览器写链与空目录恢复演练未完成。|
+|S5 可选真实渠道|`BLOCKED_POLICY`|继续保持只读 THS 观察与纸面计划，执行闸门不开放。|
+
+## 下一步顺序
+
+1. 在下一个闭市日继续捕获本机 StockDB，并保留 124 个缺失行及覆盖变化；不把缺失当作零。
+2. 在同一完整窗口上继续重跑成熟因子/Ridge 与 Alpha158/LightGBM 候选，保留相同成本、样本和失败原因。
+3. 将通过回放的目标持仓接入每日纸面计划和只读 THS 证据链；不提交、不登录、不下单。
+4. 数据满足 F01 的单季度与 PIT 闸门后，选择一个新信息机制进行同条件净增量比较。
+5. 隔离整合和空目录恢复只保留为支撑性验收，不再扩展与直接回放无关的防御性协议。
+
+每一步都要更新机器可读绑定并保留失败、缺失和阻塞证据。策略历史结果、纸面运行与真实渠道资格仍然分开。
+
+完整目标审计见 [`completion_audit_20261024.md`](completion_audit_20261024.md)：当前状态为 `INCOMPLETE_ACTIVE`，研究/纸面路径已有证据，THS 外部回读、F01 PIT、候选完整验证和真实执行前置仍未完成。
+
+F01季度缓存审计（2026-10-24）：本地季度缓存已有 52,034 条 acquired 记录，但提供字段只有 netProfit、MBRevenue 等，缺少 F01 所需 parent_net_profit 与 total_assets；netProfit 不被静默改名，PIT 和单位仍未验证。详见 outputs/financials/f01_quarterly_cache_audit_20261024.json。
+
+D1 纸面账户连续性核对：2026-10-23 为当前最后日，34 个日线记录无重复日期，25 个订单、44 个成交，generation=0、无 pending target；详见 outputs/paper_plans/20261024_lowvol_current_continuity_receipt.json。
+D1 测试回归修复：合成日切夹具补上显式 native raw 状态后，calendar month-end 与 fixed-daily 聚焦测试 16/16 通过；生产执行引用门槛未放宽。
+THS 只读参考包已绑定 D1 连续性回执哈希；仍为 blank readback、无客户端交互、不可预填，等待同一 reference generation 的授权只读捕获。
+### U03 provenance slice (2026-10-24)
+
+`trading/research/pipeline_provenance.py` 已对同快照 Alpha158/LightGBM 纸面回放做只读来源链校验：Data、Signal、Target Portfolio、Orders、BrokerAdapter、Fill、Cash/Position 七阶段均有实际事件，源快照 manifest、score batch、score parquet、回放结果和比较回执均记录哈希。结果见 `outputs/pipeline_receipts/20261024_u03_pipeline_provenance_receipt.json`，状态 `VERIFIED_LOCAL_PIPELINE_PROVENANCE`；`execution_admitted=false`、未访问券商/同花顺。该证据是本地回放可追溯性，不等同于 PIT 或真实渠道验证。
+
+### O03 paper-account recovery rehearsal (2026-10-24)
+
+针对当前 `fixed_daily` 纸面研究账户完成了一次真实输入复制恢复演练：[`paper_account_recovery.py`](../../trading/research/paper_account_recovery.py) 读取并校验 `head.json`/`registration.json` 指向的 run、protocol、account、replay、daily、snapshot manifest 与交易日历，使用带 manifest 哈希的恢复包复制核心状态，恢复到空目录后核对现金和持仓。回执见 [`20261024_lowvol_current/receipt.json`](../../outputs/recovery_rehearsals/20261024_lowvol_current/receipt.json)：`RECOVERY_REHEARSAL_VERIFIED`、generation `0`、最后日 `2026-10-23`、现金 `4,341,307` cents、20 个持仓标的，`cash_equal=true`、`positions_equal=true`、`execution_admitted=false`。244 MB 的原始补充输入未复制，仅按原 SHA-256 记录为外部依赖，避免把一个大文件的外部引用伪装成完整迁移。核心模块与恢复包测试 `5 passed`；O03 已在 `work_packages_v3_binding.json` 绑定为 `VERIFIED_LOCAL`，下一次纸面日切后复演并保留 worker 中断回执。
+
+### Paper target reconciliation slice (2026-10-24)
+
+已将当前纸面账户与固定的 2026-10-23 StockDB raw close 接入同一整手分配器，生成目标股数、当前股数、可卖数量、差额和估算买入费用。代码入口为 `trading/research/paper_target_reconciliation.py`，命令为 `python run_committee.py paper-target-reconciliation`；实际回执为 `outputs/paper_plans/20261024_lowvol_current_paper_reconciliation/receipt.json`，明细为 `target_reconciliation.csv`。
+
+本次结果：20/20 目标收盘行齐全，20/20 账户价格标记与 raw close 一致，账户权益 `139,638.07` 元，估算股票预算 `111,710.45` 元；回执明确 `execution_admitted=false`、`orders_created=false`、`ledger_mutated=false`。目标股数差额已计算，但仍是纸面 close reference，不能替代同花顺当前报价、账户余额或回读，也没有覆盖原有 THS 空白只读 reconciliation。
+
+验收：`test_paper_target_reconciliation.py` 与组合比较测试 `4 passed`；`architecture-check` 为 `539 modules / 0 violations`。
+
+### Paper-plan reconciliation audit slice (2026-10-24)
+
+已将纸面计划、StockDB close reconciliation、fixed_daily 连续性回执和 THS 空白只读模板绑定为同一只读审计。入口为 `trading/research/paper_plan_reconciliation_audit.py`，命令为 `python run_committee.py paper-plan-reconciliation-audit`；回执为 `outputs/paper_plans/20261024_lowvol_current_plan_reconciliation_audit/receipt.json`。
+
+回执状态 `VERIFIED_LOCAL_PAPER_PLAN_RECONCILIATION`，20 个目标、来源日期 `2026-10-23`、`issues=[]`；计划权重、目标数量、账户连续性日期、源文件哈希和 THS 空白字段均一致。仍明确 `execution_admitted=false`、`orders_created=false`、`readback_observed=false`，历史 StockDB close 不被当作当前 THS 行情。
+
+验收：审计聚焦测试 `2 passed`；架构审计更新为 `540 modules / 0 violations`。
+
+### Candidate catalog audit slice (2026-10-24)
+
+新增 `trading/research/candidate_catalog_audit.py` 与 `candidate-catalog-audit` 命令，对固定低波动、趋势/动量、Alpha158/LightGBM、成熟因子、短线连板、公开席位和龙头风格共 9 个候选逐项校验：证据路径真实存在、指标为有限数值、可比组和限制字段齐全。回执 `outputs/pipeline_receipts/20261024_candidate_catalog_audit.json` 状态为 `VERIFIED_CANDIDATE_CATALOG_READONLY`，缺失证据为 0；该审计不混排不同快照收益，也不把诊断结果升级为策略采用。
+
+本轮曾因把布尔完成标记放入数值 `metrics` 触发一次 catalog audit schema 阻断，失败回执 [`20261024_candidate_catalog_audit_metric_schema_failure_v1.json`](../../outputs/pipeline_receipts/20261024_candidate_catalog_audit_metric_schema_failure_v1.json) 已保留；移出该字段后复跑通过，没有重跑任何策略。
+
+验收：`test_candidate_catalog_audit.py` 2 passed；架构审计 `541 modules / 0 violations`。
+
+### Fixed strategy paper provenance slice (2026-10-24)
+
+新增 `trading/research/paper_account_provenance.py` 与 `paper-account-provenance` 命令，对当前固定低波动纸面账户的 StockDB 数据、信号/目标、订单、模拟 BrokerAdapter 事件、成交和现金/持仓进行七阶段核对。回执 `outputs/pipeline_receipts/20261024_lowvol_paper_account_provenance.json` 为 `VERIFIED_LOCAL_PAPER_ACCOUNT_PROVENANCE`：2026-10-23 截止，34 个日线、148 个事件、25 个订单、44 个成交，七阶段全部为 `true`，`issues=[]`。
+
+该回执只证明本地研究纸面链路可追溯，模拟 BrokerAdapter 不是实盘成交；PIT、THS 和真实账户资格仍保持独立边界。
+
+### Calendar-bound trend comparison slice (2026-10-24)
+
+在与低波动控制相同的 StockDB 快照、补充 raw 状态、交易日历、成本和共享 Engine/Ledger 上，完成了 `momentum_12_1_20` 与 `low_vol_half_momentum_20` 的 678 个会话回放（2024-01-02 至 2026-10-23）。动量策略净收益 `-13.51%`、最大回撤 `-18.38%`、146 个订单和 201 个成交；低波动半动量净收益 `+10.08%`、最大回撤 `-16.58%`、391 个订单和 656 个成交。双变体回执为 [`20261024_121737_d2456fd6/run.json`](../../outputs/stockdb_rolling_low_volatility/20261024_121737_d2456fd6/run.json)，共享流水线回放审计为 [`20261024_stockdb_momentum_long_replay_audit.json`](../../outputs/pipeline_receipts/20261024_stockdb_momentum_long_replay_audit.json)，状态 `VERIFIED_STOCKDB_HISTORICAL_REPLAY`、问题为空。
+
+这两个结果已写入候选库 JSON，并保留原 29 日诊断字段；长窗字段标注为同一 `stockdb_2024_0102_1023_calendar_bound` 可比组。它们仍是研究诊断，不是 PIT、未触碰留出或策略采用结论，`execution_admitted=false` 保持不变。
+
+### Full-market Alpha158 current-snapshot run (2026-10-24, research complete)
+
+只读全市场 Alpha158 诊断已完成，输入为冻结 StockDB 快照 `stockdb_2024_0101_1013_current_cutoff_v1`，实际数据截止 `2026-10-13`，覆盖 5,322 个 SH/SZ 标的、669 个交易日和 158 个因子；源数据 3,435,917 行，其中 15 行因非正成交量/质量条件被明确排除，没有零填。运行协议 [`protocol.json`](../../outputs/full_market_alpha158/20261024_122933_6bf1a087_sh_sz_all_equities/protocol.json) 为 `completed_research_only`，并已固化完成回执 [`20261024_full_market_alpha158_completion_receipt.json`](../../outputs/pipeline_receipts/20261024_full_market_alpha158_completion_receipt.json)。该过程只写研究诊断目录，不访问账户、券商或同花顺；15 个 candidate proxy replay 仍是 provider pct_chg 研究代理，不是共享 Engine/Ledger 账户收益，也不是新鲜留出或策略采用证据。
+
+### F01 scoped financial field evidence (2026-10-24)
+
+对现有发行人报告原文做了一个受限字段核对，回执为 [`f01_scoped_field_coverage_20261024.json`](../../outputs/financials/f01_scoped_field_coverage_20261024.json)，状态 `PARTIAL_FIELD_EVIDENCE_PIT_PENDING`。`600004.SSE`、`688008.SSE`、`000002.SZSE` 的 2024Q1 均有 PDF/TXT、`pubDate`/`statDate`、人民币元单位、合并口径；`parent_net_profit`、`total_assets` 和联合覆盖均为 3/3，并保存行号、摘录和 PDF/TXT SHA-256。
+
+该回执只证明三家公司一个季度的字段事实，不等于全市场季度覆盖。修订安全 PIT、公告事件入库/延迟合同和 provider 字段映射仍未通过，因此没有修改原 readiness、没有创建 F01 任务、没有进入因子或账户回放，`execution_admitted=false` 保持不变。
+
+
+
+
+F01 scoped receipt 已固化为 `trading/research/f01_scoped_field_coverage.py` 只读验证入口，并接入 `run_committee.py f01-scoped-field-coverage --json`。它校验 PDF/TXT 哈希、证据行号/摘录、字段覆盖和 `pit_verified=false` 边界；聚焦测试 `2 passed`，架构审计 `544 modules / 0 violations`。该入口不会写回 receipt、联网或改变 readiness。
+
+F01 来源 sidecar 已进一步固化为 [`f01_publication_sidecar.py`](../../trading/research/f01_publication_sidecar.py)，入口为 `run_committee.py f01-publication-sidecar`，回执为 [`20261024_f01_publication_sidecar_v1.json`](../../outputs/pipeline_receipts/20261024_f01_publication_sidecar_v1.json)。三条 2024Q1 发行人报告的 PDF/TXT 哈希和披露日均核验通过；财务运行回执中的 `retrieved_at` 被明确保留为 provider CSV 证据，没有冒充发行人 PDF 的检索时间。发行人 `retrieved_at`、`asof_at`、`revision_id` 均为 0/3，`pit_safe_rows=0`；provider `netProfit` 与 PDF parent-attributable profit 三条均存在口径或数值差异。该 sidecar 只做来源映射和阻断分类，不创建 F01 任务、不生成因子、不进入账户回放，`execution_admitted=false` 保持不变。
+
+F01 coverage funnel 现在可通过 `--publication-sidecar` 消费上述来源合同，形成 [`f01_coverage_funnel_with_sidecar_20261024.json`](../../outputs/financials/f01_coverage_funnel_with_sidecar_20261024.json)。本次三行市场连接已显式达到 `3/3`，但 issuer retrieval/as-of/revision 仍为 `0/3`，因此 `f01_eligible_rows=0`、状态仍为 `BLOCKED_DATA`；相关测试 `6 passed`。补齐真实时点证据后，同一闸门可直接重新评估，不需要另写一套放行逻辑。
+
+Action publication sidecar 在 v3/v4 中保留了事件聚合前每个来源 artifact 的时点字段和合同结果，并接入显式 `source_retrieved_at` 回退。最新回执 [`20261024_action_publication_sidecar_v4.json`](../../outputs/pipeline_receipts/20261024_action_publication_sidecar_v4.json) 映射 138 个事件、177 个来源 artifact、138 个哈希核验文件；事件级 `retrieved_at_rows=31`、artifact 级为 62，`asof_at_rows=0`、PIT-safe 仍为 0。该增量只恢复真实保存的来源证据，不推断 as-of，不应用公司行动。
+
+v4 已实际接入成熟因子 180,948 行 action context：同日行动行 `961`、PIT-safe 行 `0`、公司行动应用行 `0`，集成回执为 [`20261024_stockdb_dated_action_context_sidecar_v4_receipt.json`](../../outputs/pipeline_receipts/20261024_stockdb_dated_action_context_sidecar_v4_receipt.json)。
+
+v5 在不改变 PIT 判定的前提下，把 action root 的 `input_input_receipts.json` 按标的和年份映射到 138 个事件、177 个来源 artifact 的 `upstream_input_*` 字段：事件级 upstream receipt/retrieved/hash 为 `138/138/138`，artifact receipt 为 `177`；issuer `retrieved_at/asof_at/revision_id` 仍为 `31/0/32`，`pit_safe_rows=0`。这些字段只证明上游年度输入 lineage，不被写入 issuer retrieval，也不触发公司行动应用。回执 [`20261024_action_publication_sidecar_v5.json`](../../outputs/pipeline_receipts/20261024_action_publication_sidecar_v5.json) 与报告 [`20261024_action_publication_sidecar_v5.md`](../../outputs/research_reports/20261024_action_publication_sidecar_v5.md) 已保留。
+
+
+
+
+
+## 2026-10-24 full native Alpha158 and 190-factor increment
+
+The canonical StockDB Qlib provider is complete for the frozen snapshot through 2026-10-13: 5,322 symbols and 669 sessions. The native Alpha158 build completed 158/158 features on the full calendar grid (3,560,418 rows; 37,254 binary files; finite feature cells 544,111,899; qlib 0.9.7). The one-date frozen 190-factor panel then completed for all 5,322 symbols with 988,487 finite cells.
+
+The dated Alpha158/LightGBM score batch covers 184 dates and 979,248 rows. The cap500 shared Engine/Ledger replay covers 2026-01-05..2026-10-13, 165 symbols, 485 selected event rows, 436 orders, 816 fills, net return -7.3249%, maximum drawdown -28.6817%, fees 4438.42, Sharpe (zero risk-free) -0.3460, and 83 blocked order events. It generated target and paper-order diagnostics while keeping `execution_admitted=false`, `strategy_validated=false`, `ledger_mutated=false` and no THS payload. The earlier cap20 replay ending 2026-06-22 is retained as a range-sensitivity failure experiment.
+
+These outputs are research diagnostics, not strategy adoption, PIT validation or untouched holdout evidence. Provider positive-volume proxy semantics, dated eligibility, PIT membership, corporate actions, and independent forward evidence remain open.
+
+### Selector boundary repair and corrected rerun
+
+A real boundary defect was found in the first full-market Alpha158 batch: a five-session label from 2026-06-29 crossed the 2026-07-01 selection split. `decision_dates()` now requires every selection label to mature before the split. The corrected run is `outputs/full_market_alpha158/20261024_133722_8be29ed5_sh_sz_all_equities/protocol.json` (158/158 definitions, 23 selection dates, 68 later-check sessions, 15 proxy replays). The prior run and its exact case are retained in `outputs/pipeline_receipts/20261024_full_market_alpha158_boundary_failure.json` with status `RETAINED_BOUNDARY_FAILURE`; it is not used for candidate selection or promotion.
+
+## Mature-factor same-snapshot bridge
+
+The completed StockDB provider/native/190-factor snapshot now reconstructs the frozen mature-factor Ridge score for the 2026-10-13 cutoff: 5,322 finite scores from 190 factors. The bridge receipt is `outputs/pipeline_receipts/20261024_mature_factor_stockdb_snapshot_bridge_receipt.json` with status `COMPLETED_CROSS_LINEAGE_DIAGNOSTIC`. It intentionally generated no ranking, target holdings, paper orders or ledger replay. The saved Ridge model still trains on the legacy `bulk_adjusted_prices`/action/calendar lineage, so a historical same-lineage StockDB training panel with dated eligibility and PIT evidence is the next acceptance.
+
+## Mature-factor monthly StockDB panel
+
+A historical monthly input panel is now materialized from the same provider/native lineage: 34 month-end sessions from 2024-01-31 through 2026-10-13, 5,322 symbols, 180,948 rows, 190 factors, and 32,438,260 finite cells. Receipt: `outputs/pipeline_receipts/20261024_mature_factor_stockdb_monthly_panel_receipt.json`. It is an input artifact only; no Ridge fit, ranking, target holdings, paper orders or shared-ledger replay was generated. PIT/as-of publication events, dated eligibility and action views remain the acceptance gate.
+
+## Mature-factor same-lineage Ridge diagnostic
+
+The monthly StockDB panel is now fitted with the fixed 190-factor Ridge rule using 20-session forward open labels from the same provider: 11 training months and 55,909 training rows produce 34 score dates, 180,948 finite scores and 3,319,047 finite forward-label cells. The run is `outputs/stockdb_factor_monthly_ridge_diagnostics/20261024_monthly_same_lineage_v1/run.json`, with receipt `outputs/pipeline_receipts/20261024_mature_factor_stockdb_monthly_ridge_receipt.json`. It remains a research diagnostic: no ranking, target holdings, paper orders, Ledger or broker/THS artifact was generated. PIT/as-of, dated eligibility, actions and liquidity qualification remain required before replay.
+
+## 2026-10-24 mature factor replay
+
+Completed a research-only monthly Ridge replay on the same StockDB lineage through the shared Engine/Ledger: 648 sessions, 281 orders, 562 fills, net return 36.9764%, maximum drawdown -18.1384%, Sharpe 0.7614. The output generates historical target holdings and paper-order diagnostics but keeps `ledger_mutated=false` and `execution_admitted=false`; PIT/as-of, eligibility, actions and untouched holdout remain blockers.
+
+## 2026-10-24 dated eligibility binding
+
+A StockDB dated eligibility view now binds raw-bar observation, positive OHLCV, `is_st=false` and a fixed 10,000,000 CNY amount floor to the 190-factor monthly score rows. The eligibility-filtered mature-factor replay completed through the shared Engine/Ledger: 648 sessions, 285 orders, 570 fills, net return 38.6272%, maximum drawdown -18.8216%, Sharpe 0.7886. PIT publication/revision, corporate actions and untouched holdout remain explicit blockers; `execution_admitted=false`.
+
+## 2026-10-24 action context and untouched forward
+
+The monthly score panel now binds a complete canonical action identity view by hash, including operate dates, plan-announcement dates and action terms. It intentionally reports `pit_asof_safe_rows=0` and `company_action_applied_rows=0`. The mature-factor terminal portfolio was marked through the complete 8-session 2026-10-14..23 forward segment without future scores, re-ranking, orders or fills: net return -0.7811%, maximum drawdown -4.7289%, Sharpe -0.3050. The Alpha158 forward attempt remains a retained coverage failure until a complete full-market capture is available.
+
+
+### Paper target native StockDB close cross-check (2026-10-24)
+
+针对当前纸面目标 20 个标的，已从本机 native StockDB 捕获 2026-10-14..23 八个交易日（160/160 行），并与 `lowvol_supplements` 的 2026-10-23 raw close reference 做独立交叉核对：20/20 行都有数据，收盘价 20/20 精确一致，最大绝对差 0。回执为 `outputs/pipeline_receipts/20261024_paper_target_native_stockdb_reference.json`，明细为 `outputs/paper_plans/20261024_lowvol_current_native_stockdb_reference/comparison.csv`。这只证明本地研究源之间的 close 一致性，不能替代 THS 当前报价、账户余额或回读；没有登录、预填、提交、撤单或账本变更。
+
+
+### 2026-10-24 publication lower-bound inventory
+
+对 canonical action parquet 的 16,818 个事件做字段盘点：`dividPlanAnnounceDate` 有 16,815 行且均不晚于 operate date，只能作为事件下界；`source_date`、`source_url`、`source_file` 只有 2 行，`retrieved_at`、`asof_date`、`revision_id`、`publication_time` 均不在 schema。未补任何日期，PIT/as-of/revision-safe/company-action 应用继续为 false。详见 `outputs/pipeline_receipts/20261024_action_publication_field_inventory_v1.json`。
+
+
+### 2026-10-24 candidate-level action coverage
+
+同截止四组终端持仓的行动事件覆盖已单独记录：固定低波动 109/2，低波动/半动量 95/0，成熟因子 22/0，Alpha158 0/0（事件数/完整来源凭据数）。PIT-safe 行为 0；未从公告日推导来源发布日期或检索时点。
+
+
+### 2026-10-24 reproducible native paper reference
+
+纸面目标的 native-vs-raw close 核对已封装为 `run_committee.py paper-target-native-reference`，使用同一 20 个目标标的和 2026-10-23 截止日重跑得到 20/20 匹配、0 差异。回执为 `outputs/paper_plans/20261024_lowvol_current_native_stockdb_reference_v2/receipt.json`；仍不代表 THS 当前账户、报价或可预填状态。
+
+
+### 2026-10-24 candidate shadow paper packages
+
+Alpha158 与成熟因子各生成一份历史影子纸面包，复用本地 Ledger 计算目标股数、纸面委托、成交、现金和持仓。两个包均 `execution_admitted=false`、未观察账户、未提交、未持久化账本；报价是 2026-10-13 回放状态，不是 THS 当前行情。回执：`outputs/pipeline_receipts/20261024_candidate_shadow_paper_packages_v1.json`。
+
+
+### 2026-10-24 reusable candidate shadow route
+
+已将候选终端回放到历史影子纸面包的过程封装为 `run_committee.py candidate-shadow-paper`，可从任意合规研究回放生成目标、参考价格和本地目标/委托/成交/现金/持仓投影。回执 `outputs/pipeline_receipts/20261024_candidate_shadow_paper_packages_v2.json`；不进入日常纸面账户，也不生成可提交的 THS 订单。
+
+### 2026-10-24 trend/half-momentum shadow package
+
+已把 `stockdb_low_vol_half_momentum_20` 的终端回放账户通过显式 legacy 适配接入 `candidate-shadow-paper`：20 个目标、20 个纸面委托、20 个可用路由。14 万研究现金下的零手失败已保留，成功包使用明确标注的 140 万研究现金假设。该包只证明候选可以进入统一本地纸面投影，不进入日常纸面账户，不代表 PIT、策略验证或同花顺资格。回执为 `outputs/pipeline_receipts/20261024_candidate_shadow_paper_packages_v3.json`。
+
+### 2026-10-24 publication-event contract
+
+已新增逐事件发布时点合同并接入 action context：只有 publication date/time、retrieved_at、asof_at、revision_id、source_file 与 SHA-256 齐全且在决策时点前，匹配事件才可标记 `pit_asof_safe`。现有 canonical action 数据仍没有完整 sidecar，因此生产回执仍保持 PIT false；当前只验证了合成契约，不把合成结果当作市场证据。
+
+### 2026-10-24 real action sidecar attempt
+
+已从现有 canonical action cache 找到 000538.SZSE 的两份真实来源文件，SHA-256 均核验通过。两条记录的来源日期只作为下界，原始检索时间、as-of 和完整修订身份缺失，接入 action context 后 2 行仍为 `pit_asof_safe=0`、公司行动应用 `0`。缓存读取时间单独保留，没有冒充检索时间。
+
+### 2026-10-24 reusable action publication sidecar
+
+已把真实行动来源盘点封装为 `run_committee.py action-publication-sidecar`：本次得到 138 个事件级 sidecar、177 个来源文件记录，138 个文件哈希核验通过；20 行有 retrieved_at，但 asof_at 为 0，PIT-safe 仍为 0。重复来源已按事件聚合并保留全部文件与哈希，重复事件失败回执继续保留。
+
+
+
+## 2026-10-24 long-window mainline result
+
+已完成固定低波动的 2024-01-02..2026-10-23、678 会话 StockDB 重放，并以统一回执确认 Data→Signal→Target Portfolio→Orders→BrokerAdapter→Fill→Cash/Position 八段均有产物；净收益 -4.0859%、最大回撤 -12.9214%、160 订单、229 成交、期末权益 134,279.81。随后生成五策略统一长窗口比较，回执 `outputs/pipeline_receipts/20261024_long_window_strategy_comparison_v1.json`。所有结果保持研究状态，`execution_admitted=false`，未访问券商或同花顺。
+
+
+## 2026-10-24 leader cross-year resource-bounded result
+
+龙头风格新增跨年连续适配，但全量 32 case 在约 12GB 工作集处主动停止；首个 case 已完成 424 个 source sessions并保留完整 equity/target/订单/成交文件，首个 case 生成 38 个订单、73 个成交回调和 424 行 equity；另一个 bounded case 在 commit 前停止。两类中断证据均已保存，未重复重跑；此路线仍为部分研究证据，`execution_admitted=false`。
+
+### 2026-10-24 current-cutoff candidate paper reconciliation
+
+已把已有 2026-10-23 长窗口 `low_vol_half_momentum_20` 终端账户接入当前截止点的纸面 target reconciliation：20 个目标、19 个已有持仓、现金 55,447.37 元、终端标记权益 154,106.37 元，14 条 BUY_REFERENCE、0 条 SELL、6 条 HOLD，目标价格全覆盖且卖出 T+1 可卖性通过。该产物只复用本地 StockDB 回放终端标记，没有周末日切、没有 THS/券商交互、没有创建订单或修改 Ledger。回执为 `outputs/paper_plans/20261024_low_vol_half_momentum_current_reconciliation_v1/receipt.json`。
+
+### 2026-10-24 leader bounded-memory retry result
+
+对 leader 跨年适配增加了按日懒加载 panel、共享只读 raw feed、受限风险特征视图和 bounded day-indexed feed；`py_compile`、既有 3 项 leader 测试及 `combine_inputs()` 语义回归通过（424 panels，2,097,867 raw rows，2025-01-02 至 2026-09-30）。受控单 case `liquidity_capacity_proxy__two_close_envguard__causal_first_seen_cap20` 的 v2/v3 尝试仍在输出 case progress 前达到 7,386,066,944 / 8,083,701,760 bytes 工作集而中止；两个版本只写入 abort receipt 和 ABORT.md，没有虚构 target/order/fill/equity。后续不重复该资源路径，除非先实现有实质差异的流式/持久状态设计。
+
+### R01 candidate specification registry (2026-10-24)
+
+已把候选策略目录的 9 个策略绑定到固定的 data snapshot/comparability group、研究窗口、组合限制、成本配置、回放/纸面闸门和关闭的 promotion rule。入口为 `trading/research/candidate_spec_registry.py`，配置为 `docs/architecture_v3/candidate_strategy_specs_20261024.json`，命令为 `python run_committee.py candidate-spec-registry`。
+
+实际回执 `outputs/pipeline_receipts/20261024_candidate_spec_registry.json`：9/9 候选、8 个 comparability groups、`issues=[]`；6 个允许研究回放、5 个允许纸面投影，所有候选仍 `promotion_allowed=false`、`execution_admitted=false`。短线、席位和龙头资源停止候选保留停止原因，不能进入新的回放。测试 `2 passed`，架构审计 `559 modules / 0 violations`。本包未读取新行情、未接触 THS。
+
+### R03 fixed account verification (2026-10-24)
+
+现有 678-session 固定低波动 StockDB 回放的 R03 状态已按已有证据更新为 `VERIFIED_LOCAL`：678 sessions、160 orders、229 fills、费用 CNY 893.19、期末权益 CNY 134,279.81、stale valuation 0、issues 0；保存的 provenance receipt 显示 Data、Signal、Target Portfolio、Orders、BrokerAdapter、Fill、Cash/Position 八段全部存在。没有重新回放，也没有修改账户或执行通道。
+
+### P04 virtual strategy sleeves slice (2026-10-24)
+
+新增 `trading/research/virtual_strategy_sleeves.py` 与 `virtual-strategy-sleeves` 命令，将五个已保存长窗口 terminal `account.json` 以等权 20% sleeve 归因到一个研究现金池。回执 `outputs/pipeline_receipts/20261024_virtual_strategy_sleeves_v1.json` 为 `VERIFIED_RESEARCH_ONLY_VIRTUAL_SLEEVES`：虚拟终端权益 CNY 146,196.56，现金 CNY 70,715.80，持仓市值 CNY 75,480.76；现金与权益归因守恒，合并目标 gross 70.4%、最大单名 3.2%，均满足 80%/20% 限制。五个账户终端日为 2026-10-13 和 2026-10-23，已明确标记 `MIXED_TERMINAL_DATES_RESEARCH_ONLY`，不得由此派生当前可执行目标。
+
+聚焦测试 `trading/research/tests/test_virtual_strategy_sleeves.py` 为 `3 passed`，并覆盖默认单名暴露超限拒绝；未创建 orders/fills、未修改 Ledger、未接触 Broker/THS，`execution_admitted=false`。
+
+### 2026-10-24 P03 exposure and blocked-action stress view
+
+已将保存的 2026-10-23 纸面 reconciliation、native StockDB close reference 接入 `run_committee.py paper-exposure-stress`。回执 `outputs/pipeline_receipts/20261024_p03_paper_exposure_stress_v1.json` 生成 baseline、T+1 卖出阻断和 50% cash haircut 三个固定场景，记录动作计数、阻断数量、残余暴露和现金守恒。基线无阻断；T+1 阻断 1 个动作、100 股、残余暴露 CNY 515.00；现金压力场景仍无阻断。测试 `trading/research/tests/test_paper_exposure_stress.py` 为 2 passed，输入日期或跨源 close 不一致会拒绝。该视图只做研究侧压力投影，不创建订单/成交、不修改 Ledger、不访问券商或 THS，`execution_admitted=false`。P03 已更新为 `VERIFIED_LOCAL`，下一包转向 P05 容量/成本利用率与未成交暴露。
+
+### 2026-10-24 P05 capacity and cost comparison
+
+已将五个保存的共享 Engine/Ledger 终端账户接入 `run_committee.py strategy-capacity-cost`。回执 `outputs/pipeline_receipts/20261024_p05_capacity_cost_comparison_v1.json` 记录 requested/filled quantity、未成交数量与名义暴露、容量利用率、基础费用，并固定输出 0/25/50 bps 成本压力。Alpha158/LightGBM 容量利用率 98.4714%、未成交 14,100 股、未成交名义暴露 CNY 22,849.00；半动量 99.5980%、500 股、CNY 4,930.00；12-1 动量 99.6042%、100 股、CNY 1,324.00；固定低波动和成熟 Ridge 为 100%。终端日 2026-10-13/23 混合，结果保持研究专用。测试 `trading/research/tests/test_strategy_capacity_cost_comparison.py` 为 2 passed，未重放市场、未合并候选订单、未创建订单/成交、未修改 Ledger、未访问券商或 THS，`execution_admitted=false`。P05 已更新为 `VERIFIED_LOCAL`。
+
+下一波切换为 L02/L04 与 D05/D06/O02 两条独立工程切片并行，分别处理未知外部结果/迟到成交恢复，以及快照发布/增量影响/断点续跑。
+
+
+### 2026-10-24 L02/L04 ledger recovery slice
+
+已完成共享 Ledger 的迟到成交/撤单竞态与未知外部结果纵向切片。`run_committee.py ledger-recovery-scenarios` 生成 `outputs/pipeline_receipts/20261024_ledger_recovery_scenarios_v1.json`：撤单请求后 100 股迟到部分成交仍保留为 `cancel_pending`，确认撤单后订单为 `cancelled`、成交数量/现金/持仓保留；同一幂等键重复提交不新增订单或成交。`submission_unknown`、`timeout`、`connection_lost` 均为 `UNKNOWN_RECONCILIATION_REQUIRED`，`retry_allowed=false`、`duplicate_action_allowed=false`，且没有外部提交调用。focused tests `3 passed`，`py_compile` 通过。所有场景为内存纸面 Ledger，未修改持久账户、未访问 Broker/THS，`execution_admitted=false`。L02/L04 已绑定 `VERIFIED_LOCAL`。
+
+下一包切换为 D05/D06/O02：只做原子快照发布、增量影响与断点恢复的可执行切片，拒绝不完整快照并证明重启不重复发布。
+
+
+### 2026-10-24 D05/D06/O02 snapshot and recovery slice
+
+已完成原子快照发布、修订影响和断点恢复纵向切片。`run_committee.py snapshot-publication-recovery` 生成 `outputs/pipeline_receipts/20261024_snapshot_publication_recovery_v1.json`：无 manifest 的部分快照被拒绝；完整 data+manifest 以目录替换作为发布点并通过 SHA/行数消费校验；一条修订记录保留 `received_at`、`revision_id`、`supersedes`，影响字段为 `value` 与 `revision_id`；在“发布后、checkpoint 提交前”受控中断后，重启把已发布单元识别为 `IDEMPOTENT_EXISTING`，下一单元只创建一次。focused tests `4 passed`，`py_compile` 通过。全部使用临时研究目录，未修改纸面账户、未访问 Broker/THS，`execution_admitted=false`。D05/D06/O02 已绑定 `VERIFIED_LOCAL`。
+
+下一节点为 F1 单真实披露事件纵向切片，但仅在取得可靠 issuer publication/retrieval/as-of/revision 与市场 join 证据后启动；在此之前不伪造财报 PIT 数据，继续独立策略与纸面主线。
+
+
+### 2026-10-24 P06 aligned joint portfolio
+
+已完成 P06 组合验收切片：`run_committee.py joint-portfolio-acceptance` 只纳入终端日同为 2026-10-13 的成熟因子 Ridge 与 Alpha158/LightGBM 账户，各占 50% 虚拟 sleeve，生成 7 个研究目标行。合并理论 gross 56%、实际手数取整后 gross 53.2407%、最大单名 10.4629%，现金余量 CNY 65,463.00；301686.SZSE 因 8% 目标不足一手，按固定“若一手仍低于单名上限则向上取一手，否则阻断”规则取 100 股，结果仍通过 20% 单名上限。回执 `outputs/pipeline_receipts/20261024_joint_portfolio_acceptance_v1.json` 为 `VERIFIED_RESEARCH_ONLY_JOINT_PORTFOLIO`。没有把 2026-10-23 的其它策略混入，未创建订单/成交、未修改 Ledger、未访问 Broker/THS，`execution_admitted=false`。P06 已绑定 `VERIFIED_LOCAL`。
+
+下一节点仍为 F1 单真实披露事件纵向切片；必须先取得 issuer publication/retrieval/as-of/revision 证据，不能用现有缺时点的 3 行季度事实冒充 PIT。
+
+
+### 2026-10-24 R02 research decision matrix
+
+已把公开席位回放的“审计结果”转成固定决策矩阵：`run_committee.py research-decision-matrix` 读取 `public_seat_replay_audit_v2`，要求完整 241-session 窗口且订单/成交均存在才计算 post-event opportunity；完整非正收益案例判为 `STOP_RESEARCH_ONLY`，完整正收益案例判为 `CONTINUE_RESEARCH_ONLY`，未完成案例保留原始错误并判为 `BLOCKED_INCOMPLETE_WINDOW`。本次 9 个案例为 2 个继续研究、3 个停止研究、4 个数据阻断；publication timing、PIT membership、causal seat alpha 均为 false，promotion 仍关闭。回执 `outputs/pipeline_receipts/20261024_research_decision_matrix_v1.json`，focused tests `3 passed`，未生成目标/订单/成交，`execution_admitted=false`。R02 已绑定 `VERIFIED_LOCAL`。
+
+下一节点仍为 F1 单真实披露事件纵向切片；继续研究不等于采用，不把公开席位正收益接入纸面账户。
+
+### 2026-10-24 F1 issuer retrieval and market join slice
+
+F1 已完成一段可复用的真实来源纵向链路：三行 Q1 2024 发行人报告重新从原 URL 抓取，3/3 HTTP 成功、3/3 全文件 SHA-256 与保存 PDF 一致，并保留当前检索时间、HTTP `Last-Modified`、ETag 与 `IsLatest`。同一回执把三只股票连接到固定 StockDB 快照的首个交易日 `2024-05-06`，3/3 行通过，快照 manifest 哈希已记录。回执为 `outputs/pipeline_receipts/20261024_f01_source_retrieval_receipt_v1.json`。
+
+出版 sidecar 已接入该检索回执：`outputs/pipeline_receipts/20261024_f01_publication_sidecar_network_v2.json` 中 3 行均有显式当前 `retrieved_at`、`asof_at` 和内容修订标识，契约仍以 `REAL_SOURCE_MAPPED_PIT_BLOCKED` 拒绝，因为当前重抓时间晚于历史决策日 `2024-05-01`。F1 本地纵向切片仍以 `PARTIAL_LOCAL_TIMESTAMP_VERTICAL_SLICE` 贯通 `Data→Signal→Target Portfolio→Orders→BrokerAdapter→Fill→Cash/Position`，3 个订单、6 个模拟成交，但没有将本地时间戳冒充历史 PIT。测试为 F1 focused `15 passed`；`execution_admitted=false`，没有券商或同花顺操作。
+
+
+### 2026-10-24 D1 candidate paper batch fan-in
+
+新增 `trading/research/daily_candidate_paper_batch.py` 和 `run_committee.py daily-candidate-paper-batch`，把显式的研究-only target/quote payload 按候选隔离目录接入现有共享纸面 target/order/fill/cash/position 包。历史验证批次包含 `trend_low_vol_half_momentum_20`（20 targets、20 paper orders）和 `stockdb_factor_monthly_ridge_v1`（5 targets、5 paper orders），回执为 `outputs/paper_plans/20261025_candidate_batch_v1/packages/batch_receipt.json`，报告为 `outputs/research_reports/20261025_daily_candidate_paper_batch_v1.md`。该批次不生成信号、不抓取行情、不修改 `fixed_daily`，不访问券商或同花顺；`execution_admitted=false`。测试 `2 passed`。
+
+D1 汇入口已补上候选目录 ID 与回放 payload strategy ID 的显式映射：`stockdb_low_vol_half_momentum_20` → `trend_low_vol_half_momentum_20`，`factor_candidate_family_balanced_ridge` → `stockdb_factor_monthly_ridge_v1`。v2 manifest 与批次回执位于 `outputs/paper_plans/20261025_candidate_batch_v1/manifest_v2.json` 和 `outputs/paper_plans/20261025_candidate_batch_v1/packages_v2/batch_receipt.json`，避免下一交易日因名称差异误拒绝或误标候选。
+
+D1 候选批次现已读取 `candidate_strategy_catalog_20261024.json` 的 `research_selection` 闸门，仅允许 `research_followup_allowed=true` 的候选进入纸面投影。v3 回执 `outputs/paper_plans/20261025_candidate_batch_v1/packages_v3/batch_receipt.json` 记录了目录选择结果；停止、覆盖阻断和未评估候选在生成订单前即被拒绝。
+
+D1 批处理又增加了时点约束：quote 的 `observed_at` 和每行 `observed_date` 必须等于 target 的 `decision_day`，`execution_day` 必须严格晚于决策日。v4 回执 `outputs/paper_plans/20261025_candidate_batch_v1/packages_v4/batch_receipt.json` 已通过该约束；未来报价或错日行情会在订单生成前被拒绝。
+
+D1 v5 又将批次回执绑定到 manifest 的绝对路径、SHA-256 和候选数，并拒绝与 manifest 候选集合不一致的调用。重跑回执为 `outputs/paper_plans/20261025_candidate_batch_v1/packages_v5/batch_receipt.json`，manifest SHA-256 为 `34f68b5d2638b635555ffc776003dacd88145d303417f0d9c40d1f9cb9c810a4`；D1/F01 focused tests `26 passed`。
+
+D1 输入汇入已自动化：`candidate-daily-input-bundle` 从两个已保存的 StockDB 回放源生成 catalog 约束的 target/quote manifest，并拒绝改变 replay identity 的 strategy alias，再交给 D1 批处理。最新输入回执为 `outputs/paper_plans/20261025_candidate_batch_v1/generated_inputs_v2/bundle_receipt.json`，下游回执为 `outputs/paper_plans/20261025_candidate_batch_v1/packages_v7/batch_receipt.json`；两个候选仍为 20/20 与 5/5，focused D1/F01/input-bundle tests `30 passed`。
+
+`candidate-daily-paper-run` 已把上述两步合为一个闭市后研究入口，保存输入 manifest、bundle 回执、D1 batch 回执和总回执；本次总回执为 `outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v1/pipeline_receipt.json`，`execution_admitted=false`，两个候选仍为 20/20 与 5/5，combined focused tests `31 passed`。
+
+该入口又增加了可选 fixed leg：显式传入固定策略终态研究账户后，固定低波半动量 `20/20`、趋势候选 `20/20`、Ridge `5/5` 均通过同一个 `build_paper_target_package` 进入本地 Ledger 投影，固定 leg 的 target/quote 文件也保留 SHA-256。证明回执为 `outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v3/pipeline_receipt.json`；`execution_admitted=false`，未修改固定纸面账户，未访问券商或同花顺。
+
+公开席位候选 `lag2_TREND_ANY_LHB` 的一个完整 241-session 案例已进入同一共享本地纸面投影，5 个目标、5 个纸面订单、4 个可用路由。回执 `outputs/pipeline_receipts/20261025_public_seat_candidate_shared_paper_receipt_v1.json` 明确保留 `UNASSESSED_SEPARATE_GATE`，没有把公开席位结果接入可选策略队列；`validation` 和 `boundary_assertions` 均显示外部账户、客户端、提交、撤单和持久账本状态为 false。

@@ -27,8 +27,16 @@ def daily(evidence, monkeypatch):
     manifest = read(manifest_path)
     manifest.update(start="2024-11-01", end=NEXT)
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    native = e["frame"].rename(columns={"pre_close": "preclose", "is_st": "isST"})[
+        ["date", "code", "open", "high", "low", "close", "preclose",
+         "volume", "amount", "isST"]].copy()
+    native["tradestatus"] = "1"
+    native["adjustflag"] = "3"
+    supplemental = e["root"] / "synthetic_native_raw_daily.parquet"
+    native.to_parquet(supplemental, index=False)
     out, record = rolling.run(e["new"], START, MONTH_END, variants=(VARIANT,),
-        calendars=[e["calendar"]], calendar_driven_month_ends=True, persistent_full_exits=True)
+        calendars=[e["calendar"]], calendar_driven_month_ends=True,
+        persistent_full_exits=True, supplemental_raw_view=supplemental)
     package = e["root"] / "complete_successor"
     package.mkdir()
     raw = pd.DataFrame([{"date": NEXT, "code": "sh.600001"}])

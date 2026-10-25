@@ -1,0 +1,97 @@
+{
+  "schema": "quantification_staffing_plan_v1",
+  "updated_on": "2026-10-25",
+  "source_design_documents": [
+    "C:\\Users\\13944\\Downloads\\quant_rebuild_V3_detailed_20261023.docx",
+    "C:\\Users\\13944\\Downloads\\financial_factor_implementation_F2_20261023.docx"
+  ],
+  "objective": "把两份方案拆成可并行、可验收、可回滚的 Data-Signal-TargetPortfolio-Orders-BrokerAdapter-Fill-CashPosition 工作包。",
+  "operating_rules": {
+    "primary_writer_per_package": 1,
+    "independent_reviewer_per_package": 1,
+    "integrator": "root_primary_thread",
+    "max_parallel_substantive_packages": 2,
+    "redundancy_scope": [
+      "PIT publication/as-of/revision timing",
+      "units and period semantics",
+      "cash/lot/T+1 conservation",
+      "unknown external result duplicate-action recovery"
+    ],
+    "no_duplicate_terminal_work": true,
+    "execution_admitted": false,
+    "real_login_order_cancel_transfer": false,
+    "ths_mode": "read_only_evidence_only"
+  },
+  "nodes": [
+    {
+      "id": "W0",
+      "name": "baseline_freeze",
+      "owner_role": "root_integrator",
+      "reviewer_role": "receipt_and_catalog_reviewer",
+      "status": "VERIFIED_LOCAL",
+      "depends_on": [],
+      "deliverables": ["candidate catalog", "cost/benchmark binding", "current handoff"],
+      "acceptance": "Every downstream package names an exact snapshot, cost model, benchmark and execution gate."
+    },
+    {
+      "id": "W1",
+      "name": "next_close_D0_D1",
+      "owner_role": "next_close_delivery_writer",
+      "reviewer_role": "stockdb_date_snapshot_reviewer",
+      "status": "READY_NEXT_SESSION",
+      "depends_on": ["W0"],
+      "parallel_with": ["W2", "W3"],
+      "deliverables": ["same-day StockDB close snapshot", "fixed and candidate targets/quotes", "shared paper receipt"],
+      "acceptance": "One idempotent post-close command uses same-day inputs through shared Engine/Ledger; stale or missing rows block without carry-forward."
+    },
+    {
+      "id": "W2",
+      "name": "F2_single_event_factor_slice",
+      "owner_role": "f2_factor_delivery_writer",
+      "reviewer_role": "independent_PIT_single_event_reviewer",
+      "status": "BLOCKED_DATA_OR_READY",
+      "depends_on": ["W0"],
+      "parallel_with": ["W1", "W3"],
+      "deliverables": ["typed fact receipt or concrete BLOCKED_DATA receipt", "single-quarter U calculation", "shared-account bridge when gates pass"],
+      "acceptance": "Only a publication/retrieval/as-of/revision and units/period safe event reaches account replay; otherwise no factor or task is created."
+    },
+    {
+      "id": "W3",
+      "name": "candidate_same_snapshot_comparison",
+      "owner_role": "candidate_strategy_delivery_writer",
+      "reviewer_role": "frozen_forward_window_reviewer",
+      "status": "VERIFIED_LOCAL",
+      "depends_on": ["W0"],
+      "parallel_with": ["W1", "W2"],
+      "deliverables": ["trend/momentum, mature-factor and Alpha158/LightGBM evidence", "continue/stop/block decisions", "six-strategy h60 comparison"],
+      "acceptance": "No parameter rescue; every candidate has shared replay evidence or an explicit preserved stop/coverage decision."
+    },
+    {
+      "id": "W4",
+      "name": "paper_continuity_and_readonly_channel",
+      "owner_role": "paper_runtime_writer",
+      "reviewer_role": "paper_vs_channel_boundary_reviewer",
+      "status": "DEPENDENT",
+      "depends_on": ["W1", "W3"],
+      "deliverables": ["recoverable daily paper rollover", "target/reconciliation evidence", "THS read-only evidence if externally authorized"],
+      "acceptance": "Paper state is recoverable and traceable; no login, prefill submission, order, cancellation or transfer occurs."
+    },
+    {
+      "id": "W5",
+      "name": "release_decision",
+      "owner_role": "root_integrator",
+      "reviewer_role": "input_semantics_and_research_result_reviewers",
+      "status": "DEPENDENT",
+      "depends_on": ["W1", "W2", "W3", "W4"],
+      "deliverables": ["versioned result package", "continue/stop/block/no-opportunity decisions", "next handoff"],
+      "acceptance": "Research, paper and external channel states are reported separately; execution gate remains false."
+    }
+  ],
+  "dispatch_policy": {
+    "first_wave": ["W1", "W2", "W3"],
+    "currently_waiting": ["W1"],
+    "current_substantive_evidence": ["W3"],
+    "do_not_start": ["W4", "W5"],
+    "reason": "W1 needs the actual 2026-10-26 close; W2 lacks original PIT receipts; W3 has completed the current local evidence slice."
+  }
+}

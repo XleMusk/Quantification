@@ -47,3 +47,10 @@ def test_empty_groups_finish_queries_without_fabricating_coverage(tmp_path, monk
     assert coverage.status.eq("empty_source_period").all()
     assert coverage.rows.eq(0).all()
     assert not coverage.execution_admitted.any()
+    entries = json.loads((root / "result.json").read_text(encoding="utf-8"))["entries"]
+    assert entries and {entry["fetch_receipt"]["completion_state"] for entry in entries.values()} == {"COMPLETE_EMPTY"}
+    assert all((root / entry["fetch_receipt"]["raw_content_reference"]["file"]).is_file()
+               for entry in entries.values())
+    audit = annual.audit_receipts(root)
+    assert audit["status"] == "COMPLETED_READ_ONLY_AUDIT" and audit["network_accessed"] is False
+    assert all(group["status"] == "COMPLETE" for group in audit["groups"].values())

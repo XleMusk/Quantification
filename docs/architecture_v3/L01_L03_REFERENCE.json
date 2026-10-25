@@ -1,0 +1,36 @@
+{
+  "schema": "quantification_v3_ledger_reference_v1",
+  "recorded_on": "2026-10-23",
+  "execution_admitted": false,
+  "scope": "synthetic_local_ledger_only",
+  "test": "trading/tests/test_v3_ledger_reference.py",
+  "scenarios": [
+    {
+      "id": "L01-cash-holdings-fees-t1-duplicate",
+      "context": "replay:v3-l01",
+      "initial_cash_cents": 1000000,
+      "buy": {"quantity": 200, "price_cents": 1000, "gross_cents": 200000, "fees_cents": 502},
+      "after_buy": {"cash_cents": 799498, "quantity": 200, "sellable_on_buy_day": 0,
+        "sellable_on_next_day": 200},
+      "same_day_sell": {"status": "rejected", "reason": "insufficient_sellable_T1"},
+      "sell": {"quantity": 100, "price_cents": 1100, "gross_cents": 110000, "fees_cents": 556},
+      "final": {"cash_cents": 908942, "quantity": 100, "marked_equity_cents": 1018942},
+      "duplicate_fill": {"same_payload": "idempotent_no_mutation", "changed_payload": "rejected_no_mutation"}
+    },
+    {
+      "id": "L03-entitlement-receivable-payment",
+      "context": "replay:v3-l03",
+      "registered_quantity": 100,
+      "dividend_cash_before_tax_cents": 10000,
+      "modeled_tax_reserve_cents": 2000,
+      "receivable_cents": 8000,
+      "cash_before_payment_cents": 1000000,
+      "cash_after_payment_cents": 1008000,
+      "duplicate_payment": "idempotent_no_mutation"
+    }
+  ],
+  "limitations": [
+    "Synthetic examples do not validate market data, broker exports or channel behavior.",
+    "Real login, order, cancellation, transfer and paid data remain prohibited."
+  ]
+}

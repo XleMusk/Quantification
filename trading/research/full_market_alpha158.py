@@ -107,9 +107,22 @@ def provider_rows(frame, folder):
 def decision_dates(calendar, first=FIRST, split=SPLIT, end=END, forward=FORWARD):
     days = [day for day in calendar if first <= day <= end]
     positions = {day: i for i, day in enumerate(calendar)}
-    return [(day, "selection" if day < split else "later_check") for day in days[::forward]
-            if positions[day] + forward < len(calendar)
-            and (calendar[positions[day] + forward] <= end if day < split else True)]
+    result = []
+    for day in days[::forward]:
+        exit_position = positions[day] + forward
+        if exit_position >= len(calendar):
+            continue
+        exit_day = calendar[exit_position]
+        if day < split:
+            # A selection label must mature before the later-check segment;
+            # otherwise the factor sees a boundary-crossing outcome.
+            if exit_day >= split or exit_day > end:
+                continue
+            segment = "selection"
+        else:
+            segment = "later_check"
+        result.append((day, segment))
+    return result
 
 
 def evaluate_both(score, label, allowed):

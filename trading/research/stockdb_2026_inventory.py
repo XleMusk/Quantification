@@ -6,6 +6,7 @@ from datetime import datetime
 from hashlib import sha256
 import json
 from pathlib import Path
+from urllib.error import URLError
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
@@ -211,9 +212,33 @@ def main(argv=None):
     parser.add_argument("--snapshot", type=Path, default=DEFAULT_SNAPSHOT)
     parser.add_argument("--out", type=Path, default=ROOT / "outputs" / "full_market" / "stockdb_2026_inventory.json")
     args = parser.parse_args(argv)
-    result = inventory(args.stockdb_root, args.snapshot)
+    try:
+        result = inventory(args.stockdb_root, args.snapshot)
+    except (URLError, TimeoutError, ConnectionError) as error:
+        # Keep a read-only audit failure explicit and machine-readable.  A
+        # missing local service is a data blocker, never an empty inventory or
+        # permission to fall back to a different source.
+        result = {
+            "status": "stockdb_service_unavailable",
+            "observed_at": datetime.now().astimezone().isoformat(),
+            "stockdb_root": str(args.stockdb_root.resolve()),
+            "snapshot": str(args.snapshot.resolve()),
+            "error_type": type(error).__name__,
+            "error": str(error),
+            "execution_admitted": False,
+            "returns_validated": False,
+            "limitations": [
+                "StockDB service could not be reached; no inventory or coverage is inferred",
+                "No fallback provider, snapshot promotion or order path was used",
+            ],
+        }
     args.out.parent.mkdir(parents=True, exist_ok=True)
     write_json(args.out, result)
+    if result["status"] == "stockdb_service_unavailable":
+        print(json.dumps({"out": str(args.out), "status": result["status"],
+                          "error_type": result["error_type"],
+                          "execution_admitted": False}, ensure_ascii=False))
+        return 2
     print(json.dumps({"out": str(args.out), "rows_2026": result["daily_2026"]["total"]["rows"],
                       "marked_etf_codes": result["funds_2026"]["marked_etf_2026_symbols"],
                       "execution_admitted": False}, ensure_ascii=False))

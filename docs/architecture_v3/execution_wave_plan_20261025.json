@@ -1,0 +1,178 @@
+{
+  "schema": "quantification_execution_wave_plan_v1",
+  "updated_on": "2026-10-25",
+  "source_design_documents": [
+    "C:\\Users\\13944\\Downloads\\quant_rebuild_V3_detailed_20261023.docx",
+    "C:\\Users\\13944\\Downloads\\financial_factor_implementation_F2_20261023.docx"
+  ],
+  "interpretation": "The documents are design inputs. Code, receipts, paper results and preserved failures are the current-state authority.",
+  "objective": "Move the V3 and F2 design into repeatable Data-Signal-TargetPortfolio-Orders-BrokerAdapter-Fill-CashPosition slices with research-only execution.",
+  "guardrails": {
+    "execution_admitted": false,
+    "real_login": false,
+    "prefill_submit_cancel_transfer": false,
+    "paid_data": false,
+    "ths_mode": "read_only_evidence_only",
+    "weekend_rule": "Do not fabricate a 2026-10-26 close before the session closes."
+  },
+  "team_model": {
+    "primary_writer_per_package": 1,
+    "independent_reviewer_per_package": 1,
+    "integrator": "root_primary_thread",
+    "parallelism": "Two substantive writers plus root integration; reviewers use independent fixtures/oracles.",
+    "redundancy_rule": "Redundancy is only for PIT timing, unit/period semantics, cash/lot conservation, and duplicate-action recovery.",
+    "no_duplicate_work": "Do not restart a terminal package without changed code, input snapshot or resource design."
+  },
+  "waves": [
+    {
+      "id": "W0",
+      "name": "baseline_freeze",
+      "state": "VERIFIED_LOCAL",
+      "owners": [
+        "root"
+      ],
+      "reviewers": [
+        "catalog_and_receipt_reviewer"
+      ],
+      "deliverables": [
+        "current handoff",
+        "candidate catalog",
+        "fixed/candidate v5 receipt",
+        "F1/F2 status bindings"
+      ],
+      "acceptance": "All downstream work references exact snapshot, cost model, benchmark binding and execution gate."
+    },
+    {
+      "id": "W1",
+      "name": "next_close_D0_D1",
+      "state": "READY_NEXT_SESSION",
+      "owners": [
+        "next_close_delivery_wave"
+      ],
+      "reviewers": [
+        "stockdb_snapshot_and_date_reviewer"
+      ],
+      "parallel_with": [
+        "W2"
+      ],
+      "deliverables": [
+        "native StockDB close snapshot",
+        "fixed plus registered candidate same-day target/quote inputs",
+        "shared paper receipt"
+      ],
+      "acceptance": "One idempotent command after the 2026-10-26 close; fixed and candidates use the same Engine/Ledger, exact cost/benchmark IDs, and execution_admitted=false.",
+      "evidence": [
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/tests/test_next_close_d0_d1.py"
+      ],
+      "result": "The D0/D1 contract now accepts a same-day prebuilt target payload from the candidate input manifest, copies it into the frozen run inputs, and still enforces research-only execution and strategy identity. Native 2026-10-26 capture remains pending the actual close."
+    },
+    {
+      "id": "W2",
+      "name": "F2_single_event_factor_slice",
+      "state": "BLOCKED_DATA_OR_READY",
+      "owners": [
+        "f2_factor_delivery_wave"
+      ],
+      "reviewers": [
+        "independent_single_quarter_oracle"
+      ],
+      "parallel_with": [
+        "W1",
+        "W3"
+      ],
+      "deliverables": [
+        "standard fact/period/unit/available_at contract or concrete blocked receipt",
+        "single-quarter U calculation",
+        "factor-to-shared-account bridge when PIT gates pass"
+      ],
+      "acceptance": "One event reaches Signal→Target Portfolio→Orders→Fill→Cash/Position only when publication/retrieval/as-of/revision and units/period gates pass; otherwise BLOCKED_DATA with no task/replay.",
+      "evidence": [
+        "trading/research/f2_fact_bridge.py",
+        "outputs/pipeline_receipts/20261025_f2_sidecar_fact_bridge_receipt_v1.json",
+        "trading/research/f2_vertical_slice.py",
+        "trading/research/tests/test_f2_vertical_slice.py",
+        "outputs/f2_vertical_slice/20261025_synthetic/vertical_slice_receipt.json",
+        "trading/research/f2_bridge_vertical_slice.py",
+        "trading/research/tests/test_f2_bridge_vertical_slice.py",
+        "outputs/f2_vertical_slice/20261025_bridge_ready_synthetic/bridge_vertical_slice_receipt.json"
+      ],
+      "result": "READY bridge plus explicit prior fact reaches F01 Signal -> Target Portfolio -> shared paper Engine/Ledger; blocked real sidecar remains BLOCKED_DATA."
+    },
+    {
+      "id": "W3",
+      "name": "candidate_same_snapshot_comparison",
+      "state": "VERIFIED_LOCAL",
+      "owners": [
+        "candidate_strategy_delivery_wave"
+      ],
+      "reviewers": [
+        "frozen_forward_window_reviewer"
+      ],
+      "parallel_with": [
+        "W1",
+        "W2"
+      ],
+      "deliverables": [
+        "trend/momentum, mature factor, Alpha158/LightGBM candidate outputs on one pinned snapshot",
+        "continuation/stop/block decisions"
+      ],
+      "acceptance": "No parameter retuning to rescue a result; each candidate has target/order/account evidence or an explicit stop/coverage block.",
+      "evidence": [
+        "trading/research/stockdb_factor_monthly_ridge_horizon_variant.py",
+        "trading/tests/test_stockdb_factor_monthly_ridge_horizon_variant.py",
+        "outputs/pipeline_receipts/20261025_mature_factor_stockdb_monthly_ridge_h60_receipt.json",
+        "outputs/pipeline_receipts/20261025_mature_factor_stockdb_monthly_ridge_h60_replay_receipt.json",
+        "trading/research/long_window_strategy_comparison.py",
+        "trading/tests/test_long_window_strategy_comparison.py",
+        "outputs/pipeline_receipts/20261025_long_window_strategy_comparison_h60_v1.json",
+        "outputs/research_reports/20261025_long_window_strategy_comparison_h60_v1.md",
+        "trading/research/joint_portfolio_paper_package.py",
+        "trading/research/tests/test_joint_portfolio_paper_package.py",
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/joint_paper_receipt.json"
+      ],
+      "result": "Same-snapshot candidate comparison and aligned Ridge+Alpha158 joint target both reach research-only shared paper orders/fills; promotion remains closed."
+    },
+    {
+      "id": "W4",
+      "name": "paper_continuity_and_readonly_channel",
+      "state": "DEPENDENT",
+      "owners": [
+        "paper_runtime_owner"
+      ],
+      "reviewers": [
+        "paper_vs_channel_boundary_reviewer"
+      ],
+      "deliverables": [
+        "daily idempotent paper rollover",
+        "target/reconciliation evidence",
+        "THS read-only evidence when externally authorized"
+      ],
+      "acceptance": "Paper state is recoverable and traceable; no live login, prefill submission, order, cancel or transfer."
+    },
+    {
+      "id": "W5",
+      "name": "release_decision",
+      "state": "DEPENDENT",
+      "owners": [
+        "root"
+      ],
+      "reviewers": [
+        "input_semantics_reviewer",
+        "research_result_reviewer"
+      ],
+      "deliverables": [
+        "versioned result package",
+        "continue/stop/block/no-opportunity decisions",
+        "next handoff and rollback point"
+      ],
+      "acceptance": "Only verified data, research and channel states are reported separately; execution gate remains closed."
+    }
+  ],
+  "current_blockers": [
+    "F1 historical as-of/revision evidence is not proven for the 2024-05-01 cutoff.",
+    "THS external channel evidence is not available.",
+    "2026-10-26 daily paper run must wait for the actual close.",
+    "Leader bounded-memory path remains resource-stopped and is not retried without a materially different streaming design."
+  ]
+}

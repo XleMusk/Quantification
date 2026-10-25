@@ -188,6 +188,9 @@ def main(argv=None):
     if argv[:1] == ["architecture-check"]:
         from trading.architecture import main as architecture_main
         return architecture_main(argv[1:])
+    if argv[:1] == ["production-receipt-audit"]:
+        from trading.research.production_receipt_audit import main as production_receipt_audit_main
+        return production_receipt_audit_main(argv[1:])
     if argv[:1] == ["ths"]:
         from trading.ths.cli import main as ths_main
         return ths_main(argv[1:])
@@ -209,6 +212,66 @@ def main(argv=None):
     if argv[:1] == ["stockdb-fixed-daily"]:
         from trading.research.stockdb_fixed_daily import main as fixed_daily_main
         return fixed_daily_main(argv[1:])
+    if argv[:1] == ["paper-account-recovery"]:
+        from trading.research.paper_account_recovery import main as paper_account_recovery_main
+        return paper_account_recovery_main(argv[1:])
+    if argv[:1] == ["paper-target-reconciliation"]:
+        from trading.research.paper_target_reconciliation import main as paper_target_reconciliation_main
+        return paper_target_reconciliation_main(argv[1:])
+    if argv[:1] == ["paper-target-native-reference"]:
+        from trading.research.paper_target_reconciliation import native_reference_main
+        return native_reference_main(argv[1:])
+    if argv[:1] == ["paper-plan-reconciliation-audit"]:
+        from trading.research.paper_plan_reconciliation_audit import main as paper_plan_reconciliation_audit_main
+        return paper_plan_reconciliation_audit_main(argv[1:])
+    if argv[:1] == ["paper-exposure-stress"]:
+        from trading.research.paper_exposure_stress import main as paper_exposure_stress_main
+        return paper_exposure_stress_main(argv[1:])
+    if argv[:1] == ["ledger-recovery-scenarios"]:
+        from trading.research.ledger_recovery_scenarios import main as ledger_recovery_scenarios_main
+        return ledger_recovery_scenarios_main(argv[1:])
+    if argv[:1] == ["snapshot-publication-recovery"]:
+        from trading.research.snapshot_publication_recovery import main as snapshot_publication_recovery_main
+        return snapshot_publication_recovery_main(argv[1:])
+    if argv[:1] == ["joint-portfolio-acceptance"]:
+        from trading.research.joint_portfolio_acceptance import main as joint_portfolio_acceptance_main
+        return joint_portfolio_acceptance_main(argv[1:])
+    if argv[:1] == ["joint-portfolio-paper-package"]:
+        from trading.research.joint_portfolio_paper_package import main as joint_portfolio_paper_package_main
+        return joint_portfolio_paper_package_main(argv[1:])
+    if argv[:1] == ["joint-portfolio-paper-package"]:
+        from trading.research.joint_portfolio_paper_package import main as joint_portfolio_paper_package_main
+        return joint_portfolio_paper_package_main(argv[1:])
+    if argv[:1] == ["research-decision-matrix"]:
+        from trading.research.research_decision_matrix import main as research_decision_matrix_main
+        return research_decision_matrix_main(argv[1:])
+    if argv[:1] == ["copied-account-replay-proof"]:
+        from trading.research.copied_account_replay_proof import main as copied_account_replay_proof_main
+        return copied_account_replay_proof_main(argv[1:])
+    if argv[:1] == ["strategy-robustness-matrix"]:
+        from trading.research.strategy_robustness_matrix import main as strategy_robustness_matrix_main
+        return strategy_robustness_matrix_main(argv[1:])
+    if argv[:1] == ["candidate-research-selection"]:
+        from trading.research.candidate_research_selection import main as candidate_research_selection_main
+        return candidate_research_selection_main(argv[1:])
+    if argv[:1] == ["f01-local-vertical-slice"]:
+        from trading.research.f01_local_vertical_slice import main as f01_local_vertical_slice_main
+        return f01_local_vertical_slice_main(argv[1:])
+    if argv[:1] == ["f01-source-retrieval-receipt"]:
+        from trading.research.f01_source_retrieval_receipt import main as f01_source_retrieval_receipt_main
+        return f01_source_retrieval_receipt_main(argv[1:])
+    if argv[:1] == ["candidate-catalog-audit"]:
+        from trading.research.candidate_catalog_audit import main as candidate_catalog_audit_main
+        return candidate_catalog_audit_main(argv[1:])
+    if argv[:1] == ["candidate-spec-registry"]:
+        from trading.research.candidate_spec_registry import main as candidate_spec_registry_main
+        return candidate_spec_registry_main(argv[1:])
+    if argv[:1] == ["paper-account-provenance"]:
+        from trading.research.paper_account_provenance import main as paper_account_provenance_main
+        return paper_account_provenance_main(argv[1:])
+    if argv[:1] == ["stockdb-replay-audit"]:
+        from trading.research.stockdb_replay_audit import main as stockdb_replay_audit_main
+        return stockdb_replay_audit_main(argv[1:])
     if argv[:1] == ["fixed-close-to-opening"]:
         from trading.research.fixed_close_to_opening import main as fixed_close_to_opening_main
         return fixed_close_to_opening_main(argv[1:])
@@ -272,6 +335,9 @@ def main(argv=None):
     if argv[:1] == ["shortline-native-score-publication"]:
         from trading.research.shortline_native_scoring import publication_main
         return publication_main(argv[1:])
+    if argv[:1] == ["shortline-score-gate-audit"]:
+        from trading.research.shortline_score_gate_audit import main as shortline_score_gate_audit_main
+        return shortline_score_gate_audit_main(argv[1:])
     if argv[:1] == ["shortline-native-preopen-plan"]:
         from trading.research.shortline_native_preopen import main as shortline_native_preopen_main
         return shortline_native_preopen_main(argv[1:])
@@ -362,6 +428,9 @@ def main(argv=None):
     if argv[:1] == ["offline-portfolio-risk"]:
         from trading.research.offline_portfolio_risk import main as offline_portfolio_risk_main
         return offline_portfolio_risk_main(argv[1:])
+    if argv[:1] == ["strategy-capacity-cost"]:
+        from trading.research.strategy_capacity_cost_comparison import main as strategy_capacity_cost_main
+        return strategy_capacity_cost_main(argv[1:])
     if argv[:1] == ["paper-release-sequence"]:
         from trading.research.paper_release_sequence import main as paper_release_sequence_main
         return paper_release_sequence_main(argv[1:])
@@ -422,6 +491,24 @@ def main(argv=None):
     if argv[:1] == ["stockdb-paper-target-package"]:
         from trading.research.stockdb_paper_target_package import main as stockdb_paper_target_package_main
         return stockdb_paper_target_package_main(argv[1:])
+    if argv[:1] == ["candidate-shadow-paper"]:
+        from trading.research.candidate_shadow_paper import main as candidate_shadow_paper_main
+        return candidate_shadow_paper_main(argv[1:])
+    if argv[:1] == ["daily-candidate-paper-batch"]:
+        from trading.research.daily_candidate_paper_batch import main as daily_candidate_paper_batch_main
+        return daily_candidate_paper_batch_main(argv[1:])
+    if argv[:1] == ["candidate-daily-input-bundle"]:
+        from trading.research.candidate_daily_input_bundle import main as candidate_daily_input_bundle_main
+        return candidate_daily_input_bundle_main(argv[1:])
+    if argv[:1] == ["candidate-daily-paper-run"]:
+        from trading.research.candidate_daily_paper_run import main as candidate_daily_paper_run_main
+        return candidate_daily_paper_run_main(argv[1:])
+    if argv[:1] == ["next-close-d0-d1"]:
+        from trading.research.next_close_d0_d1 import main as next_close_d0_d1_main
+        return next_close_d0_d1_main(argv[1:])
+    if argv[:1] == ["virtual-strategy-sleeves"]:
+        from trading.research.virtual_strategy_sleeves import main as virtual_strategy_sleeves_main
+        return virtual_strategy_sleeves_main(argv[1:])
     if argv[:1] == ["stockdb-baostock-splice-inventory"]:
         from trading.research.stockdb_baostock_splice_inventory import main as stockdb_baostock_splice_inventory_main
         return stockdb_baostock_splice_inventory_main(argv[1:])
@@ -551,6 +638,33 @@ def main(argv=None):
     if argv[:1] == ["stockdb-factor-score-diagnostic"]:
         from trading.research.stockdb_factor_score_diagnostic import main as stockdb_factor_score_diagnostic_main
         return stockdb_factor_score_diagnostic_main(argv[1:])
+    if argv[:1] == ["stockdb-factor-monthly-ridge-diagnostic"]:
+        from trading.research.stockdb_factor_monthly_ridge_diagnostic import main as stockdb_factor_monthly_ridge_diagnostic_main
+        return stockdb_factor_monthly_ridge_diagnostic_main(argv[1:])
+    if argv[:1] == ["stockdb-factor-monthly-ridge-replay"]:
+        from trading.research.stockdb_factor_monthly_ridge_replay import main as stockdb_factor_monthly_ridge_replay_main
+        return stockdb_factor_monthly_ridge_replay_main(argv[1:])
+    if argv[:1] == ["stockdb-factor-monthly-ridge-horizon-variant"]:
+        from trading.research.stockdb_factor_monthly_ridge_horizon_variant import main as stockdb_factor_monthly_ridge_horizon_variant_main
+        return stockdb_factor_monthly_ridge_horizon_variant_main(argv[1:])
+    if argv[:1] == ["stockdb-dated-eligibility-view"]:
+        from trading.research.stockdb_eligibility_view import main as stockdb_dated_eligibility_view_main
+        return stockdb_dated_eligibility_view_main(argv[1:])
+    if argv[:1] == ["stockdb-untouched-forward-holdout"]:
+        from trading.research.stockdb_untouched_forward_holdout import main as stockdb_untouched_forward_holdout_main
+        return stockdb_untouched_forward_holdout_main(argv[1:])
+    if argv[:1] == ["stockdb-dated-action-context-view"]:
+        from trading.research.stockdb_action_context_view import main as stockdb_dated_action_context_view_main
+        return stockdb_dated_action_context_view_main(argv[1:])
+    if argv[:1] == ["action-publication-sidecar"]:
+        from trading.research.action_publication_sidecar import main as action_publication_sidecar_main
+        return action_publication_sidecar_main(argv[1:])
+    if argv[:1] == ["f01-publication-sidecar"]:
+        from trading.research.f01_publication_sidecar import main as f01_publication_sidecar_main
+        return f01_publication_sidecar_main(argv[1:])
+    if argv[:1] == ["public-seat-replay-audit"]:
+        from trading.research.public_seat_replay_audit import main as public_seat_replay_audit_main
+        return public_seat_replay_audit_main(argv[1:])
     if argv[:1] == ["stockdb-alpha158-lgbm-diagnostic"]:
         from trading.research.stockdb_alpha158_lgbm_diagnostic import main as stockdb_alpha158_lgbm_diagnostic_main
         return stockdb_alpha158_lgbm_diagnostic_main(argv[1:])
@@ -722,6 +836,21 @@ def main(argv=None):
     if argv[:1] == ["financials"]:
         from trading.research.financials import main as financials_main
         return financials_main(argv[1:])
+    if argv[:1] == ["f01-scoped-field-coverage"]:
+        from trading.research.f01_scoped_field_coverage import main as f01_scoped_field_coverage_main
+        return f01_scoped_field_coverage_main(argv[1:])
+    if argv[:1] == ["f01-coverage-funnel"]:
+        from trading.research.f01_coverage_funnel import main as f01_coverage_funnel_main
+        return f01_coverage_funnel_main(argv[1:])
+    if argv[:1] == ["f2-fact-bridge"]:
+        from trading.research.f2_fact_bridge import main as f2_fact_bridge_main
+        return f2_fact_bridge_main(argv[1:])
+    if argv[:1] == ["f2-vertical-slice"]:
+        from trading.research.f2_vertical_slice import main as f2_vertical_slice_main
+        return f2_vertical_slice_main(argv[1:])
+    if argv[:1] == ["f2-bridge-vertical-slice"]:
+        from trading.research.f2_bridge_vertical_slice import main as f2_bridge_vertical_slice_main
+        return f2_bridge_vertical_slice_main(argv[1:])
     if argv[:1] == ["alternate-stock-daily"]:
         from trading.research.alternate_daily import main as alternate_daily_main
         return alternate_daily_main(argv[1:])

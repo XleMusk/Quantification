@@ -10,6 +10,7 @@ from copy import deepcopy
 from datetime import datetime
 import json
 from pathlib import Path
+from collections.abc import Mapping
 
 import numpy as np
 import pandas as pd
@@ -173,25 +174,88 @@ def _context_anchor(provider):
         "only_reference_context_not_quote_or_trade_session": True, "PIT_or_actions_verified": False}
 
 
+class _BoundedRows(Mapping):
+    """Compact day-indexed raw rows with one materialised day at a time."""
+    def __init__(self, frame, days, symbols):
+        self.symbols = tuple(symbols)
+        self._symbol_index = {symbol: index for index, symbol in enumerate(self.symbols)}
+        fields = ["open", "high", "low", "close", "preclose", "volume", "amount"]
+        self._days = tuple(days)
+        self._payload = {}
+        volume_grid = np.full((len(self._days), len(self.symbols)), np.nan, dtype=float)
+        day_index = {day: index for index, day in enumerate(self._days)}
+        for day, group in frame.groupby("date", sort=False):
+            if day not in day_index:
+                continue
+            codes = group["symbol"].to_numpy()
+            indexes = np.fromiter((self._symbol_index.get(symbol, -1) for symbol in codes), dtype=np.int32,
+                                  count=len(codes))
+            valid = indexes >= 0
+            indexes, group = indexes[valid], group.iloc[np.flatnonzero(valid)]
+            values = {field: pd.to_numeric(group[field], errors="coerce").to_numpy(dtype=float, copy=True)
+                      for field in fields}
+            statuses = group["tradestatus"].map({"0": 0, "1": 1}).to_numpy()
+            st_flags = group["isST"].map({"0": 0, "1": 1}).to_numpy()
+            self._payload[day] = (indexes, values, statuses, st_flags)
+            volume_grid[day_index[day], indexes] = values["volume"]
+        self.volumes = pd.DataFrame(volume_grid, index=self._days, columns=self.symbols)
+        self._cached_day = None
+        self._cached_rows = None
+
+    def __getitem__(self, day):
+        if day not in self._payload:
+            raise KeyError(day)
+        if day == self._cached_day:
+            return self._cached_rows
+        indexes, values, statuses, st_flags = self._payload[day]
+        rows = {}
+        for offset, symbol_index in enumerate(indexes):
+            status = statuses[offset]
+            st_flag = st_flags[offset]
+            rows[self.symbols[symbol_index]] = {
+                **{field: float(values[field][offset]) for field in values},
+                "tradestatus": int(status) if status in (0, 1) else None,
+                "isST": int(st_flag) if st_flag in (0, 1) else None,
+                "adjustflag": "3",
+            }
+        self._cached_day, self._cached_rows = day, rows
+        return rows
+
+    def __iter__(self):
+        return iter(self._payload)
+
+    def __len__(self):
+        return len(self._payload)
+
+
 class ExactSourceRawFeed(ShortlinePanelFeed):
     """Narrow Engine surface retaining raw status and nullable activity."""
-    def __init__(self, raw, days, symbols, context_anchor=None):
+    def __init__(self, raw, days, symbols, context_anchor=None, *, copy_raw=True, bounded_memory=False):
         self.symbols, self.calendar, self.signals = list(symbols), list(days), {}
         self.context_anchor = context_anchor or {"day": None, "closes": {}}
-        frame = raw.copy()
+        required = ["code", "date", "open", "high", "low", "close", "preclose",
+                    "volume", "amount", "tradestatus", "isST"]
+        missing = set(required) - set(raw)
+        if missing:
+            raise ValueError(f"Exact source raw is missing required fields: {sorted(missing)}")
+        frame = raw.loc[:, required].copy() if copy_raw else raw
         frame["symbol"] = frame.code.str[3:] + np.where(frame.code.str.startswith("sh."), ".SSE", ".SZSE")
         frame = frame.loc[frame.symbol.isin(symbols)]
         fields = ["open", "high", "low", "close", "preclose", "volume", "amount"]
         frame[fields] = frame[fields].apply(pd.to_numeric, errors="coerce")
-        self.rows = {}
-        for day, group in frame.groupby("date", sort=False):
-            values = {}
-            for row in group.to_dict("records"):
-                values[row["symbol"]] = {**{field: float(row[field]) for field in fields},
-                    "tradestatus": int(row["tradestatus"]) if row["tradestatus"] in ("0", "1") else None,
-                    "isST": int(row["isST"]) if row["isST"] in ("0", "1") else None, "adjustflag": "3"}
-            self.rows[day] = values
-        self.volumes = frame.pivot(index="date", columns="symbol", values="volume").reindex(index=days, columns=symbols)
+        if bounded_memory:
+            bounded = _BoundedRows(frame, days, symbols)
+            self.rows, self.volumes = bounded, bounded.volumes
+        else:
+            self.rows = {}
+            for day, group in frame.groupby("date", sort=False):
+                values = {}
+                for row in group.to_dict("records"):
+                    values[row["symbol"]] = {**{field: float(row[field]) for field in fields},
+                        "tradestatus": int(row["tradestatus"]) if row["tradestatus"] in ("0", "1") else None,
+                        "isST": int(row["isST"]) if row["isST"] in ("0", "1") else None, "adjustflag": "3"}
+                self.rows[day] = values
+            self.volumes = frame.pivot(index="date", columns="symbol", values="volume").reindex(index=days, columns=symbols)
         self.instruments = {symbol: {"ipoDate": None, "outDate": ""} for symbol in symbols}
         self.actions, self.instrument_profiles = [], {}
         self.manifest = {"replay_only": True, "scope": "exact_saved_recent_ordinary_raw_candidate_panel",

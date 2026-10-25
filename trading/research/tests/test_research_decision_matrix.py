@@ -1,44 +1,31 @@
 import json
 
-from trading.research import research_decision_matrix as matrix
+from trading.research.research_decision_matrix import build_matrix, classify_case
 
 
-def test_market_replay_blocker_is_visible_in_exception_register(tmp_path, monkeypatch):
-    monkeypatch.setattr(matrix, "ROOT", tmp_path)
-    run = tmp_path / "outputs" / "market_replay" / "run-1"
-    run.mkdir(parents=True)
-    (run / "run.json").write_text(json.dumps({
-        "id": "run-1",
-        "scope": "full_source_sh_sz_research_only",
-        "status": "failed_full_source_diagnostic",
-        "start": "2025-01-02",
-        "end": "2025-12-31",
-        "results": [{
-            "signal": "liquid_momentum",
-            "status": "failed",
-            "completed_sessions": 115,
-            "blocker": {
-                "code": "missing_corporate_action_terms",
-                "message": "missing reserve term",
-                "symbol": "603121.SSE",
-                "decision_date": "2025-06-27",
-                "missing_fields": ["dividReserveToStockPs"],
-            },
-        }],
-    }), encoding="utf-8")
+def test_complete_positive_case_continues_research_only():
+    row = classify_case({"signal": "x", "mode": "x", "status": "completed",
+                         "completed_sessions": 10, "net_return": .05,
+                         "max_drawdown": -.1, "orders": 2, "fills": 3}, expected_sessions=10)
+    assert row["complete_window"] is True
+    assert row["enterable"] is True
+    assert row["decision"] == "CONTINUE_RESEARCH_ONLY"
+    assert row["promotion_allowed"] is False
 
-    result = matrix._research_exception_register()
 
-    assert result["status"] == "open_blockers"
-    assert result["latest_market_replay_attempt"]["signal"] == "liquid_momentum"
-    assert result["open_items"] == [{
-        "code": "missing_corporate_action_terms",
-        "message": "missing reserve term",
-        "symbol": "603121.SSE",
-        "decision_date": "2025-06-27",
-        "missing_fields": ["dividReserveToStockPs"],
-        "source": str(run / "run.json"),
-        "signal": "liquid_momentum",
-        "window": {"start": "2025-01-02", "end": "2025-12-31"},
-        "source_kind": "market_replay",
-    }]
+def test_incomplete_case_has_no_return_and_is_blocked():
+    row = classify_case({"signal": "x", "status": "failed", "completed_sessions": 9,
+                         "net_return": .5, "orders": 2, "fills": 3,
+                         "error": "source_missing"}, expected_sessions=10)
+    assert row["post_event_opportunity"] is None
+    assert row["decision"] == "BLOCKED_INCOMPLETE_WINDOW"
+
+
+def test_saved_public_seat_matrix_preserves_gates():
+    source = json.loads(open("outputs/pipeline_receipts/20261024_public_seat_replay_audit_v2.json", encoding="utf-8").read())
+    result = build_matrix(source)
+    assert result["status"] == "VERIFIED_RESEARCH_DECISION_MATRIX"
+    assert result["decision_counts"]["CONTINUE_RESEARCH_ONLY"] == 2
+    assert result["decision_counts"]["STOP_RESEARCH_ONLY"] == 3
+    assert result["decision_counts"]["BLOCKED_INCOMPLETE_WINDOW"] == 4
+    assert result["promotion_gates"]["promotion_allowed"] is False

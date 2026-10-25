@@ -4,7 +4,7 @@ import sys
 
 import pytest
 
-from trading.architecture import CORE, audit
+from trading.architecture import CORE, CORE_PACKAGE_BRIDGES, CORE_SUPPORT, WORKBENCH_COMPOSITE, audit
 from trading.symbols import normalize_symbol
 
 
@@ -12,6 +12,23 @@ def test_real_checkout_dependency_rules():
     result = audit()
     assert result["status"] == "passed", result["violations"]
     assert result["modules_scanned"] > len(CORE)
+
+
+def test_reviewed_boundary_allowlists_are_exact_and_narrow():
+    assert CORE_SUPPORT == frozenset({
+        "trading.expected_returns", "trading.portfolio_allocation", "trading.portfolio_allocation_comparison", "trading.entry_risk",
+        "trading.rights_issue", "trading.event_frontier", "trading.target_exit_lifecycle",
+        "trading.published_close_router", "trading.published_close_session",
+        "trading.security_conversion", "trading.security_conversion_engine",
+        "trading.research.research_corporate_action_view",
+    })
+    assert CORE_PACKAGE_BRIDGES == frozenset({"trading.research"})
+    assert WORKBENCH_COMPOSITE == frozenset({
+        "trading.research.capability_gap_scan",
+        "trading.research.opening_cycle",
+        "trading.research.trader_desk_snapshot",
+    })
+    assert not CORE_SUPPORT & WORKBENCH_COMPOSITE
 
 
 @pytest.mark.parametrize("module,content,rule", [

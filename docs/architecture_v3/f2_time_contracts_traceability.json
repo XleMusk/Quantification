@@ -1,0 +1,65 @@
+{
+  "schema": "quantification_f2_time_contracts_trace_v1",
+  "source_document": "C:\\Users\\13944\\Downloads\\financial_factor_implementation_F2_20261023.docx",
+  "source_document_sha256": "f2fe14f8b84697d8e19a11e9e0dbdf83c448f17f9fcc0e1d40772de1636afaa6",
+  "source_semantics": [
+    "DOCX paragraphs 162-164: strict event-before reference, session-anchor delay, label_available_at maturity"
+  ],
+  "execution_admitted": false,
+  "account_replay": false,
+  "state": "VERIFIED_LOCAL",
+  "scope": "pure semantic functions and independent synthetic counterexamples; no market-data or account claim",
+  "implementation": {
+    "path": "D:\\Quantification\\trading\\research\\financial_factor_contracts.py",
+    "sha256": "1d44f3c3e629316589f5465a08de051d6d2fc4f39840c5b657076a3e228be20e",
+    "functions": [
+      "publication_interval",
+      "strictly_before",
+      "select_pre_event_reference",
+      "conservative_available_at",
+      "session_anchor",
+      "label_available_at",
+      "assess_label_maturity"
+    ]
+  },
+  "tests": {
+    "path": "D:\\Quantification\\trading\\research\\tests\\test_financial_factor_contracts.py",
+    "sha256": "78e9e9fa74e23398da63d3e72543c1d2e09e70c897eecd570fb1c9aad438d9cd",
+    "command": "D:\\Quantification\\env\\python.exe -B -m pytest -q trading/research/tests/test_financial_factor_contracts.py",
+    "result": "11 passed",
+    "independent_expected_values": true
+  },
+  "counterexamples": [
+    {
+      "id": "date_only_event_same_day_reference",
+      "event": "[2026-10-20T00:00:00+08:00,2026-10-21T00:00:00+08:00)",
+      "reference": "2026-10-20T09:00:00+08:00",
+      "expected": "PRE_EVENT_UNPROVEN"
+    },
+    {
+      "id": "delay_uses_session_anchor",
+      "calendar": [
+        "2026-10-20",
+        "2026-10-21",
+        "2026-10-22"
+      ],
+      "source_day": "2026-10-20",
+      "entry_policy": "first_window",
+      "delay_sessions": 1,
+      "expected": "2026-10-21T10:00:00+08:00"
+    },
+    {
+      "id": "late_label_source",
+      "label_actual_end": "2026-10-21T15:00:00+08:00",
+      "label_available_at": "2026-10-22T09:00:00+08:00",
+      "fit_cutoff": "2026-10-21T15:00:00+08:00",
+      "expected": "IMMATURE"
+    }
+  ],
+  "limitations": [
+    "No source adapter binding or real disclosure receipt was performed.",
+    "No StockDB or external market read was performed.",
+    "No Engine/Ledger account replay was performed.",
+    "No broker/client access or order action was performed."
+  ]
+}

@@ -1,0 +1,398 @@
+{
+  "schema": "quantification_f2_financial_factor_binding_v1",
+  "source_document": "C:\\Users\\13944\\Downloads\\financial_factor_implementation_F2_20261023.docx",
+  "source_date": "2026-10-23",
+  "execution_admitted": false,
+  "account_replay": false,
+  "states": [
+    "UNBOUND",
+    "PARTIAL",
+    "CODE_INTEGRATED",
+    "VERIFIED_LOCAL",
+    "DATA_READY",
+    "MARKET_EVALUATED",
+    "BLOCKED_DATA",
+    "NO_OPPORTUNITY",
+    "NOT_APPLICABLE"
+  ],
+  "required_fetch_completion": [
+    "COMPLETE",
+    "COMPLETE_EMPTY",
+    "PARTIAL",
+    "UNKNOWN_COVERAGE",
+    "SCHEMA_CHANGED",
+    "DENIED",
+    "RETRYABLE_ERROR"
+  ],
+  "packages": [
+    {
+      "id": "FP01",
+      "batch": "A",
+      "result": "Bind the existing research entry, snapshot, task and account path.",
+      "state": "PARTIAL",
+      "actual_paths": [
+        "trading/research/financials.py",
+        "trading/research/factor_execution_projection.py",
+        "trading/research/f01_task_binding.py",
+        "trading/research/tests/test_f01_task_binding.py",
+        "trading/store.py::register_research_attempt",
+        "outputs/financials/f01_task_binding_blocked_20261024.json"
+      ],
+      "next": "Feed a real disclosure snapshot through the readiness gate and existing API/task store; blocked inputs must remain uncreated.",
+      "acceptance": "A real event and fixed snapshot reach the existing account adapter with an auditable run id; the current annual/PIT-blocked snapshot creates no task."
+    },
+    {
+      "id": "FP02",
+      "batch": "A",
+      "result": "Freeze the study definition and preserve the existing F01 scope.",
+      "state": "PARTIAL",
+      "actual_paths": [
+        "trading/research/factors.py",
+        "trading/research/financials.py"
+      ],
+      "next": "Record formula, fields, periods, cutoff, universe, delay and cost versions.",
+      "acceptance": "The same study hash cannot silently change its signal or trading window."
+    },
+    {
+      "id": "FP03",
+      "batch": "A",
+      "result": "Separate diagnostic factor output from account replay output.",
+      "state": "PARTIAL",
+      "actual_paths": [
+        "trading/research/factor_execution_projection.py",
+        "trading/research/f01_worker.py",
+        "trading/research/tests/test_f01_worker.py",
+        "trading/store.py::register_research_attempt"
+      ],
+      "next": "Bind the durable F01 worker receipt to the existing research API/task store after a real disclosure snapshot is available.",
+      "acceptance": "No field or UI input can assert account_replay completion; only a terminal, hash-verified worker receipt can."
+    },
+    {
+      "id": "FP04",
+      "batch": "A",
+      "result": "Retain one run key and idempotent attempt behavior.",
+      "state": "VERIFIED_LOCAL",
+      "actual_paths": [
+        "trading/research/run_identity.py",
+        "trading/research/f01_account_replay.py",
+        "trading/research/tests/test_run_identity.py"
+      ],
+      "next": "Bind the stable identity to the persistent task store/API when the financial-factor entry is selected.",
+      "acceptance": "Mapping order does not change run_key; code/input changes create a new key; attempts are separate and locally tested."
+    },
+    {
+      "id": "FP05",
+      "batch": "B",
+      "result": "Return source data with a complete FetchReceipt.",
+      "state": "VERIFIED_LOCAL",
+      "actual_paths": [
+        "trading/research/fetch_receipts.py",
+        "trading/research/financials.py",
+        "trading/research/bulk_annual_financials.py",
+        "trading/research/tests/test_fetch_receipts.py",
+        "trading/research/tests/test_bulk_annual_financials.py",
+        "outputs/bulk_annual_financials/20261004_220836_94303b12/receipt_audit.json"
+      ],
+      "next": "Validate the receipt against an authorized real source run and preserve the upstream response contract/version.",
+      "acceptance": "Single-period and paged local adapters record request hash, raw blob hash, schema fingerprint, page coverage and distinct completion/error states; the existing six-group raw cache re-audits 66 pages as complete without network access, but no PIT/data-readiness claim is made."
+    },
+    {
+      "id": "FP06",
+      "batch": "B",
+      "result": "Detect missing pages and incomplete upstream financial responses.",
+      "state": "VERIFIED_LOCAL",
+      "actual_paths": [
+        "trading/research/financials.py",
+        "trading/research/tests/test_financials.py",
+        "outputs/financials/20260930_162448_8be1e603/collection_audit.json"
+      ],
+      "next": "Bind the partial/unknown result to the published F01 admission gate and preserve source-level page receipts.",
+      "acceptance": "A read-only audit identifies the existing collection as PARTIAL (53,520/80,505 tasks, 26,985 missing, 3,568/5,367 complete symbols) with no invalid file hashes; it cannot publish as complete or as a market result."
+    },
+    {
+      "id": "FP07",
+      "batch": "B",
+      "result": "Preserve original disclosures, identities and revisions.",
+      "state": "PARTIAL",
+      "actual_paths": [
+        "trading/research/annual_financial_inputs.py",
+        "outputs/pipeline_receipts/20261025_f01_publication_sidecar_contract_v3.json",
+        "trading/research/f2_fact_bridge.py",
+        "trading/research/tests/test_f2_fact_bridge.py",
+        "outputs/pipeline_receipts/20261025_f2_sidecar_fact_bridge_receipt_v1.json"
+      ],
+      "next": "Bind raw document references and issuer lineage to the fact store.",
+      "acceptance": "Correction, provider backfill and parser repair produce separate versions."
+    },
+    {
+      "id": "FP08",
+      "batch": "B",
+      "result": "Classify missing, conflict, denied and unknown coverage without zero filling.",
+      "state": "CODE_INTEGRATED",
+      "actual_paths": [
+        "trading/research/financials.py",
+        "trading/research/annual_financial_inputs.py",
+        "outputs/pipeline_receipts/20261025_f01_publication_sidecar_contract_v3.json",
+        "outputs/financials/f01_coverage_funnel_contract_v3_20261025.json",
+        "trading/research/f2_fact_bridge.py",
+        "trading/research/tests/test_f2_fact_bridge.py",
+        "outputs/pipeline_receipts/20261025_f2_sidecar_fact_bridge_receipt_v1.json",
+        "trading/research/f2_vertical_slice.py",
+        "trading/research/tests/test_f2_vertical_slice.py",
+        "outputs/f2_vertical_slice/20261025_synthetic/vertical_slice_receipt.json",
+        "trading/research/f2_bridge_vertical_slice.py",
+        "trading/research/tests/test_f2_bridge_vertical_slice.py",
+        "outputs/f2_vertical_slice/20261025_bridge_ready_synthetic/bridge_vertical_slice_receipt.json"
+      ],
+      "next": "Use the bridge receipt as the typed-fact admission input once historical as-of and explicit scope evidence are available.",
+      "acceptance": "Unknown coverage remains in the event master and cannot become an empty target.",
+      "local_evidence_note": "Synthetic READY bridge plus explicit prior facts reaches F01 Signal -> Target Portfolio -> shared paper Engine/Ledger; blocked real sidecar remains outside account replay."
+    },
+    {
+      "id": "FP09",
+      "batch": "C",
+      "result": "Use stable fact identity, units, periods, scope and currency.",
+      "state": "VERIFIED_LOCAL",
+      "actual_paths": [
+        "trading/research/financials.py",
+        "trading/research/f01_financial_factor.py",
+        "trading/research/financial_units.py",
+        "trading/research/tests/test_financial_units.py"
+      ],
+      "next": "Bind raw/standardized amounts and source dictionaries to the real fact view.",
+      "acceptance": "Explicit Decimal unit conversion preserves raw value/unit and rejects unknown units; the F01 fact contract retains issuer/metric/period/scope/currency identity."
+    },
+    {
+      "id": "FP10",
+      "batch": "C",
+      "result": "Select point-in-time versions before selecting report periods.",
+      "state": "PARTIAL",
+      "actual_paths": [
+        "trading/research/financials.py",
+        "trading/research/annual_financial_inputs.py",
+        "outputs/pipeline_receipts/20261025_f01_publication_sidecar_contract_v3.json",
+        "trading/research/tests/test_f01_publication_sidecar.py",
+        "outputs/financials/f01_coverage_funnel_contract_v3_20261025.json",
+        "trading/research/f2_fact_bridge.py",
+        "trading/research/tests/test_f2_fact_bridge.py",
+        "outputs/pipeline_receipts/20261025_f2_sidecar_fact_bridge_receipt_v1.json"
+      ],
+      "next": "Use the sidecar contract result to select only revisions proven before the cutoff; current three rows remain late-retrieval BLOCKED_DATA.",
+      "acceptance": "A later correction cannot change an earlier fixed cutoff result."
+    },
+    {
+      "id": "FP11",
+      "batch": "C",
+      "result": "Implement strict event interval and pre-event reference semantics.",
+      "state": "VERIFIED_LOCAL",
+      "actual_paths": [
+        "trading/research/financial_factor_contracts.py",
+        "trading/research/tests/test_financial_factor_contracts.py",
+        "docs/architecture_v3/f2_time_contracts_traceability.json"
+      ],
+      "next": "Bind the contract to the F01 event consumer after a real disclosure receipt is available.",
+      "acceptance": "Unproven same-day ordering returns PRE_EVENT_UNPROVEN; 11 independent synthetic tests pass."
+    },
+    {
+      "id": "FP12",
+      "batch": "C",
+      "result": "Compute standalone quarter and TTM values only for comparable inputs.",
+      "state": "VERIFIED_LOCAL",
+      "actual_paths": [
+        "trading/research/f01_financial_factor.py",
+        "trading/research/financial_periods.py",
+        "trading/research/tests/test_f01_financial_factor.py",
+        "trading/research/tests/test_financial_periods.py"
+      ],
+      "next": "Bind derived flows to real versioned financial facts and preserve their source versions.",
+      "acceptance": "Independent Decimal examples cover cumulative-to-single-quarter and TTM; mismatched period, unit or scope is rejected."
+    },
+    {
+      "id": "FP13",
+      "batch": "C",
+      "result": "Register F01 and explanation factors with explicit dependencies.",
+      "state": "VERIFIED_LOCAL",
+      "actual_paths": [
+        "trading/research/financial_factor_registry.py",
+        "trading/research/f01_financial_factor.py",
+        "trading/research/f01_readiness.py",
+        "trading/research/tests/test_financial_factor_registry.py",
+        "trading/research/tests/test_f01_financial_factor.py",
+        "outputs/financials/f01_readiness_20261024.json"
+      ],
+      "next": "Bind the pure F01 result to a real disclosure fact view and existing signal consumer after the readiness blockers are closed.",
+      "acceptance": "The explicit registry keeps only F01 active, rejects arbitrary factor execution, and Decimal F01 examples pass locally; the actual annual input run is explicitly BLOCKED_DATA for single-quarter/PIT F01 and explanation factors cannot alter ranking implicitly."
+    },
+    {
+      "id": "FP14",
+      "batch": "D",
+      "result": "Freeze snapshots and record query dependencies including misses.",
+      "state": "VERIFIED_LOCAL",
+      "actual_paths": [
+        "trading/stockdb_source.py",
+        "trading/research/financials.py",
+        "trading/research/query_dependencies.py",
+        "trading/research/tests/test_query_dependencies.py"
+      ],
+      "next": "Persist dependency records with the published financial snapshot and source receipt.",
+      "acceptance": "A later in-scope fact available by the cutoff reopens a prior MISS/UNKNOWN query; unrelated and late facts do not."
+    },
+    {
+      "id": "FP15",
+      "batch": "D",
+      "result": "Apply session based entry delays and mature labels.",
+      "state": "VERIFIED_LOCAL",
+      "actual_paths": [
+        "trading/research/financial_factor_contracts.py",
+        "trading/research/tests/test_financial_factor_contracts.py",
+        "docs/architecture_v3/f2_time_contracts_traceability.json"
+      ],
+      "next": "Bind to the existing versioned calendar and label consumers after a real study slice is fixed.",
+      "acceptance": "Delay 1 moves to the next named session anchor; late labels remain IMMATURE; 11 independent synthetic tests pass."
+    },
+    {
+      "id": "FP16",
+      "batch": "D",
+      "result": "Join eligible financial facts to market data without silently dropping rows.",
+      "state": "PARTIAL",
+      "actual_paths": [
+        "trading/research/financials.py",
+        "trading/stockdb_source.py",
+        "outputs/pipeline_receipts/20261025_f01_publication_sidecar_contract_v3.json",
+        "trading/research/tests/test_f01_publication_sidecar.py",
+        "outputs/financials/f01_coverage_funnel_contract_v3_20261025.json",
+        "trading/research/f2_fact_bridge.py",
+        "trading/research/tests/test_f2_fact_bridge.py",
+        "outputs/pipeline_receipts/20261025_f2_sidecar_fact_bridge_receipt_v1.json"
+      ],
+      "next": "Consume the sidecar contract in the coverage funnel; preserve 3/3 market joins but 0/3 PIT-safe rows until historical as-of evidence exists.",
+      "acceptance": "Each exclusion or missing input has a machine-readable reason."
+    },
+    {
+      "id": "FP17",
+      "batch": "E",
+      "result": "Convert fixed candidates into the existing PortfolioIntent and allocator.",
+      "state": "VERIFIED_LOCAL",
+      "actual_paths": [
+        "trading/research/f01_signal.py",
+        "trading/engine.py",
+        "trading/portfolio_allocation.py",
+        "trading/research/tests/test_f01_signal.py"
+      ],
+      "next": "Bind the adapter to a real disclosure-backed F01 snapshot.",
+      "acceptance": "A synthetic F01 SignalFrame reaches the existing target/order path without a second balance or matcher."
+    },
+    {
+      "id": "FP18",
+      "batch": "E",
+      "result": "Run a complete isolated account with cash, holdings, orders, fills, fees, actions and NAV.",
+      "state": "VERIFIED_LOCAL",
+      "actual_paths": [
+        "trading/ledger.py",
+        "trading/engine.py",
+        "trading/research/f01_signal.py",
+        "trading/research/f01_account_replay.py",
+        "trading/research/tests/test_f01_signal.py",
+        "docs/architecture_v3/FP17_FP18_REFERENCE.json"
+      ],
+      "next": "Produce and independently reconcile the first real financial event account bundle.",
+      "acceptance": "The local account replay generates targets, orders and fills through the shared Ledger, records all pipeline stages and can bind a stable run_key; execution_admitted remains false and market/account readiness is still gated."
+    },
+    {
+      "id": "FP19",
+      "batch": "E",
+      "result": "Keep fixed benchmarks and separate cost, friction and observation differences.",
+      "state": "VERIFIED_LOCAL",
+      "actual_paths": [
+        "trading/research_comparison.py",
+        "trading/research/factor_execution_projection.py",
+        "outputs/pipeline_receipts/20261025_f01_comparison_contract_receipt_v1.json",
+        "trading/research/stockdb_paper_target_package.py",
+        "trading/research/tests/test_candidate_daily_paper_run.py",
+        "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v3/paper_batch/public_seat_trend_hypotheses/result.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v4/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v4/fixed/result.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v4/paper_batch/stockdb_low_vol_half_momentum_20/result.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v4/paper_batch/factor_candidate_family_balanced_ridge/result.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v5/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v5/paper_batch/batch_receipt.json"
+      ],
+      "next": "Reuse the enforced cost/benchmark binding on the 2026-10-26 fixed/candidate paper batch; reject mixed versions.",
+      "acceptance": "No benchmark or cost setting changes after evaluation."
+    },
+    {
+      "id": "FP20",
+      "batch": "E",
+      "result": "Record study, event, factor, target, order and account trace links.",
+      "state": "VERIFIED_LOCAL",
+      "actual_paths": [
+        "trading/research/f01_account_replay.py",
+        "trading/research/f01_signal.py",
+        "trading/research/f01_financial_factor.py",
+        "trading/research/tests/test_f01_signal.py"
+      ],
+      "next": "Bind the local provenance trace to a real disclosure/source receipt and published study run.",
+      "acceptance": "The local bundle carries signal provenance, targets, orders and fills in one shared replay trace; real original-source linkage remains gated."
+    },
+    {
+      "id": "FP21",
+      "batch": "F",
+      "result": "Recompute affected decisions and shared account paths from the earliest checkpoint.",
+      "state": "VERIFIED_LOCAL",
+      "actual_paths": [
+        "trading/ledger.py",
+        "trading/research/factor_execution_projection.py",
+        "trading/research/query_dependencies.py",
+        "trading/research/tests/test_query_dependencies.py"
+      ],
+      "next": "Bind decision impact to the durable account checkpoint/replay bundle.",
+      "acceptance": "A selected-symbol, target, order, fee, cash or position change is classified REPLAY_ACCOUNT; explanatory-only changes remain separate."
+    },
+    {
+      "id": "FP22",
+      "batch": "F",
+      "result": "Recover interrupted runs, reject stale generations and preserve failed evidence.",
+      "state": "PARTIAL",
+      "actual_paths": [
+        "webapp/backend/app/store.py",
+        "trading/store.py",
+        "trading/worker.py",
+        "trading/store.py::register_research_attempt",
+        "trading/store.py::record_research_terminal",
+        "trading/tests/test_trading.py::test_worker_startup_records_interruption_receipt_and_explicit_resume",
+        "trading/tests/test_trading.py::test_worker_main_process_restart_replays_next_daily_checkpoint",
+        "trading/research/f01_worker.py",
+        "trading/research/tests/test_f01_worker.py",
+        "trading/research/system_daily_route_recovery.py"
+      ],
+      "next": "Bind F01 worker attempt receipts to the existing persistent task/API store and a real disclosure snapshot.",
+      "acceptance": "A worker interruption records the preserved cursor/state hash once; F01 attempt interruption is UNKNOWN_NO_RETRY; explicit paper/replay resume continues without duplicating economic events."
+    },
+    {
+      "id": "FP23",
+      "batch": "F",
+      "result": "Publish a versioned result package and support empty-directory recovery.",
+      "state": "VERIFIED_LOCAL",
+      "actual_paths": [
+        "trading/research/f01_account_replay.py",
+        "trading/research/tests/test_f01_signal.py",
+        "trading/research/recovery_bundle.py",
+        "trading/research/tests/test_recovery_bundle.py",
+        "trading/research/paper_account_recovery.py",
+        "trading/research/tests/test_paper_account_recovery.py",
+        "outputs/recovery_rehearsals/20261024_lowvol_current/receipt.json"
+      ],
+      "next": "Preserve the copied-account rehearsal on the next paper rollover; bind a worker interruption receipt when a real worker interruption occurs.",
+      "acceptance": "The local replay and recovery bundle publish atomically with manifest hashes, reject tampering, restore named inputs into an empty directory, and the current copied paper account verifies equal cash/positions; execution_admitted remains false."
+    },
+    {
+      "id": "FP24",
+      "batch": "F",
+      "result": "Produce the research decision and forward continuation record.",
+      "state": "UNBOUND",
+      "actual_paths": [],
+      "next": "After real data and account evidence, classify continue, stop, blocked or no opportunity.",
+      "acceptance": "No positive/negative market claim is made without the required real slice."
+    }
+  ]
+}

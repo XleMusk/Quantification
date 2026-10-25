@@ -198,7 +198,15 @@ def resume_check(previous, protocol, manifest, dates, config):
             or previous.get("status") not in {"completed_seat_bulk_diagnostic", "partial_seat_bulk_diagnostic"}
             or previous.get("execution_admitted") is not False
             or len(previous["results"]) != len(protocol["cases"])
-            or any(previous["protocol"].get(key) != value for key, value in protocol.items() if key != "stock_inputs")
+            or any(
+                previous["protocol"].get(key) != value
+                for key, value in protocol.items()
+                if key not in {"stock_inputs", "adjusted_continuity_override"}
+            )
+            or (
+                previous["protocol"].get("adjusted_continuity_override", False)
+                and protocol.get("adjusted_continuity_override") is not True
+            )
             or [{key: row[key] for key in ("signal", "mode", "lag")} for row in previous["results"]] != protocol["cases"]):
         raise ValueError("Seat continuation requires the same terminal hypotheses, disclosure snapshot, dates and costs")
     validate_prefix_inputs(previous["stock_manifest"], manifest, None)
@@ -242,7 +250,7 @@ def append_signal_observations(feed, destination, checkpoint):
 
 
 def run(source_run, dataset=DEFAULT_DATASET, *, resume_run=None, event_view=None, reference_view=None,
-        resume_cases=(), fresh_input_override=False):
+        resume_cases=(), fresh_input_override=False, allow_adjusted_continuity=False):
     source_run, dataset = Path(source_run).resolve(), Path(dataset).resolve()
     source = json.loads(source_run.read_text(encoding="utf-8"))
     status = json.loads((dataset / "status.json").read_text(encoding="utf-8"))
@@ -274,7 +282,8 @@ def run(source_run, dataset=DEFAULT_DATASET, *, resume_run=None, event_view=None
                 "cases": [{"signal": mode if not lag else f"lag{lag}_{mode}", "mode": mode, "lag": lag} for mode, lag in cases],
                 "formula": "Original Donchian20/10/ATR20 and earlier H1/H4/ANY_LHB regime flags",
                 "availability": "unknown publication timestamp; lagged decision close then next-session fills",
-                "live_orders": False, "execution_admitted": False, "limits": LIMITS}
+                "live_orders": False, "execution_admitted": False,
+                "adjusted_continuity_override": bool(allow_adjusted_continuity), "limits": LIMITS}
     record = {"id": identifier, "research_family": ID, "status": "preparing", "protocol": protocol,
               "artifacts": str(root), "start": EVALUATION[0], "end": EVALUATION[1], "results": [], "execution_admitted": False}
     if previous is not None:
@@ -285,7 +294,7 @@ def run(source_run, dataset=DEFAULT_DATASET, *, resume_run=None, event_view=None
     base = None
     with lock(dataset / "bulk_replay.lock"):
         try:
-            base = BulkResearchFeed(**inputs)
+            base = BulkResearchFeed(**inputs, allow_adjusted_continuity=allow_adjusted_continuity)
             if EVALUATION[0] not in base.calendar or EVALUATION[1] not in base.calendar:
                 raise ValueError("Both fixed evaluation endpoints must be present in the source calendar")
             dates = [day for day in base.calendar if EVALUATION[0] <= day <= EVALUATION[1]]
@@ -363,10 +372,13 @@ def main(argv=None):
     parser.add_argument("--event-view", type=Path)
     parser.add_argument("--reference-view", type=Path)
     parser.add_argument("--resume-case", action="append", default=[])
+    parser.add_argument("--allow-adjusted-continuity", action="store_true",
+                        help="Research-only: permit saved reference_mismatch rows only when adjusted preclose continuity is verified")
     parser.add_argument("--fresh-input-override", action="store_true",
                         help="Start a new full replay with the explicit event/reference pair; do not reuse a seat checkpoint")
     args = parser.parse_args(argv)
     _, result = run(args.source_run, args.seat_dataset, resume_run=args.resume_run,
                     event_view=args.event_view, reference_view=args.reference_view, resume_cases=args.resume_case,
-                    fresh_input_override=args.fresh_input_override)
+                    fresh_input_override=args.fresh_input_override,
+                    allow_adjusted_continuity=args.allow_adjusted_continuity)
     return 0 if result["status"] == "completed_seat_bulk_diagnostic" else 1

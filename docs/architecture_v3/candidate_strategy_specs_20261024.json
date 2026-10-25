@@ -1,0 +1,459 @@
+{
+  "schema": "quantification_candidate_strategy_spec_registry_v1",
+  "version": "2026-10-24-r01",
+  "execution_admitted": false,
+  "promotion_allowed": false,
+  "selection_policy": "Fixed data/window/cost/gate specs are required before any candidate rerun; diagnostics never auto-promote.",
+  "entries": [
+    {
+      "id": "stockdb_low_volatility_252_20",
+      "family": "fixed_low_volatility",
+      "comparability_group": "stockdb_2026_current",
+      "data_snapshot": {
+        "id": "stockdb_2026_current",
+        "basis": "catalog evidence comparability group; no mixed snapshots",
+        "source_bound_by_catalog": true
+      },
+      "primary_window": {
+        "kind": "current_paper_and_long_replay",
+        "start": "2024-01-02",
+        "end": "2026-10-23",
+        "sessions_expected": 678
+      },
+      "portfolio": {
+        "initial_cash_cny": 140000.0,
+        "holdings": 20,
+        "retain_rank": 30,
+        "gross_limit": 0.8,
+        "single_limit": 0.2,
+        "lot_size_shares": 100
+      },
+      "cost_profile": {
+        "commission": 0.0003,
+        "minimum_commission_cny": 5.0,
+        "sell_tax": 0.0005,
+        "transfer_fee": 1e-05,
+        "slippage_bps": 10.0,
+        "participation": 0.01
+      },
+      "acceptance_gate": {
+        "execution_admitted": false,
+        "strategy_validated": false,
+        "pit_required_before_promotion": true,
+        "fresh_holdout_required": true,
+        "source_hashes_required": true,
+        "shared_engine_ledger_required": true,
+        "replay_allowed": true,
+        "paper_allowed": true,
+        "stop_reason": null
+      },
+      "promotion_rule": {
+        "promotion_allowed": false,
+        "decision": "retain_as_diagnostic_or_blocked_candidate",
+        "reason": "fixed low-vol control can continue through shared paper path; adoption remains closed"
+      },
+      "execution_admitted": false,
+      "live_channel_allowed": false
+    },
+    {
+      "id": "stockdb_momentum_12_1_20",
+      "family": "trend_momentum",
+      "comparability_group": "stockdb_2026_0831_1016",
+      "data_snapshot": {
+        "id": "stockdb_2026_0831_1016",
+        "basis": "catalog evidence comparability group; no mixed snapshots",
+        "source_bound_by_catalog": true
+      },
+      "primary_window": {
+        "kind": "current_and_long_replay",
+        "start": "2024-01-02",
+        "end": "2026-10-23",
+        "sessions_expected": 678
+      },
+      "portfolio": {
+        "initial_cash_cny": 140000.0,
+        "holdings": 20,
+        "retain_rank": 30,
+        "gross_limit": 0.8,
+        "single_limit": 0.2,
+        "lot_size_shares": 100
+      },
+      "cost_profile": {
+        "commission": 0.0003,
+        "minimum_commission_cny": 5.0,
+        "sell_tax": 0.0005,
+        "transfer_fee": 1e-05,
+        "slippage_bps": 10.0,
+        "participation": 0.01
+      },
+      "acceptance_gate": {
+        "execution_admitted": false,
+        "strategy_validated": false,
+        "pit_required_before_promotion": true,
+        "fresh_holdout_required": true,
+        "source_hashes_required": true,
+        "shared_engine_ledger_required": true,
+        "replay_allowed": true,
+        "paper_allowed": true,
+        "stop_reason": null
+      },
+      "promotion_rule": {
+        "promotion_allowed": false,
+        "decision": "retain_as_diagnostic_or_blocked_candidate",
+        "reason": "diagnostic candidate; current paper promotion not allowed"
+      },
+      "execution_admitted": false,
+      "live_channel_allowed": false
+    },
+    {
+      "id": "stockdb_low_vol_half_momentum_20",
+      "family": "trend_momentum",
+      "comparability_group": "stockdb_2026_0831_1016",
+      "data_snapshot": {
+        "id": "stockdb_2026_0831_1016",
+        "basis": "catalog evidence comparability group; no mixed snapshots",
+        "source_bound_by_catalog": true
+      },
+      "primary_window": {
+        "kind": "current_and_long_replay",
+        "start": "2024-01-02",
+        "end": "2026-10-23",
+        "sessions_expected": 678
+      },
+      "portfolio": {
+        "initial_cash_cny": 140000.0,
+        "holdings": 20,
+        "retain_rank": 30,
+        "gross_limit": 0.8,
+        "single_limit": 0.2,
+        "lot_size_shares": 100
+      },
+      "cost_profile": {
+        "commission": 0.0003,
+        "minimum_commission_cny": 5.0,
+        "sell_tax": 0.0005,
+        "transfer_fee": 1e-05,
+        "slippage_bps": 10.0,
+        "participation": 0.01
+      },
+      "acceptance_gate": {
+        "execution_admitted": false,
+        "strategy_validated": false,
+        "pit_required_before_promotion": true,
+        "fresh_holdout_required": true,
+        "source_hashes_required": true,
+        "shared_engine_ledger_required": true,
+        "replay_allowed": true,
+        "paper_allowed": true,
+        "stop_reason": null
+      },
+      "promotion_rule": {
+        "promotion_allowed": false,
+        "decision": "retain_as_diagnostic_or_blocked_candidate",
+        "reason": "diagnostic candidate; current paper promotion not allowed"
+      },
+      "execution_admitted": false,
+      "live_channel_allowed": false
+    },
+    {
+      "id": "alpha158_lgbm_candidate_panel_v1",
+      "family": "alpha158_lightgbm",
+      "comparability_group": "stockdb_same_snapshot_2026_0831_1009",
+      "data_snapshot": {
+        "id": "stockdb_same_snapshot_2026_0831_1009",
+        "basis": "catalog evidence comparability group; no mixed snapshots",
+        "source_bound_by_catalog": true
+      },
+      "primary_window": {
+        "kind": "same_snapshot_native_and_forward",
+        "start": "2026-08-31",
+        "end": "2026-10-23",
+        "sessions_expected": 184
+      },
+      "portfolio": {
+        "initial_cash_cny": 140000.0,
+        "holdings": 20,
+        "retain_rank": 30,
+        "gross_limit": 0.8,
+        "single_limit": 0.2,
+        "lot_size_shares": 100
+      },
+      "cost_profile": {
+        "commission": 0.0003,
+        "minimum_commission_cny": 5.0,
+        "sell_tax": 0.0005,
+        "transfer_fee": 1e-05,
+        "slippage_bps": 10.0,
+        "participation": 0.01
+      },
+      "acceptance_gate": {
+        "execution_admitted": false,
+        "strategy_validated": false,
+        "pit_required_before_promotion": true,
+        "fresh_holdout_required": true,
+        "source_hashes_required": true,
+        "shared_engine_ledger_required": true,
+        "replay_allowed": true,
+        "paper_allowed": true,
+        "stop_reason": null
+      },
+      "promotion_rule": {
+        "promotion_allowed": false,
+        "decision": "retain_as_diagnostic_or_blocked_candidate",
+        "reason": "full-native diagnostic is complete; PIT and promotion gates remain closed"
+      },
+      "execution_admitted": false,
+      "live_channel_allowed": false
+    },
+    {
+      "id": "factor_candidate_family_balanced_ridge",
+      "family": "mature_factor_library",
+      "comparability_group": "bulk_adjusted_factor_inputs_2025_2026",
+      "data_snapshot": {
+        "id": "bulk_adjusted_factor_inputs_2025_2026",
+        "basis": "catalog evidence comparability group; no mixed snapshots",
+        "source_bound_by_catalog": true
+      },
+      "primary_window": {
+        "kind": "same_lineage_monthly_and_forward",
+        "start": "2025-01-02",
+        "end": "2026-10-23",
+        "sessions_expected": 648
+      },
+      "portfolio": {
+        "initial_cash_cny": 140000.0,
+        "holdings": 20,
+        "retain_rank": 30,
+        "gross_limit": 0.8,
+        "single_limit": 0.2,
+        "lot_size_shares": 100
+      },
+      "cost_profile": {
+        "commission": 0.0003,
+        "minimum_commission_cny": 5.0,
+        "sell_tax": 0.0005,
+        "transfer_fee": 1e-05,
+        "slippage_bps": 10.0,
+        "participation": 0.01
+      },
+      "acceptance_gate": {
+        "execution_admitted": false,
+        "strategy_validated": false,
+        "pit_required_before_promotion": true,
+        "fresh_holdout_required": true,
+        "source_hashes_required": true,
+        "shared_engine_ledger_required": true,
+        "replay_allowed": true,
+        "paper_allowed": true,
+        "stop_reason": null
+      },
+      "promotion_rule": {
+        "promotion_allowed": false,
+        "decision": "retain_as_diagnostic_or_blocked_candidate",
+        "reason": "same-lineage diagnostic is complete; action publication/PIT gate remains closed"
+      },
+      "execution_admitted": false,
+      "live_channel_allowed": false
+    },
+    {
+      "id": "stockdb_value_size_activity_2023",
+      "family": "mature_factor_library",
+      "comparability_group": "stockdb_factor_2023_retrospective",
+      "data_snapshot": {
+        "id": "stockdb_factor_2023_retrospective",
+        "basis": "catalog evidence comparability group; no mixed snapshots",
+        "source_bound_by_catalog": true
+      },
+      "primary_window": {
+        "kind": "retrospective_development",
+        "start": "2023-01-01",
+        "end": "2023-12-31",
+        "sessions_expected": 242
+      },
+      "portfolio": {
+        "initial_cash_cny": 140000.0,
+        "holdings": 20,
+        "retain_rank": 30,
+        "gross_limit": 0.8,
+        "single_limit": 0.2,
+        "lot_size_shares": 100
+      },
+      "cost_profile": {
+        "commission": 0.0003,
+        "minimum_commission_cny": 5.0,
+        "sell_tax": 0.0005,
+        "transfer_fee": 1e-05,
+        "slippage_bps": 10.0,
+        "participation": 0.01
+      },
+      "acceptance_gate": {
+        "execution_admitted": false,
+        "strategy_validated": false,
+        "pit_required_before_promotion": true,
+        "fresh_holdout_required": true,
+        "source_hashes_required": true,
+        "shared_engine_ledger_required": true,
+        "replay_allowed": true,
+        "paper_allowed": false,
+        "stop_reason": null
+      },
+      "promotion_rule": {
+        "promotion_allowed": false,
+        "decision": "retain_as_diagnostic_or_blocked_candidate",
+        "reason": "historical development diagnostic only; no current paper continuation"
+      },
+      "execution_admitted": false,
+      "live_channel_allowed": false
+    },
+    {
+      "id": "shortline_native_lr_lgbm",
+      "family": "shortline_board_chain",
+      "comparability_group": "shortline_saved_selection_2026",
+      "data_snapshot": {
+        "id": "shortline_saved_selection_2026",
+        "basis": "catalog evidence comparability group; no mixed snapshots",
+        "source_bound_by_catalog": true
+      },
+      "primary_window": {
+        "kind": "saved_selection_partial",
+        "start": "2026-01-01",
+        "end": "2026-10-23",
+        "sessions_expected": 103
+      },
+      "portfolio": {
+        "initial_cash_cny": 140000.0,
+        "holdings": 20,
+        "retain_rank": 30,
+        "gross_limit": 0.8,
+        "single_limit": 0.2,
+        "lot_size_shares": 100
+      },
+      "cost_profile": {
+        "commission": 0.0003,
+        "minimum_commission_cny": 5.0,
+        "sell_tax": 0.0005,
+        "transfer_fee": 1e-05,
+        "slippage_bps": 10.0,
+        "participation": 0.01
+      },
+      "acceptance_gate": {
+        "execution_admitted": false,
+        "strategy_validated": false,
+        "pit_required_before_promotion": true,
+        "fresh_holdout_required": true,
+        "source_hashes_required": true,
+        "shared_engine_ledger_required": true,
+        "replay_allowed": false,
+        "paper_allowed": false,
+        "stop_reason": "score gate has zero paper_candidate_only=true rows; preserve stop point"
+      },
+      "promotion_rule": {
+        "promotion_allowed": false,
+        "decision": "retain_as_diagnostic_or_blocked_candidate",
+        "reason": "score gate has zero paper_candidate_only=true rows; preserve stop point"
+      },
+      "execution_admitted": false,
+      "live_channel_allowed": false
+    },
+    {
+      "id": "public_seat_trend_hypotheses",
+      "family": "public_seat_and_turtle_style",
+      "comparability_group": "seat_bulk_2024_2026",
+      "data_snapshot": {
+        "id": "seat_bulk_2024_2026",
+        "basis": "catalog evidence comparability group; no mixed snapshots",
+        "source_bound_by_catalog": true
+      },
+      "primary_window": {
+        "kind": "seat_bulk_diagnostic",
+        "start": "2024-01-01",
+        "end": "2026-10-23",
+        "sessions_expected": 1205
+      },
+      "portfolio": {
+        "initial_cash_cny": 140000.0,
+        "holdings": 20,
+        "retain_rank": 30,
+        "gross_limit": 0.8,
+        "single_limit": 0.2,
+        "lot_size_shares": 100
+      },
+      "cost_profile": {
+        "commission": 0.0003,
+        "minimum_commission_cny": 5.0,
+        "sell_tax": 0.0005,
+        "transfer_fee": 1e-05,
+        "slippage_bps": 10.0,
+        "participation": 0.01
+      },
+      "acceptance_gate": {
+        "execution_admitted": false,
+        "strategy_validated": false,
+        "pit_required_before_promotion": true,
+        "fresh_holdout_required": true,
+        "source_hashes_required": true,
+        "shared_engine_ledger_required": true,
+        "replay_allowed": false,
+        "paper_allowed": false,
+        "stop_reason": "publication timing and causal attribution unresolved; no trade route"
+      },
+      "promotion_rule": {
+        "promotion_allowed": false,
+        "decision": "retain_as_diagnostic_or_blocked_candidate",
+        "reason": "publication timing and causal attribution unresolved; no trade route"
+      },
+      "execution_admitted": false,
+      "live_channel_allowed": false
+    },
+    {
+      "id": "leader_eight_type_replay_engine",
+      "family": "public_leader_style",
+      "comparability_group": "leader_case_2026",
+      "data_snapshot": {
+        "id": "leader_case_2026",
+        "basis": "catalog evidence comparability group; no mixed snapshots",
+        "source_bound_by_catalog": true
+      },
+      "primary_window": {
+        "kind": "resource_stopped_partial",
+        "start": "2025-01-02",
+        "end": "2026-09-30",
+        "sessions_expected": 424
+      },
+      "portfolio": {
+        "initial_cash_cny": 140000.0,
+        "holdings": 20,
+        "retain_rank": 30,
+        "gross_limit": 0.8,
+        "single_limit": 0.2,
+        "lot_size_shares": 100
+      },
+      "cost_profile": {
+        "commission": 0.0003,
+        "minimum_commission_cny": 5.0,
+        "sell_tax": 0.0005,
+        "transfer_fee": 1e-05,
+        "slippage_bps": 10.0,
+        "participation": 0.01
+      },
+      "acceptance_gate": {
+        "execution_admitted": false,
+        "strategy_validated": false,
+        "pit_required_before_promotion": true,
+        "fresh_holdout_required": true,
+        "source_hashes_required": true,
+        "shared_engine_ledger_required": true,
+        "replay_allowed": false,
+        "paper_allowed": false,
+        "stop_reason": "cross-year resource stop; no new leader replay on weekend"
+      },
+      "promotion_rule": {
+        "promotion_allowed": false,
+        "decision": "retain_as_diagnostic_or_blocked_candidate",
+        "reason": "cross-year resource stop; no new leader replay on weekend"
+      },
+      "execution_admitted": false,
+      "live_channel_allowed": false
+    }
+  ]
+}

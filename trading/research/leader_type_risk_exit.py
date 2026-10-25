@@ -132,19 +132,19 @@ class LeaderTypeRiskExitPolicy:
     from the pinned feed's exact decision/reference session, never today's low.
     """
 
-    def __init__(self, type_id, *, candidate_by_day, feature_by_day, complete_feature_days=()):
+    def __init__(self, type_id, *, candidate_by_day, feature_by_day, complete_feature_days=(), copy_inputs=True):
         if type_id not in TYPE_IDS:
             raise ValueError("A fixed original eight-type identity is required")
         self.type_id = type_id
         self.policy_id = POLICY_ID + ":" + type_id
         self.candidates = {}
         for day, values in candidate_by_day.items():
-            rows = deepcopy(list(values))
+            rows = deepcopy(list(values)) if copy_inputs else list(values)
             mapping = {row["symbol"]: row for row in rows}
             if len(mapping) != len(rows) or any(row.get("source_day", day) != day or row.get("date", day) != day for row in rows):
                 raise ValueError("Entry candidates must be distinct and exactly dated")
             self.candidates[day] = mapping
-        self.features = deepcopy(feature_by_day)
+        self.features = deepcopy(feature_by_day) if copy_inputs else feature_by_day
         self.complete_feature_days = frozenset(complete_feature_days)
         self.expiry = FiveSessionExpiryPolicy()
 

@@ -1,0 +1,930 @@
+{
+  "schema": "quantification_v3_work_package_binding_v1",
+  "source_document": "C:\\Users\\13944\\Downloads\\quant_rebuild_V3_detailed_20261023.docx",
+  "source_date": "2026-10-23",
+  "execution_admitted": false,
+  "states": [
+    "UNBOUND",
+    "CODE_INTEGRATED",
+    "VERIFIED_LOCAL",
+    "DATA_READY",
+    "MARKET_EVALUATED",
+    "ENVIRONMENT_VALIDATED",
+    "CHANNEL_VALIDATED",
+    "PARTIAL",
+    "BLOCKED_DATA",
+    "NO_OPPORTUNITY",
+    "NOT_APPLICABLE"
+  ],
+  "business_slices": [
+    "source_event_to_timepoint_signal",
+    "signal_to_shared_paper_account",
+    "replay_recovery_and_browser_trace",
+    "forward_candidate_continuation"
+  ],
+  "packages": [
+    {
+      "id": "F01",
+      "domain": "development",
+      "result": "Bind existing entries, successful commands, commits, artifacts and only the remaining differences.",
+      "state": "CODE_INTEGRATED",
+      "next": "Obtain original issuer-PDF retrieval/as-of/revision receipts; the funnel now consumes the publication sidecar and has an explicit market join but remains blocked on PIT.",
+      "prohibition": "Do not repeat a full inventory or treat a plan checker as production evidence.",
+      "actual_paths": [
+        "trading/research/f01_scoped_field_coverage.py",
+        "trading/tests/test_f01_scoped_field_coverage.py",
+        "outputs/financials/f01_scoped_field_coverage_20261024.json",
+        "run_committee.py",
+        "trading/research/f01_publication_sidecar.py",
+        "trading/research/tests/test_f01_publication_sidecar.py",
+        "outputs/pipeline_receipts/20261024_f01_publication_sidecar_v1.json",
+        "outputs/research_reports/20261024_f01_publication_sidecar_v1.md",
+        "run_committee.py f01-publication-sidecar",
+        "outputs/financials/f01_coverage_funnel_with_sidecar_20261024.json",
+        "trading/tests/test_f01_coverage_funnel.py",
+        "outputs/research_reports/20261024_f01_coverage_funnel_with_sidecar_v1.md",
+        "trading/research/f01_local_vertical_slice.py",
+        "trading/research/tests/test_f01_local_vertical_slice.py",
+        "outputs/pipeline_receipts/20261024_f01_local_vertical_slice_v1.json",
+        "outputs/research_reports/20261024_f01_local_vertical_slice_v1.md",
+        "trading/research/f01_source_retrieval_receipt.py",
+        "trading/research/tests/test_f01_source_retrieval_receipt.py",
+        "outputs/pipeline_receipts/20261024_f01_source_retrieval_receipt_v1.json",
+        "outputs/research_reports/20261024_f01_source_retrieval_receipt_v1.md",
+        "run_committee.py f01-source-retrieval-receipt",
+        "outputs/pipeline_receipts/20261024_f01_publication_sidecar_network_v2.json",
+        "outputs/research_reports/20261024_f01_publication_sidecar_network_v2.md",
+        "trading/research/f01_publication_sidecar.py",
+        "trading/research/tests/test_f01_publication_sidecar.py",
+        "run_committee.py f01-publication-sidecar --retrieval-receipt"
+      ]
+    },
+    {
+      "id": "F02",
+      "domain": "development",
+      "result": "Isolated workspaces and runtime configuration are reproducible and cleanable.",
+      "state": "PARTIAL",
+      "next": "Record a bounded worktree/runtime recipe for any package that writes code or durable state.",
+      "prohibition": "A worktree is not a safety sandbox and must not receive credentials."
+    },
+    {
+      "id": "F03",
+      "domain": "development",
+      "result": "Shared object, error and state meanings have one consumer-facing definition.",
+      "state": "PARTIAL",
+      "next": "Extend existing contracts only when a real V3 scenario requires a missing field.",
+      "prohibition": "Do not silently reinterpret an existing field or empty target."
+    },
+    {
+      "id": "F04",
+      "domain": "development",
+      "result": "Layered checks validate the actual candidate combination and controlled integration entry.",
+      "state": "PARTIAL",
+      "next": "Bind focused tests to the changed package and preserve the current main baseline.",
+      "prohibition": "A green isolated branch is not a green integrated release."
+    },
+    {
+      "id": "F05",
+      "domain": "development",
+      "result": "Persistent tasks and global concurrency/expense decisions are recoverable.",
+      "state": "PARTIAL",
+      "next": "Reuse the existing run store and record rejection reasons before adding scheduling code.",
+      "prohibition": "Do not fill task slots or expand budgets to make progress look larger."
+    },
+    {
+      "id": "F06",
+      "domain": "development",
+      "result": "Agent throughput and expense are measured per accepted business capability.",
+      "state": "UNBOUND",
+      "next": "Measure only after a bounded V3 slice has a real acceptance artifact.",
+      "prohibition": "Do not use token count or task count as delivery."
+    },
+    {
+      "id": "D01",
+      "domain": "data",
+      "result": "First-disclosure event samples have source locations and unknown-coverage reasons.",
+      "state": "PARTIAL",
+      "next": "Bind the scoped issuer-report facts and preserve unknown PIT coverage; do not treat the sample as full-market event coverage.",
+      "prohibition": "UNKNOWN prior coverage is not no prior information.",
+      "actual_paths": [
+        "outputs/financials/f01_scoped_field_coverage_20261024.json",
+        "D:/QuantificationData/trading/research/financials/20260930_162448_8be1e603/field_checks/20260930_q1_three_issuers/facts.json",
+        "trading/research/f01_scoped_field_coverage.py",
+        "trading/tests/test_f01_scoped_field_coverage.py",
+        "run_committee.py"
+      ]
+    },
+    {
+      "id": "D02",
+      "domain": "data",
+      "result": "A callable point-in-time versioned read returns only facts available at the requested cutoff.",
+      "state": "PARTIAL",
+      "next": "Use the F01 sidecar contract to bind source hashes/publication dates, then add original retrieval/as-of/revision evidence before exposing a PIT read.",
+      "prohibition": "Do not read the latest file implicitly.",
+      "actual_paths": [
+        "outputs/financials/f01_scoped_field_coverage_20261024.json",
+        "trading/research/f01_scoped_field_coverage.py",
+        "trading/tests/test_f01_scoped_field_coverage.py",
+        "run_committee.py",
+        "trading/research/f01_publication_sidecar.py",
+        "trading/research/tests/test_f01_publication_sidecar.py",
+        "outputs/pipeline_receipts/20261024_f01_publication_sidecar_v1.json",
+        "trading/research/f01_coverage_funnel.py",
+        "trading/tests/test_f01_coverage_funnel.py",
+        "outputs/financials/f01_coverage_funnel_with_sidecar_20261024.json"
+      ]
+    },
+    {
+      "id": "D03",
+      "domain": "data",
+      "result": "Event master, U value, exclusions and source links are reproducible.",
+      "state": "PARTIAL",
+      "next": "Use the v4 per-artifact timing fields (including explicit source_retrieved_at provenance) to obtain original as-of/revision receipts; no action application until the contract passes.",
+      "prohibition": "Do not turn missing event evidence into zero return or exclusion without reason.",
+      "actual_paths": [
+        "outputs/pipeline_receipts/20261024_publication_event_contract_local_receipt.json",
+        "trading/research/publication_event_contract.py",
+        "trading/research/stockdb_action_context_view.py",
+        "trading/research/tests/test_publication_event_contract.py",
+        "trading/tests/test_stockdb_action_context_view.py",
+        "outputs/pipeline_receipts/20261024_action_publication_sidecar_attempt_v1.json",
+        "outputs/research_reports/20261024_action_publication_sidecar_attempt_v1.md",
+        "outputs/pipeline_receipts/20261024_action_publication_sidecar_v2.json",
+        "outputs/research_reports/20261024_action_publication_sidecar_v2.md",
+        "outputs/pipeline_receipts/20261024_action_publication_sidecar_duplicate_failure_v1.json",
+        "trading/research/action_publication_sidecar.py",
+        "trading/research/tests/test_action_publication_sidecar.py",
+        "run_committee.py",
+        "outputs/pipeline_receipts/20261024_action_publication_sidecar_v3.json",
+        "outputs/research_reports/20261024_action_publication_sidecar_v3.md",
+        "outputs/pipeline_receipts/20261024_action_publication_sidecar_v4.json",
+        "outputs/research_reports/20261024_action_publication_sidecar_v4.md",
+        "outputs/pipeline_receipts/20261024_stockdb_dated_action_context_sidecar_v4_receipt.json",
+        "outputs/stockdb_action_context_views/20261024_sidecar_v4/run.json",
+        "outputs/pipeline_receipts/20261024_action_publication_sidecar_v5.json",
+        "outputs/research_reports/20261024_action_publication_sidecar_v5.md"
+      ]
+    },
+    {
+      "id": "D04",
+      "domain": "data",
+      "result": "Historical security rules and entitlement inputs are date-aware and sourced.",
+      "state": "PARTIAL",
+      "next": "Bind existing action/status/qualification receipts to the target scenario.",
+      "prohibition": "Raw adjustment factors are not automatically cash/share events.",
+      "actual_paths": [
+        "outputs/pipeline_receipts/20261024_publication_event_contract_local_receipt.json",
+        "trading/research/publication_event_contract.py",
+        "trading/research/stockdb_action_context_view.py",
+        "trading/research/tests/test_publication_event_contract.py",
+        "trading/tests/test_stockdb_action_context_view.py",
+        "outputs/pipeline_receipts/20261024_action_publication_sidecar_attempt_v1.json",
+        "outputs/research_reports/20261024_action_publication_sidecar_attempt_v1.md",
+        "outputs/pipeline_receipts/20261024_action_publication_sidecar_v2.json",
+        "outputs/research_reports/20261024_action_publication_sidecar_v2.md",
+        "outputs/pipeline_receipts/20261024_action_publication_sidecar_duplicate_failure_v1.json",
+        "trading/research/action_publication_sidecar.py",
+        "trading/research/tests/test_action_publication_sidecar.py",
+        "run_committee.py",
+        "outputs/pipeline_receipts/20261024_action_publication_sidecar_v3.json",
+        "outputs/research_reports/20261024_action_publication_sidecar_v3.md",
+        "outputs/pipeline_receipts/20261024_action_publication_sidecar_v4.json",
+        "outputs/research_reports/20261024_action_publication_sidecar_v4.md",
+        "outputs/pipeline_receipts/20261024_stockdb_dated_action_context_sidecar_v4_receipt.json",
+        "outputs/stockdb_action_context_views/20261024_sidecar_v4/run.json",
+        "outputs/pipeline_receipts/20261024_action_publication_sidecar_v5.json",
+        "outputs/research_reports/20261024_action_publication_sidecar_v5.md"
+      ]
+    },
+    {
+      "id": "D05",
+      "domain": "data",
+      "result": "Fixed research slices publish atomically with recoverable manifests.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Reuse the atomic publication contract for a changed snapshot source; do not consume a directory without a complete manifest.",
+      "prohibition": "A partial directory cannot be consumed as a complete snapshot.",
+      "actual_paths": [
+        "trading/research/snapshot_publication_recovery.py",
+        "trading/research/tests/test_snapshot_publication_recovery.py",
+        "run_committee.py",
+        "outputs/pipeline_receipts/20261024_snapshot_publication_recovery_v1.json",
+        "outputs/research_reports/20261024_snapshot_publication_recovery_v1.md"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261024_snapshot_publication_recovery_v1.json",
+        "run_committee.py snapshot-publication-recovery"
+      ],
+      "acceptance": "A partial snapshot directory is rejected; complete data and manifest are published by one directory rename, and consumer hash/row-count checks pass."
+    },
+    {
+      "id": "D06",
+      "domain": "data",
+      "result": "Incremental inputs and revisions show old/new versions, impacts and receive times.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Carry the same revision_id/received_at/supersedes fields into the next real incremental source; keep missing provider timing explicit.",
+      "prohibition": "Do not backfill a missed forward record as if it arrived on time.",
+      "actual_paths": [
+        "trading/research/snapshot_publication_recovery.py",
+        "trading/research/tests/test_snapshot_publication_recovery.py",
+        "run_committee.py",
+        "outputs/pipeline_receipts/20261024_snapshot_publication_recovery_v1.json",
+        "outputs/research_reports/20261024_snapshot_publication_recovery_v1.md"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261024_snapshot_publication_recovery_v1.json",
+        "run_committee.py snapshot-publication-recovery"
+      ],
+      "acceptance": "A revised row records changed fields, received_at, revision_id and supersedes identity without replacing the prior snapshot."
+    },
+    {
+      "id": "R01",
+      "domain": "research",
+      "result": "Fixed research and comparison configuration is executable, versioned, and bound one-to-one to all catalog candidates.",
+      "state": "VERIFIED_LOCAL",
+      "next": "At the next changed-input rerun, require candidate-spec-registry verification before starting a strategy process.",
+      "prohibition": "Do not tune a parameter after seeing the evaluation result.",
+      "actual_paths": [
+        "docs/architecture_v3/candidate_strategy_specs_20261024.json",
+        "outputs/pipeline_receipts/20261024_candidate_spec_registry.json",
+        "outputs/pipeline_receipts/20261024_long_window_strategy_comparison_v1.json",
+        "outputs/research_reports/20261024_long_window_strategy_comparison_v1.md",
+        "run_committee.py candidate-spec-registry",
+        "trading/research/candidate_spec_registry.py",
+        "trading/research/long_window_strategy_comparison.py",
+        "trading/research/tests/test_candidate_spec_registry.py",
+        "trading/tests/test_long_window_strategy_comparison.py"
+      ],
+      "acceptance": "9/9 catalog IDs have exactly one fixed data snapshot, window, cost profile, portfolio limits, acceptance gate and closed promotion rule; no mixed-spec IDs or live flags"
+    },
+    {
+      "id": "R02",
+      "domain": "research",
+      "result": "Post-event opportunity, enterability and continue/stop decision are measured.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Use the decision matrix only to select the next research experiment; continue means research-only and does not enable paper or live execution.",
+      "prohibition": "A signal relation without executable entry is not a strategy result.",
+      "actual_paths": [
+        "trading/research/research_decision_matrix.py",
+        "trading/research/tests/test_research_decision_matrix.py",
+        "run_committee.py",
+        "outputs/pipeline_receipts/20261024_public_seat_replay_audit_v2.json",
+        "outputs/pipeline_receipts/20261024_research_decision_matrix_v1.json",
+        "outputs/research_reports/20261024_research_decision_matrix_v1.md"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261024_research_decision_matrix_v1.json",
+        "run_committee.py research-decision-matrix"
+      ],
+      "acceptance": "Completed public-seat cases expose post-event return/opportunity, order/fill enterability, and fixed continue/stop research decisions; incomplete cases remain blocked with their error; all promotion and execution gates remain closed."
+    },
+    {
+      "id": "R03",
+      "domain": "research",
+      "result": "A complete fixed long-window account is traceable through the shared Engine/Ledger with fees, equity, orders, fills, blocked events and all eight pipeline stages.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Keep the saved 678-session receipt as the fixed control; only rerun after a changed snapshot, rule or cost input.",
+      "prohibition": "Do not report return alone or treat a zero-order account as completed research.",
+      "actual_paths": [
+        "outputs/pipeline_receipts/20261024_stockdb_low_volatility_252_20_long_replay_audit.json",
+        "outputs/stockdb_rolling_low_volatility/20261024_195517_c8688fff/run.json",
+        "outputs/stockdb_rolling_low_volatility/20261024_195517_c8688fff/REPORT.md",
+        "D:/QuantificationData/trading/research/stockdb_rolling_low_volatility/20261024_195517_c8688fff/low_volatility_252_20/account.json"
+      ],
+      "acceptance": "678 sessions, 160 orders, 229 fills, fees CNY 893.19, final equity CNY 134,279.81, stale valuation 0, issues 0, and Data/Signal/Target Portfolio/Orders/BrokerAdapter/Fill/Cash-Position all true in the saved provenance receipt"
+    },
+    {
+      "id": "R04",
+      "domain": "research",
+      "result": "The prespecified 60-session variant has an independent result or explicit not-applicable basis.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Retain the fixed 60-session same-lineage Ridge result as research-only evidence; require PIT/action coverage before any adoption decision.",
+      "prohibition": "Do not search 60-day variants after seeing 20-day returns.",
+      "actual_paths": [
+        "trading/research/stockdb_factor_monthly_ridge_horizon_variant.py",
+        "trading/research/stockdb_factor_monthly_ridge_replay.py",
+        "trading/tests/test_stockdb_factor_monthly_ridge_horizon_variant.py",
+        "outputs/stockdb_factor_monthly_ridge_horizon60/20261025_same_lineage_v2/run.json",
+        "outputs/pipeline_receipts/20261025_mature_factor_stockdb_monthly_ridge_h60_receipt.json",
+        "outputs/stockdb_factor_monthly_ridge_replays/20261025_monthly_same_lineage_h60_cap500_v3/result.json",
+        "outputs/stockdb_factor_monthly_ridge_replays/20261025_monthly_same_lineage_h60_cap500_v3/audit.json",
+        "outputs/pipeline_receipts/20261025_mature_factor_stockdb_monthly_ridge_h60_replay_receipt.json",
+        "docs/architecture_v3/candidate_strategy_catalog_20261024.json"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261025_mature_factor_stockdb_monthly_ridge_h60_receipt.json",
+        "outputs/pipeline_receipts/20261025_mature_factor_stockdb_monthly_ridge_h60_replay_receipt.json",
+        "outputs/stockdb_factor_monthly_ridge_replays/20261025_monthly_same_lineage_h60_cap500_v3/REPORT.md"
+      ],
+      "acceptance": "Fixed 60-session horizon has an independent same-lineage fit and shared Engine/Ledger replay with explicit dates, source lineage, orders/fills, metrics and research-only gates; no PIT or adoption claim."
+    },
+    {
+      "id": "R05",
+      "domain": "research",
+      "result": "Robustness table and adoption/stop decision are supported by real artifacts.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Keep the public-seat lag2 shadow package separate from the follow-up queue until timing, PIT membership and causal attribution are verified; reuse the shared paper receipt only as research evidence.",
+      "prohibition": "No candidate is promoted from same-cost diagnostics alone.",
+      "actual_paths": [
+        "docs/architecture_v3/candidate_strategy_catalog_20261024.json",
+        "outputs/pipeline_receipts/20261024_public_seat_replay_audit_v1.json",
+        "outputs/research_reports/20261024_public_seat_replay_audit_v1.md",
+        "trading/research/public_seat_replay_audit.py",
+        "trading/research/tests/test_public_seat_replay_audit.py",
+        "outputs/pipeline_receipts/20261024_long_window_strategy_comparison_v1.json",
+        "outputs/research_reports/20261024_long_window_strategy_comparison_v1.md",
+        "trading/research/long_window_strategy_comparison.py",
+        "trading/tests/test_long_window_strategy_comparison.py",
+        "trading/research/leader_cross_year_continuous.py",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_continuous_v1/partial_result.json",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_continuous_v1/target_receipts.json",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_continuous_v1/orders.csv",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_continuous_v1/fills.csv",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_continuous_v1/equity.csv",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_continuous_v1/abort_receipt.json",
+        "outputs/leader_cross_year/20261024_2025_2026_continuous_v1/REPORT.md",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_liquidity_case_v1/abort_receipt.json",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_liquidity_case_v1/partial_result.json",
+        "outputs/leader_cross_year/20261024_2025_2026_liquidity_case_v1/REPORT.md",
+        "trading/research/strategy_robustness_matrix.py",
+        "trading/research/tests/test_strategy_robustness_matrix.py",
+        "run_committee.py",
+        "outputs/pipeline_receipts/20261024_strategy_robustness_matrix_v1.json",
+        "outputs/research_reports/20261024_strategy_robustness_matrix_v1.md",
+        "trading/research/candidate_research_selection.py",
+        "trading/research/tests/test_candidate_research_selection.py",
+        "outputs/pipeline_receipts/20261024_candidate_research_selection_v1.json",
+        "outputs/research_reports/20261024_candidate_research_selection_v1.md",
+        "docs/architecture_v3/candidate_strategy_catalog_20261024.md",
+        "outputs/pipeline_receipts/20261024_candidate_spec_registry.json",
+        "outputs/pipeline_receipts/20261025_public_seat_candidate_shared_paper_receipt_v1.json",
+        "outputs/paper_plans/20261025_public_seat_lag2_shadow_v2/shadow_receipt.json",
+        "trading/research/tests/test_candidate_shadow_paper.py",
+        "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v3/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v3/paper_batch/public_seat_trend_hypotheses/result.json"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261024_strategy_robustness_matrix_v1.json",
+        "outputs/pipeline_receipts/20261024_candidate_research_selection_v1.json",
+        "outputs/pipeline_receipts/20261024_candidate_spec_registry.json",
+        "run_committee.py candidate-research-selection",
+        "outputs/pipeline_receipts/20261025_public_seat_candidate_shared_paper_receipt_v1.json"
+      ],
+      "acceptance": "Saved long-window, untouched-forward and capacity/cost artifacts produce explicit continue, mixed, stop or coverage-blocked research decisions; those decisions are bound into the candidate library with a research-only follow-up queue and closed paper/promotion gates."
+    },
+    {
+      "id": "R06",
+      "domain": "research",
+      "result": "Saved long-window comparison now includes the prespecified mature-factor Ridge 60-session variant as an additive same-snapshot row; baseline five-strategy receipt remains unchanged.",
+      "state": "PARTIAL",
+      "next": "Use the additive h60 comparison for research prioritization; do not promote without PIT and paper continuity evidence.",
+      "prohibition": "Do not migrate old books across missing publications.",
+      "actual_paths": [
+        "docs/architecture_v3/candidate_strategy_catalog_20261024.json",
+        "outputs/pipeline_receipts/20261024_candidate_catalog_audit.json",
+        "trading/research/candidate_catalog_audit.py",
+        "trading/research/tests/test_candidate_catalog_audit.py",
+        "outputs/stockdb_rolling_low_volatility/20261024_121737_d2456fd6/run.json",
+        "outputs/pipeline_receipts/20261024_stockdb_momentum_long_replay_audit.json",
+        "outputs/stockdb_qlib_provider/20261024_131713_d912ad4d/result.json",
+        "D:/QuantificationData/trading/research/qlib_native_features/20261024_131824_bdf8b6c6/result.json",
+        "outputs/stockdb_alpha158_lgbm_batch_diagnostics/20261024_full_native_2026/result.json",
+        "outputs/stockdb_alpha158_lgbm_panel_replays/20261024_full_native_2026_cap500/result.json",
+        "outputs/stockdb_alpha158_lgbm_panel_replays/20261024_full_native_2026_cap500/audit.json",
+        "outputs/full_market_alpha158/20261024_133722_8be29ed5_sh_sz_all_equities/protocol.json",
+        "outputs/pipeline_receipts/20261024_full_market_alpha158_boundary_failure.json",
+        "docs/architecture_v3/candidate_strategy_catalog_20261024.md",
+        "outputs/stockdb_factor_score_diagnostics/20261024_current_snapshot_v1/run.json",
+        "outputs/pipeline_receipts/20261024_mature_factor_stockdb_snapshot_bridge_receipt.json",
+        "trading/tests/test_stockdb_factor_score_diagnostic.py",
+        "outputs/stockdb_factor_features/20261024_monthly_panel/run.json",
+        "outputs/pipeline_receipts/20261024_mature_factor_stockdb_monthly_panel_receipt.json",
+        "trading/research/stockdb_factor_monthly_ridge_diagnostic.py",
+        "trading/tests/test_stockdb_factor_monthly_ridge_diagnostic.py",
+        "outputs/stockdb_factor_monthly_ridge_diagnostics/20261024_monthly_same_lineage_v1/run.json",
+        "outputs/pipeline_receipts/20261024_mature_factor_stockdb_monthly_ridge_receipt.json",
+        "trading/research/stockdb_factor_monthly_ridge_replay.py",
+        "trading/tests/test_stockdb_factor_monthly_ridge_replay.py",
+        "outputs/stockdb_factor_monthly_ridge_replays/20261024_monthly_same_lineage_cap500/result.json",
+        "outputs/stockdb_factor_monthly_ridge_replays/20261024_monthly_same_lineage_cap500/audit.json",
+        "outputs/pipeline_receipts/20261024_mature_factor_stockdb_monthly_ridge_replay_receipt.json",
+        "trading/research/stockdb_eligibility_view.py",
+        "trading/tests/test_stockdb_eligibility_view.py",
+        "outputs/stockdb_eligibility_views/20261024_monthly_same_lineage_v1/run.json",
+        "outputs/pipeline_receipts/20261024_stockdb_dated_eligibility_view_receipt.json",
+        "outputs/stockdb_factor_monthly_ridge_replays/20261024_monthly_same_lineage_eligibility_v1/result.json",
+        "outputs/stockdb_factor_monthly_ridge_replays/20261024_monthly_same_lineage_eligibility_v1/audit.json",
+        "trading/research/stockdb_action_context_view.py",
+        "trading/tests/test_stockdb_action_context_view.py",
+        "outputs/stockdb_action_context_views/20261024_monthly_same_lineage_v1/run.json",
+        "outputs/pipeline_receipts/20261024_stockdb_dated_action_context_receipt.json",
+        "trading/research/stockdb_untouched_forward_holdout.py",
+        "trading/tests/test_stockdb_untouched_forward_holdout.py",
+        "outputs/stockdb_untouched_forward_holdouts/20261024_mature_factor_v3/result.json",
+        "outputs/stockdb_untouched_forward_holdouts/20261024_mature_factor_v3/audit.json",
+        "outputs/pipeline_receipts/20261024_untouched_forward_holdout_20261024_mature_factor_v3.json",
+        "outputs/pipeline_receipts/20261024_alpha158_untouched_forward_coverage_failure.json",
+        "outputs/pipeline_receipts/20261024_action_publication_sidecar_attempt_v1.json",
+        "outputs/research_reports/20261024_action_publication_sidecar_attempt_v1.md",
+        "outputs/pipeline_receipts/20261024_action_publication_sidecar_v2.json",
+        "outputs/research_reports/20261024_action_publication_sidecar_v2.md",
+        "outputs/pipeline_receipts/20261024_action_publication_sidecar_duplicate_failure_v1.json",
+        "trading/research/action_publication_sidecar.py",
+        "trading/research/tests/test_action_publication_sidecar.py",
+        "run_committee.py",
+        "outputs/pipeline_receipts/20261024_long_window_strategy_comparison_v1.json",
+        "outputs/research_reports/20261024_long_window_strategy_comparison_v1.md",
+        "trading/research/long_window_strategy_comparison.py",
+        "trading/tests/test_long_window_strategy_comparison.py",
+        "trading/research/leader_cross_year_continuous.py",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_continuous_v1/partial_result.json",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_continuous_v1/target_receipts.json",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_continuous_v1/orders.csv",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_continuous_v1/fills.csv",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_continuous_v1/equity.csv",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_continuous_v1/abort_receipt.json",
+        "outputs/leader_cross_year/20261024_2025_2026_continuous_v1/REPORT.md",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_liquidity_case_v1/abort_receipt.json",
+        "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_liquidity_case_v1/partial_result.json",
+        "outputs/leader_cross_year/20261024_2025_2026_liquidity_case_v1/REPORT.md",
+        "outputs/pipeline_receipts/20261025_long_window_strategy_comparison_h60_v1.json",
+        "outputs/research_reports/20261025_long_window_strategy_comparison_h60_v1.md"
+      ]
+    },
+    {
+      "id": "L01",
+      "domain": "ledger",
+      "result": "Independent financial examples and account invariants are manually recomputable.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Extend the reference scenario only when a new ledger transition lacks an independent invariant or replay proof.",
+      "prohibition": "A test count cannot replace an invariant or replay proof."
+    },
+    {
+      "id": "L02",
+      "domain": "ledger",
+      "result": "Fill/cancel race behavior is corrected and evidenced on existing consumers.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Reuse the same focused scenario if a new cancel/fill transition is added; do not widen into a generic audit.",
+      "prohibition": "Cancellation request is not cancellation confirmation.",
+      "actual_paths": [
+        "trading/research/ledger_recovery_scenarios.py",
+        "trading/research/tests/test_ledger_recovery_scenarios.py",
+        "run_committee.py",
+        "outputs/pipeline_receipts/20261024_ledger_recovery_scenarios_v1.json",
+        "outputs/research_reports/20261024_ledger_recovery_scenarios_v1.md"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261024_ledger_recovery_scenarios_v1.json",
+        "run_committee.py ledger-recovery-scenarios"
+      ],
+      "acceptance": "An isolated paper Ledger proves cancel_pending -> late partial fill -> confirmed cancelled, preserves filled quantity/cash/position, and same idempotency key creates no duplicate order or fill; focused tests pass."
+    },
+    {
+      "id": "L03",
+      "domain": "ledger",
+      "result": "Fees, entitlements and external funds reconcile with explicit differences.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Retain cumulative fees, entitlement receivables and correction receipts in the shared path; real external reconciliation remains gated by persistent evidence.",
+      "prohibition": "Do not invent a balance adjustment to force reconciliation."
+    },
+    {
+      "id": "L04",
+      "domain": "ledger",
+      "result": "Unknown results and reconciliation recovery prevent duplicate actions.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Keep unknown external results reconciliation-only; do not add retry behavior without a concrete broker observation contract.",
+      "prohibition": "Unknown is not an ordinary retryable failure.",
+      "actual_paths": [
+        "trading/research/ledger_recovery_scenarios.py",
+        "trading/research/tests/test_ledger_recovery_scenarios.py",
+        "run_committee.py",
+        "outputs/pipeline_receipts/20261024_ledger_recovery_scenarios_v1.json",
+        "outputs/research_reports/20261024_ledger_recovery_scenarios_v1.md"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261024_ledger_recovery_scenarios_v1.json",
+        "run_committee.py ledger-recovery-scenarios"
+      ],
+      "acceptance": "Unknown/timeout/connection-lost results are classified as UNKNOWN_RECONCILIATION_REQUIRED with retry_allowed=false and duplicate_action_allowed=false; no external submit call or persistent account mutation; focused tests pass."
+    },
+    {
+      "id": "L05",
+      "domain": "ledger",
+      "result": "Core migration and event replay preserve balances and compatibility.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Keep the copied-account proof attached to the fixed paper route; do not migrate to a broker or personal account while execution_admitted=false.",
+      "prohibition": "Never overwrite a live account or infer rollback from code rollback.",
+      "actual_paths": [
+        "trading/research/copied_account_replay_proof.py",
+        "trading/research/tests/test_copied_account_replay_proof.py",
+        "trading/research/paper_account_recovery.py",
+        "trading/research/paper_account_provenance.py",
+        "run_committee.py",
+        "outputs/pipeline_receipts/20261024_copied_account_replay_proof_v1.json",
+        "outputs/research_reports/20261024_copied_account_replay_proof_v1.md"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261024_copied_account_replay_proof_v1.json",
+        "run_committee.py copied-account-replay-proof"
+      ],
+      "acceptance": "A saved paper checkpoint is copied into an immutable research bundle and restored; event sequence, event digest, cash, positions, orders, fills and terminal day match, with the seven local pipeline stages provenance-verified and execution closed."
+    },
+    {
+      "id": "L06",
+      "domain": "ledger",
+      "result": "Account release candidate has valid, bounded evidence.",
+      "state": "UNBOUND",
+      "next": "Keep release blocked until account, quote, four-table and T+1 evidence exist.",
+      "prohibition": "Paper readiness is not channel readiness."
+    },
+    {
+      "id": "P01",
+      "domain": "portfolio",
+      "result": "Date-aware paper targets, native StockDB close marks, holdings, sellability, costs and constraint flags are bound in one research account view while THS account evidence remains separate.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Refresh the same reconciliation only after a new closed session; preserve THS current-account fields as unknown until an authorized read-only observation exists.",
+      "prohibition": "Do not use stale account versions for a new target.",
+      "actual_paths": [
+        "trading/research/paper_target_reconciliation.py",
+        "trading/research/tests/test_paper_target_reconciliation.py",
+        "outputs/paper_plans/20261024_low_vol_half_momentum_current_reconciliation_v1/receipt.json",
+        "outputs/paper_plans/20261024_low_vol_half_momentum_current_reconciliation_v1/target_reconciliation.csv",
+        "outputs/paper_plans/20261024_lowvol_current_plan_reconciliation_audit/receipt.json",
+        "outputs/paper_plans/20261024_lowvol_current_native_stockdb_reference_v2/receipt.json",
+        "outputs/paper_plans/20261024_lowvol_current_native_stockdb_reference_v2/comparison.csv"
+      ],
+      "evidence": [
+        "outputs/paper_plans/20261024_lowvol_current_native_stockdb_reference_v2/receipt.json",
+        "outputs/paper_plans/20261024_lowvol_current_native_stockdb_reference_v2/comparison.csv",
+        "trading/research/paper_target_reconciliation.py",
+        "run_committee.py paper-target-native-reference"
+      ],
+      "acceptance": "Current cutoff 2026-10-23 has 20 target rows, complete target prices, integer quantities, T+1 sellability=true, native-vs-raw close matches 20/20, and THS account/quote/readback remains explicitly unknown and unmodified."
+    },
+    {
+      "id": "P02",
+      "domain": "portfolio",
+      "result": "Fee- and holding-aware integer allocation produces legal target quantities, fees, deltas, sellable quantities and explicit constraint reasons in the shared paper path.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Keep the existing Engine allocator; rerun only after a changed cost, lot, holding or sellability rule.",
+      "prohibition": "No silent upper-limit, cash or sellable-share violation.",
+      "actual_paths": [
+        "trading/research/paper_target_reconciliation.py",
+        "trading/research/tests/test_paper_target_reconciliation.py",
+        "outputs/paper_plans/20261024_low_vol_half_momentum_current_reconciliation_v1/receipt.json",
+        "outputs/paper_plans/20261024_low_vol_half_momentum_current_reconciliation_v1/target_reconciliation.csv"
+      ],
+      "acceptance": "Current paper reconciliation contains 20 integer target rows with target quantity, current quantity, sellable quantity, delta, fee and constraint flags; missing prices=0 and T+1 sellability=true; source account is not mutated and execution remains closed."
+    },
+    {
+      "id": "P03",
+      "domain": "portfolio",
+      "result": "Exposure and blocked-order stress view shows actions and residual exposure.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Reuse the saved stress receipt after a new closed-session paper reconciliation; keep historical marks separate from THS or live execution.",
+      "prohibition": "Pausing new orders does not cancel old external orders; this view cannot create broker actions.",
+      "actual_paths": [
+        "trading/research/paper_exposure_stress.py",
+        "trading/research/tests/test_paper_exposure_stress.py",
+        "run_committee.py paper-exposure-stress",
+        "outputs/paper_plans/20261024_lowvol_current_paper_reconciliation/receipt.json",
+        "outputs/paper_plans/20261024_lowvol_current_plan_reconciliation_audit/receipt.json",
+        "outputs/pipeline_receipts/20261024_p03_paper_exposure_stress_v1.json",
+        "outputs/research_reports/20261024_p03_paper_exposure_stress_v1.md",
+        "outputs/pipeline_receipts/20261024_paper_target_native_stockdb_reference.json"
+      ],
+      "acceptance": "Saved 2026-10-23 paper reconciliation and native close reference produce baseline, T+1-sell-blocked and 50% cash-haircut scenarios with action counts, blocked quantities, residual exposure and cash conservation; focused tests pass, execution_admitted=false, and no orders, fills, Ledger, broker or THS mutation is possible."
+    },
+    {
+      "id": "P04",
+      "domain": "portfolio",
+      "result": "One account cash pool with virtual strategy attribution conserves totals.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Use the virtual sleeve result for research attribution only; align terminal dates before deriving any current executable target.",
+      "prohibition": "Internal attribution cannot create broker fills or fees; mixed terminal dates remain research-only.",
+      "actual_paths": [
+        "trading/research/virtual_strategy_sleeves.py",
+        "trading/research/tests/test_virtual_strategy_sleeves.py",
+        "run_committee.py virtual-strategy-sleeves",
+        "outputs/pipeline_receipts/20261024_virtual_strategy_sleeves_v1.json",
+        "outputs/research_reports/20261024_virtual_strategy_sleeves_v1.md"
+      ],
+      "acceptance": "Five saved strategy accounts are attributed into equal 20% sleeves and one research-only virtual cash pool; initial cash and terminal equity conservation checks pass, merged target gross weight 70.4% and max single weight 3.2% satisfy the 80%/20% limits, mixed terminal days are explicit, and execution_admitted=false with no orders, fills, Ledger mutation, broker or THS interaction."
+    },
+    {
+      "id": "P05",
+      "domain": "portfolio",
+      "result": "Capacity/cost comparison reports utilization and unfilled exposure.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Reuse the fixed 0/25/50 bps diagnostic bands after a changed input or cost rule; do not claim current broker capacity.",
+      "prohibition": "Do not select capacity or cost bands after evaluation; saved candidate accounts remain alternatives and are not merged.",
+      "actual_paths": [
+        "trading/research/strategy_capacity_cost_comparison.py",
+        "trading/research/tests/test_strategy_capacity_cost_comparison.py",
+        "run_committee.py strategy-capacity-cost",
+        "outputs/pipeline_receipts/20261024_p05_capacity_cost_comparison_v1.json",
+        "outputs/research_reports/20261024_p05_capacity_cost_comparison_v1.md"
+      ],
+      "acceptance": "Five saved Engine/Ledger accounts are compared using requested versus filled quantity, unfilled quantity/notional, capacity utilization and base fees; fixed 0/25/50 bps stress rows are emitted with mixed terminal dates explicit, focused tests pass, execution_admitted=false, and no orders, fills, Ledger, broker or THS mutation is performed."
+    },
+    {
+      "id": "P06",
+      "domain": "portfolio",
+      "result": "Joint portfolio acceptance is bounded by evidence category.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Use the fixed lot-rounding policy only when a changed aligned input remains within the single-name cap; align the remaining candidates before any paper promotion.",
+      "prohibition": "A prerequisite flag alone cannot validate a joint result.",
+      "actual_paths": [
+        "trading/research/joint_portfolio_acceptance.py",
+        "trading/research/tests/test_joint_portfolio_acceptance.py",
+        "run_committee.py",
+        "outputs/pipeline_receipts/20261024_joint_portfolio_acceptance_v1.json",
+        "outputs/research_reports/20261024_joint_portfolio_acceptance_v1.md"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261024_joint_portfolio_acceptance_v1.json",
+        "run_committee.py joint-portfolio-acceptance"
+      ],
+      "acceptance": "Two aligned saved accounts produce a common-day equal-sleeve target with explicit one-lot rounding, integer quantities, exposure and cash checks; no orders or Ledger mutation."
+    },
+    {
+      "id": "E01",
+      "domain": "execution",
+      "result": "Channel capability map separates read/export/prefill/submit/cancel/fills/fees.",
+      "state": "PARTIAL",
+      "next": "Keep the THS capability matrix and update only with fresh observations.",
+      "prohibition": "Do not describe all capabilities as simply THS-connected."
+    },
+    {
+      "id": "E02",
+      "domain": "execution",
+      "result": "Isolated channel and exception substitute calls are independently checked.",
+      "state": "PARTIAL",
+      "next": "Reuse the guarded THS adapter and synthetic broker receipts.",
+      "prohibition": "Synthetic adapter success is not real client evidence."
+    },
+    {
+      "id": "E03",
+      "domain": "execution",
+      "result": "Four-table account import is complete, consistent and recoverable.",
+      "state": "BLOCKED_DATA",
+      "next": "Require a persistent same-session account/orders/trades/cashflows export.",
+      "prohibition": "Missing table is not a valid empty table."
+    },
+    {
+      "id": "E04",
+      "domain": "execution",
+      "result": "Windows isolated integration and recovery are evidenced.",
+      "state": "PARTIAL",
+      "next": "Keep local read-only workbench and process evidence separate from account evidence.",
+      "prohibition": "Do not open or write a real client during this phase."
+    },
+    {
+      "id": "E05",
+      "domain": "execution",
+      "result": "Execution timing and expense chain is traceable.",
+      "state": "UNBOUND",
+      "next": "Measure only on an authorized, non-live paper or observed route.",
+      "prohibition": "Do not infer queue position or fill from daily bars."
+    },
+    {
+      "id": "E06",
+      "domain": "execution",
+      "result": "Specified real channel is validated or external blocking condition is explicit.",
+      "state": "BLOCKED_DATA",
+      "next": "Keep blocked until the user supplies/authorizes the required real evidence.",
+      "prohibition": "Plan files do not grant channel authorization."
+    },
+    {
+      "id": "O01",
+      "domain": "operations",
+      "result": "Calendar and business schedule calculate windows and classify missing inputs.",
+      "state": "PARTIAL",
+      "next": "Reuse the versioned SSE calendar and daily-refresh receipts.",
+      "prohibition": "Do not use machine timezone or weekday inference."
+    },
+    {
+      "id": "O02",
+      "domain": "operations",
+      "result": "Persistent tasks recover actual interrupted states.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Reuse the checkpoint contract for the next persistent paper rollover; do not rerun a failed producer without its checkpoint.",
+      "prohibition": "Do not rerun a failed producer without exact recovery evidence.",
+      "actual_paths": [
+        "trading/research/snapshot_publication_recovery.py",
+        "trading/research/tests/test_snapshot_publication_recovery.py",
+        "run_committee.py",
+        "outputs/pipeline_receipts/20261024_snapshot_publication_recovery_v1.json",
+        "outputs/research_reports/20261024_snapshot_publication_recovery_v1.md"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261024_snapshot_publication_recovery_v1.json",
+        "run_committee.py snapshot-publication-recovery"
+      ],
+      "acceptance": "A controlled interruption after publication resumes from checkpoint; the already published unit is idempotent and the next unit is created exactly once."
+    },
+    {
+      "id": "O03",
+      "domain": "operations",
+      "result": "Consistent backup and empty-directory recovery reproduce cash/positions.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Repeat the copied-account rehearsal after the next paper rollover and retain any worker interruption receipt; real account/channel migration remains gated.",
+      "prohibition": "Database-only backup is not full system recovery.",
+      "actual_paths": [
+        "trading/research/paper_account_recovery.py",
+        "trading/research/tests/test_paper_account_recovery.py",
+        "trading/research/recovery_bundle.py",
+        "trading/research/tests/test_recovery_bundle.py",
+        "outputs/recovery_rehearsals/20261024_lowvol_current/receipt.json"
+      ],
+      "acceptance": "A current research-only paper checkpoint is hash-verified, copied without mutating its source, restored into an empty directory, and cash/positions match; external raw inputs are explicitly hash-pinned when not copied."
+    },
+    {
+      "id": "O04",
+      "domain": "operations",
+      "result": "Business observability and capacity measurements expose bottlenecks.",
+      "state": "PARTIAL",
+      "next": "Run the bound next-close D0/D1 contract after 2026-10-26 close with same-day strategy sources; preserve missing-row receipts and keep execution_admitted=false.",
+      "prohibition": "Do not turn monitoring uncertainty into a false offline status.",
+      "actual_paths": [
+        "trading/research/daily_candidate_paper_batch.py",
+        "trading/research/tests/test_daily_candidate_paper_batch.py",
+        "outputs/paper_plans/20261025_candidate_batch_v1/packages/batch_receipt.json",
+        "outputs/research_reports/20261025_daily_candidate_paper_batch_v1.md",
+        "outputs/paper_plans/20261025_candidate_batch_v1/manifest_v2.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/packages_v2/batch_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/packages_v3/batch_receipt.json",
+        "docs/architecture_v3/candidate_strategy_catalog_20261024.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/packages_v4/batch_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/packages_v5/batch_receipt.json",
+        "trading/research/candidate_daily_input_bundle.py",
+        "trading/research/tests/test_candidate_daily_input_bundle.py",
+        "outputs/paper_plans/20261025_candidate_batch_v1/generated_inputs_v1/bundle_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/packages_v6/batch_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/generated_inputs_v2/bundle_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/packages_v7/batch_receipt.json",
+        "trading/research/candidate_daily_paper_run.py",
+        "trading/research/tests/test_candidate_daily_paper_run.py",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v1/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v2/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v3/pipeline_receipt.json",
+        "outputs/pipeline_receipts/20261025_public_seat_candidate_shared_paper_receipt_v1.json",
+        "outputs/paper_plans/20261025_public_seat_lag2_shadow_v2/shadow_receipt.json",
+        "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v1/run/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v2/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v3/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v3/paper_batch/public_seat_trend_hypotheses/result.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v4/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v4/fixed/result.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v5/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v5/paper_batch/batch_receipt.json",
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "run_committee.py next-close-d0-d1"
+      ]
+    },
+    {
+      "id": "O05",
+      "domain": "operations",
+      "result": "Fault injection and stable running leave explicit residual risks.",
+      "state": "PARTIAL",
+      "next": "Reuse focused failure receipts; add only a missing V3 scenario.",
+      "prohibition": "A passing happy path does not close recovery risk."
+    },
+    {
+      "id": "O06",
+      "domain": "operations",
+      "result": "Internal stable release has versioned inputs and an operations guide.",
+      "state": "UNBOUND",
+      "next": "Release only after the first two business slices are evidence-complete.",
+      "prohibition": "Do not call a partial internal build the full live system."
+    },
+    {
+      "id": "U01",
+      "domain": "workbench",
+      "result": "Frontend/backend task and state semantics agree with request examples.",
+      "state": "PARTIAL",
+      "next": "Reuse the current API task IDs and read-only state surfaces.",
+      "prohibition": "Do not let UI labels collapse paper, live and unknown states."
+    },
+    {
+      "id": "U02",
+      "domain": "workbench",
+      "result": "Browser task chain reaches a real result and survives reconnect.",
+      "state": "PARTIAL",
+      "next": "Bind existing workbench evidence to a slice without client writes.",
+      "prohibition": "A screenshot cannot prove backend persistence or broker acceptance."
+    },
+    {
+      "id": "U03",
+      "domain": "workbench",
+      "result": "Research and account result trace to source, snapshot and comparison.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Re-run provenance against the next fixed_daily generation after the next close; keep fixed-strategy, trend, Ridge and public-seat inputs separate and retain the public-seat timing/PIT gate.",
+      "prohibition": "Do not trace a market result to a synthetic source.",
+      "actual_paths": [
+        "outputs/pipeline_receipts/20261024_lowvol_paper_account_provenance.json",
+        "outputs/pipeline_receipts/20261024_same_snapshot_strategy_comparison_receipt.json",
+        "outputs/pipeline_receipts/20261024_u03_pipeline_provenance_receipt.json",
+        "trading/research/paper_account_provenance.py",
+        "trading/research/pipeline_provenance.py",
+        "trading/research/tests/test_paper_account_provenance.py",
+        "trading/research/tests/test_pipeline_provenance.py",
+        "outputs/stockdb_rolling_low_volatility/20261024_121737_d2456fd6/run.json",
+        "outputs/pipeline_receipts/20261024_stockdb_momentum_long_replay_audit.json",
+        "trading/research/stockdb_replay_audit.py",
+        "trading/research/tests/test_stockdb_replay_audit.py",
+        "outputs/stockdb_alpha158_lgbm_batch_diagnostics/20261024_full_native_2026/result.json",
+        "outputs/stockdb_alpha158_lgbm_panel_replays/20261024_full_native_2026_cap500/result.json",
+        "outputs/stockdb_alpha158_lgbm_panel_replays/20261024_full_native_2026_cap500/audit.json",
+        "D:/QuantificationData/trading/research/qlib_native_features/20261024_131824_bdf8b6c6/result.json",
+        "outputs/stockdb_factor_features/20261024_132936_e6bc9e76/run.json",
+        "trading/research/daily_candidate_paper_batch.py",
+        "trading/research/tests/test_daily_candidate_paper_batch.py",
+        "outputs/paper_plans/20261025_candidate_batch_v1/manifest.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/packages/batch_receipt.json",
+        "outputs/research_reports/20261025_daily_candidate_paper_batch_v1.md",
+        "run_committee.py daily-candidate-paper-batch",
+        "outputs/paper_plans/20261025_candidate_batch_v1/manifest_v2.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/packages_v2/batch_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/packages_v3/batch_receipt.json",
+        "docs/architecture_v3/candidate_strategy_catalog_20261024.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/packages_v4/batch_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/packages_v5/batch_receipt.json",
+        "trading/research/candidate_daily_input_bundle.py",
+        "trading/research/tests/test_candidate_daily_input_bundle.py",
+        "run_committee.py candidate-daily-input-bundle",
+        "outputs/paper_plans/20261025_candidate_batch_v1/generated_inputs_v1/bundle_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/generated_inputs_v1/manifest.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/packages_v6/batch_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/generated_inputs_v2/manifest.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/packages_v7/batch_receipt.json",
+        "trading/research/candidate_daily_paper_run.py",
+        "trading/research/tests/test_candidate_daily_paper_run.py",
+        "run_committee.py candidate-daily-paper-run",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v1/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v2/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v3/pipeline_receipt.json",
+        "outputs/pipeline_receipts/20261025_public_seat_candidate_shared_paper_receipt_v1.json",
+        "outputs/paper_plans/20261025_public_seat_lag2_shadow_v2/shadow_receipt.json",
+        "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v1/run/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v2/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v3/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v3/paper_batch/public_seat_trend_hypotheses/result.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v4/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v4/fixed/result.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v5/pipeline_receipt.json",
+        "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v5/paper_batch/batch_receipt.json",
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/tests/test_next_close_d0_d1.py"
+      ],
+      "acceptance": "The saved Alpha158 score batch and cap500 replay trace provider snapshot, native features, factor panel, signal events, targets, orders, BrokerAdapter diagnostics, fills and cash/positions with hashes; execution_admitted remains false."
+    },
+    {
+      "id": "U04",
+      "domain": "workbench",
+      "result": "Exception and recovery workspace exposes real task state and feedback.",
+      "state": "PARTIAL",
+      "next": "Bind failure/recovery receipts and keep unknown external orders isolated.",
+      "prohibition": "UI cancel is not broker cancel."
+    },
+    {
+      "id": "U05",
+      "domain": "workbench",
+      "result": "Permission and user-flow tests cover the actual allowed scope.",
+      "state": "PARTIAL",
+      "next": "Retain read-only THS and paper guard regression tests.",
+      "prohibition": "No test may grant real login or order authority."
+    },
+    {
+      "id": "U06",
+      "domain": "workbench",
+      "result": "Whole-flow UI acceptance reports engineering and market scope separately.",
+      "state": "UNBOUND",
+      "next": "Run after the first two slices have stable evidence.",
+      "prohibition": "Do not claim full UI acceptance while account/channel gates are blocked."
+    },
+    {
+      "id": "P07",
+      "domain": "portfolio",
+      "result": "An aligned multi-strategy target is projected through the shared paper Orders, BrokerAdapter routing, Fill and Cash/Position path.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Rerun only after a changed aligned account snapshot or cost rule; keep daily close and THS evidence separate.",
+      "prohibition": "Saved terminal marks are research observations and cannot become live or current broker orders.",
+      "actual_paths": [
+        "trading/research/joint_portfolio_paper_package.py",
+        "trading/research/tests/test_joint_portfolio_paper_package.py",
+        "run_committee.py joint-portfolio-paper-package",
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/joint_paper_receipt.json",
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/paper_package/target_holdings.csv",
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/paper_package/order_plan.csv",
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/paper_package/projected_account.json",
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_lot_mismatch_failure_v1.json"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/joint_paper_receipt.json",
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_lot_mismatch_failure_v1.json"
+      ],
+      "acceptance": "Two aligned saved research accounts produce one date-aligned joint target and 7 paper orders/fills through the shared package with explicit cost/benchmark binding, projected cash/equity and execution_admitted=false."
+    }
+  ]
+}

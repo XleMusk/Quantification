@@ -1,6 +1,7 @@
 """Bounded market-wide annual statements, retained separately from admitted financials."""
 import argparse
 from datetime import date, datetime
+from hashlib import sha256
 import json
 from pathlib import Path
 import shutil
@@ -12,6 +13,7 @@ import pandas as pd
 from ..settings import DATA_ROOT, ROOT
 from ..worker import lock
 from .experiment import write_json
+from .fetch_receipts import make_receipt
 
 
 ENDPOINT = "https://datacenter-web.eastmoney.com/api/data/v1/get"
@@ -143,6 +145,51 @@ def consume(root):
     return summary
 
 
+def audit_receipts(root):
+    """Re-verify cached raw pages without issuing a network request."""
+
+    root = Path(root).resolve()
+    plan = json.loads((root / "plan.json").read_text(encoding="utf-8"))
+    result = json.loads((root / "result.json").read_text(encoding="utf-8"))
+    entries, groups = [], {}
+    for key, entry in sorted(result.get("entries", {}).items()):
+        raw_path = (root / entry["raw_file"]).resolve()
+        raw_path.relative_to(root)
+        if not raw_path.is_file():
+            raise ValueError(f"Cached raw financial page is missing: {entry['raw_file']}")
+        content = raw_path.read_bytes()
+        frame, meta = decode_page(content, entry["period"], int(entry["page"]))
+        if len(frame) != entry["rows"]:
+            raise ValueError(f"Cached raw/page row count differs: {key}")
+        page_id = f"{key}:page:{entry['page']}"
+        receipt = make_receipt(
+            {"period": entry["period"], "report": entry["report"], "page": int(entry["page"]), "endpoint": ENDPOINT},
+            source="bulk_annual_financials", upstream_source=ENDPOINT,
+            adapter_version="bulk_annual_financials_v1",
+            requested_scope={"period": entry["period"], "report": entry["report"], "page": int(entry["page"])},
+            fetched_at=entry["received_at"],
+            raw_content_reference={"file": entry["raw_file"], "sha256": sha256(content).hexdigest()},
+            schema_fingerprint=sha256("|".join(frame.columns).encode("utf-8")).hexdigest(),
+            expected_partitions=[page_id], completed_partitions=[page_id],
+            page_receipts=[{"partition": page_id, "rows": len(frame)}],
+            completion_state="COMPLETE" if len(frame) else "COMPLETE_EMPTY")
+        entries.append({"key": key, "receipt": receipt, "provider_meta": meta})
+    for key, group in sorted(result.get("groups", {}).items()):
+        page_entries = [entry for entry in result.get("entries", {}).values()
+                        if entry["period"] + "_" + entry["report"] == key]
+        expected = int(group["pages"] or 1)
+        pages = sorted(int(entry["page"]) for entry in page_entries)
+        groups[key] = {"expected_pages": expected, "completed_pages": pages,
+                       "status": "COMPLETE" if pages == list(range(1, expected + 1)) else "PARTIAL",
+                       "expected_rows": int(group["count"]),
+                       "observed_rows": sum(int(entry["rows"]) for entry in page_entries)}
+    return {"schema": "bulk_annual_financial_receipt_audit_v1", "status": "COMPLETED_READ_ONLY_AUDIT",
+            "source_root": str(root), "source_run_id": plan["id"], "entries": entries, "groups": groups,
+            "execution_admitted": False, "network_accessed": False,
+            "limitations": ["Audit reuses cached raw responses; it does not establish current provider availability.",
+                            "Original disclosure identity and historical PIT semantics still require separate review."]}
+
+
 def collect(root, max_pages=12, request_get=None):
     if not 1 <= max_pages <= 64:
         raise ValueError("Use a bounded one-to64-page batch")
@@ -177,14 +224,29 @@ def collect(root, max_pages=12, request_get=None):
                 (root / raw_name).write_bytes(response.content)
                 response.raise_for_status()
                 frame, meta = decode_page(response.content, period, page)
+                fetched_at = datetime.now().astimezone().isoformat()
+                page_id = f"{key}:page:{page}"
+                raw_sha = sha256(response.content).hexdigest()
+                page_receipt = make_receipt(
+                    {"period": period, "report": report, "page": page, "endpoint": ENDPOINT},
+                    source="bulk_annual_financials", upstream_source=ENDPOINT,
+                    adapter_version="bulk_annual_financials_v1",
+                    requested_scope={"period": period, "report": report, "page": page},
+                    fetched_at=fetched_at,
+                    raw_content_reference={"file": raw_name, "sha256": raw_sha},
+                    schema_fingerprint=sha256("|".join(frame.columns).encode("utf-8")).hexdigest(),
+                    expected_partitions=[page_id], completed_partitions=[page_id],
+                    page_receipts=[{"partition": page_id, "rows": len(frame)}],
+                    completion_state="COMPLETE" if len(frame) else "COMPLETE_EMPTY")
                 if key in result["groups"] and result["groups"][key] != {name: meta[name] for name in ("count", "pages")}:
                     raise ValueError("Financial pagination metadata changed; do not merge versions")
                 result["groups"][key] = {name: meta[name] for name in ("count", "pages")}
                 file_name = "pages/" + key + "_" + str(page) + ".parquet"
                 frame.to_parquet(root / file_name, index=False)
                 result["entries"][key + "_" + str(page)] = {"period": period, "report": report, "page": page,
-                    "received_at": datetime.now().astimezone().isoformat(), "response_url": response.url,
-                    "raw_file": raw_name, "file": file_name, "rows": len(frame)}
+                    "received_at": fetched_at, "response_url": response.url,
+                    "raw_file": raw_name, "file": file_name, "rows": len(frame),
+                    "fetch_receipt": page_receipt}
                 write_json(root / "result.json", result)
                 print(f"{period} {report}: page={page}/{meta['pages']}, rows={len(frame)}, source_rows={meta['count']}", flush=True)
                 time.sleep(.3)
@@ -205,9 +267,17 @@ def main(argv=None):
     parser.add_argument("--max-pages", type=int, default=12)
     parser.add_argument("--resume", type=Path)
     parser.add_argument("--consume", type=Path)
+    parser.add_argument("--audit-receipts", type=Path)
     args = parser.parse_args(argv)
     if args.consume:
         consume(args.consume)
+        return 0
+    if args.audit_receipts:
+        audit = audit_receipts(args.audit_receipts)
+        destination = ROOT / "outputs/bulk_annual_financials" / audit["source_run_id"]
+        destination.mkdir(parents=True, exist_ok=True)
+        write_json(destination / "receipt_audit.json", audit)
+        print(str(destination / "receipt_audit.json"), flush=True)
         return 0
     root = args.resume or create(args.periods.split(","))
     _, result = collect(root, args.max_pages)

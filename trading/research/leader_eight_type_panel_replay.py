@@ -112,13 +112,18 @@ def _environment(panels, calendar, as_of):
 def _case(raw, source_days, sessions, previous, panels, paths, env, members, qualification,
           anchor, start, end, identity, cap_name, guard, account_id,
           execution_policy_factory=None, context_raw=None, snapshot_day=None,
-          entry_membership_policy=None, resume_case=None):
+          entry_membership_policy=None, resume_case=None, base_feed=None,
+          risk_policy_candidates=None, risk_policy_features=None,
+          risk_policy_complete_days=None):
     if snapshot_day is not None and snapshot_day not in source_days:
         raise ValueError("Explicit account snapshot must use one exact source session")
     config, state = _config(100000, 5), new_state(100000)
-    base_raw = raw if context_raw is None else pd.concat([context_raw, raw], ignore_index=True)
-    base_days = source_days if context_raw is None else sorted(set(context_raw.date) | set(source_days))
-    base = ExactSourceRawFeed(base_raw, base_days, sorted(members), context_anchor=anchor)
+    if base_feed is None:
+        base_raw = raw if context_raw is None else pd.concat([context_raw, raw], ignore_index=True)
+        base_days = source_days if context_raw is None else sorted(set(context_raw.date) | set(source_days))
+        base = ExactSourceRawFeed(base_raw, base_days, sorted(members), context_anchor=anchor)
+    else:
+        base = base_feed
     execution = execution_policy_factory(base, source_days) if execution_policy_factory is not None else None
     raw_issues = execution.raw_issues if execution is not None else lambda day, required: _raw_issues(base, day, required)
     references = execution.references if execution is not None else lambda day, required: [
@@ -154,11 +159,18 @@ def _case(raw, source_days, sessions, previous, panels, paths, env, members, qua
         if snapshot_day is not None and snapshot_day <= saved_state["day"]:
             raise ValueError("Continuation cannot reconstruct an already committed account snapshot")
         state = deepcopy(saved_state)
-    risk_policy = LeaderTypeRiskExitPolicy(identity,
-        candidate_by_day={day: next(item for item in panel["types"] if item["id"] == identity)["candidates"]
-            for day, panel in panels.items()},
-        feature_by_day={day: panel.get("risk_features", {}) for day, panel in panels.items()},
-        complete_feature_days=[day for day, panel in panels.items() if panel.get("risk_feature_scope_complete") is True])
+    policy_copy_inputs = risk_policy_candidates is None or risk_policy_features is None
+    if risk_policy_candidates is None:
+        risk_policy_candidates = {day: next(item for item in panel["types"] if item["id"] == identity)["candidates"]
+            for day, panel in panels.items()}
+    if risk_policy_features is None:
+        risk_policy_features = {day: panel.get("risk_features", {}) for day, panel in panels.items()}
+    if risk_policy_complete_days is None:
+        risk_policy_complete_days = [day for day, panel in panels.items()
+                                     if panel.get("risk_feature_scope_complete") is True]
+    risk_policy = LeaderTypeRiskExitPolicy(identity, candidate_by_day=risk_policy_candidates,
+        feature_by_day=risk_policy_features, complete_feature_days=risk_policy_complete_days,
+        copy_inputs=policy_copy_inputs)
     if execution is not None:
         risk_policy = execution.wrap_risk_policy(risk_policy)
     daily = deepcopy(resume_case["daily"]) if resume_case is not None else []

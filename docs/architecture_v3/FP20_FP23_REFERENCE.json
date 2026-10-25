@@ -1,0 +1,20 @@
+{
+  "schema": "quantification_f2_trace_publish_reference_v1",
+  "recorded_on": "2026-10-23",
+  "execution_admitted": false,
+  "account_replay": true,
+  "state": "VERIFIED_LOCAL",
+  "implementation": "trading/research/f01_account_replay.py",
+  "tests": "trading/research/tests/test_f01_signal.py",
+  "checks": [
+    "each daily row carries signal provenance and accepted fact_ids",
+    "target, order, simulated broker, fill and cash/position stages share one replay row",
+    "publication uses new files and a final manifest only after stage files are written",
+    "load_bundle validates every registered SHA-256 and rejects a tampered daily file"
+  ],
+  "limitations": [
+    "Synthetic F01 facts and feed only",
+    "No original disclosure bytes or real source receipt is linked",
+    "No database backup/empty-directory rehearsal or external account recovery was performed"
+  ]
+}

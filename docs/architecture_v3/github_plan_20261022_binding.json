@@ -1,0 +1,378 @@
+{
+  "schema": "quantification_github_plan_traceability_v1",
+  "source_document": "C:\\Users\\13944\\Downloads\\A股量化系统_GitHub核查与完整落地规划_20261022.docx",
+  "source_sha256": "A3A04BF11591518393FF7889D7358D3ADABB305B883F454CC45BAC3C7D187EFE",
+  "source_date": "2026-10-22",
+  "generated_at": "2026-10-24",
+  "execution_admitted": false,
+  "account_actions_allowed": false,
+  "source_interpretation": "The DOCX is a read-only review and implementation plan. Its historical branch, PR, test-count and THS observations are provenance claims from 2026-10-22 and are not current-state evidence unless revalidated below.",
+  "historical_git_observation": {
+    "main_at_source_time": "c7e121fad41228392cb9ac6766b800b41be1ec70",
+    "draft_pr_at_source_time": "1ab9179c1ed7abedd388ca289140a00eeaf61abe",
+    "common_base_at_source_time": "fc3de5af4c289b76830dc6f3b681be4609c1f63e",
+    "status": "HISTORICAL_UNVERIFIED_CURRENT",
+    "rule": "Do not merge or infer a current PR state from the source document."
+  },
+  "current_checkout_observation": {
+    "branch": "main",
+    "head": "a9f9f3dff12401c885ac8d272af402d1d2db7fb0",
+    "local_github_directory": false,
+    "external_pr_status": "NOT_QUERIED",
+    "uncommitted_changes": true,
+    "status": "LOCAL_CHECKOUT_ONLY",
+    "rule": "Existing user changes are preserved; no merge, reset, push or PR action is implied.",
+    "shared_state_integration_candidate": "outputs/integration_candidate/20261024_164751_149_3e70d164/integration_candidate_receipt.json"
+  },
+  "states": [
+    "UNBOUND",
+    "PARTIAL",
+    "CODE_INTEGRATED",
+    "VERIFIED_LOCAL",
+    "DATA_READY",
+    "MARKET_EVALUATED",
+    "ENVIRONMENT_VALIDATED",
+    "CHANNEL_VALIDATED",
+    "BLOCKED_DATA",
+    "BLOCKED_POLICY",
+    "NOT_APPLICABLE"
+  ],
+  "stage_binding": [
+    {
+      "id": "S0",
+      "name": "integrable baseline",
+      "state": "PARTIAL",
+      "evidence": [
+        "trading/ledger.py",
+        "trading/tests/test_trading.py",
+        "trading/tests/test_broker.py",
+        "docs/architecture_v3/TRACEABILITY.md",
+        "outputs/integration_candidate/20261024_164751_149_3e70d164/integration_candidate_receipt.json"
+      ],
+      "verified": [
+        "shared Engine/Ledger remains the account path",
+        "cancel_pending race is fixed locally and tested",
+        "architecture audit remains an explicit gate"
+      ],
+      "open": [
+        "the integrated candidate must still combine historical branch behaviors",
+        "historical branch parity and market-data integrated replay remain unverified"
+      ],
+      "prohibition": "Separate branch results are not evidence for one integrated version."
+    },
+    {
+      "id": "S1",
+      "name": "trusted inputs and schedule",
+      "state": "PARTIAL",
+      "evidence": [
+        "trading/research/fetch_receipts.py",
+        "trading/research/financial_factor_contracts.py",
+        "outputs/bulk_annual_financials/20261004_220836_94303b12/receipt_audit.json",
+        "outputs/financials/20260930_162448_8be1e603/collection_audit.json",
+        "outputs/financials/f01_readiness_20261024.json"
+      ],
+      "verified": [
+        "receipt completion states and point-in-time contracts exist",
+        "the cached bulk audit is complete without network access"
+      ],
+      "open": [
+        "the financial collection is partial",
+        "single-quarter and PIT readiness remain blocked",
+        "latest producer and split receipts still need an actual local run"
+      ],
+      "prohibition": "Partial or unknown coverage cannot publish a complete factor result."
+    },
+    {
+      "id": "S2",
+      "name": "research net increment",
+      "state": "PARTIAL",
+      "evidence": [
+        "docs/architecture_v3/f2_work_packages_binding.json",
+        "trading/research/financial_factor_registry.py",
+        "trading/research/f01_account_replay.py"
+      ],
+      "verified": [
+        "F01 is explicitly registered and uses the shared replay path",
+        "diagnostic factor output is separated from account replay"
+      ],
+      "open": [
+        "no new candidate has passed a real, point-in-time, net-increment comparison",
+        "Alpha158/LightGBM, trend/momentum, mature factors, board-chain and seat-style candidates remain research routes"
+      ],
+      "prohibition": "Historical result counts or a formula registry do not establish adoption."
+    },
+    {
+      "id": "S3",
+      "name": "portfolio and risk",
+      "state": "PARTIAL",
+      "evidence": [
+        "trading/portfolio_allocation.py",
+        "trading/ledger.py",
+        "trading/tests/test_v3_ledger_reference.py"
+      ],
+      "verified": [
+        "cash, holdings, fees, T+1 and corporate-action reference cases use the shared ledger"
+      ],
+      "open": [
+        "cost-aware, holdings-aware multi-strategy attribution and stress evidence are not complete"
+      ],
+      "prohibition": "An economic target or uncalibrated score is not an executable target or expected return."
+    },
+    {
+      "id": "S4",
+      "name": "internal stable version",
+      "state": "PARTIAL",
+      "evidence": [
+        "docs/architecture_v3/GOAL_CONTINUITY.md",
+        "tools/save_goal_handoff.ps1",
+        "docs/architecture_v3/goal_continuity.json"
+      ],
+      "verified": [
+        "model-capacity interruption is classified as retryable infrastructure",
+        "goal and work-package state have a durable handoff"
+      ],
+      "open": [
+        "real browser POST-to-worker-to-refresh-to-download chain is not validated",
+        "the live process restart rehearsal is not yet run; the versioned config/strategy/input/ledger/cursor bundle, SQLite backup and explicit worker interruption receipt are locally verified"
+      ],
+      "prohibition": "A saved file or Git checkout is not proof of account and input recovery."
+    },
+    {
+      "id": "S5",
+      "name": "optional real channel",
+      "state": "BLOCKED_POLICY",
+      "evidence": [
+        "docs/architecture_v3/TRACEABILITY.md",
+        "docs/architecture_v3/GOAL_CONTINUITY.md"
+      ],
+      "verified": [
+        "execution_admitted=false"
+      ],
+      "open": [
+        "THS remains read-only observation and manual prefill/readback evidence only"
+      ],
+      "prohibition": "No real login, prefill, order, cancellation, transfer or paid purchase is allowed in this phase."
+    }
+  ],
+  "gap_binding": [
+    {
+      "id": "P0_BRANCH_INTEGRATION",
+      "source_priority": "P0",
+      "state": "PARTIAL",
+      "evidence": [
+        "trading/ledger.py",
+        "trading/tests/test_trading.py",
+        "trading/tests/test_combined_integration_candidate.py",
+        "trading/research/integration_harness.py",
+        "trading/research/recent_alpha158_split_forward.py",
+        "trading/research/tests/test_recent_alpha158_split_forward.py",
+        "tools/run_offline_ci.ps1",
+        "tools/run_integration_candidate.ps1",
+        "outputs/integration_candidate/20261024_085859_088_5f2cfcf8/integration_candidate_receipt.json",
+        "outputs/integration_candidate/20261024_164751_149_3e70d164/integration_candidate_receipt.json"
+      ],
+      "next": "Use the shared-state candidate as the integration baseline; add production-shaped market inputs and audit historical branch parity before any promotion.",
+      "acceptance": "cancel_pending race, securities conversion, split settlement, late publication and target exit pass together on one persistent state; historical parity and live channel remain separate gates."
+    },
+    {
+      "id": "P0_CANCEL_RACE",
+      "source_priority": "P0",
+      "state": "VERIFIED_LOCAL",
+      "evidence": [
+        "trading/ledger.py",
+        "trading/tests/test_trading.py::test_partial_fill_during_cancel_pending_preserves_pending_state",
+        "trading/tests/test_trading.py::test_full_fill_during_cancel_pending_wins_over_cancel"
+      ],
+      "next": "Carry the fix into the integrated candidate and broker observation replay.",
+      "acceptance": "Late partial fill leaves cancel_pending and emits partial evidence; full fill becomes filled; repeated cancel confirmation does not overwrite terminal state."
+    },
+    {
+      "id": "P0_COMMIT_EVIDENCE",
+      "source_priority": "P0",
+      "state": "VERIFIED_LOCAL",
+      "evidence": [
+        "tools/run_offline_ci.ps1",
+        "outputs/offline_ci/20261024_090611_645_c85210ed/offline_ci_receipt.json",
+        "docs/architecture_v3/CURRENT_STATUS.md"
+      ],
+      "next": "Use the local receipt while building an integrated candidate; keep external GitHub/PR status separate.",
+      "acceptance": "The same checkout produces a reviewable local release receipt without external secrets or market/account data."
+    },
+    {
+      "id": "P1_DEPENDENCY_COUPLING",
+      "source_priority": "P1",
+      "state": "VERIFIED_LOCAL",
+      "evidence": [
+        "trading/architecture.py",
+        "docs/architecture_v2/DEPENDENCY_BOUNDARIES.md"
+      ],
+      "next": "Migrate remaining true cross-layer consumers one at a time and retain exact allowlists.",
+      "acceptance": "Architecture audit reports zero violations without broad research whitelisting."
+    },
+    {
+      "id": "P1_DATA_SEMANTICS",
+      "source_priority": "P1",
+      "state": "PARTIAL",
+      "evidence": [
+        "trading/research/financial_factor_contracts.py",
+        "trading/research/financial_periods.py",
+        "trading/research/financial_units.py"
+      ],
+      "next": "Bind identity, event, revision and corporate-action services to a real published snapshot.",
+      "acceptance": "Public availability, received time, revision time, raw/reference/adjusted values and missing categories remain queryable."
+    },
+    {
+      "id": "P1_STRATEGY_EVIDENCE",
+      "source_priority": "P1",
+      "state": "PARTIAL",
+      "evidence": [
+        "docs/architecture_v3/f2_work_packages_binding.json",
+        "trading/research/financial_factor_registry.py"
+      ],
+      "next": "Run one bounded new information mechanism through the same account comparison after data readiness.",
+      "acceptance": "Adoption or denial is based on fixed inputs, costs, delays, capacity and falsifiers."
+    },
+    {
+      "id": "P1_REAL_PRODUCTION",
+      "source_priority": "P1",
+      "state": "PARTIAL",
+      "evidence": [
+        "trading/research/system_daily_route_recovery.py",
+        "trading/research/bulk_annual_financials.py",
+        "trading/research/production_receipt_audit.py",
+        "trading/research/tests/test_production_receipt_audit.py",
+        "outputs/production_receipt_audit/20261024_alpha158_20261021.json",
+        "outputs/alpha158_daily/20261021_v1/actual_readback.json"
+      ],
+      "next": "Audit the next pinned producer/split receipt when available and bind it to the same route without rerunning or duplicating the producer.",
+      "acceptance": "No duplicate runner is introduced; source, publication and settlement generations are recoverable and historical receipts stay marked historical."
+    },
+    {
+      "id": "P2_PORTFOLIO",
+      "source_priority": "P2",
+      "state": "PARTIAL",
+      "evidence": [
+        "trading/portfolio_allocation.py",
+        "trading/portfolio_allocation_comparison.py",
+        "trading/tests/test_portfolio_allocation_comparison.py",
+        "trading/ledger.py"
+      ],
+      "next": "Expose the persisted comparison in the paper UI and validate multi-strategy cash attribution.",
+      "acceptance": "Economic intent and executable target are distinct and reconcile to one cash pool."
+    },
+    {
+      "id": "P2_FRONTEND",
+      "source_priority": "P2",
+      "state": "PARTIAL",
+      "evidence": [
+        "webapp/backend/tests/test_webapp.py::test_end_to_end_real_worker_function",
+        "webapp/backend/app/main.py",
+        "webapp/workers/factor_worker.py"
+      ],
+      "next": "Extend the existing POST→worker→refresh→download test to a persistent worker process and interruption/restart receipt.",
+      "acceptance": "POST, persistent worker, refresh and download identify the same run."
+    },
+    {
+      "id": "P2_EXECUTION_COST",
+      "source_priority": "P2",
+      "state": "PARTIAL",
+      "evidence": [
+        "docs/architecture_v3/FP17_FP18_REFERENCE.json",
+        "docs/architecture_v3/GOAL_CONTINUITY.md"
+      ],
+      "next": "Keep simulated costs and measured THS observations in separate evidence classes.",
+      "acceptance": "Four-table/account evidence includes its time basis and unknowns; no simulated fee becomes broker fact."
+    },
+    {
+      "id": "P2_RECOVERY",
+      "source_priority": "P2",
+      "state": "VERIFIED_LOCAL",
+      "evidence": [
+        "trading/research/f01_account_replay.py",
+        "trading/research/tests/test_f01_signal.py::test_f01_account_bundle_restores_into_empty_directory",
+        "trading/research/recovery_bundle.py",
+        "trading/research/tests/test_recovery_bundle.py",
+        "trading/store.py::recover_interrupted_runs",
+        "trading/tests/test_trading.py::test_worker_startup_records_interruption_receipt_and_explicit_resume",
+        "trading/tests/test_trading.py::test_worker_process_restart_writes_and_reads_interruption_receipt",
+        "trading/tests/test_trading.py::test_worker_main_process_restart_replays_next_daily_checkpoint",
+        "docs/architecture_v3/goal_continuity.json"
+      ],
+      "next": "Bind the verified local drill to the financial-factor worker and a real pinned daily input receipt; keep channel recovery separate.",
+      "acceptance": "Configuration, strategy, input, ledger and daily cursor recover consistently; worker interruption is recorded once and requires explicit paper/replay resume."
+    }
+  ],
+  "drill_binding": [
+    {
+      "id": "D01_BRANCH_INTEGRATION",
+      "state": "PARTIAL",
+      "evidence": [
+        "trading/ledger.py",
+        "trading/tests/test_trading.py",
+        "outputs/integration_candidate/20261024_164751_149_3e70d164/integration_candidate_receipt.json"
+      ],
+      "missing": "production-shaped market-data replay and complete historical branch parity remain unverified; current shared-state scenario is synthetic evidence only"
+    },
+    {
+      "id": "D02_PROVIDER_CHANGE",
+      "state": "UNBOUND",
+      "evidence": [],
+      "missing": "same strategy and fields on two authorized providers"
+    },
+    {
+      "id": "D03_STATEFUL_STRATEGY",
+      "state": "PARTIAL",
+      "evidence": [
+        "trading/research/f01_account_replay.py"
+      ],
+      "missing": "restart and lifecycle receipt for a real input bundle"
+    },
+    {
+      "id": "D04_EXECUTION_CHANNEL",
+      "state": "VERIFIED_LOCAL",
+      "evidence": [
+        "trading/research/f01_signal.py",
+        "trading/research/f01_account_replay.py"
+      ],
+      "missing": "channel-specific paper/sim readback; click is not fill"
+    },
+    {
+      "id": "D05_HISTORY_REVISION",
+      "state": "PARTIAL",
+      "evidence": [
+        "trading/research/query_dependencies.py",
+        "trading/research/financial_factor_contracts.py"
+      ],
+      "missing": "coexisting old/new real snapshots and recomputation receipt"
+    },
+    {
+      "id": "D06_LATE_PUBLICATION",
+      "state": "PARTIAL",
+      "evidence": [
+        "trading/research/system_daily_route_recovery.py"
+      ],
+      "missing": "one real late-publication settlement replay"
+    },
+    {
+      "id": "D07_BROWSER_WRITE",
+      "state": "PARTIAL",
+      "evidence": [
+        "webapp/backend/tests/test_webapp.py::test_end_to_end_real_worker_function"
+      ],
+      "missing": "persistent worker process and interruption/restart in the same browser run"
+    },
+    {
+      "id": "D08_EMPTY_DIRECTORY",
+      "state": "VERIFIED_LOCAL",
+      "evidence": [
+        "trading/research/recovery_bundle.py",
+        "trading/research/tests/test_recovery_bundle.py",
+        "trading/research/f01_account_replay.py",
+        "trading/research/tests/test_f01_signal.py::test_f01_account_bundle_restores_into_empty_directory",
+        "trading/tests/test_trading.py::test_worker_main_process_restart_replays_next_daily_checkpoint"
+      ],
+      "missing": "real pinned daily input and account recovery rehearsal"
+    }
+  ],
+  "continuation_rule": "Advance one or two bounded work packages at a time. Keep this register and the V3/F2 registers current; preserve failed and blocked evidence; never convert a model-capacity interruption into a business result."
+}

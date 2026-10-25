@@ -14,8 +14,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from hashlib import sha256
 import json
+import mmap
 from pathlib import Path
 from urllib.parse import urlparse
+from collections.abc import Mapping
 
 import numpy as np
 import pandas as pd
@@ -56,6 +58,144 @@ def _read(path):
     if not isinstance(value, dict):
         raise ValueError("Historical research metadata must be a JSON object")
     return value
+
+
+def _skip_json_space(data, position):
+    length = len(data)
+    while position < length and data[position] in b" \t\r\n":
+        position += 1
+    return position
+
+
+def _json_value_end(data, position):
+    """Return the end offset of one JSON value without retaining it."""
+    if data[position] not in b"[{":
+        if data[position] == ord('"'):
+            position += 1
+            escaped = False
+            while position < len(data):
+                byte = data[position]
+                position += 1
+                if escaped:
+                    escaped = False
+                elif byte == ord('\\'):
+                    escaped = True
+                elif byte == ord('"'):
+                    return position
+        while position < len(data) and data[position] not in b",}] \t\r\n":
+            position += 1
+        return position
+    stack = [data[position]]
+    position += 1
+    length = len(data)
+    while position < length and stack:
+        # mmap.find is implemented in C and avoids walking every byte of the
+        # multi-gigabyte panel file in the Python interpreter.
+        candidates = [data.find(token, position) for token in (b'"', b'{', b'[', b'}', b']')]
+        candidates = [(offset, index) for index, offset in enumerate(candidates) if offset >= 0]
+        if not candidates:
+            break
+        offset, index = min(candidates)
+        if index == 0:  # Skip one complete JSON string, including escaped quotes.
+            quote = offset + 1
+            while True:
+                quote = data.find(b'"', quote)
+                if quote < 0:
+                    raise ValueError("Truncated saved panel JSON string")
+                backslashes = 0
+                cursor = quote - 1
+                while cursor >= position and data[cursor] == ord('\\'):
+                    backslashes += 1
+                    cursor -= 1
+                if backslashes % 2 == 0:
+                    position = quote + 1
+                    break
+                quote += 1
+            continue
+        byte = data[offset]
+        expected = ord('[') if byte == ord(']') else ord('{')
+        if byte in b"[{":
+            stack.append(byte)
+        elif not stack or stack[-1] != expected:
+            raise ValueError("Malformed saved panel JSON nesting")
+        else:
+            stack.pop()
+        position = offset + 1
+    if stack:
+        raise ValueError("Truncated saved panel JSON value")
+    return position
+
+
+class _LazyPanelMapping(Mapping):
+    """Read one dated panel from a pinned JSON object on demand."""
+    def __init__(self, path):
+        self.path = Path(path).resolve()
+        self._handle = self.path.open("rb")
+        self._mapped = mmap.mmap(self._handle.fileno(), 0, access=mmap.ACCESS_READ)
+        data = self._mapped
+        position = _skip_json_space(data, 0)
+        if position >= len(data) or data[position] != ord('{'):
+            raise ValueError("Saved panels must be a top-level JSON object")
+        offsets = {}
+        # The pinned writer uses indent=2. Top-level day keys therefore have
+        # the unique line prefix ``\n  \"``; nested keys are indented at
+        # least four spaces. mmap.find performs this index scan in C.
+        marker = data.find(b'\n  "', position + 1)
+        if marker < 0:
+            raise ValueError("Saved panel object has no dated keys")
+        while marker >= 0:
+            key_start = marker + 3
+            key_end = _json_value_end(data, key_start)
+            key = json.loads(bytes(data[key_start:key_end]).decode("utf-8"))
+            colon = _skip_json_space(data, key_end)
+            if colon >= len(data) or data[colon] != ord(':'):
+                raise ValueError("Saved panel key is missing its value")
+            value_start = _skip_json_space(data, colon + 1)
+            next_marker = data.find(b'\n  "', value_start)
+            object_end = next_marker if next_marker >= 0 else data.rfind(b'\n}')
+            if object_end < value_start:
+                raise ValueError("Truncated saved panel object")
+            value_end = object_end
+            while value_end > value_start and data[value_end - 1] in b" \t\r\n":
+                value_end -= 1
+            if value_end > value_start and data[value_end - 1] == ord(','):
+                value_end -= 1
+                while value_end > value_start and data[value_end - 1] in b" \t\r\n":
+                    value_end -= 1
+            if key in offsets:
+                raise ValueError(f"Duplicate saved panel day: {key}")
+            offsets[key] = (value_start, value_end)
+            marker = next_marker
+        if not offsets:
+            raise ValueError("Saved panel object contains no values")
+        self._offsets = offsets
+        # Keep only the compact byte offsets.  A persistent mmap would retain
+        # every touched annual page in the process working set while replay
+        # walks all source days; day reads below use ordinary file I/O.
+        self._mapped.close()
+        self._mapped = None
+
+    def __getitem__(self, day):
+        try:
+            start, end = self._offsets[day]
+        except KeyError:
+            raise KeyError(day) from None
+        self._handle.seek(start)
+        return json.loads(self._handle.read(end - start).decode("utf-8"))
+
+    def __iter__(self):
+        return iter(self._offsets)
+
+    def __len__(self):
+        return len(self._offsets)
+
+    def close(self):
+        if getattr(self, "_mapped", None) is not None:
+            self._mapped.close()
+            self._mapped = None
+        if getattr(self, "_handle", None) is not None:
+            self._handle.close()
+            self._handle = None
 
 
 def _save(path, value):
@@ -514,7 +654,7 @@ def build_inputs(views, calendar, master_run, start, end, through, out, *, prior
     return manifest
 
 
-def load_inputs(path):
+def load_inputs(path, *, lazy_panels=False, raw_columns=None):
     path = Path(path).resolve()
     value = _read(path)
     if (value.get("schema") != INPUT_SCHEMA or value.get("method_id") != METHOD_ID
@@ -573,8 +713,8 @@ def load_inputs(path):
                     or len(rows) != read["projected_rows_included"]
                     or not set(rows.symbol) <= set(read["symbols_requested"])):
                 raise ValueError("Restoration projection and original pinned native source metadata differ")
-    raw = pd.read_parquet(value["raw_file"])
-    panels = _read(value["panels_file"])
+    raw = pd.read_parquet(value["raw_file"], columns=raw_columns)
+    panels = _LazyPanelMapping(value["panels_file"]) if lazy_panels else _read(value["panels_file"])
     if (len(raw) != value["raw_rows"] or sorted(raw.date.unique()) != value["source_days"]
             or raw.duplicated(["date", "code"]).any() or sorted(panels) != value["source_days"]):
         raise ValueError("Historical raw/panel exact dates and row identities differ")

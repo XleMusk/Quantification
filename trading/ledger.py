@@ -247,12 +247,21 @@ class Ledger:
             if track_origin and not self.quantity(symbol):
                 self.state["security_conversion_holding_origins"].pop(symbol)
             self.state["cash"] += notional - fee_delta
+        prior_status = order["status"]
         order["filled"] += qty
         order["notional"] += notional
         if price_unit != "cent":
             order["notional_minor"] = total_minor
         order["fees"] = new_fees
-        order["status"] = "filled" if order["filled"] == order["qty"] else "partial"
+        # A cancellation is a request that can race with a late fill.  Keep
+        # the request observable while the order still has an open remainder;
+        # a complete fill wins over the request and becomes terminal.
+        if order["filled"] == order["qty"]:
+            order["status"] = "filled"
+        elif prior_status == "cancel_pending":
+            order["status"] = "cancel_pending"
+        else:
+            order["status"] = "partial"
         remaining = order["qty"] - order["filled"]
         future_notional = notional_cents(total_minor + remaining * order["limit_price"], 1, price_unit) - order["notional"]
         future_fee = 0 if _broker else self.fee(order["notional"] + future_notional, "buy", symbol, day) - new_fees
@@ -266,7 +275,9 @@ class Ledger:
         if price_unit != "cent":
             extra.update(price_unit=price_unit, notional=notional)
             self.state["fills"][execution_id].update(extra)
-        self.emit(day, order["status"], order_id=order_id, execution_id=execution_id, symbol=symbol, qty=qty, price=price, **extra)
+        event_kind = "filled" if order["filled"] == order["qty"] else "partial"
+        self.emit(day, event_kind, order_id=order_id, execution_id=execution_id, symbol=symbol,
+                  qty=qty, price=price, order_status=order["status"], **extra)
         return True
 
     def apply_security_conversion(self, receipt):

@@ -31,3 +31,34 @@ Result: `outputs/architecture_v2/a04_dependencies_20260930.json` passed with
 committee integration checks passed (89 tests); final architecture-only check
 passed (13). No data, account state or dependency environment was migrated.
 This is a code-boundary result, not a strategy or real-client acceptance.
+
+## 2026-10-23 reviewed boundary allowlists
+
+The current checkout has grown beyond the original 2026-09-30 module count.
+`trading/architecture.py` therefore keeps two explicit, narrow allowlists rather
+than treating every `trading.*` import as safe:
+
+- `CORE_SUPPORT` contains the internal simulation and policy helpers that the
+  canonical Engine/Ledger may call: expected-return validation, lot allocation,
+  entry risk, rights, event-frontier, exit lifecycle, published-close routing,
+  security conversion, and the read-only research corporate-action view. The
+  package-level `trading.research` import used by Engine is tracked separately
+  as a one-purpose `CORE_PACKAGE_BRIDGES` entry for `order_capacity_replay`.
+- `WORKBENCH_COMPOSITE` contains only `capability_gap_scan`, `opening_cycle`,
+  and `trader_desk_snapshot`. These are read-only workbench composites that
+  consume guarded THS observation/templates. Their membership does not grant
+  broker I/O, submission, cancellation, or execution admission.
+
+The allowlists are exact module names and are covered by
+`trading/tests/test_architecture.py`. `system_daily_route_recovery` now uses
+lazy explicit imports for its seven reviewed route modules, so the architecture
+check records concrete dependencies instead of accepting an unresolved dynamic
+import. The acceptance command is:
+
+```powershell
+.\env\python.exe -X utf8 run_committee.py architecture-check
+```
+
+This check is still static and is not runtime authorization. It does not change
+the `execution_admitted=false` gate or turn a read-only composite into a broker
+channel.

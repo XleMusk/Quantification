@@ -1,0 +1,27 @@
+{
+  "schema": "quantification_f2_fetch_receipt_reference_v1",
+  "recorded_on": "2026-10-23",
+  "execution_admitted": false,
+  "scope": "local_contract_and_baostock_single_period_adapter",
+  "implementation": [
+    "trading/research/fetch_receipts.py",
+    "trading/research/financials.py",
+    "trading/research/bulk_annual_financials.py",
+    "trading/research/tests/test_fetch_receipts.py",
+    "trading/research/tests/test_bulk_annual_financials.py"
+  ],
+  "observed_cache_audit": "outputs/bulk_annual_financials/20261004_220836_94303b12/receipt_audit.json",
+  "observed_cache_scope": {"entries": 66, "groups": 6, "complete_groups": 6, "network_accessed": false},
+  "validated_states": ["COMPLETE", "COMPLETE_EMPTY", "PARTIAL", "UNKNOWN_COVERAGE", "SCHEMA_CHANGED", "RETRYABLE_ERROR"],
+  "independent_checks": [
+    "empty and nonempty pages have different completion states",
+    "missing partitions cannot be marked COMPLETE",
+    "schema and retryable failures require an error code",
+    "request hash is stable under key ordering"
+  ],
+  "limitations": [
+    "No real upstream response or full disclosure pagination was used",
+    "The BaoStock period adapter still does not preserve original response bytes; the paged annual adapter does",
+    "This contract does not promote financial data to PIT verified or account ready"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "quantification_f2_f01_reference_v1",
+  "recorded_on": "2026-10-23",
+  "execution_admitted": false,
+  "account_replay": false,
+  "state": "VERIFIED_LOCAL",
+  "scope": "pure_decimal_fact_calculation_and_synthetic_counterexamples",
+  "formula": "(current_single_quarter_parent_net_profit - prior_comparable_single_quarter_parent_net_profit) / event_pre_assets",
+  "implementation": ["trading/research/financial_factor_registry.py", "trading/research/f01_financial_factor.py"],
+  "tests": ["trading/research/tests/test_financial_factor_registry.py", "trading/research/tests/test_f01_financial_factor.py"],
+  "observed_input_readiness": "outputs/financials/f01_readiness_20261024.json",
+  "independent_checks": [
+    "50 minus 40 divided by 1000 equals 0.01 using Decimal",
+    "same-day asset without strict pre-event proof returns PRE_EVENT_UNPROVEN",
+    "missing and unresolved facts never become zero",
+    "nonpositive assets and scope/unit conflicts are rejected",
+    "cumulative 9M minus H1 derives one comparable single quarter"
+  ],
+  "limitations": [
+    "No real disclosure original or provider coverage was used",
+    "The observed annual consolidated input run is BLOCKED_DATA for event-timed single-quarter/PIT F01",
+    "No production factor registry or account adapter is changed by this artifact",
+    "The result cannot support a market or live-execution claim"
+  ]
+}

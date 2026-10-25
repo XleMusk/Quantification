@@ -11,6 +11,7 @@ from .contracts import (ExecutionEvent, IntentKind, OrderIntent, PortfolioIntent
 from .expected_returns import checked_return_intent
 from .ledger import ACTIVE, Ledger
 from .portfolio_allocation import LOT_ALLOCATION, OPEN_LOT_ALLOCATION, allocate_close_lots, allocate_open_lots
+from .portfolio_allocation_comparison import compare_target
 from .entry_risk import entry_risk_contract, notice_entry_block, raw_quote_entry_block, validate_entry_risk_binding
 from .rules import cents, holder_bonus_ratio_bounds, listing_limit_reason, notional_cents, quote_value
 from .rights_issue import apply_rights_issue, validate_rights_binding
@@ -1202,6 +1203,11 @@ def _advance_session(state, feed, day, config, session_number, *, context=None, 
             book.emit(day, "no_decision", signal_date=day, reason=intent.reason, **published_metadata)
         else:
             state["candidates"] = candidates
+            if intent.kind == IntentKind.FULL_TARGET:
+                comparison = compare_target(intent, book, day, rows)
+                state["portfolio_comparison"] = comparison
+                book.emit(day, "economic_executable_target_comparison",
+                          **{key: value for key, value in comparison.items() if key != "day"})
             state["targets"] = intent.to_legacy_pending()
             state["pending_targets"] = intent.to_legacy_pending()
             if exit_lifecycle is not None:

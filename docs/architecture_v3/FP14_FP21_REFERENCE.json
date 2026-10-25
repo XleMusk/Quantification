@@ -1,0 +1,23 @@
+{
+  "schema": "quantification_f2_query_dependency_reference_v1",
+  "recorded_on": "2026-10-23",
+  "execution_admitted": false,
+  "state": "VERIFIED_LOCAL",
+  "scope": "pure_query_dependency_and_revision_impact_contract",
+  "implementation": [
+    "trading/research/query_dependencies.py",
+    "trading/research/tests/test_query_dependencies.py"
+  ],
+  "checks": [
+    "MISS and UNKNOWN retain stable query identity without a fact_id",
+    "an in-scope fact available before cutoff reopens the query",
+    "unrelated and after-cutoff facts do not reopen it",
+    "economic decision changes require REPLAY_ACCOUNT",
+    "explanation-only changes require RECOMPUTE_EXPLANATION"
+  ],
+  "limitations": [
+    "No provider ingestion or durable query-dependency database was used",
+    "No real financial correction was replayed through a historical account",
+    "The contract does not infer that a missing fact means no prior disclosure"
+  ]
+}
