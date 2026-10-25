@@ -278,6 +278,8 @@ def build_fact_bridge(sidecar: str | Path, *, scoped_receipt: str | Path | None 
 
     historical_rows: dict[str, Mapping[str, Any]] = {}
     historical_path: Path | None = None
+    historical_schema: str | None = None
+    source_snapshot_id: str | None = None
     if historical_evidence is not None:
         historical_path = Path(historical_evidence).expanduser().resolve()
         historical = _read_json(historical_path)
@@ -291,6 +293,9 @@ def build_fact_bridge(sidecar: str | Path, *, scoped_receipt: str | Path | None 
             if not isinstance(gate, Mapping) or gate.get("schema") != HISTORICAL_SCHEMA:
                 raise ValueError(f"{SOURCE_SNAPSHOT_SCHEMA} receipt has no historical gate")
             historical_rows_payload = gate.get("rows", [])
+            snapshot = historical.get("snapshot")
+            if isinstance(snapshot, Mapping) and isinstance(snapshot.get("snapshot_id"), str):
+                source_snapshot_id = snapshot["snapshot_id"]
         else:
             raise ValueError(f"expected {HISTORICAL_SCHEMA} or {SOURCE_SNAPSHOT_SCHEMA}")
         for item in historical_rows_payload if isinstance(historical_rows_payload, list) else []:
@@ -324,6 +329,8 @@ def build_fact_bridge(sidecar: str | Path, *, scoped_receipt: str | Path | None 
         "scoped_receipt_sha256": _sha256(scoped_path) if scoped_path and scoped_path.is_file() else None,
         "historical_evidence": str(historical_path) if historical_path else None,
         "historical_evidence_sha256": _sha256(historical_path) if historical_path and historical_path.is_file() else None,
+        "historical_evidence_schema": historical_schema,
+        "source_snapshot_id": source_snapshot_id,
         "decision_day": payload.get("decision_day"),
         "rows": materialized,
         "summary": {

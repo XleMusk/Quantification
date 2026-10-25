@@ -90,6 +90,8 @@ def test_source_snapshot_adapter_receipt_feeds_fact_bridge(tmp_path):
     assert result["status"] == READY
     assert result["summary"]["fact_rows"] == 2
     assert result["summary"]["reason_counts"] == {}
+    assert result["historical_evidence_schema"] == "f2_source_snapshot_adapter_v1"
+    assert result["source_snapshot_id"] == "bridge-fixture-v1"
 
 
 def test_source_snapshot_without_pit_fields_stays_blocked_in_fact_bridge(tmp_path):
