@@ -1,0 +1,29 @@
+{
+  "schema": "stockdb_next_close_plan_binding_v1",
+  "created_at": "2026-10-25T18:10:40.6175602Z",
+  "status": "VERIFIED_LOCAL_RESEARCH",
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "change": [
+    "frozen D0/D1 plan now records local plan_published_at distinct from quote_observed_at and decision_cutoff_at",
+    "registered fixed_daily heads carry generation/last_completed_day account_version into the plan and manifest",
+    "direct terminal-account inputs remain explicit and unversioned"
+  ],
+  "evidence": [
+    "trading/research/next_close_d0_d1.py",
+    "trading/research/tests/test_next_close_d0_d1.py"
+  ],
+  "tests": [
+    {
+      "command": "D:\\Quantification\\env\\python.exe -m pytest -q trading/research/tests/test_next_close_d0_d1.py",
+      "result": "15 passed"
+    }
+  ],
+  "limitations": [
+    "local publication timestamp is not broker or Tonghuashun delivery",
+    "no live data capture or real account interaction"
+  ],
+  "next_acceptance": "Run after the actual 2026-10-26 close with a registered fixed_daily head and verify account_version plus D0/D1 continuity."
+}
