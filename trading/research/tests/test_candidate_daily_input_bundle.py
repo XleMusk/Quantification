@@ -39,7 +39,7 @@ def test_bundle_builds_alias_safe_manifest_from_two_replay_kinds(tmp_path: Path)
         {"id": "catalog_b", "research_selection": {"research_followup_allowed": True}},
     ]}), encoding="utf-8")
     receipt = build_input_bundle([
-        {"candidate_id": "catalog_a", "replay_result": str(nested)},
+        {"candidate_id": "catalog_a", "decision_id": "decision_a", "replay_result": str(nested)},
         {"candidate_id": "catalog_b", "terminal_account": str(legacy),
          "strategy_id": "trend_low_vol_half_momentum_20"},
     ], tmp_path / "bundle", catalog_path=catalog)
@@ -49,6 +49,7 @@ def test_bundle_builds_alias_safe_manifest_from_two_replay_kinds(tmp_path: Path)
     assert len(receipt["manifest"]["sha256"]) == 64
     manifest = json.loads((tmp_path / "bundle" / "manifest.json").read_text(encoding="utf-8"))
     assert [row["candidate_id"] for row in manifest["candidates"]] == ["catalog_a", "catalog_b"]
+    assert manifest["candidates"][0]["decision_id"] == "decision_a"
     assert all(Path(row["target"]).is_file() and Path(row["quotes"]).is_file()
                for row in manifest["candidates"])
 

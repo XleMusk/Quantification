@@ -103,6 +103,9 @@ def build_input_bundle(candidates: Sequence[Mapping[str, Any]], output_dir: str 
     manifest_candidates: list[dict[str, Any]] = []
     records: list[dict[str, Any]] = []
     for item, candidate_id in zip(candidates, identifiers):
+        decision_id = item.get("decision_id")
+        if decision_id is not None and (not isinstance(decision_id, str) or not decision_id.strip()):
+            raise ValueError(f"Candidate decision_id must be a non-empty string: {candidate_id}")
         catalog_entry = catalog_entries.get(candidate_id)
         catalog_selection = None
         if catalog_path is not None:
@@ -135,9 +138,12 @@ def build_input_bundle(candidates: Sequence[Mapping[str, Any]], output_dir: str 
         target_ref = {"path": str(target_path), "sha256": _sha256(target_path)}
         quote_ref = {"path": str(quote_path), "sha256": _sha256(quote_path)}
         source_ref = {"path": str(source_path), "sha256": _sha256(source_path)}
-        manifest_candidates.append({"candidate_id": candidate_id, "strategy_id": strategy_id,
-                                    "target": str(target_path), "quotes": str(quote_path)})
-        records.append({
+        manifest_candidate = {"candidate_id": candidate_id, "strategy_id": strategy_id,
+                              "target": str(target_path), "quotes": str(quote_path)}
+        if decision_id is not None:
+            manifest_candidate["decision_id"] = decision_id.strip()
+        manifest_candidates.append(manifest_candidate)
+        record = {
             "candidate_id": candidate_id,
             "strategy_id": strategy_id,
             "source": source_ref,
@@ -147,7 +153,10 @@ def build_input_bundle(candidates: Sequence[Mapping[str, Any]], output_dir: str 
             "quotes": quote_ref,
             "catalog_selection": catalog_selection,
             "gate_mode": gate_mode,
-        })
+        }
+        if decision_id is not None:
+            record["decision_id"] = decision_id.strip()
+        records.append(record)
     manifest = {
         "schema": SCHEMA,
         "status": STATUS,

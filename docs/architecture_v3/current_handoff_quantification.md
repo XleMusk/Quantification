@@ -278,3 +278,8 @@ D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `de
 ## 2026-10-25 replay manifest fan-in
 
 `post-close-d0-d1` 新增互斥入口 `--candidate-replay-manifest`：直接消费候选 replay 结果清单，调用现有 `candidate_daily_input_bundle` 生成 Target 输入，再交给 D0/D1 用真实收市 StockDB 价格重建 Quote；原有 `--source-manifest` 仍可直接使用。新增回放清单夹具后聚焦回归为 `29 passed`，未新增账户或外部写操作。
+
+
+## 2026-10-25 decision-bound replay fan-in
+
+候选输入 bundle 现在保留上游 `decision_id` 到生成的 manifest/receipt，保证 `--research-decision-receipt` 在 replay manifest 直连路径中仍能按研究去留筛选候选，而不是依赖 candidate id 恰好相同。相关候选 bundle、post-close、D0/D1、fixed_daily 与联合纸面聚焦回归为 `34 passed`。
