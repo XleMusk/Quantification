@@ -840,7 +840,8 @@
         "D:/QuantificationData/trading/research/releases/20261026_v8/release_manifest.json",
         "D:/QuantificationData/trading/research/releases/20261026_v9/release_manifest.json",
         "D:/QuantificationData/trading/research/releases/20261026_v10/release_manifest.json",
-        "D:/QuantificationData/trading/research/releases/20261026_v11/release_manifest.json"
+        "D:/QuantificationData/trading/research/releases/20261026_v11/release_manifest.json",
+        "D:/QuantificationData/trading/research/releases/20261026_v12/release_manifest.json"
       ],
       "evidence": [
         "D:/QuantificationData/trading/research/releases/20261025_v3/release_manifest.json",
@@ -851,7 +852,8 @@
         "D:/QuantificationData/trading/research/releases/20261026_v8/release_manifest.json",
         "D:/QuantificationData/trading/research/releases/20261026_v9/release_manifest.json",
         "D:/QuantificationData/trading/research/releases/20261026_v10/release_manifest.json",
-        "D:/QuantificationData/trading/research/releases/20261026_v11/release_manifest.json"
+        "D:/QuantificationData/trading/research/releases/20261026_v11/release_manifest.json",
+        "D:/QuantificationData/trading/research/releases/20261026_v12/release_manifest.json"
       ],
       "acceptance": "A research-only release manifest binds code, fixed account and candidate paper/THS-reference evidence, explicitly records current BrokerQuote, four-table account export, sellable T+1 and THS observation as missing or reference-only, and keeps execution_admitted=false and live_execution_ready=false.",
       "evidence_updated_on": "2026-10-26"
