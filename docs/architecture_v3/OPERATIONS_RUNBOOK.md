@@ -2,6 +2,8 @@
 
 This runbook operates the local research and paper pipeline described by the CTO plan. It does not log in to Tonghuashun or a broker, submit/pre-fill/cancel orders, transfer cash, buy data, or mutate a real account.
 
+Current-session data is route-scoped. Missing or delayed latest data pauses only the route that needs it; code, historical replay, pinned-snapshot paper runs, candidate comparison, release packaging and other independent work continue with their own recorded inputs.
+
 ## Before a close-day run
 
 Keep the registered fixed account under `D:\QuantificationData\trading\research\fixed_daily` and use an exact same-day source manifest or replay manifest for candidates. A replay manifest must use the registered candidate catalog and may carry a `research_decision_receipt`.

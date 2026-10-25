@@ -320,3 +320,8 @@ D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `de
 ## 2026-10-25 internal research release candidate
 
 新增 `trading/research/internal_release_candidate.py`、统一命令 `run_committee.py internal-release-candidate` 和 `docs/architecture_v3/OPERATIONS_RUNBOOK.md`。实际生成 `D:\QuantificationData\trading\research\releases\20261025_v1\release_manifest.json`，绑定代码/架构/交接证据的 SHA-256，列出 fixed_daily、next-close、post-close、THS readback 等运行入口；`execution_admitted=false`、`live_execution_ready=false`。该包完成 O06 的内部研究发布和操作手册，不把它冒充真实执行发布。
+
+
+## 2026-10-25 route-scoped latest-data policy
+
+后续最新行情或当前账户数据只影响直接依赖它的路线；不得以此停止代码交付、历史回放、pinned snapshot 纸面运行、候选比较、发布包或其他独立研究。每次缺口记录受影响路线和下一条可执行主线，继续推进其余工作。
