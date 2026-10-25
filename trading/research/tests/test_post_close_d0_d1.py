@@ -77,6 +77,28 @@ def test_post_close_waits_for_complete_fixed_source_without_d0_projection(tmp_pa
     assert receipt["execution_admitted"] is False
 
 
+def test_post_close_propagates_d0_block_and_snapshot_coverage(tmp_path: Path, monkeypatch) -> None:
+    source, fixed_dir, package, stockdb = _inputs(tmp_path)
+    monkeypatch.setattr(orchestrator.stockdb_fixed_daily, "run", lambda *args, **kwargs: {
+        "status": "continued_research_only", "last_completed_day": CLOSE,
+        "execution_admitted": False,
+    })
+    monkeypatch.setattr(orchestrator.next_close_d0_d1, "run_contract", lambda *args, **kwargs: {
+        "status": orchestrator.next_close_d0_d1.BLOCKED_STATUS,
+        "reason": "Missing same-day StockDB rows; no price was carried forward",
+        "execution_admitted": False,
+        "snapshot_coverage": {"status": "STALE_SNAPSHOT", "requested_close_date": CLOSE},
+    })
+    receipt = orchestrator.run_pipeline(
+        source, tmp_path / "run", fixed_run_dir=fixed_dir, packages=[package],
+        close_date=CLOSE, execution_day="2026-10-27", settlement_day="2026-10-28",
+        initial_cash=100000.0, stockdb_root=stockdb)
+    assert receipt["status"] == orchestrator.BLOCKED_D0_STATUS
+    assert receipt["reason"] == "Missing same-day StockDB rows; no price was carried forward"
+    assert receipt["snapshot_coverage"]["status"] == "STALE_SNAPSHOT"
+    assert receipt["execution_admitted"] is False
+
+
 def test_post_close_builds_candidate_targets_from_replay_manifest(tmp_path: Path, monkeypatch) -> None:
     _, fixed_dir, package, stockdb = _inputs(tmp_path)
     replay = tmp_path / "candidate_replay.json"

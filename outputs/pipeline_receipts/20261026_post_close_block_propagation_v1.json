@@ -1,0 +1,15 @@
+{
+  "schema": "stockdb_post_close_d0_d1_block_propagation_v1",
+  "status": "LOCAL_VERIFIED_RESEARCH_ONLY",
+  "execution_admitted": false,
+  "changes": [
+    "Post-close now preserves a non-completed D0/D1 status instead of reporting COMPLETED.",
+    "BLOCKED D0/D1 results map to BLOCKED_D0_D1_INPUT and retain reason and snapshot_coverage.",
+    "Successful D0/D1 receipts expose snapshot_coverage at the post-close top level."
+  ],
+  "tests": {
+    "command": "D:\\Quantification\\env\\python.exe -m pytest -q trading/research/tests/test_post_close_d0_d1.py trading/research/tests/test_next_close_d0_d1.py",
+    "result": "24 passed"
+  },
+  "acceptance": "A stale or incomplete close snapshot cannot produce a post-close success receipt or a price-forwarded plan."
+}

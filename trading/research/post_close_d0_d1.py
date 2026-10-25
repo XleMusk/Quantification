@@ -25,6 +25,7 @@ SCHEMA = "stockdb_post_close_d0_d1_orchestration_v1"
 STATUS = "COMPLETED_RESEARCH_ONLY_POST_CLOSE_D0_D1"
 WAITING_STATUS = "WAITING_FIXED_DAILY_SOURCES"
 FAILED_STATUS = "FAILED_POST_CLOSE_D0_D1"
+BLOCKED_D0_STATUS = "BLOCKED_D0_D1_INPUT"
 
 
 def _read(path: Path) -> dict[str, Any]:
@@ -228,8 +229,25 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
             joint_capacity_policy=joint_capacity_policy,
             joint_max_target_rows=joint_max_target_rows)
         _assert_unadmitted(d0_result, "D0/D1 result")
+        d0_status = d0_result.get("status")
+        if d0_status != next_close_d0_d1.STATUS:
+            status = (BLOCKED_D0_STATUS
+                      if isinstance(d0_status, str) and d0_status.startswith("BLOCKED")
+                      else FAILED_STATUS)
+            receipt = {
+                **base,
+                "status": status,
+                "reason": d0_result.get("reason") or "D0/D1 did not complete",
+                "d0_d1": d0_result,
+                "snapshot_coverage": d0_result.get("snapshot_coverage"),
+                "receipt_path": str(receipt_path),
+                "artifacts": {"d0_d1": str(output / "next_close")},
+            }
+            receipt_path.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            return receipt
         receipt = {**base, "status": STATUS, "fixed_daily": fixed_result,
                    "d0_d1": d0_result, "receipt_path": str(receipt_path),
+                   "snapshot_coverage": d0_result.get("snapshot_coverage"),
                    "artifacts": {"d0_d1": str(output / "next_close")}}
         receipt_path.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         return receipt
