@@ -374,9 +374,9 @@
     {
       "id": "R06",
       "domain": "research",
-      "result": "Saved long-window comparison now includes the prespecified mature-factor Ridge 60-session variant as an additive same-snapshot row; baseline five-strategy receipt remains unchanged.",
-      "state": "PARTIAL",
-      "next": "Use the additive h60 comparison for research prioritization; do not promote without PIT and paper continuity evidence.",
+      "result": "Saved long-window comparison now includes the prespecified mature-factor Ridge 60-session variant, deterministic research continue/stop decisions for all six rows, and an explicit baseline-to-h60 robustness delta on the same StockDB snapshot.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Prioritize low-vol/half-momentum and Ridge for the next same-day paper bundle after 2026-10-26; keep promotion closed until PIT and paper continuity evidence pass.",
       "prohibition": "Do not migrate old books across missing publications.",
       "actual_paths": [
         "docs/architecture_v3/candidate_strategy_catalog_20261024.json",
@@ -447,8 +447,10 @@
         "D:/QuantificationData/trading/research/leader_eight_type_case_replay/20261024_2025_2026_liquidity_case_v1/partial_result.json",
         "outputs/leader_cross_year/20261024_2025_2026_liquidity_case_v1/REPORT.md",
         "outputs/pipeline_receipts/20261025_long_window_strategy_comparison_h60_v1.json",
-        "outputs/research_reports/20261025_long_window_strategy_comparison_h60_v1.md"
-      ]
+        "outputs/research_reports/20261025_long_window_strategy_comparison_h60_v1.md",
+        "D:/Quantification/trading/tests/test_long_window_strategy_comparison.py"
+      ],
+      "acceptance": "The h60 receipt has six rows, each with a fixed research decision; Ridge baseline and h60 preserve positive return/Sharpe signs, and the focused comparison tests pass."
     },
     {
       "id": "L01",

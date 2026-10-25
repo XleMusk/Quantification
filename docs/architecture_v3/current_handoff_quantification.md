@@ -191,3 +191,10 @@ Focused regression covering the new joint paper route, existing P06 contract, F2
 已将保存的公开席位/游资候选 `public_seat_lag2_trend_any_lhb` 的 Target+Quote payload 接入联合纸面路径。输入决策日 `2026-09-24`、执行日 `2026-09-25`，严格容量策略产生 5 笔纸面订单，4 条路由可用、1 条保留为阻断，回执为 `outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/joint_paper_receipt.json`；共享 Orders→Fill→Cash/Position 投影的期末权益为 CNY 999,753.38，`execution_admitted=false`。
 
 首次清单格式错误已保存为 `outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/manifest_shape_failure.txt`，修正为现有 `strategies` 数组契约后重跑成功。该接线只增加可复现的主线纸面证据，公开席位候选仍保持 `UNASSESSED_SEPARATE_GATE`，不改变 `paper_allowed=false` 或晋级结论。P12、W3 和候选目录已绑定回执。
+
+
+## 2026-10-25 long-window research routing
+
+将同一冻结 StockDB 快照上的 5 条基线与预先登记 Ridge h60 变体写成机器可读研究去留表。`outputs/pipeline_receipts/20261025_long_window_strategy_comparison_h60_v1.json` 现在为六个回放行提供固定规则 `net_return > 0 and sharpe > 0`：低波/半动量与 Ridge 两个家族进入 `CONTINUE_RESEARCH_ONLY`，固定低波、12-1 动量与 Alpha158/LightGBM 进入 `STOP_RESEARCH_ONLY`；这只决定下一轮研究资源，不改候选目录的独立晋级闸门。
+
+Ridge h60 相对基线的净收益差为 -4.7997 个百分点、最大回撤差为 -0.9656 个百分点、Sharpe 差为 -0.0219，但收益与 Sharpe 的正负号保持一致，稳健性回执决定继续研究。新增 `trading/tests/test_long_window_strategy_comparison.py` 断言与聚焦测试为 `3 passed`；无行情抓取、无账户写入、`execution_admitted=false`。

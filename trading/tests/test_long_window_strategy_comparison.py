@@ -21,6 +21,8 @@ def test_saved_long_window_comparison_is_complete_and_research_only():
         assert row["execution_admitted"] is False
         assert row["source_paths"]["daily"].endswith("daily.csv")
         assert row["metrics"]["sessions"] > 0
+        assert row["research_decision"] in {"CONTINUE_RESEARCH_ONLY", "STOP_RESEARCH_ONLY"}
+        assert row["research_decision_rule"] == "net_return > 0 and sharpe > 0"
 
 
 def test_markdown_contains_all_standardized_metric_columns():
@@ -38,4 +40,6 @@ def test_h60_variant_adds_saved_ridge_row_without_changing_baseline_contract():
     assert row["candidate_spec_id"] == "factor_candidate_family_balanced_ridge"
     assert row["metrics"]["sessions"] == 648
     assert row["execution_admitted"] is False
+    assert variant["robustness"]["positive_return_and_sharpe_sign_preserved"] is True
+    assert variant["robustness"]["research_decision"] == "CONTINUE_RESEARCH_ONLY"
     assert variant["comparison_contract"]["include_h60_variant"] is True

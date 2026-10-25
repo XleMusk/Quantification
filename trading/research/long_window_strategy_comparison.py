@@ -42,6 +42,43 @@ COMPARISON_SPEC_IDS = {
 H60_SPEC_ID = "factor_candidate_family_balanced_ridge"
 
 
+def _research_decision(metrics: dict[str, Any]) -> str:
+    """Apply the fixed research-only continuation rule to saved metrics."""
+    if float(metrics["net_return"]) > 0 and float(metrics["sharpe"]) > 0:
+        return "CONTINUE_RESEARCH_ONLY"
+    return "STOP_RESEARCH_ONLY"
+
+
+def _annotate_research_decisions(entries: list[dict[str, Any]]) -> None:
+    """Add deterministic research routing without changing catalog promotion state."""
+    for entry in entries:
+        entry["research_decision"] = _research_decision(entry["metrics"])
+        entry["research_decision_rule"] = "net_return > 0 and sharpe > 0"
+
+
+def _h60_robustness(entries: list[dict[str, Any]]) -> dict[str, Any]:
+    baseline = next(row for row in entries if row["id"] == "mature_factor_balanced_ridge")
+    variant = next(row for row in entries if row["id"] == "mature_factor_balanced_ridge_h60")
+    base_metrics = baseline["metrics"]
+    variant_metrics = variant["metrics"]
+    delta = {
+        key: variant_metrics[key] - base_metrics[key]
+        for key in ("net_return", "max_drawdown", "sharpe", "orders", "fills", "fees", "blocked")
+    }
+    same_sign = (
+        (base_metrics["net_return"] > 0) == (variant_metrics["net_return"] > 0)
+        and (base_metrics["sharpe"] > 0) == (variant_metrics["sharpe"] > 0)
+    )
+    return {
+        "baseline_id": baseline["id"],
+        "variant_id": variant["id"],
+        "metric_delta_variant_minus_baseline": delta,
+        "positive_return_and_sharpe_sign_preserved": same_sign,
+        "research_decision": "CONTINUE_RESEARCH_ONLY" if same_sign else "STOP_RESEARCH_ONLY",
+        "interpretation": "Both saved Ridge rows remain positive on return and Sharpe; keep the family in research while PIT and paper continuity gates remain open.",
+    }
+
+
 def _load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -255,10 +292,11 @@ def build_receipt(*, include_h60: bool = False) -> dict[str, Any]:
     entries = build_entries(include_h60=include_h60)
     for entry in entries:
         entry["candidate_spec_id"] = spec_bindings[entry["id"]]
+    _annotate_research_decisions(entries)
     snapshots = {entry["stockdb_snapshot"] for entry in entries}
     if len(snapshots) != 1:
         raise ValueError(f"Replays do not share one StockDB snapshot: {sorted(snapshots)}")
-    return {
+    receipt = {
         "schema": SCHEMA,
         "status": "COMPLETED_RESEARCH_ONLY_LONG_WINDOW_COMPARISON",
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -279,6 +317,7 @@ def build_receipt(*, include_h60: bool = False) -> dict[str, Any]:
             "candidate_spec_registry_status": SPEC_VERIFIED,
             "candidate_spec_ids": sorted(spec_bindings.values()),
             "include_h60_variant": include_h60,
+            "research_decision_rule": "net_return > 0 and sharpe > 0",
         },
         "strategies": entries,
         "source_paths": sorted({path for entry in entries for path in entry["source_paths"].values()}),
@@ -288,6 +327,9 @@ def build_receipt(*, include_h60: bool = False) -> dict[str, Any]:
             "Saved simulated BrokerAdapter events are not real broker fills; no THS or broker channel was accessed.",
         ],
     }
+    if include_h60:
+        receipt["robustness"] = _h60_robustness(entries)
+    return receipt
 
 
 def render_markdown(receipt: dict[str, Any], *, title: str | None = None) -> str:
@@ -300,8 +342,8 @@ def render_markdown(receipt: dict[str, Any], *, title: str | None = None) -> str
         f"StockDB snapshot: `{contract['stockdb_snapshot']}`  ",
         "Execution admitted: `false`; strategy validated: `false`; ledger mutated: `false`.",
         "",
-        "| Strategy | Window | Sessions | Orders | Fills | Net return | Max drawdown | Sharpe (0 RF, 252) | Fees (RMB) | Blocked |",
-        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "| Strategy | Window | Sessions | Orders | Fills | Net return | Max drawdown | Sharpe (0 RF, 252) | Fees (RMB) | Blocked | Research decision |",
+        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|",
     ]
     for entry in receipt["strategies"]:
         m = entry["metrics"]
@@ -309,8 +351,21 @@ def render_markdown(receipt: dict[str, Any], *, title: str | None = None) -> str
         sharpe = "null" if m["sharpe"] is None else f"{m['sharpe']:.4f}"
         lines.append(
             f"| {entry['label']} (`{entry['id']}`) | {window} | {m['sessions']} | {m['orders']} | {m['fills']} | "
-            f"{m['net_return']:.4%} | {m['max_drawdown']:.4%} | {sharpe} | {m['fees']:.2f} | {m['blocked']} |"
+            f"{m['net_return']:.4%} | {m['max_drawdown']:.4%} | {sharpe} | {m['fees']:.2f} | {m['blocked']} | {entry['research_decision']} |"
         )
+    if "robustness" in receipt:
+        robustness = receipt["robustness"]
+        lines += [
+            "",
+            "## Prespecified Ridge h60 robustness",
+            "",
+            f"`{robustness['variant_id']}` minus `{robustness['baseline_id']}`: "
+            f"return {robustness['metric_delta_variant_minus_baseline']['net_return']:.4%}, "
+            f"max drawdown {robustness['metric_delta_variant_minus_baseline']['max_drawdown']:.4%}, "
+            f"Sharpe {robustness['metric_delta_variant_minus_baseline']['sharpe']:.4f}. "
+            f"Sign preserved: `{robustness['positive_return_and_sharpe_sign_preserved']}`; "
+            f"decision: `{robustness['research_decision']}`.",
+        ]
     lines += [
         "",
         "## Source paths",

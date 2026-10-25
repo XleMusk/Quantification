@@ -151,7 +151,10 @@
     "shortline_lr_joint_paper_module": "D:/Quantification/trading/research/joint_portfolio_paper_package.py",
     "public_seat_joint_paper_receipt": "D:/Quantification/outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/joint_paper_receipt.json",
     "public_seat_joint_paper_failure": "D:/Quantification/outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/manifest_shape_failure.txt",
-    "public_seat_joint_paper_module": "D:/Quantification/trading/research/joint_portfolio_paper_package.py"
+    "public_seat_joint_paper_module": "D:/Quantification/trading/research/joint_portfolio_paper_package.py",
+    "long_window_research_decision_receipt": "D:/Quantification/outputs/pipeline_receipts/20261025_long_window_strategy_comparison_h60_v1.json",
+    "long_window_research_decision_report": "D:/Quantification/outputs/research_reports/20261025_long_window_strategy_comparison_h60_v1.md",
+    "long_window_research_decision_test": "D:/Quantification/trading/tests/test_long_window_strategy_comparison.py"
   },
   "project_handoff_file": "D:\\Quantification\\docs\\architecture_v3\\current_handoff_quantification.md",
   "handoff_file_collision_note": "The global capability_lab current_handoff is concurrently used by D:\\muse; resume D:\\Quantification from project_handoff_file."
