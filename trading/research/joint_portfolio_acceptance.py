@@ -14,6 +14,7 @@ import math
 from pathlib import Path
 from typing import Any, Mapping
 
+from ..rules import stock_quantity_rule
 from .virtual_strategy_sleeves import DEFAULT_ACCOUNTS
 
 
@@ -102,11 +103,24 @@ def build_joint_portfolio(account_paths: Mapping[str, Path] = DEFAULT_SELECTED, 
     for symbol, weight in sorted(weights.items()):
         desired_cents = int(round(pool_cents * weight))
         price = price_by_symbol[symbol]
-        quantity = desired_cents // price // lot_size * lot_size
+        # Respect the instrument board rule in addition to the default A-share
+        # lot size.  STAR-board equities require 200 shares per buy; emitting
+        # 100-share targets would pass the portfolio math but fail in the
+        # shared Orders/Ledger path.
+        board_rule = stock_quantity_rule(symbol)
+        # STAR-board buys have a 200-share minimum but then allow odd lots;
+        # main/ChiNext retain the ordinary 100-share step.
+        quantity_step = (board_rule.step if board_rule.step == 1
+                         else max(lot_size, board_rule.step))
+        minimum_quantity = board_rule.minimum
+        quantity = desired_cents // price // quantity_step * quantity_step
+        if quantity < minimum_quantity:
+            quantity = 0
         rounding_policy = "FLOOR_TO_LOT"
-        if weight > 0 and quantity == 0 and price * lot_size <= int(round(pool_cents * single_limit)):
-            quantity = lot_size
-            rounding_policy = "ROUND_UP_ONE_LOT_WITHIN_SINGLE_LIMIT"
+        if (weight > 0 and quantity == 0
+                and price * minimum_quantity <= int(round(pool_cents * single_limit))):
+            quantity = minimum_quantity
+            rounding_policy = "ROUND_UP_ONE_BOARD_LOT_WITHIN_SINGLE_LIMIT"
         notional = quantity * price
         target_notional += notional
         rows.append({"symbol": symbol, "contributors": sorted(set(contributors[symbol])),
@@ -114,6 +128,7 @@ def build_joint_portfolio(account_paths: Mapping[str, Path] = DEFAULT_SELECTED, 
                      "desired_notional_cents": desired_cents, "target_quantity": quantity,
                      "target_notional_cents": notional, "actual_weight": notional / pool_cents,
                      "lot_rounding_policy": rounding_policy,
+                     "quantity_step": quantity_step,
                      "lot_rounding_residual_cents": desired_cents - notional})
     lot_feasible = all(row["target_quantity"] > 0 or row["target_weight"] == 0 for row in rows)
     actual_gross = target_notional / pool_cents

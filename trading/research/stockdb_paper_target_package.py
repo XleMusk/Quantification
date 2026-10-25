@@ -58,6 +58,12 @@ def build_paper_target_package(
         raise ValueError("Explicit canonical execution and later settlement dates required")
 
     weights = target_payload.get("weights") or {}
+    explicit_quantities = target_payload.get("quantities")
+    if explicit_quantities is not None:
+        if not isinstance(explicit_quantities, dict) or set(explicit_quantities) != set(weights):
+            raise ValueError("Explicit target quantities must cover exactly the target symbols")
+        if any(type(quantity) is not int or quantity <= 0 for quantity in explicit_quantities.values()):
+            raise ValueError("Explicit target quantities must be positive integers")
     signals = target_payload.get("signal_frame", {}).get("signals") or []
     ranks = {
         f"{row['security']['code']}.{row['security']['exchange']}": row.get("diagnostics", {}).get("rank")
@@ -78,8 +84,14 @@ def build_paper_target_package(
         raise ValueError("Positive finite raw RMB prices required")
 
     holdings = len(weights)
+    # StrategyConfig caps signal selection at 22 names.  A pre-built joint
+    # target can legitimately contain more names; this package is already
+    # past signal selection and only needs Ledger fee/execution parameters.
+    # Keep the config within its validated range without truncating the
+    # target rows that the shared paper route must project.
+    config_holdings = min(holdings, 22)
     config = StrategyConfig(
-        signal="equal_weight", holdings=holdings, retain_rank=max(holdings, 30),
+        signal="equal_weight", holdings=config_holdings, retain_rank=max(config_holdings, 30),
         gross_limit=0.8, single_limit=min(0.2, max(float(w) for w in weights.values())),
         initial_cash=float(initial_cash),
     ).validate()
@@ -91,7 +103,8 @@ def build_paper_target_package(
     for symbol, weight in sorted(weights.items(), key=lambda item: (ranks[item[0]], item[0])):
         price = int(round(float(prices[symbol]["price_rmb"]) * 100))
         rule = execution_rule(symbol, execution_day)
-        quantity = shares_for_target(equity_cents, float(weight), price, rule)
+        quantity = (int(explicit_quantities[symbol]) if explicit_quantities is not None
+                    else shares_for_target(equity_cents, float(weight), price, rule))
         if quantity <= 0:
             raise ValueError(f"zero target qty for {symbol}")
         route = route_order(symbol)

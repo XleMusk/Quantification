@@ -50,6 +50,7 @@ def _target_payload(joint: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str,
     # the economic sleeve weight again can produce zero shares for an expensive
     # stock even though joint acceptance deliberately rounded it to one lot.
     weights = {str(row["symbol"]): float(row["actual_weight"]) for row in ordered}
+    quantities = {str(row["symbol"]): int(row["target_quantity"]) for row in ordered}
     signals = []
     prices: dict[str, dict[str, Any]] = {}
     for rank, row in enumerate(ordered, 1):
@@ -59,6 +60,7 @@ def _target_payload(joint: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str,
                         "diagnostics": {"rank": rank, "score": float(row["target_weight"]),
                                         "economic_target_weight": float(row["target_weight"]),
                                         "executable_weight": float(row["actual_weight"]),
+                                        "target_quantity": int(row["target_quantity"]),
                                         "contributors": list(row.get("contributors", []))}})
         prices[symbol] = {
             "price_rmb": float(row["mark_cents"]) / 100.0,
@@ -72,6 +74,7 @@ def _target_payload(joint: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str,
         "research_only": True,
         "execution_admitted": False,
         "weights": weights,
+        "quantities": quantities,
         "signal_frame": {"signals": signals},
     }
     quote = {

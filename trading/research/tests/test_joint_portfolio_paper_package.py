@@ -36,6 +36,10 @@ def test_joint_target_reaches_shared_paper_package(tmp_path):
     assert result["paper_package"]["paper_order_count"] == 2
     assert result["paper_package"]["result"]["cost_model"]["id"] == "cn_a_share_standard_ledger_costs_v1"
     assert result["paper_package"]["result"]["benchmark_binding"]["id"] == "paper_target_projection_no_market_benchmark_v1"
+    assert result["target_payload"]["quantities"] == {
+        "000001.SZSE": 800,
+        "000002.SZSE": 1600,
+    }
     assert (tmp_path / "run" / "joint_paper_receipt.json").is_file()
     assert (tmp_path / "run" / "paper_package" / "projected_account.json").is_file()
 

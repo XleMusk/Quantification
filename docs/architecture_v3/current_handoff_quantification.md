@@ -149,3 +149,9 @@ Focused regression covering the new joint paper route, existing P06 contract, F2
 为缩短下一交易日 D0/D1 的接线路径，`trading/research/next_close_d0_d1.py` 现在接受候选输入清单中的 `target` 文件引用。适配器只接受 `decision_day` 对齐且 `research_only=true`、`execution_admitted=false` 的预构建目标，并校验清单中的 `strategy_id`；随后把原始目标复制进冻结运行目录，继续使用同一 StockDB 快照、Engine/Ledger 与纸面订单路径。原有 replay/terminal account 输入契约保持兼容。
 
 新增同日预构建 target fixture 后，`D:\Quantification\env\python.exe -m pytest -q trading/research/tests/test_next_close_d0_d1.py` 为 `4 passed`，`py_compile` 通过。W1 已绑定该模块和测试；真实 2026-10-26 收盘前不抓取、不伪造行情，`execution_admitted=false` 保持不变。
+
+## 2026-10-25 current-date three-strategy paper package
+
+将 2026-10-23 同一终止日的固定低波、半动量和 12-1 动量三条账户接入 `joint_portfolio_paper_package`。这次接线暴露并修复了两个主线问题：联合目标的板块最小交易单位此前统一按 100 股，导致科创板 688498.SSE 的 200 股规则在 Orders 阶段被拒；联合目标此前只传可执行权重，浮点向下取整又可能把已接受的最小手数变回非法数量。现在 `joint_portfolio_acceptance.py` 按板块规则生成数量，`joint_portfolio_paper_package.py` 将数量写入目标，`stockdb_paper_target_package.py` 在目标携带显式数量时直接复用并仍由共享 Ledger 校验。
+
+聚焦测试：联合目标、联合纸面包和 D0/D1 共 `9 passed`，改动模块 `py_compile` 通过。当前三策略包在明确的 CNY 10,000,000 容量诊断下生成 `60` 个纸面订单；CNY 2,000,000 运行保留为 `BLOCKED_JOINT_TARGET` 容量回执，未静默放宽约束。两份回执均 `execution_admitted=false`，没有持久 Ledger、券商或同花顺写入。
