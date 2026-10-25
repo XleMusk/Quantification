@@ -208,3 +208,8 @@ Ridge h60 相对基线的净收益差为 -4.7997 个百分点、最大回撤差�
 ## 2026-10-25 continue-candidate joint paper bundle
 
 按长窗回执中的 `CONTINUE_RESEARCH_ONLY` 路由，将低波/半动量与成熟因子 Ridge 的同日 `2026-10-13` Target+Quote 输入合并进入联合纸面流水线。预算策略生成 22 笔纸面订单、21 条可用路由，3 行因 `capacity_max_target_rows` 明确裁剪，期末权益投影 CNY 139,889.29；回执为 `outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v1/joint_paper_receipt.json`，`execution_admitted=false`。该包把研究去留直接落到目标持仓与订单结果，等待下一真实闭市日用新鲜同日输入重跑。
+
+
+## 2026-10-25 decision-bound joint paper ingestion
+
+联合纸面命令新增可选 `--research-decision-receipt`。它读取每个 payload 的 `decision_id`，只把 `CONTINUE_RESEARCH_ONLY` 输入送进 Target Portfolio，并在回执中记录纳入/排除行。混合清单实测纳入低波/半动量与 Ridge，排除 Alpha158/LightGBM；回执 `outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v3/joint_paper_receipt.json` 生成 22 笔订单、21 条可用路由、3 行容量裁剪，`execution_admitted=false`。新增契约测试后聚焦回归为 `22 passed`，P14 已绑定。

@@ -1047,6 +1047,24 @@
         "D:/Quantification/outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v1/joint_paper_receipt.json"
       ],
       "acceptance": "The 2026-10-13 aligned bundle produces 22 budgeted paper orders, retains 3 capacity_max_target_rows drops, and keeps execution_admitted=false."
+    },
+    {
+      "id": "P14",
+      "domain": "portfolio",
+      "result": "Joint paper payload ingestion can bind a research decision receipt and automatically exclude STOP_RESEARCH_ONLY candidates before Target Portfolio construction.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Use the decision-bound payload manifest for the next same-day close; require explicit decision_id entries for every candidate.",
+      "prohibition": "The decision filter controls research routing only; it cannot promote a strategy, access THS or authorize orders.",
+      "actual_paths": [
+        "trading/research/joint_portfolio_paper_package.py",
+        "trading/research/tests/test_joint_portfolio_paper_package.py",
+        "outputs/pipeline_receipts/20261025_long_window_strategy_comparison_h60_v1.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v3/joint_paper_receipt.json"
+      ],
+      "evidence": [
+        "D:/Quantification/outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v3/joint_paper_receipt.json"
+      ],
+      "acceptance": "A manifest containing two CONTINUE_RESEARCH_ONLY rows and one STOP_RESEARCH_ONLY row includes only the two continuing rows, generates 22 paper orders, records 21 available routes and 3 capacity drops, with execution_admitted=false."
     }
   ]
 }

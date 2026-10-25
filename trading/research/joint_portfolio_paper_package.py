@@ -27,6 +27,7 @@ SCHEMA = "quantification_joint_portfolio_paper_package_v1"
 STATUS = "COMPLETED_RESEARCH_ONLY_JOINT_PAPER_PACKAGE"
 BLOCKED = "BLOCKED_JOINT_TARGET"
 BLOCKED_PAPER = "BLOCKED_PAPER_TARGET_ORDER"
+CONTINUE_RESEARCH_ONLY = "CONTINUE_RESEARCH_ONLY"
 
 
 def _write_json(path: Path, value: Mapping[str, Any]) -> None:
@@ -211,11 +212,32 @@ def build_joint_paper_from_payloads(
     )
 
 
-def _payload_manifest(path: str | Path) -> dict[str, tuple[dict[str, Any], dict[str, Any]]]:
+def _decision_rows(path: str | Path) -> tuple[dict[str, str], dict[str, Any]]:
+    decision_path = Path(path).expanduser().resolve()
+    value = json.loads(decision_path.read_text(encoding="utf-8"))
+    rows = value.get("strategies") or value.get("rows") if isinstance(value, Mapping) else None
+    if not isinstance(rows, list) or not rows:
+        raise ValueError("research decision receipt must contain a non-empty strategies or rows list")
+    decisions: dict[str, str] = {}
+    for row in rows:
+        if not isinstance(row, Mapping):
+            continue
+        key = row.get("id") or row.get("strategy_id") or row.get("catalog_id")
+        decision = row.get("research_decision") or row.get("decision") or row.get("robustness_decision")
+        if isinstance(key, str) and isinstance(decision, str):
+            decisions[key] = decision
+    if not decisions:
+        raise ValueError("research decision receipt has no keyed decisions")
+    return decisions, {"path": str(decision_path), "status": value.get("status"),
+                       "rule": CONTINUE_RESEARCH_ONLY, "included": [], "excluded": []}
+
+
+def _payload_manifest(path: str | Path, *, research_decision_receipt: str | Path | None = None) -> tuple[dict[str, tuple[dict[str, Any], dict[str, Any]]], dict[str, Any] | None]:
     value = json.loads(Path(path).expanduser().resolve().read_text(encoding="utf-8"))
     items = value.get("strategies") if isinstance(value, Mapping) else value
     if not isinstance(items, list) or not items:
         raise ValueError("payload manifest must contain a non-empty strategies list")
+    decisions, selection = _decision_rows(research_decision_receipt) if research_decision_receipt else ({}, None)
     result = {}
     for item in items:
         if not isinstance(item, Mapping):
@@ -223,6 +245,16 @@ def _payload_manifest(path: str | Path) -> dict[str, tuple[dict[str, Any], dict[
         strategy_id = item.get("strategy_id")
         if not isinstance(strategy_id, str) or not strategy_id:
             raise ValueError("payload manifest strategy_id is required")
+        if selection is not None:
+            decision_id = item.get("decision_id") or strategy_id
+            decision = decisions.get(str(decision_id))
+            if decision is None:
+                raise ValueError(f"research decision is missing: {decision_id}")
+            record = {"strategy_id": strategy_id, "decision_id": str(decision_id), "decision": decision}
+            bucket = "included" if decision == CONTINUE_RESEARCH_ONLY else "excluded"
+            selection[bucket].append(record)
+            if decision != CONTINUE_RESEARCH_ONLY:
+                continue
         target_path = Path(str(item.get("target"))).expanduser().resolve()
         quote_path = Path(str(item.get("quotes"))).expanduser().resolve()
         if not target_path.is_file() or not quote_path.is_file():
@@ -231,7 +263,9 @@ def _payload_manifest(path: str | Path) -> dict[str, tuple[dict[str, Any], dict[
             json.loads(target_path.read_text(encoding="utf-8")),
             json.loads(quote_path.read_text(encoding="utf-8")),
         )
-    return result
+    if not result:
+        raise ValueError("research decision receipt excluded every payload strategy")
+    return result, selection
 
 
 def _persist(receipt: dict[str, Any], output_dir: str | Path | None) -> dict[str, Any]:
@@ -253,6 +287,8 @@ def main(argv=None) -> int:
     source_group = parser.add_mutually_exclusive_group()
     source_group.add_argument("--accounts-manifest", type=Path)
     source_group.add_argument("--payload-manifest", type=Path)
+    parser.add_argument("--research-decision-receipt", type=Path,
+                        help="optional receipt; payload entries must be CONTINUE_RESEARCH_ONLY")
     parser.add_argument("--initial-cash", type=float, default=140_000.0)
     parser.add_argument("--gross-limit", type=float, default=0.8)
     parser.add_argument("--single-limit", type=float, default=0.2)
@@ -269,8 +305,15 @@ def main(argv=None) -> int:
                   execution_day=args.execution_day, settlement_day=args.settlement_day,
                   output_dir=args.output_dir)
     if args.payload_manifest is not None:
-        result = build_joint_paper_from_payloads(_payload_manifest(args.payload_manifest), **common)
+        payloads, selection = _payload_manifest(
+            args.payload_manifest, research_decision_receipt=args.research_decision_receipt)
+        result = build_joint_paper_from_payloads(payloads, **common)
+        if selection is not None:
+            result["research_selection"] = selection
+            _persist(result, args.output_dir)
     else:
+        if args.research_decision_receipt is not None:
+            raise ValueError("--research-decision-receipt requires --payload-manifest")
         result = build_joint_paper_package(_account_paths(args.accounts_manifest), **common)
     print(json.dumps({"status": result["status"],
                       "execution_admitted": result["execution_admitted"],
@@ -279,7 +322,7 @@ def main(argv=None) -> int:
     return 0 if result["status"] == STATUS else 1
 
 
-__all__ = ["BLOCKED", "BLOCKED_PAPER", "SCHEMA", "STATUS",
+__all__ = ["BLOCKED", "BLOCKED_PAPER", "CONTINUE_RESEARCH_ONLY", "SCHEMA", "STATUS",
            "build_joint_paper_package", "build_joint_paper_from_payloads", "main"]
 
 

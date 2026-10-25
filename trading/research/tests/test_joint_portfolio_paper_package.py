@@ -5,6 +5,7 @@ import pytest
 from trading.research.joint_portfolio_paper_package import (
     BLOCKED_PAPER,
     STATUS,
+    _payload_manifest,
     build_joint_paper_package,
     build_joint_paper_from_payloads,
 )
@@ -120,3 +121,24 @@ def test_joint_payloads_reach_shared_paper_package(tmp_path):
     assert result["paper_package"]["paper_order_count"] == 2
     assert result["quote_payload"]["source"] == "aligned_target_quote_payload"
     assert result["execution_admitted"] is False
+
+
+def test_payload_manifest_can_bind_continue_research_decisions(tmp_path):
+    target = tmp_path / "keep_target.json"
+    quote = tmp_path / "keep_quote.json"
+    target.write_text("{}", encoding="utf-8")
+    quote.write_text("{}", encoding="utf-8")
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(json.dumps({"strategies": [
+        {"strategy_id": "keep", "decision_id": "keep", "target": str(target), "quotes": str(quote)},
+        {"strategy_id": "drop", "decision_id": "drop", "target": str(target), "quotes": str(quote)},
+    ]}), encoding="utf-8")
+    decisions = tmp_path / "decisions.json"
+    decisions.write_text(json.dumps({"strategies": [
+        {"id": "keep", "research_decision": "CONTINUE_RESEARCH_ONLY"},
+        {"id": "drop", "research_decision": "STOP_RESEARCH_ONLY"},
+    ]}), encoding="utf-8")
+    payloads, selection = _payload_manifest(manifest, research_decision_receipt=decisions)
+    assert list(payloads) == ["keep"]
+    assert selection["included"] == [{"strategy_id": "keep", "decision_id": "keep", "decision": "CONTINUE_RESEARCH_ONLY"}]
+    assert selection["excluded"] == [{"strategy_id": "drop", "decision_id": "drop", "decision": "STOP_RESEARCH_ONLY"}]

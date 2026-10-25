@@ -141,9 +141,12 @@
         "D:/Quantification/outputs/pipeline_receipts/20261025_long_window_strategy_comparison_h60_v1.json",
         "D:/Quantification/outputs/research_reports/20261025_long_window_strategy_comparison_h60_v1.md",
         "D:/Quantification/trading/tests/test_long_window_strategy_comparison.py",
-        "D:/Quantification/outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v1/joint_paper_receipt.json"
+        "D:/Quantification/outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v1/joint_paper_receipt.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v3/joint_paper_receipt.json",
+        "D:/Quantification/trading/research/joint_portfolio_paper_package.py",
+        "D:/Quantification/trading/research/tests/test_joint_portfolio_paper_package.py"
       ],
-      "result": "Same-snapshot comparison, deterministic research routing, and aligned Ridge+Alpha158/target routes now reach research-only paper orders. The two CONTINUE_RESEARCH_ONLY candidates also produce a 22-order budgeted joint package from the 2026-10-13 Target+Quote bundle; 3 rows are explicitly capacity-dropped."
+      "result": "Same-snapshot comparison and decision-bound joint paper routing now reach research-only orders. A mixed manifest automatically included the two CONTINUE_RESEARCH_ONLY candidates and excluded Alpha158/LightGBM STOP_RESEARCH_ONLY before target construction; 22 orders and 3 explicit capacity drops were produced."
     },
     {
       "id": "W4",
