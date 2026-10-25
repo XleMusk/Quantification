@@ -65,6 +65,17 @@ def test_f2_source_snapshot_help_is_available():
     assert "--output" in result.stdout
 
 
+def test_f2_fact_bridge_help_is_available():
+    result = subprocess.run(
+        [sys.executable, "-Xutf8", str(ROOT / "run_committee.py"),
+         "f2-fact-bridge", "--help"],
+        cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
+    )
+    assert result.returncode == 0
+    assert "--sidecar" in result.stdout
+    assert "--historical-evidence" in result.stdout
+
+
 def test_f2_source_snapshot_cli_runs_gate_and_writes_receipt(tmp_path):
     source = tmp_path / "issuer.pdf"
     source.write_bytes(b"synthetic issuer source")
