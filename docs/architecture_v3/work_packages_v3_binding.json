@@ -837,7 +837,13 @@
       "result": "Frontend/backend task and state semantics agree with request examples.",
       "state": "PARTIAL",
       "next": "Reuse the current API task IDs and read-only state surfaces.",
-      "prohibition": "Do not let UI labels collapse paper, live and unknown states."
+      "prohibition": "Do not let UI labels collapse paper, live and unknown states.",
+      "actual_paths": [
+        "trading/api.py",
+        "trading/tests/test_api_paper_continuity.py",
+        "outputs/pipeline_receipts/20261026_paper_account_continuity_api_v1.json"
+      ],
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "U02",
@@ -845,7 +851,13 @@
       "result": "Browser task chain reaches a real result and survives reconnect.",
       "state": "PARTIAL",
       "next": "Bind existing workbench evidence to a slice without client writes.",
-      "prohibition": "A screenshot cannot prove backend persistence or broker acceptance."
+      "prohibition": "A screenshot cannot prove backend persistence or broker acceptance.",
+      "actual_paths": [
+        "webapp/frontend/src/components/PaperAccountContinuity.tsx",
+        "webapp/frontend/src/pages/Trading.tsx",
+        "outputs/pipeline_receipts/20261026_workbench_paper_continuity_ui_v1.json"
+      ],
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "U03",
