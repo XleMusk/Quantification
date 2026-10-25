@@ -213,3 +213,8 @@ Ridge h60 相对基线的净收益差为 -4.7997 个百分点、最大回撤差�
 ## 2026-10-25 decision-bound joint paper ingestion
 
 联合纸面命令新增可选 `--research-decision-receipt`。它读取每个 payload 的 `decision_id`，只把 `CONTINUE_RESEARCH_ONLY` 输入送进 Target Portfolio，并在回执中记录纳入/排除行。混合清单实测纳入低波/半动量与 Ridge，排除 Alpha158/LightGBM；回执 `outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v3/joint_paper_receipt.json` 生成 22 笔订单、21 条可用路由、3 行容量裁剪，`execution_admitted=false`。新增契约测试后聚焦回归为 `22 passed`，P14 已绑定。
+
+
+## 2026-10-25 decision-bound next-close D0/D1
+
+`next_close_d0_d1.py` 新增可选 `--research-decision-receipt`。它在 StockDB 捕获前读取候选的 `decision_id`，仅保留 `CONTINUE_RESEARCH_ONLY`，并把纳入/排除记录写入 D0/D1 回执；固定腿、同日 Target+Quote、候选批次和联合纸面仍走原路径。新增测试覆盖过滤契约，D0/D1 与联合纸面相关测试共 `11 passed`；下一交易日可在真实收市后把该参数与新候选清单一起传入，周末未抓取行情。

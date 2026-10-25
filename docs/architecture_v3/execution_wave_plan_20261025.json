@@ -64,9 +64,12 @@
       "evidence": [
         "trading/research/next_close_d0_d1.py",
         "trading/research/tests/test_next_close_d0_d1.py",
-        "trading/research/joint_portfolio_paper_package.py"
+        "trading/research/joint_portfolio_paper_package.py",
+        "D:/Quantification/trading/research/next_close_d0_d1.py",
+        "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_long_window_strategy_comparison_h60_v1.json"
       ],
-      "result": "The D0/D1 contract accepts a same-day prebuilt target payload, copies it into the frozen run inputs, and can optionally emit a budgeted fixed-plus-candidate joint paper package from the same snapshot. Native 2026-10-26 capture remains pending the actual close."
+      "result": "The next-close contract now accepts a research decision receipt and filters STOP_RESEARCH_ONLY candidates before same-day StockDB capture; the selected candidate fan-in still reuses the shared paper path."
     },
     {
       "id": "W2",

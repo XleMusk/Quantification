@@ -1065,6 +1065,25 @@
         "D:/Quantification/outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v3/joint_paper_receipt.json"
       ],
       "acceptance": "A manifest containing two CONTINUE_RESEARCH_ONLY rows and one STOP_RESEARCH_ONLY row includes only the two continuing rows, generates 22 paper orders, records 21 available routes and 3 capacity drops, with execution_admitted=false."
+    },
+    {
+      "id": "P15",
+      "domain": "operations",
+      "result": "The next-close D0/D1 contract can bind the research decision receipt and exclude STOP_RESEARCH_ONLY candidates before StockDB capture and paper projection.",
+      "state": "VERIFIED_LOCAL",
+      "next": "On the next closed session pass the fresh candidate manifest and long-window decision receipt; preserve the included/excluded selection in the D0/D1 receipt.",
+      "prohibition": "The filter is research routing only; it does not create broker actions or promote a candidate.",
+      "actual_paths": [
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "trading/research/joint_portfolio_paper_package.py",
+        "outputs/pipeline_receipts/20261025_long_window_strategy_comparison_h60_v1.json",
+        "run_committee.py next-close-d0-d1"
+      ],
+      "evidence": [
+        "trading/research/tests/test_next_close_d0_d1.py"
+      ],
+      "acceptance": "A decision-bound candidate list retains only CONTINUE_RESEARCH_ONLY rows before target/quote capture; included and excluded rows are preserved, with execution_admitted=false."
     }
   ]
 }

@@ -175,3 +175,18 @@ def test_next_close_contract_rejects_stale_target_before_capture(tmp_path, monke
         raise AssertionError("stale target must be rejected")
     assert json.loads((tmp_path / "run" / "contract_receipt.json").read_text())["status"] == contract.FAILED_STATUS
 
+
+def test_next_close_decision_bound_filter_keeps_only_continue_candidates(tmp_path):
+    items = [
+        {"candidate_id": "keep", "decision_id": "keep", "target": "keep.json"},
+        {"candidate_id": "stop", "decision_id": "stop", "target": "stop.json"},
+    ]
+    receipt = _write(tmp_path / "decisions.json", {"strategies": [
+        {"id": "keep", "research_decision": "CONTINUE_RESEARCH_ONLY"},
+        {"id": "stop", "research_decision": "STOP_RESEARCH_ONLY"},
+    ]})
+    selected, selection = contract._decision_bound_candidates(items, receipt)
+    assert [item["candidate_id"] for item in selected] == ["keep"]
+    assert selection["included"] == [{"candidate_id": "keep", "decision_id": "keep", "decision": "CONTINUE_RESEARCH_ONLY"}]
+    assert selection["excluded"] == [{"candidate_id": "stop", "decision_id": "stop", "decision": "STOP_RESEARCH_ONLY"}]
+

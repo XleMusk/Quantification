@@ -26,7 +26,11 @@ import pandas as pd
 from ..stockdb_source import DEFAULT_STOCKDB, freeze_snapshot
 from .candidate_shadow_paper import _target_payload
 from .daily_candidate_paper_batch import build_batch
-from .joint_portfolio_paper_package import build_joint_paper_from_payloads
+from .joint_portfolio_paper_package import (
+    CONTINUE_RESEARCH_ONLY,
+    _decision_rows,
+    build_joint_paper_from_payloads,
+)
 from .stockdb_paper_target_package import build_paper_target_package
 
 
@@ -98,6 +102,28 @@ def _candidate_items(path: Path) -> list[Mapping[str, Any]]:
     return list(values)
 
 
+def _decision_bound_candidates(items: Sequence[Mapping[str, Any]], receipt_path: str | Path) -> tuple[list[Mapping[str, Any]], dict[str, Any]]:
+    """Filter D0/D1 candidates using an explicit research decision receipt."""
+    decisions, selection = _decision_rows(receipt_path)
+    selected: list[Mapping[str, Any]] = []
+    for item in items:
+        decision_id = str(item.get("decision_id") or item.get("candidate_id") or item.get("strategy_id") or "").strip()
+        if not decision_id:
+            raise ValueError("Decision-bound candidate requires decision_id or candidate_id")
+        decision = decisions.get(decision_id)
+        if decision is None:
+            raise ValueError(f"research decision is missing: {decision_id}")
+        record = {"candidate_id": str(item.get("candidate_id") or item.get("strategy_id") or ""),
+                  "decision_id": decision_id, "decision": decision}
+        bucket = "included" if decision == CONTINUE_RESEARCH_ONLY else "excluded"
+        selection[bucket].append(record)
+        if decision == CONTINUE_RESEARCH_ONLY:
+            selected.append(item)
+    if not selected:
+        raise ValueError("research decision receipt excluded every D0/D1 candidate")
+    return selected, selection
+
+
 def _canonical_day(value: str, field: str) -> str:
     try:
         day = date.fromisoformat(value)
@@ -112,6 +138,7 @@ def _input_fingerprint(*, close_date: str, execution_day: str, settlement_day: s
                        stockdb_root: Path, source_manifest: Path, catalog: Path | None,
                        fixed_source: Path, fixed_strategy_id: str, initial_cash: float,
                        minute_time: str, gate_mode: str,
+                       research_decision_receipt: Path | None,
                        joint_capacity_policy: str | None, joint_max_target_rows: int) -> tuple[str, dict[str, Any]]:
     refs = {
         "source_manifest": _ref(source_manifest),
@@ -119,6 +146,8 @@ def _input_fingerprint(*, close_date: str, execution_day: str, settlement_day: s
     }
     if catalog is not None:
         refs["catalog"] = _ref(catalog)
+    if research_decision_receipt is not None:
+        refs["research_decision_receipt"] = _ref(research_decision_receipt)
     body = {"close_date": close_date, "execution_day": execution_day,
             "settlement_day": settlement_day, "stockdb_root": str(stockdb_root.resolve()),
             "sources": refs, "initial_cash": float(initial_cash),
@@ -203,6 +232,7 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
                  close_date: str, execution_day: str, settlement_day: str,
                  initial_cash: float, minute_time: str = "",
                  gate_mode: str = "research_followup",
+                 research_decision_receipt: str | Path | None = None,
                  joint_capacity_policy: str | None = None,
                  joint_max_target_rows: int = 22) -> dict[str, Any]:
     close_date = _canonical_day(close_date, "close_date")
@@ -216,15 +246,19 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
     fixed_source = Path(fixed_terminal_account).resolve()
     stockdb_root = Path(stockdb_root).resolve()
     catalog = Path(catalog_path).resolve() if catalog_path is not None else None
+    decision_receipt = Path(research_decision_receipt).resolve() if research_decision_receipt is not None else None
     if not source_manifest.is_file() or not fixed_source.is_file():
         raise ValueError("Source manifest and fixed terminal account must exist")
     if catalog is not None and not catalog.is_file():
         raise ValueError(f"Candidate catalog does not exist: {catalog}")
+    if decision_receipt is not None and not decision_receipt.is_file():
+        raise ValueError(f"Research decision receipt does not exist: {decision_receipt}")
     fingerprint, fingerprint_inputs = _input_fingerprint(
         close_date=close_date, execution_day=execution_day, settlement_day=settlement_day,
         stockdb_root=stockdb_root, source_manifest=source_manifest, catalog=catalog,
         fixed_source=fixed_source, fixed_strategy_id=fixed_strategy_id,
         initial_cash=initial_cash, minute_time=minute_time, gate_mode=gate_mode,
+        research_decision_receipt=decision_receipt,
         joint_capacity_policy=joint_capacity_policy, joint_max_target_rows=joint_max_target_rows)
     output = Path(output_dir).resolve()
     receipt_path = output / "contract_receipt.json"
@@ -249,6 +283,9 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
                                                            "strategy_id": fixed_strategy_id})
         _assert_target_day(fixed_target, close_date, "fixed")
         candidates = _candidate_items(source_manifest)
+        decision_selection = None
+        if decision_receipt is not None:
+            candidates, decision_selection = _decision_bound_candidates(candidates, decision_receipt)
         candidate_targets: list[tuple[str, dict[str, Any], dict[str, Any]]] = []
         for item in candidates:
             candidate_id = str(item.get("candidate_id") or item.get("strategy_id") or "").strip()
@@ -268,6 +305,8 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
                              "requested_symbol_count": len(symbols), "missing_symbols": missing,
                              "fixed_source": fixed_source_ref,
                              "candidate_source_manifest": _ref(source_manifest)})
+        if decision_selection is not None:
+            receipt_base["research_decision_selection"] = decision_selection
         if missing:
             receipt_base.update(status=BLOCKED_STATUS,
                                 reason="Missing same-day StockDB rows; no price was carried forward",
@@ -369,6 +408,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--initial-cash", type=float, required=True)
     parser.add_argument("--minute-time", default="")
     parser.add_argument("--gate-mode", choices=("research_followup", "separate_gate"), default="research_followup")
+    parser.add_argument("--research-decision-receipt", type=Path,
+                        help="optional receipt; only CONTINUE_RESEARCH_ONLY candidates enter D0/D1")
     parser.add_argument("--joint-capacity-policy", choices=("strict", "budgeted"), default=None,
                         help="optional direct fixed+candidate joint paper projection")
     parser.add_argument("--joint-max-target-rows", type=int, default=22)
@@ -380,6 +421,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         close_date=args.close_date, execution_day=args.execution_day,
         settlement_day=args.settlement_day, initial_cash=args.initial_cash,
         minute_time=args.minute_time, gate_mode=args.gate_mode,
+        research_decision_receipt=args.research_decision_receipt,
         joint_capacity_policy=args.joint_capacity_policy,
         joint_max_target_rows=args.joint_max_target_rows)
     print(json.dumps({"status": receipt["status"], "execution_admitted": receipt["execution_admitted"],
