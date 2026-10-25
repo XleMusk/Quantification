@@ -242,6 +242,9 @@ def main(argv=None):
     if argv[:1] == ["ths-target-readback"]:
         from trading.ths.target_readback import main as ths_target_readback_main
         return ths_target_readback_main(argv[1:])
+    if argv[:1] == ["f2-alternate-financials"]:
+        from trading.research.f2_alternate_financials import main as f2_alternate_financials_main
+        return f2_alternate_financials_main(argv[1:])
     if argv[:1] == ["long-window-strategy-comparison"]:
         from trading.research.long_window_strategy_comparison import main as long_window_strategy_comparison_main
         return long_window_strategy_comparison_main(argv[1:])

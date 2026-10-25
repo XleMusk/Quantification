@@ -238,3 +238,8 @@ Ridge h60 相对基线的净收益差为 -4.7997 个百分点、最大回撤差�
 ## 2026-10-25 F1 archival PIT attempt
 
 为推进 F2 的真实 PIT 入口，对 3 个已绑定 Q1 2024 issuer PDF URL 查询 Wayback CDX。结果为 600004 与 688008 没有抓取记录，000002 只有 `2024-08-14` 的一次抓取，全部没有 `<=2024-05-01` 的存档，因此回执 `outputs/pipeline_receipts/20261025_f01_wayback_pit_attempt_v1.json` 保持 `BLOCKED_DATA`，0 行 PIT-safe、0 个 FinancialFact、0 次因子/账户回放。该失败实验已保留；下一步必须更换为带历史 retrieval/as-of 或 revision history 的可靠数据源，不重复同一 URL。
+
+
+## 2026-10-25 alternate financial source into F2
+
+备用公开源 `alternate_financials.py` 已完成一次真实批量采集：3 个发行人、18 个报告期、54 份 statement reports、5,076 个字段行，包含 `PARENETP` 与 `TOTASSET`。新增 `f2_alternate_financials.py` 将其映射为标准 F1 sidecar，回执 `outputs/pipeline_receipts/20261025_f2_alternate_financials_sidecar_v1.json`；再由现有 `f2-fact-bridge` 消费，回执 `outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v1.json` 为 `BLOCKED_DATA`，18 行、0 facts，原因包括当前检索非历史 as-of、15 行字段出版日不一致、单位和 issuer scope 未证实。P20/W2 已绑定；同一 bridge 将来可直接消费有可靠时点和范围证明的新源。

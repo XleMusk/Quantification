@@ -1156,6 +1156,27 @@
         "D:/Quantification/outputs/pipeline_receipts/20261025_f01_wayback_pit_attempt_v1.json"
       ],
       "acceptance": "Three URL checks produce zero captures on or before 2024-05-01; no fact, factor, target, order or account replay is created."
+    },
+    {
+      "id": "P20",
+      "domain": "data",
+      "result": "The alternate public financial history source now feeds the existing F2 sidecar and fact bridge with field-level timing preserved.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Use a source with historical retrieval/as-of, verified units and issuer scope to rerun the same adapter; keep the current 18-row bridge blocked.",
+      "prohibition": "Alternate provider history is not PIT-safe and cannot create a factor, target, order or account replay.",
+      "actual_paths": [
+        "D:/Quantification/trading/research/f2_alternate_financials.py",
+        "D:/Quantification/trading/research/tests/test_f2_alternate_financials.py",
+        "run_committee.py f2-alternate-financials",
+        "trading/research/f2_fact_bridge.py",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_sidecar_v1.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v1.json"
+      ],
+      "evidence": [
+        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_sidecar_v1.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v1.json"
+      ],
+      "acceptance": "18 alternate-provider rows map to parent profit/assets fields; the existing bridge returns BLOCKED_DATA with 0 facts and explicit reason counts, execution_admitted=false."
     }
   ]
 }
