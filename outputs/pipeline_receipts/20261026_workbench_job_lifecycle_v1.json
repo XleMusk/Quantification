@@ -1,0 +1,22 @@
+{
+  "schema": "quantification_workbench_job_lifecycle_receipt_v1",
+  "generated_at": "2026-10-26T02:35:00+08:00",
+  "change": "Add read-only job lifecycle view for submit, compute, result, download and manual recovery stages.",
+  "api": {
+    "endpoint": "GET /api/jobs/{identifier}/lifecycle",
+    "execution_mode": "research_only",
+    "execution_admitted": false,
+    "live_trading": false,
+    "stages": ["submitted", "compute", "result", "download"],
+    "recovery": "manual resubmit only; no automatic retry"
+  },
+  "validation": [
+    {"command": "D:\\Quantification\\env\\python.exe -m pytest -q webapp/backend/tests/test_webapp.py", "result": "22 passed"},
+    {"command": "npm.cmd run build", "result": "passed; Vite chunk-size warning only"}
+  ],
+  "boundaries": [
+    "The lifecycle endpoint reads job state and result files only; it does not advance, retry or mutate jobs.",
+    "A completed result is downloadable only when result artifacts exist.",
+    "Interrupted, failed and cancelled jobs expose a manual resubmit instruction without automatic recovery."
+  ]
+}
