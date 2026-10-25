@@ -131,9 +131,10 @@
         "trading/research/tests/test_joint_portfolio_paper_package.py",
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_v1/joint_paper_receipt.json",
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/capacity_10m/joint_paper_receipt.json",
-        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/capacity_2m/joint_paper_receipt.json"
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/capacity_2m/joint_paper_receipt.json",
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/budgeted_140k/joint_paper_receipt.json"
       ],
-      "result": "Same-snapshot candidate comparison and aligned Ridge+Alpha158 joint target reach research-only shared paper orders/fills. A current-date fixed/trend/momentum three-strategy target now reaches 60 board-valid paper orders under an explicit 10m capacity diagnostic; the 2m capacity block is preserved and promotion remains closed."
+      "result": "Same-snapshot candidate comparison and aligned Ridge+Alpha158 joint target reach research-only shared paper orders/fills. A current-date fixed/trend/momentum three-strategy target now reaches 22 board-valid paper orders under the explicit 140k budgeted capacity policy; 38 dropped rows and strict capacity blocks remain visible, and promotion remains closed."
     },
     {
       "id": "W4",

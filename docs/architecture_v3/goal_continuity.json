@@ -140,6 +140,7 @@
     "joint_portfolio_paper_failure_receipt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261025_joint_portfolio_paper_package_lot_mismatch_failure_v1.json",
     "joint_portfolio_current_three_strategy_receipt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261025_joint_portfolio_paper_package_current_v1\\capacity_10m\\joint_paper_receipt.json",
     "joint_portfolio_current_capacity_block_receipt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261025_joint_portfolio_paper_package_current_v1\\capacity_2m\\joint_paper_receipt.json",
+    "joint_portfolio_current_budgeted_receipt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261025_joint_portfolio_paper_package_current_v1\\budgeted_140k\\joint_paper_receipt.json",
     "joint_portfolio_board_lot_module": "D:\\Quantification\\trading\\research\\joint_portfolio_acceptance.py",
     "joint_portfolio_explicit_quantity_module": "D:\\Quantification\\trading\\research\\stockdb_paper_target_package.py"
   },

@@ -929,9 +929,9 @@
     {
       "id": "P08",
       "domain": "portfolio",
-      "result": "A current-date three-strategy target uses board-aware lot quantities and reaches the shared paper path when capacity permits.",
+      "result": "A current-date three-strategy target uses board-aware lot quantities and a deterministic cash-capacity policy to reach the shared paper path.",
       "state": "VERIFIED_LOCAL",
-      "next": "Use the capacity result to select a cash/holdings policy before any current-date paper promotion; keep the 140k-capacity block explicit.",
+      "next": "Use the budgeted target as a research-only candidate output; rerun only after a changed aligned snapshot or capacity rule.",
       "prohibition": "Do not silently upscale cash or turn a capacity diagnostic into a live or current broker instruction.",
       "actual_paths": [
         "trading/research/joint_portfolio_acceptance.py",
@@ -939,13 +939,15 @@
         "trading/research/stockdb_paper_target_package.py",
         "trading/research/tests/test_joint_portfolio_paper_package.py",
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/capacity_10m/joint_paper_receipt.json",
-        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/capacity_2m/joint_paper_receipt.json"
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/capacity_2m/joint_paper_receipt.json",
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/budgeted_140k/joint_paper_receipt.json"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/capacity_10m/joint_paper_receipt.json",
-        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/capacity_2m/joint_paper_receipt.json"
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/capacity_2m/joint_paper_receipt.json",
+        "outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/budgeted_140k/joint_paper_receipt.json"
       ],
-      "acceptance": "Three aligned 2026-10-23 fixed/trend/momentum accounts produce 60 board-valid paper orders at the explicit 10m capacity diagnostic; the 2m run remains a preserved capacity block, all target quantities are explicit, and execution_admitted=false."
+      "acceptance": "Three aligned 2026-10-23 fixed/trend/momentum accounts produce 22 board-valid paper orders under the explicit 140k budgeted policy with 38 capacity-dropped rows; strict capacity failures remain preserved, all target quantities are explicit, and execution_admitted=false."
     }
   ]
 }

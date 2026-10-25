@@ -20,6 +20,7 @@ from .virtual_strategy_sleeves import DEFAULT_ACCOUNTS
 
 SCHEMA = "quantification_joint_portfolio_acceptance_v1"
 VERIFIED = "VERIFIED_RESEARCH_ONLY_JOINT_PORTFOLIO"
+CAPACITY_POLICIES = {"strict", "budgeted"}
 DEFAULT_SELECTED = {
     "mature_factor_balanced_ridge": DEFAULT_ACCOUNTS["mature_factor_balanced_ridge"],
     "alpha158_lgbm_cap500": DEFAULT_ACCOUNTS["alpha158_lgbm_cap500"],
@@ -74,10 +75,13 @@ def _snapshot(strategy_id: str, path: Path) -> dict[str, Any]:
 
 def build_joint_portfolio(account_paths: Mapping[str, Path] = DEFAULT_SELECTED, *,
                           initial_cash_cny: float = 140_000.0, gross_limit: float = 0.8,
-                          single_limit: float = 0.2, lot_size: int = 100) -> dict[str, Any]:
+                          single_limit: float = 0.2, lot_size: int = 100,
+                          capacity_policy: str = "strict", max_target_rows: int = 22) -> dict[str, Any]:
     if not account_paths:
         raise ValueError("At least one strategy account is required")
-    if initial_cash_cny <= 0 or not 0 < single_limit <= gross_limit <= 1 or lot_size <= 0:
+    if (initial_cash_cny <= 0 or not 0 < single_limit <= gross_limit <= 1
+            or lot_size <= 0 or capacity_policy not in CAPACITY_POLICIES
+            or type(max_target_rows) is not int or not 1 <= max_target_rows <= 22):
         raise ValueError("Invalid portfolio constraints")
     snapshots = [_snapshot(strategy_id, Path(path)) for strategy_id, path in account_paths.items()]
     days = sorted({item["day"] for item in snapshots})
@@ -130,6 +134,36 @@ def build_joint_portfolio(account_paths: Mapping[str, Path] = DEFAULT_SELECTED, 
                      "lot_rounding_policy": rounding_policy,
                      "quantity_step": quantity_step,
                      "lot_rounding_residual_cents": desired_cents - notional})
+    economic_rows = list(rows)
+    dropped_rows: list[dict[str, Any]] = []
+    if capacity_policy == "budgeted":
+        budget_cents = int(round(pool_cents * gross_limit))
+        selected: list[dict[str, Any]] = []
+        used_cents = 0
+        candidates = sorted(
+            (row for row in rows if row["target_quantity"] > 0),
+            key=lambda row: (row["target_notional_cents"], -row["target_weight"], row["symbol"]),
+        )
+        for row in candidates:
+            if len(selected) >= max_target_rows:
+                dropped_rows.append({"symbol": row["symbol"], "reason": "capacity_max_target_rows"})
+                continue
+            if used_cents + row["target_notional_cents"] <= budget_cents:
+                selected.append(row)
+                used_cents += row["target_notional_cents"]
+            else:
+                dropped_rows.append({"symbol": row["symbol"], "reason": "capacity_gross_cash_budget"})
+        selected_symbols = {row["symbol"] for row in selected}
+        for row in rows:
+            if row["symbol"] not in selected_symbols and not any(
+                    item["symbol"] == row["symbol"] for item in dropped_rows):
+                dropped_rows.append({
+                    "symbol": row["symbol"],
+                    "reason": "capacity_no_board_valid_quantity" if row["target_quantity"] <= 0
+                    else "capacity_selection",
+                })
+        rows = selected
+        target_notional = sum(row["target_notional_cents"] for row in rows)
     lot_feasible = all(row["target_quantity"] > 0 or row["target_weight"] == 0 for row in rows)
     actual_gross = target_notional / pool_cents
     actual_max_single = max((row["actual_weight"] for row in rows), default=0.0)
@@ -149,12 +183,15 @@ def build_joint_portfolio(account_paths: Mapping[str, Path] = DEFAULT_SELECTED, 
                         "gross_pass": constraints_pass and actual_gross <= gross_limit + 1e-9,
                         "single_pass": constraints_pass and actual_max_single <= single_limit + 1e-9,
                         "lot_size": lot_size},
-        "accounts": snapshots, "target_rows": rows,
+        "accounts": snapshots, "target_rows": rows, "economic_target_rows": economic_rows,
+        "dropped_rows": dropped_rows, "capacity_policy": capacity_policy,
+        "max_target_rows": max_target_rows,
         "target_notional_cents": target_notional,
         "cash_residual_cents": pool_cents - target_notional,
         "orders_created": False, "fills_created": False, "ledger_mutated": False,
         "broker_or_ths_interacted": False,
-        "blockers": {"lot_infeasible_symbols": blockers},
+        "blockers": {"lot_infeasible_symbols": blockers,
+                     "capacity_dropped_symbols": [item["symbol"] for item in dropped_rows]},
         "lot_rounding_policy": "round_up_one_lot_if_positive_target_and_within_single_limit_else_block",
         "acceptance": {"common_day": True, "gross_pass": actual_gross <= gross_limit + 1e-9,
                         "single_pass": actual_max_single <= single_limit + 1e-9,

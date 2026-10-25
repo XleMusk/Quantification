@@ -96,6 +96,8 @@ def build_joint_paper_package(account_paths: Mapping[str, Path] = DEFAULT_SELECT
                               gross_limit: float = 0.8,
                               single_limit: float = 0.2,
                               lot_size: int = 100,
+                              capacity_policy: str = "strict",
+                              max_target_rows: int = 22,
                               execution_day: str,
                               settlement_day: str,
                               output_dir: str | Path | None = None) -> dict[str, Any]:
@@ -103,7 +105,8 @@ def build_joint_paper_package(account_paths: Mapping[str, Path] = DEFAULT_SELECT
 
     joint = build_joint_portfolio(account_paths, initial_cash_cny=initial_cash_cny,
                                   gross_limit=gross_limit, single_limit=single_limit,
-                                  lot_size=lot_size)
+                                  lot_size=lot_size, capacity_policy=capacity_policy,
+                                  max_target_rows=max_target_rows)
     if joint["status"] != VERIFIED:
         receipt = {
             "schema": SCHEMA, "status": BLOCKED,
@@ -192,6 +195,8 @@ def main(argv=None) -> int:
     parser.add_argument("--gross-limit", type=float, default=0.8)
     parser.add_argument("--single-limit", type=float, default=0.2)
     parser.add_argument("--lot-size", type=int, default=100)
+    parser.add_argument("--capacity-policy", choices=("strict", "budgeted"), default="strict")
+    parser.add_argument("--max-target-rows", type=int, default=22)
     parser.add_argument("--execution-day", required=True)
     parser.add_argument("--settlement-day", required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
@@ -200,6 +205,7 @@ def main(argv=None) -> int:
         _account_paths(args.accounts_manifest),
         initial_cash_cny=args.initial_cash, gross_limit=args.gross_limit,
         single_limit=args.single_limit, lot_size=args.lot_size,
+        capacity_policy=args.capacity_policy, max_target_rows=args.max_target_rows,
         execution_day=args.execution_day, settlement_day=args.settlement_day,
         output_dir=args.output_dir,
     )

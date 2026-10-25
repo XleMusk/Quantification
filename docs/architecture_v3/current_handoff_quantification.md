@@ -159,3 +159,9 @@ Focused regression covering the new joint paper route, existing P06 contract, F2
 ## 2026-10-25 joint paper rejection receipt
 
 联合纸面包现在把共享 Orders/Ledger 的 `ValueError` 转为 `BLOCKED_PAPER_TARGET_ORDER` 回执，并保留已构建的目标、报价和原始拒绝原因；这样容量、板块或现金约束不会以无上下文的 CLI traceback 结束，且不会写入持久账户。新增回执契约测试后，联合纸面包、联合目标与 D0/D1 聚焦测试为 `10 passed`，改动模块编译通过。
+
+## 2026-10-25 budgeted joint target delivery
+
+为解决三策略在 140,000 元研究账户下因多标的整手约束而整包阻断，联合目标新增显式 `capacity_policy=budgeted`。它按板块最小数量、目标权重、单票上限和总现金预算确定性选择最多 22 个可执行目标，并把被容量裁掉的标的及原因留在 `dropped_rows`；默认 `strict` 模式不变。当前固定低波、半动量、12-1 动量三条 2026-10-23 账户的预算模式回执为 22 个纸面订单、38 个容量裁剪行，继续走共享 Orders/Fill/Cash/Position 路径，`execution_admitted=false`。
+
+新增预算模式 fixture 后，联合目标、联合纸面包和 D0/D1 测试为 `11 passed`，改动模块编译通过。回执：`outputs/pipeline_receipts/20261025_joint_portfolio_paper_package_current_v1/budgeted_140k/joint_paper_receipt.json`。这仍是研究纸面目标，不代表当前券商或同花顺订单。
