@@ -28,7 +28,7 @@
       "domain": "development",
       "result": "Bind existing entries, successful commands, commits, artifacts and only the remaining differences.",
       "state": "CODE_INTEGRATED",
-      "next": "Use a historical_archive/provider_revision/source_snapshot adapter when available; current fetches remain BLOCKED_DATA until retrieval/as-of and revision evidence pass.",
+      "next": "The 2023Q1 CDX probe found only a 2025-09-05 capture; use a source with pre-decision retrieval/as-of and revision payload evidence before any PIT admission.",
       "prohibition": "Do not repeat a full inventory or treat a plan checker as production evidence.",
       "actual_paths": [
         "trading/research/f01_scoped_field_coverage.py",
@@ -71,7 +71,11 @@
         "trading/research/f2_historical_evidence.py",
         "trading/research/tests/test_f2_historical_evidence.py",
         "outputs/pipeline_receipts/20261026_f2_historical_gate_v1.json",
-        "outputs/research_reports/20261026_f2_historical_gate_v1.md"
+        "outputs/research_reports/20261026_f2_historical_gate_v1.md",
+        "trading/research/f2_wayback_probe.py",
+        "trading/research/tests/test_f2_wayback_probe.py",
+        "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v1.json",
+        "outputs/research_reports/20261026_f2_wayback_2023q1_v1.md"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -176,7 +180,11 @@
         "trading/research/f2_historical_evidence.py",
         "trading/research/tests/test_f2_historical_evidence.py",
         "outputs/pipeline_receipts/20261026_f2_historical_gate_v1.json",
-        "outputs/research_reports/20261026_f2_historical_gate_v1.md"
+        "outputs/research_reports/20261026_f2_historical_gate_v1.md",
+        "trading/research/f2_wayback_probe.py",
+        "trading/research/tests/test_f2_wayback_probe.py",
+        "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v1.json",
+        "outputs/research_reports/20261026_f2_wayback_2023q1_v1.md"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -229,7 +237,11 @@
         "trading/research/f2_historical_evidence.py",
         "trading/research/tests/test_f2_historical_evidence.py",
         "outputs/pipeline_receipts/20261026_f2_historical_gate_v1.json",
-        "outputs/research_reports/20261026_f2_historical_gate_v1.md"
+        "outputs/research_reports/20261026_f2_historical_gate_v1.md",
+        "trading/research/f2_wayback_probe.py",
+        "trading/research/tests/test_f2_wayback_probe.py",
+        "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v1.json",
+        "outputs/research_reports/20261026_f2_wayback_2023q1_v1.md"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [

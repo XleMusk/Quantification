@@ -1,6 +1,6 @@
 {
   "schema": "quantification_goal_completion_audit_v1",
-  "audited_at": "2026-10-26T02:45:00+08:00",
+  "audited_at": "2026-10-26T02:58:00+08:00",
   "execution_admitted": false,
   "overall_status": "INCOMPLETE_ACTIVE",
   "items": [
@@ -424,10 +424,14 @@
         "trading/research/f2_historical_evidence.py",
         "trading/research/tests/test_f2_historical_evidence.py",
         "outputs/pipeline_receipts/20261026_f2_historical_gate_v1.json",
-        "outputs/research_reports/20261026_f2_historical_gate_v1.md"
+        "outputs/research_reports/20261026_f2_historical_gate_v1.md",
+        "trading/research/f2_wayback_probe.py",
+        "trading/research/tests/test_f2_wayback_probe.py",
+        "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v1.json",
+        "outputs/research_reports/20261026_f2_wayback_2023q1_v1.md"
       ],
       "gap": "The locked 000002.SZSE/2023Q1 CNINFO issuer PDF is now identified and hash-matched on current retrieval; historical retrieval/as-of, revision history and explicit scope mapping remain unproven, so PIT-safe and F01-eligible rows remain blocked.",
-      "next_acceptance": "supply a historical_archive/provider_revision/source_snapshot row that passes the explicit retrieval/as-of/revision gate before factor or account replay"
+      "next_acceptance": "obtain a pre-decision historical retrieval/as-of and revision payload for the captured 2023Q1 artifact; the 2025-09-05-only CDX result remains blocked"
     },
     {
       "id": "candidate_catalog",
