@@ -1,0 +1,395 @@
+{
+  "schema": "stockdb_action_target_context_binding_v1",
+  "status": "BOUND_ACTION_CONTEXT_PIT_BLOCKED",
+  "created_at": "2026-10-26T03:12:03.005402+08:00",
+  "decision_day": "2026-10-13",
+  "target_receipt": "quantification_joint_portfolio_paper_package_v1",
+  "action_context_receipt": "stockdb_dated_action_context_sidecar_v4_receipt_v1",
+  "target_count": 22,
+  "action_context_bound_rows": 22,
+  "pit_asof_safe_rows": 0,
+  "company_action_applied_rows": 0,
+  "rows": [
+    {
+      "symbol": "600985.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "002066.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "002064.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "600236.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "002452.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "600428.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "601918.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "600989.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "601339.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "000792.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "002135.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "600201.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "002493.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "000301.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "603012.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "601886.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "002648.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "002832.SZSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "605098.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "603391.SSE",
+      "contributors": [
+        "trend_low_vol_half_momentum_20"
+      ],
+      "target_weight": 0.02,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "301586.SZSE",
+      "contributors": [
+        "stockdb_factor_monthly_ridge_v1"
+      ],
+      "target_weight": 0.08,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    },
+    {
+      "symbol": "603197.SSE",
+      "contributors": [
+        "stockdb_factor_monthly_ridge_v1"
+      ],
+      "target_weight": 0.08,
+      "action_context_present": true,
+      "action_event_present": false,
+      "publication_known_by_date": false,
+      "terms_complete": false,
+      "pit_asof_safe": false,
+      "company_action_applied": false,
+      "publication_evidence_reasons": [
+        "publication_evidence_missing"
+      ],
+      "reason": "pit_or_action_application_unproven"
+    }
+  ],
+  "execution_admitted": false,
+  "target_mutated": false,
+  "account_replay": false,
+  "limitations": [
+    "The binding joins dated action context to target symbols but does not apply cash, share or price adjustments.",
+    "PIT/as-of unsafe rows remain visible and cannot authorize factor, order or account replay."
+  ]
+}
