@@ -10,6 +10,7 @@
 - [投委会与命令行说明](README_committee.md)
 - [研究工作台安装与启动](webapp/README.md)
 - [架构与已有能力](docs/architecture_v2/BASELINE.md)
+- [代码风格与重构约定](docs/CODE_STYLE.md)
 - [实现队列](docs/architecture_v2/IMPLEMENTATION_QUEUE.md)
 - [同花顺适配边界](trading/ths/README.md)
 

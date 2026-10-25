@@ -23,6 +23,12 @@ The V2 long-term priority is an explainable, reproducible, extensible internal r
 - Prefer the project interpreter: `D:\Quantification\env\python.exe`.
 - Prefer project commands through `D:\Quantification\run_committee.py`.
 
+## Code Style and Refactoring
+
+- Follow [`docs/CODE_STYLE.md`](docs/CODE_STYLE.md) for business vocabulary, boundaries, modules, errors, tests and handoffs.
+- Keep structural refactors separate from bug fixes and research changes; preserve existing Engine/Ledger and paper-account behavior.
+- Do not change research specifications, fees, PIT cutoffs, stop decisions or execution permissions during a style refactor.
+
 ## Tonghuashun Workbench
 
 For Tonghuashun desktop navigation, screenshots, funds/sector/ETF analysis, or requests to operate its tools, load `run_committee.py skill-info tonghuashun-workbench`. It provides the verified classic-PC version baseline, local function index, combined workflows, and data/operation caveats. Configuration discovery is not UI verification. Keep live trading disabled; learning the software does not authorize orders, cancellations, transfers, or activating conditional orders. Read `trading/ths/README.md` before any separately authorized adapter work and preserve its supported-instrument and manual-submission limits.
