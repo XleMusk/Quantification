@@ -305,3 +305,5 @@ D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `de
 复用了 10 月 19、20、21 日三份完整逐日收市包，按既有 append-only supplement 合同生成 `D:\QuantificationData\trading\research\lowvol_supplements\20261025_append1021_v1`：新增 15,669 行，三份 source proof、原始前缀和 SHA-256 均保留。随后实际推进注册 fixed_daily 到 `2026-10-21`，回执状态 `continued_research_only`、generation `2`，32 个会话、25 个订单、44 个成交、期末权益 CNY 140,710.07、净收益 0.5072%、最大回撤 -2.0255%，所有执行资格和账户边界保持关闭。
 
 基于该真实固定回放又生成了 2026-10-22 的研究纸面预览：`D:\Quantification\outputs\paper_rebalance\20261025_132805_277fa0eb\result.json`。预览保留 19 个持仓目标、0 个订单，原因是固定月末 rank 尚未到 10 月 21 日且缺少用户账户/可卖数量/可执行 BrokerQuote；它是纸面目标证据，不是 THS 预填或真实订单。10 月 22–23 日完整收市源仍未取得，10 月 26 日继续等待真实收市输入。
+
+同一 append-only 输入下尝试把 `low_vol_half_momentum_20` 候选重跑到 2026-10-21，回执 `D:\Quantification\outputs\stockdb_rolling_low_volatility\20261025_213102_eed7414b\run.json` 在 2026-10-08 停止：`000301.SZSE` 的 StockDB execution reference 与 independent native raw stream 不一致。该失败已保留为 `blocked_research_only`，不把部分 22 个会话结果送入 D0/D1，也不重复同一混合源。
