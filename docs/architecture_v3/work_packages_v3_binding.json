@@ -1198,7 +1198,7 @@
         "D:/Quantification/trading/research/tests/test_stockdb_fixed_daily.py",
         "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json"
       ],
-      "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence."
+      "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence."
     }
   ]
 }

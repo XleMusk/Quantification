@@ -40,6 +40,7 @@ def test_post_close_advances_fixed_daily_before_d0_d1(tmp_path: Path, monkeypatc
     def d0_run(*args, **kwargs):
         calls.append("d0")
         assert kwargs["fixed_run_dir"] == fixed_dir
+        assert kwargs["joint_capacity_policy"] == "budgeted"
         return {"status": "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1",
                 "execution_admitted": False}
 

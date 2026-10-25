@@ -293,3 +293,8 @@ D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `de
 ## 2026-10-25 decision filter before replay bundle
 
 修正 replay 清单直连路径的研究去留顺序：若提供 `research_decision_receipt`，`post-close-d0-d1` 先过滤 `CONTINUE_RESEARCH_ONLY`，再调用 candidate input bundle 生成 Target/Quote；STOP 候选不会再生成中间目标文件，纳入/排除记录保留在总回执中。聚焦回归为 `36 passed`。
+
+
+## 2026-10-25 post-close joint paper default
+
+`post-close-d0-d1` 默认把 `joint_capacity_policy` 设为 `budgeted`，因此真实收市运行在固定腿与候选批次之外，会继续生成统一 joint paper 和既有 THS 只读目标参考；仍不登录、不预填提交、不修改持久 Ledger。显式 `strict` 或 `None` 仍可由 API 覆盖，聚焦回归保持 `36 passed`。

@@ -104,7 +104,7 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
                  research_decision_receipt: str | Path | None = None,
                  supplemental_raw_view: str | Path | None = None,
                  minute_time: str = "", gate_mode: str = "research_followup",
-                 joint_capacity_policy: str | None = None,
+                 joint_capacity_policy: str | None = "budgeted",
                  joint_max_target_rows: int = 22) -> dict[str, Any]:
     source = Path(source_manifest).resolve() if source_manifest is not None else None
     replay_manifest = (Path(candidate_replay_manifest).resolve()
@@ -246,7 +246,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--supplemental-raw-view", type=Path)
     parser.add_argument("--minute-time", default="")
     parser.add_argument("--gate-mode", choices=("research_followup", "separate_gate"), default="research_followup")
-    parser.add_argument("--joint-capacity-policy", choices=("strict", "budgeted"))
+    parser.add_argument("--joint-capacity-policy", choices=("strict", "budgeted"), default="budgeted")
     parser.add_argument("--joint-max-target-rows", type=int, default=22)
     args = parser.parse_args(argv)
     receipt = run_pipeline(
