@@ -1,13 +1,32 @@
 """Bounded prefill. A human owns the final submission in the THS client."""
+from collections.abc import Callable, Mapping, Sequence
 from datetime import datetime, timedelta, timezone
 from copy import deepcopy
 from decimal import Decimal
 import re
+from typing import Any, Protocol
 import uuid
 
 from ..config import StrategyConfig
 from ..ledger import Ledger, new_state
 from ..rules import cents
+
+
+Selector = Mapping[str, Any]
+
+
+class PrefillWindow(Protocol):
+    """Narrow GUI boundary consumed by the paper-only prefill adapter."""
+
+    def ready(self) -> None: ...
+
+    def check_fields(self, selectors: Sequence[Selector]) -> None: ...
+
+    def text(self, selector: Selector) -> str: ...
+
+    def write(self, selector: Selector, value: str) -> None: ...
+
+    def read_grid(self, grid: Selector) -> list[dict[str, Any]]: ...
 
 
 def now():
@@ -324,10 +343,12 @@ def validate_gui_prefill_profile(profile):
 
 
 class PrefillAdapter:
-    def __init__(self, window, profile):
+    """Validate and write a reviewed THS form without submitting it."""
+
+    def __init__(self, window: PrefillWindow, profile: Mapping[str, Any]) -> None:
         self.window, self.profile = window, profile
 
-    def guard(self, plan):
+    def guard(self, plan: Mapping[str, Any]) -> None:
         self.window.ready()
         if self.profile.get("verified_local") is not True:
             raise ValueError("Local control mapping has not been verified")
@@ -345,7 +366,11 @@ class PrefillAdapter:
             if not expected or self.window.text(guards[key]["selector"]) != expected:
                 raise ValueError(f"{key} guard mismatch; user must select the correct account/order page")
 
-    def prefill(self, plan, stop_check=lambda: False):
+    def prefill(
+        self,
+        plan: Mapping[str, Any],
+        stop_check: Callable[[], bool] = lambda: False,
+    ) -> dict[str, Any]:
         check_plan(plan)
         values = _prefill_values(plan)
         for field, value in values.items():
@@ -363,7 +388,7 @@ class PrefillAdapter:
         verified = verify_prefill_readback(plan, readback)
         return {**verified, "status": "awaiting_manual_submission", "verified_at": now().isoformat()}
 
-    def read(self, kind):
+    def read(self, kind: str) -> dict[str, Any]:
         self.window.ready()
         if self.profile.get("verified_local") is not True:
             raise ValueError("Local control mapping has not been verified")

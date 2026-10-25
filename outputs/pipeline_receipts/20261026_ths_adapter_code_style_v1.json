@@ -1,0 +1,26 @@
+{
+  "schema": "ths_adapter_code_style_receipt_v1",
+  "status": "VERIFIED_LOCAL",
+  "date": "2026-10-26",
+  "work_package": "G/P15 THS adapter boundary demonstration",
+  "execution_admitted": false,
+  "changes": {
+    "module": "trading.ths.adapter",
+    "boundary": "PrefillWindow Protocol",
+    "typed_methods": ["ready", "check_fields", "text", "write", "read_grid"],
+    "ledger_behavior_changed": false,
+    "prefill_behavior_changed": false,
+    "real_client_contact": false
+  },
+  "acceptance": {
+    "focused_tests": {
+      "command": "D:\\Quantification\\env\\python.exe -m pytest -q trading/tests/test_ths.py trading/tests/test_ths_prefill_recovery.py trading/tests/test_broker_sessions.py",
+      "passed": 99
+    },
+    "execution_guard": "execution_admitted=false; manual prefill only; submit/cancel remain disabled"
+  },
+  "limitations": [
+    "The protocol documents the GUI replacement boundary; it does not prove a real THS mapping or account observation.",
+    "This is a local code-style demonstration and does not promote any channel or strategy."
+  ]
+}
