@@ -32,6 +32,7 @@ REQUIRED_FILES = (
 EVIDENCE_FILES = (
     "docs/architecture_v3/goal_continuity.json",
     "docs/architecture_v3/current_handoff_quantification.md",
+    "docs/architecture_v3/candidate_strategy_catalog_20261024.json",
     "outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v2.json",
     "outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json",
 )

@@ -352,4 +352,4 @@ Reused the saved stockdb_value_size_activity_2023 account at terminal day 2023-1
 
 ## 2026-10-25 internal research release v2 and L06 readiness
 
-Extended internal_release_candidate.py to bind paper evidence and an explicit account_readiness matrix. The matrix records the research paper account as BOUND_RESEARCH_ONLY, current BrokerQuote/four-table export/sellable T+1 export as MISSING, and THS as REFERENCE_ONLY_NOT_OBSERVED; execution_admitted=false and live_execution_ready=false remain closed. L06 is now PARTIAL with the release evidence path reserved at D:/QuantificationData/trading/research/releases/20261025_v2/release_manifest.json.
+Extended internal_release_candidate.py to bind paper evidence and an explicit account_readiness matrix. The matrix records the research paper account as BOUND_RESEARCH_ONLY, current BrokerQuote/four-table export/sellable T+1 export as MISSING, and THS as REFERENCE_ONLY_NOT_OBSERVED; execution_admitted=false and live_execution_ready=false remain closed. L06 is now PARTIAL with the release evidence path reserved at D:/QuantificationData/trading/research/releases/20261025_v3/release_manifest.json.
