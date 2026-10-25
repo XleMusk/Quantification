@@ -1,0 +1,124 @@
+{
+  "schema": "quantification_common_window_cost_pressure_v1",
+  "status": "COMPLETED_RESEARCH_ONLY_COST_PRESSURE",
+  "created_at": "2026-10-25T19:01:38.712413+00:00",
+  "source_receipt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_common_window_strategy_comparison_v1.json",
+  "common_window": {
+    "start": "2024-01-31",
+    "end": "2026-10-13",
+    "sessions": 648,
+    "basis": "intersection_of_saved_daily_account_dates"
+  },
+  "stockdb_snapshot": "D:\\QuantificationData\\trading\\research\\full_market\\stockdb_2024_0101_1013_current_cutoff_v1",
+  "bps_levels": [
+    50.0,
+    100.0
+  ],
+  "strategies": [
+    {
+      "id": "low_vol_half_momentum_20",
+      "label": "低波/半动量",
+      "base_net_return": 0.14780264285714284,
+      "base_fees_rmb": 2448.16,
+      "base_window_turnover_value": 1994906.9300000002,
+      "pressure": [
+        {
+          "sessions": 648,
+          "extra_cost_rmb": 9974.53465,
+          "window_start_equity": 140000.0,
+          "window_end_equity": 150717.83535,
+          "net_return": 0.0765559667857143,
+          "max_drawdown": -0.17932235701126997,
+          "sharpe_zero_rf_252": 0.2992919272405042,
+          "bps": 50.0
+        },
+        {
+          "sessions": 648,
+          "extra_cost_rmb": 19949.0693,
+          "window_start_equity": 140000.0,
+          "window_end_equity": 140743.3007,
+          "net_return": 0.005309290714285764,
+          "max_drawdown": -0.20200975358964013,
+          "sharpe_zero_rf_252": 0.0792194002617486,
+          "bps": 100.0
+        }
+      ],
+      "research_decision_unchanged": "CONTINUE_RESEARCH_ONLY"
+    },
+    {
+      "id": "mature_factor_balanced_ridge",
+      "label": "成熟因子 Ridge",
+      "base_net_return": 0.36976350000000013,
+      "base_fees_rmb": 4584.21,
+      "base_window_turnover_value": 8227019.859999999,
+      "pressure": [
+        {
+          "sessions": 648,
+          "extra_cost_rmb": 41135.099299999994,
+          "window_start_equity": 140000.0,
+          "window_end_equity": 150631.7907,
+          "net_return": 0.0759413621428573,
+          "max_drawdown": -0.26004778341095447,
+          "sharpe_zero_rf_252": 0.24186519202980594,
+          "bps": 50.0
+        },
+        {
+          "sessions": 648,
+          "extra_cost_rmb": 82270.19859999999,
+          "window_start_equity": 140000.0,
+          "window_end_equity": 109496.69140000003,
+          "net_return": -0.21788077571428555,
+          "max_drawdown": -0.381769030282717,
+          "sharpe_zero_rf_252": -0.2858926491361611,
+          "bps": 100.0
+        }
+      ],
+      "research_decision_unchanged": "CONTINUE_RESEARCH_ONLY"
+    },
+    {
+      "id": "mature_factor_balanced_ridge_h60",
+      "label": "成熟因子 Ridge（60-session variant）",
+      "base_net_return": 0.32176678571428585,
+      "base_fees_rmb": 4129.55,
+      "base_window_turnover_value": 7416800.9399999995,
+      "pressure": [
+        {
+          "sessions": 648,
+          "extra_cost_rmb": 37084.00469999999,
+          "window_start_equity": 140000.0,
+          "window_end_equity": 147963.34530000002,
+          "net_return": 0.056881037857142935,
+          "max_drawdown": -0.2574477944972745,
+          "sharpe_zero_rf_252": 0.20862107173141353,
+          "bps": 50.0
+        },
+        {
+          "sessions": 648,
+          "extra_cost_rmb": 74168.00939999998,
+          "window_start_equity": 140000.0,
+          "window_end_equity": 110879.34060000003,
+          "net_return": -0.20800470999999987,
+          "max_drawdown": -0.3632305958436691,
+          "sharpe_zero_rf_252": -0.31607491862545517,
+          "bps": 100.0
+        }
+      ],
+      "research_decision_unchanged": "CONTINUE_RESEARCH_ONLY"
+    }
+  ],
+  "contract": {
+    "same_saved_account_rows": true,
+    "same_stockdb_snapshot": true,
+    "extra_cost_formula": "turnover_value_rmb * bps / 10000",
+    "base_fees_preserved": true,
+    "strategy_rerun": false,
+    "ledger_mutated": false,
+    "adoption_decision_changed": false
+  },
+  "execution_admitted": false,
+  "broker_or_ths_interacted": false,
+  "limitations": [
+    "This is a derived turnover-cost sensitivity over saved account rows; no strategy was rerun.",
+    "The pressure result remains research-only and does not establish PIT, forward validation or adoption."
+  ]
+}

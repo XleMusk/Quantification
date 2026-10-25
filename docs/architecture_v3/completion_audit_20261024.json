@@ -1,6 +1,6 @@
 {
   "schema": "quantification_goal_completion_audit_v1",
-  "audited_at": "2026-10-26T02:58:00+08:00",
+  "audited_at": "2026-10-26T03:08:00+08:00",
   "execution_admitted": false,
   "overall_status": "INCOMPLETE_ACTIVE",
   "items": [
@@ -131,10 +131,14 @@
         "trading/research/retained_joint_candidate_comparison.py",
         "trading/research/tests/test_retained_joint_candidate_comparison.py",
         "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_receipt.json",
-        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md"
+        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md",
+        "trading/research/common_cost_pressure.py",
+        "trading/research/tests/test_common_cost_pressure.py",
+        "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
       ],
       "gap": "shared shadow packages and action-sidecar mapping are reproducible; v4 retains 138 events/177 artifacts and integrates into 180,948-row action context, but as-of history yields 0 PIT-safe rows and no action-adjusted replay",
-      "next_acceptance": "run the retained joint target on a fresh forward account before inferring any joint return increment; keep this terminal projection research-only"
+      "next_acceptance": "recompute common-window cost pressure after a changed snapshot or cost contract; keep PIT/forward/adoption gates separate"
     },
     {
       "id": "daily_paper",
@@ -493,10 +497,14 @@
         "trading/research/retained_joint_candidate_comparison.py",
         "trading/research/tests/test_retained_joint_candidate_comparison.py",
         "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_receipt.json",
-        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md"
+        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md",
+        "trading/research/common_cost_pressure.py",
+        "trading/research/tests/test_common_cost_pressure.py",
+        "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
       ],
       "gap": "catalog and one-to-one fixed specs are bound; actual per-event PIT/revision evidence, shortline and public-seat timing gates remain open",
-      "next_acceptance": "after the next complete close, refresh the common snapshot and rerun retained joint comparison only when fresh target inputs are available"
+      "next_acceptance": "after the next complete close, refresh common snapshot, cost pressure and retained candidate evidence before any candidate rerun"
     },
     {
       "id": "execution_gate",

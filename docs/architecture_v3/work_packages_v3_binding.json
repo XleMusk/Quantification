@@ -366,7 +366,11 @@
         "trading/research/retained_joint_candidate_comparison.py",
         "trading/research/tests/test_retained_joint_candidate_comparison.py",
         "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_receipt.json",
-        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md"
+        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md",
+        "trading/research/common_cost_pressure.py",
+        "trading/research/tests/test_common_cost_pressure.py",
+        "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261024_research_decision_matrix_v1.json",
@@ -378,7 +382,11 @@
         "trading/research/retained_joint_candidate_comparison.py",
         "trading/research/tests/test_retained_joint_candidate_comparison.py",
         "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_receipt.json",
-        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md"
+        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md",
+        "trading/research/common_cost_pressure.py",
+        "trading/research/tests/test_common_cost_pressure.py",
+        "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
       ],
       "acceptance": "Completed public-seat cases expose post-event return/opportunity, order/fill enterability, and fixed continue/stop research decisions; incomplete cases remain blocked with their error; all promotion and execution gates remain closed.",
       "evidence_updated_on": "2026-10-26"
@@ -428,7 +436,7 @@
       "domain": "research",
       "result": "Robustness table and adoption/stop decision are supported by real artifacts.",
       "state": "VERIFIED_LOCAL",
-      "next": "Keep the public-seat lag2 shadow package separate from the follow-up queue until timing, PIT membership and causal attribution are verified; reuse the shared paper receipt only as research evidence.",
+      "next": "Retain the common-window cost-pressure receipt as economic sensitivity; no candidate promotion without PIT/forward validation.",
       "prohibition": "No candidate is promoted from same-cost diagnostics alone.",
       "actual_paths": [
         "docs/architecture_v3/candidate_strategy_catalog_20261024.json",
@@ -472,7 +480,11 @@
         "trading/research/retained_joint_candidate_comparison.py",
         "trading/research/tests/test_retained_joint_candidate_comparison.py",
         "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_receipt.json",
-        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md"
+        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md",
+        "trading/research/common_cost_pressure.py",
+        "trading/research/tests/test_common_cost_pressure.py",
+        "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261024_strategy_robustness_matrix_v1.json",
@@ -489,7 +501,11 @@
         "trading/research/retained_joint_candidate_comparison.py",
         "trading/research/tests/test_retained_joint_candidate_comparison.py",
         "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_receipt.json",
-        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md"
+        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md",
+        "trading/research/common_cost_pressure.py",
+        "trading/research/tests/test_common_cost_pressure.py",
+        "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
       ],
       "acceptance": "Saved long-window, untouched-forward and capacity/cost artifacts produce explicit continue, mixed, stop or coverage-blocked research decisions; those decisions are bound into the candidate library with a research-only follow-up queue and closed paper/promotion gates.",
       "evidence_updated_on": "2026-10-26"
@@ -499,7 +515,7 @@
       "domain": "research",
       "result": "Saved long-window comparison now includes the prespecified mature-factor Ridge 60-session variant, deterministic research continue/stop decisions for all six rows, and an explicit baseline-to-h60 robustness delta on the same StockDB snapshot.",
       "state": "VERIFIED_LOCAL",
-      "next": "Refresh the retained joint target after the next fresh close; keep the return comparison blocked until the joint route has a forward account.",
+      "next": "Refresh cost-pressure and retained joint target after the next fresh close; keep return comparison and adoption gates separate.",
       "prohibition": "Do not migrate old books across missing publications.",
       "actual_paths": [
         "docs/architecture_v3/candidate_strategy_catalog_20261024.json",
@@ -576,7 +592,11 @@
         "trading/research/retained_joint_candidate_comparison.py",
         "trading/research/tests/test_retained_joint_candidate_comparison.py",
         "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_receipt.json",
-        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md"
+        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md",
+        "trading/research/common_cost_pressure.py",
+        "trading/research/tests/test_common_cost_pressure.py",
+        "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
       ],
       "acceptance": "The h60 receipt has six rows, each with a fixed research decision; Ridge baseline and h60 preserve positive return/Sharpe signs; the unified launcher regenerates the receipt; focused comparison tests pass.",
       "evidence": [
@@ -587,7 +607,11 @@
         "trading/research/retained_joint_candidate_comparison.py",
         "trading/research/tests/test_retained_joint_candidate_comparison.py",
         "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_receipt.json",
-        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md"
+        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md",
+        "trading/research/common_cost_pressure.py",
+        "trading/research/tests/test_common_cost_pressure.py",
+        "outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json",
+        "outputs/research_reports/20261026_common_window_cost_pressure_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
