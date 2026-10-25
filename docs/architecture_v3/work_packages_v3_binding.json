@@ -448,9 +448,10 @@
         "outputs/leader_cross_year/20261024_2025_2026_liquidity_case_v1/REPORT.md",
         "outputs/pipeline_receipts/20261025_long_window_strategy_comparison_h60_v1.json",
         "outputs/research_reports/20261025_long_window_strategy_comparison_h60_v1.md",
-        "D:/Quantification/trading/tests/test_long_window_strategy_comparison.py"
+        "D:/Quantification/trading/tests/test_long_window_strategy_comparison.py",
+        "run_committee.py long-window-strategy-comparison --include-h60"
       ],
-      "acceptance": "The h60 receipt has six rows, each with a fixed research decision; Ridge baseline and h60 preserve positive return/Sharpe signs, and the focused comparison tests pass."
+      "acceptance": "The h60 receipt has six rows, each with a fixed research decision; Ridge baseline and h60 preserve positive return/Sharpe signs; the unified launcher regenerates the receipt; focused comparison tests pass."
     },
     {
       "id": "L01",

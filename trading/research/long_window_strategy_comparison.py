@@ -412,10 +412,10 @@ def write_h60_outputs(receipt_path: Path | None = None, report_path: Path | None
     return receipt_path, report_path
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--include-h60", action="store_true", help="write the additive 60-session Ridge comparison")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     receipt_path, report_path = write_h60_outputs() if args.include_h60 else write_outputs()
     print(json.dumps({"receipt": str(receipt_path), "report": str(report_path)}, ensure_ascii=False))
     return 0

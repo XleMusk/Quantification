@@ -198,3 +198,8 @@ Focused regression covering the new joint paper route, existing P06 contract, F2
 将同一冻结 StockDB 快照上的 5 条基线与预先登记 Ridge h60 变体写成机器可读研究去留表。`outputs/pipeline_receipts/20261025_long_window_strategy_comparison_h60_v1.json` 现在为六个回放行提供固定规则 `net_return > 0 and sharpe > 0`：低波/半动量与 Ridge 两个家族进入 `CONTINUE_RESEARCH_ONLY`，固定低波、12-1 动量与 Alpha158/LightGBM 进入 `STOP_RESEARCH_ONLY`；这只决定下一轮研究资源，不改候选目录的独立晋级闸门。
 
 Ridge h60 相对基线的净收益差为 -4.7997 个百分点、最大回撤差为 -0.9656 个百分点、Sharpe 差为 -0.0219，但收益与 Sharpe 的正负号保持一致，稳健性回执决定继续研究。新增 `trading/tests/test_long_window_strategy_comparison.py` 断言与聚焦测试为 `3 passed`；无行情抓取、无账户写入、`execution_admitted=false`。
+
+
+## 2026-10-25 unified long-window launcher
+
+将长窗研究比较接入统一入口 `run_committee.py long-window-strategy-comparison --include-h60`，修正模块入口的 argv 契约后已从统一入口成功重生成 h60 回执和报告。长窗比较测试与联合/F2/D0-D1 回归合计 `21 passed`，执行资格保持关闭。
