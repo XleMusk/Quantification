@@ -515,6 +515,9 @@ def main(argv=None):
     if argv[:1] == ["next-close-d0-d1"]:
         from trading.research.next_close_d0_d1 import main as next_close_d0_d1_main
         return next_close_d0_d1_main(argv[1:])
+    if argv[:1] == ["post-close-d0-d1"]:
+        from trading.research.post_close_d0_d1 import main as post_close_d0_d1_main
+        return post_close_d0_d1_main(argv[1:])
     if argv[:1] == ["virtual-strategy-sleeves"]:
         from trading.research.virtual_strategy_sleeves import main as virtual_strategy_sleeves_main
         return virtual_strategy_sleeves_main(argv[1:])
