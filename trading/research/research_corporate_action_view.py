@@ -14,12 +14,16 @@ from pathlib import Path
 import re
 
 from ..contracts import RunContext, TradingMode
+from ..corporate_action_binding import (
+    ACTION_VIEW_BINDING_ID,
+    STATE_KEY,
+    validate_research_action_binding,
+)
 from .baostock_daily_slice import digest
 
 SCHEMA = "research_corporate_action_component_view_v1"
 BINDING_SCHEMA = "research_corporate_action_component_binding_v1"
 METHOD_ID = "official_ordinary_distribution_components_engine_v1"
-STATE_KEY = "research_corporate_action_binding"
 KNOWLEDGE_MODES = ("dated_asof", "posthoc_component_diagnostic")
 AMOUNT_FIELDS = ("dividCashPsBeforeTax", "dividStocksPs", "dividReserveToStockPs")
 FLAGS = {"research_only": True, "candidate_panel_only": True,
@@ -63,6 +67,7 @@ def _quantity(state, symbol):
 @dataclass(frozen=True, init=False)
 class ResearchCorporateActionView:
     """Immutable loaded evidence with a pure guard; the Engine owns all writes."""
+    binding_contract = ACTION_VIEW_BINDING_ID
     _binding: str
     _events: str
     _actions: str
@@ -176,38 +181,6 @@ class ResearchCorporateActionView:
             if identifier in book.state["entitlements"] and book.state["entitlements"][identifier] != quantity:
                 raise ValueError("The original record-close entitlement cannot be replaced")
             book.state["entitlements"][identifier] = quantity
-
-
-def validate_research_action_binding(state, view, context, config, day):
-    """Pure Engine hook: bind once in a new context, never swap or disable it."""
-    saved = state.get(STATE_KEY)
-    if STATE_KEY in state and not isinstance(saved, dict):
-        raise ValueError("Saved corporate-action binding cannot be null or malformed")
-    if view is None:
-        if saved is not None:
-            raise ValueError("A bound research corporate-action view cannot be disabled")
-        return None
-    if (not isinstance(view, ResearchCorporateActionView) or not isinstance(context, RunContext)
-            or context.mode != TradingMode.REPLAY or view.context != context or state.get("broker_binding")):
-        raise ValueError("Corporate-action components require their exact unbound REPLAY context")
-    _day(day)
-    binding = view.binding
-    if binding["context"] != context.to_dict() or binding["dividend_tax_reserve"] != str(Decimal(str(config.dividend_tax_reserve))):
-        raise ValueError("Corporate-action context or dividend tax reserve changed")
-    if saved is not None:
-        saved_base = {key: value for key, value in saved.items() if key != "replay_start_day"}
-        start = _day(saved.get("replay_start_day"))
-        if (saved_base != binding or state.get("day") is None
-                or not start <= _day(state["day"]) < day):
-            raise ValueError("Bound corporate-action source, mode, context or config changed")
-        return {**binding, "replay_start_day": start}
-    if (state.get("day") is not None or state.get("events") or state.get("orders") or state.get("fills")
-            or state.get("positions") or state.get("entitlements") or state.get("receivables")
-            or state.get("pending_targets") is not None
-            or state.get("pending_published_close_intent") is not None
-            or state.get("pending_risk_exits") is not None):
-        raise ValueError("Research corporate-action accounting must start in a fresh cash-only REPLAY context")
-    return {**binding, "replay_start_day": day}
 
 
 def load_research_corporate_action_view(review_result, *, knowledge_mode, context, config, now=None):

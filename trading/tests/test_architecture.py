@@ -20,7 +20,7 @@ def test_reviewed_boundary_allowlists_are_exact_and_narrow():
         "trading.rights_issue", "trading.event_frontier", "trading.target_exit_lifecycle",
         "trading.published_close_router", "trading.published_close_session",
         "trading.security_conversion", "trading.security_conversion_engine",
-        "trading.research.research_corporate_action_view",
+        "trading.corporate_action_binding",
     })
     assert CORE_PACKAGE_BRIDGES == frozenset({"trading.research"})
     assert WORKBENCH_COMPOSITE == frozenset({

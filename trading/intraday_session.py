@@ -162,7 +162,7 @@ def opening(state, feed, day, config, envelope, *, context, opened_at, source_re
     trial = deepcopy(state)
     view = getattr(feed,'research_corporate_action_view',None)
     if view is not None or 'research_corporate_action_binding' in trial:
-        from .research.research_corporate_action_view import validate_research_action_binding
+        from .corporate_action_binding import validate_research_action_binding
         action_binding = validate_research_action_binding(trial,view,context,config,day=day)
         if action_binding is not None:
             trial['research_corporate_action_binding']=action_binding
@@ -213,7 +213,7 @@ def closing(state, feed, day, config, *, context, closed_at, source_ref):
     trial=deepcopy(state)
     view=getattr(feed,'research_corporate_action_view',None)
     if view is not None or 'research_corporate_action_binding' in trial:
-        from .research.research_corporate_action_view import validate_research_action_binding
+        from .corporate_action_binding import validate_research_action_binding
         action_binding=validate_research_action_binding(trial,view,context,config,day=day)
         if action_binding!=marker['action_binding']:
             raise ValueError('Corporate-action source changed after opening')

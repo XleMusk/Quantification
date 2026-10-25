@@ -28,7 +28,7 @@ CORE_SUPPORT = frozenset({
     "trading.published_close_session",
     "trading.security_conversion",
     "trading.security_conversion_engine",
-    "trading.research.research_corporate_action_view",
+    "trading.corporate_action_binding",
 })
 # ``engine.py`` imports the research package only to resolve the reviewed
 # ``order_capacity_replay`` child module.  Keep this package bridge separate

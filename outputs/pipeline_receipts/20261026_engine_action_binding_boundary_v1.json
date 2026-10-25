@@ -1,0 +1,28 @@
+{
+  "schema": "engine_action_binding_boundary_receipt_v1",
+  "status": "VERIFIED_LOCAL",
+  "date": "2026-10-26",
+  "work_package": "F03/P15 core action-binding boundary demonstration",
+  "execution_admitted": false,
+  "changes": {
+    "engine_dependency": "trading.corporate_action_binding",
+    "intraday_dependency": "trading.corporate_action_binding",
+    "research_loader_role": "load_and_interpret_pinned_evidence",
+    "runtime_marker": "research_corporate_action_component_binding_v1",
+    "ledger_behavior_changed": false,
+    "strategy_rules_changed": false
+  },
+  "acceptance": {
+    "architecture_audit": "passed",
+    "research_import_removed_from_engine_consumers": true,
+    "binding_marker_shared": true,
+    "focused_tests": {
+      "command": "D:\\Quantification\\env\\python.exe -m pytest -q trading/tests/test_corporate_action_binding.py trading/tests/test_architecture.py trading/research/tests/test_research_corporate_action_view.py",
+      "passed": 26
+    }
+  },
+  "limitations": [
+    "This is a structural boundary demonstration; it does not upgrade PIT or corporate-action evidence.",
+    "The research view remains replay-only and execution_admitted=false."
+  ]
+}

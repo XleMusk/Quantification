@@ -1002,7 +1002,7 @@ def _advance_session(state, feed, day, config, session_number, *, context=None, 
     action_view = getattr(feed, "research_corporate_action_view", None)
     action_binding = None
     if action_view is not None or "research_corporate_action_binding" in state:
-        from .research.research_corporate_action_view import validate_research_action_binding
+        from .corporate_action_binding import validate_research_action_binding
         action_binding = validate_research_action_binding(state, action_view, context, config, day=day)
     published_receipt = None
     if published_close_intent is not None:
