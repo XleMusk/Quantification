@@ -53,6 +53,8 @@ def evaluate_historical_evidence(row: Mapping[str, Any], decision_day: str) -> d
     return {
         "schema": SCHEMA,
         "status": READY if ready else BLOCKED,
+        "symbol": row.get("symbol"),
+        "period": row.get("period"),
         "evidence_kind": evidence_kind,
         "historical_retrieval_asof_verified": publication["retrieved_asof_proven"],
         "revision_history_verified": publication["revision_identity_proven"],

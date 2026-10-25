@@ -19,6 +19,7 @@ from ..contracts import RunContext, TradingMode
 from .f01_financial_factor import FinancialFact, F01Result, compute_f01
 from .f01_signal import signal_frame, signal_provenance
 from .financial_factor_contracts import TimeWindow
+from .f2_historical_evidence import BLOCKED as HISTORICAL_BLOCKED, READY as HISTORICAL_READY, evaluate_historical_evidence
 from .stockdb_paper_target_package import build_paper_target_package
 
 SCHEMA = "f2_financial_vertical_slice_v1"
@@ -111,6 +112,46 @@ def run_vertical_slice(spec: Mapping[str, Any], output_dir: str | Path | None = 
     event = _event_time(decision_day)
     results: dict[str, F01Result] = {}
     facts_meta: list[dict[str, Any]] = []
+    historical_rows: list[dict[str, Any]] = []
+    historical_blocked: list[dict[str, Any]] = []
+    for item in rows:
+        if not isinstance(item, Mapping) or not isinstance(item.get("symbol"), str):
+            raise ValueError("Each event requires a symbol")
+        symbol = item["symbol"]
+        historical = item.get("historical_evidence")
+        if not isinstance(historical, Mapping):
+            gate = {
+                "status": HISTORICAL_BLOCKED,
+                "symbol": symbol,
+                "period": item.get("period"),
+                "reason_codes": ["historical_evidence_missing"],
+                "pit_asof_safe": False,
+            }
+        elif historical.get("status") == HISTORICAL_READY and historical.get("pit_asof_safe") is True:
+            # A READY bridge receipt has already run the provider-neutral
+            # contract.  Preserve that gate result instead of requiring the
+            # downstream adapter to reconstruct raw publication timestamps.
+            gate = {**historical, "symbol": symbol, "period": item.get("period")}
+        else:
+            gate = evaluate_historical_evidence(historical, decision_day)
+            gate = {**gate, "symbol": symbol, "period": item.get("period")}
+        historical_rows.append(gate)
+        if gate.get("status") != HISTORICAL_READY or gate.get("pit_asof_safe") is not True:
+            historical_blocked.append(gate)
+    if historical_blocked:
+        receipt: dict[str, Any] = {
+            "schema": SCHEMA, "status": BLOCKED, "decision_day": decision_day,
+            "execution_day": execution_day, "settlement_day": settlement_day,
+            "stages": list(STAGES), "execution_admitted": False,
+            "broker_interacted": False, "ths_interacted": False,
+            "persistent_ledger_mutated": False, "account_replay": False,
+            "facts": [], "historical_evidence": historical_rows,
+            "signal": {"status": "UNAVAILABLE", "reason": "historical_evidence_blocked"},
+            "package": None,
+            "reason": "historical_evidence_blocked",
+            "limitations": ["No FinancialFact, factor, target, order, fill or account projection is created until historical evidence passes."],
+        }
+        return _write_receipt(receipt, output_dir)
     for item in rows:
         if not isinstance(item, Mapping) or not isinstance(item.get("symbol"), str):
             raise ValueError("Each event requires a symbol")

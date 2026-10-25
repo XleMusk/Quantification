@@ -28,6 +28,7 @@ from typing import Any
 from .f01_financial_factor import FinancialFact
 from .financial_factor_contracts import TimeWindow, publication_interval
 from .financial_units import normalize_amount
+from .f2_historical_evidence import BLOCKED as HISTORICAL_BLOCKED, READY as HISTORICAL_READY, SCHEMA as HISTORICAL_SCHEMA
 from .publication_event_contract import evaluate_publication_evidence
 
 
@@ -114,7 +115,8 @@ def _scope_metadata(row: Mapping[str, Any]) -> tuple[str | None, str | None, str
 
 
 def _row_facts(row: Mapping[str, Any], *, source_row: Mapping[str, Any] | None = None,
-               decision_day: str | None = None) -> dict[str, Any]:
+               decision_day: str | None = None,
+               historical_row: Mapping[str, Any] | None = None) -> dict[str, Any]:
     symbol = row.get("symbol")
     period = row.get("period")
     reasons: list[str] = []
@@ -122,6 +124,15 @@ def _row_facts(row: Mapping[str, Any], *, source_row: Mapping[str, Any] | None =
         reasons.append("symbol_missing")
     if not isinstance(period, str) or not period.strip():
         reasons.append("period_missing")
+
+    if historical_row is None:
+        reasons.append("historical_evidence_missing")
+    elif historical_row.get("status") != HISTORICAL_READY or historical_row.get("pit_asof_safe") is not True:
+        historical_reasons = historical_row.get("reason_codes")
+        if isinstance(historical_reasons, list) and historical_reasons:
+            reasons.extend(f"historical:{value}" for value in historical_reasons)
+        else:
+            reasons.append("historical:pit_asof_unproven")
     try:
         period_start, period_end = _period_bounds(period, row.get("stat_date"))
     except (TypeError, ValueError) as exc:
@@ -241,7 +252,8 @@ def fact_to_dict(fact: FinancialFact) -> dict[str, Any]:
     }
 
 
-def build_fact_bridge(sidecar: str | Path, *, scoped_receipt: str | Path | None = None) -> dict[str, Any]:
+def build_fact_bridge(sidecar: str | Path, *, scoped_receipt: str | Path | None = None,
+                      historical_evidence: str | Path | None = None) -> dict[str, Any]:
     """Build a deterministic typed-fact receipt from one publication sidecar."""
 
     sidecar_path = Path(sidecar).expanduser().resolve()
@@ -263,6 +275,17 @@ def build_fact_bridge(sidecar: str | Path, *, scoped_receipt: str | Path | None 
             if isinstance(item, Mapping):
                 source_rows[f"{item.get('symbol')}:{item.get('period')}"] = item
 
+    historical_rows: dict[str, Mapping[str, Any]] = {}
+    historical_path: Path | None = None
+    if historical_evidence is not None:
+        historical_path = Path(historical_evidence).expanduser().resolve()
+        historical = _read_json(historical_path)
+        if not isinstance(historical, Mapping) or historical.get("schema") != HISTORICAL_SCHEMA:
+            raise ValueError(f"expected {HISTORICAL_SCHEMA}")
+        for item in historical.get("rows", []) if isinstance(historical.get("rows"), list) else []:
+            if isinstance(item, Mapping):
+                historical_rows[f"{item.get('symbol')}:{item.get('period')}"] = item
+
     materialized: list[dict[str, Any]] = []
     decision_day = payload.get("decision_day")
     for row in rows:
@@ -270,7 +293,12 @@ def build_fact_bridge(sidecar: str | Path, *, scoped_receipt: str | Path | None 
             materialized.append({"status": BLOCKED, "reason_codes": ["row_not_mapping"], "facts": [], "execution_admitted": False})
             continue
         key = f"{row.get('symbol')}:{row.get('period')}"
-        materialized.append(_row_facts(row, source_row=source_rows.get(key), decision_day=decision_day))
+        materialized.append(_row_facts(
+            row,
+            source_row=source_rows.get(key),
+            decision_day=decision_day,
+            historical_row=historical_rows.get(key),
+        ))
 
     reason_counts = Counter(reason for item in materialized for reason in item.get("reason_codes", []))
     ready = sum(item.get("status") == READY for item in materialized)
@@ -283,6 +311,8 @@ def build_fact_bridge(sidecar: str | Path, *, scoped_receipt: str | Path | None 
         "sidecar_sha256": _sha256(sidecar_path),
         "scoped_receipt": str(scoped_path) if scoped_path else None,
         "scoped_receipt_sha256": _sha256(scoped_path) if scoped_path and scoped_path.is_file() else None,
+        "historical_evidence": str(historical_path) if historical_path else None,
+        "historical_evidence_sha256": _sha256(historical_path) if historical_path and historical_path.is_file() else None,
         "decision_day": payload.get("decision_day"),
         "rows": materialized,
         "summary": {
@@ -307,9 +337,14 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sidecar", type=Path, required=True)
     parser.add_argument("--scoped-receipt", type=Path)
+    parser.add_argument("--historical-evidence", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
-    result = build_fact_bridge(args.sidecar, scoped_receipt=args.scoped_receipt)
+    result = build_fact_bridge(
+        args.sidecar,
+        scoped_receipt=args.scoped_receipt,
+        historical_evidence=args.historical_evidence,
+    )
     output = args.output.expanduser().resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")

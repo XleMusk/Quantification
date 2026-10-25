@@ -127,8 +127,8 @@ def run_bridge_vertical_slice(bridge: Mapping[str, Any], prior_facts: Mapping[st
         if symbol not in quotes:
             missing.append({"symbol": symbol, "reason": "same_day_quote_missing"})
             continue
-        events.append({"symbol": symbol, "current": dict(current),
-                       "prior": dict(prior), "assets": dict(assets)})
+        events.append({"symbol": symbol, "historical_evidence": row.get("historical_evidence"),
+                       "current": dict(current), "prior": dict(prior), "assets": dict(assets)})
     if missing or not events:
         return _blocked(bridge=bridge, decision_day=decision_day,
                         reason="explicit_join_inputs_missing", output_dir=output_dir,

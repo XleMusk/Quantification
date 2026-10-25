@@ -8,6 +8,25 @@ def _sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _historical(tmp_path, symbol="000001.SZSE", period="2024Q1"):
+    path = tmp_path / "historical.json"
+    path.write_text(json.dumps({
+        "schema": "f2_historical_evidence_contract_v1",
+        "status": "HISTORICAL_EVIDENCE_READY",
+        "decision_day": "2024-05-01",
+        "rows": [{
+            "schema": "f2_historical_evidence_contract_v1",
+            "status": "HISTORICAL_EVIDENCE_READY",
+            "symbol": symbol,
+            "period": period,
+            "evidence_kind": "historical_archive",
+            "pit_asof_safe": True,
+            "reason_codes": [],
+        }],
+    }), encoding="utf-8")
+    return path
+
+
 def test_real_sidecar_remains_blocked_with_machine_readable_pit_reasons():
     result = build_fact_bridge(
         "outputs/pipeline_receipts/20261025_f01_publication_sidecar_contract_v3.json",
@@ -55,7 +74,7 @@ def test_pit_safe_explicit_metadata_materializes_two_standard_facts(tmp_path):
         "rows": [row],
     }), encoding="utf-8")
 
-    result = build_fact_bridge(sidecar)
+    result = build_fact_bridge(sidecar, historical_evidence=_historical(tmp_path))
 
     assert result["status"] == READY
     assert result["summary"] == {
@@ -72,6 +91,31 @@ def test_pit_safe_explicit_metadata_materializes_two_standard_facts(tmp_path):
     assert all(fact["available_at"]["start"] == "2024-04-30T12:00:00+08:00" for fact in facts)
     assert result["factor_computed"] is False
     assert result["account_replay"] is False
+
+
+def test_missing_historical_evidence_blocks_even_pit_flagged_row(tmp_path):
+    source = tmp_path / "report.pdf"
+    source.write_bytes(b"synthetic source")
+    sidecar = tmp_path / "sidecar.json"
+    sidecar.write_text(json.dumps({
+        "schema": "f01_publication_sidecar_v1",
+        "execution_admitted": False,
+        "decision_day": "2024-05-01",
+        "rows": [{
+            "symbol": "000001.SZSE", "period": "2024Q1", "stat_date": "2024-03-31",
+            "publication_date": "2024-04-27", "parent_net_profit": "10", "total_assets": "100",
+            "unit": "yuan", "currency": "CNY", "scope_group": "consolidated_parent",
+            "retrieved_at": "2024-04-30T12:00:00+08:00", "asof_at": "2024-04-30T12:00:00+08:00",
+            "revision_id": "issuer-v1", "contract_evaluation": {"pit_asof_safe": True, "publication_evidence_reasons": []},
+            "source_file": str(source), "source_sha256": _sha(source),
+        }],
+    }), encoding="utf-8")
+
+    result = build_fact_bridge(sidecar)
+
+    assert result["status"] == BLOCKED
+    assert result["summary"]["fact_rows"] == 0
+    assert "historical_evidence_missing" in result["rows"][0]["reason_codes"]
 
 
 def test_cached_pit_flag_cannot_bypass_missing_row_level_evidence(tmp_path):
@@ -117,7 +161,7 @@ def test_unknown_unit_blocks_materialization_without_zero_fill(tmp_path):
         }],
     }), encoding="utf-8")
 
-    result = build_fact_bridge(sidecar)
+    result = build_fact_bridge(sidecar, historical_evidence=_historical(tmp_path))
 
     assert result["status"] == BLOCKED
     assert result["summary"]["fact_rows"] == 0

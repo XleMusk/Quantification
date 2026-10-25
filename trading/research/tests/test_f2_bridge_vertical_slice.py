@@ -33,6 +33,12 @@ def _inputs():
         "rows": [{
             "symbol": symbol,
             "status": BRIDGE_READY,
+            "historical_evidence": {
+                "status": "HISTORICAL_EVIDENCE_READY",
+                "pit_asof_safe": True,
+                "evidence_kind": "historical_archive",
+                "reason_codes": [],
+            },
             "facts": [
                 _typed(symbol, "parent_net_profit", 1200000, "2024-01-01", "2024-03-31"),
                 _typed(symbol, "total_assets", 50000000, "2024-01-01", "2024-03-31"),
