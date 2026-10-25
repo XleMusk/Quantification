@@ -334,3 +334,7 @@ D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `de
 - `D:\QuantificationData\trading\research\candidate_shadow\alpha158_lgbm_20261025_v1\paper_batch\batch_receipt.json`
 
 结果为 1 个 STOP 候选、2 个目标、2 个纸面订单、0 条可用外部路由，期末权益投影 CNY 139,987.99；Target→Orders→Fill→Cash/Position 由既有共享 Ledger 投影，`execution_admitted=false`、broker/THS/persistent ledger 均未触碰。新增输入 bundle 与 batch focused tests 覆盖 gate 语义和纸面投影。
+
+## 2026-10-26 public-seat read-only reference refresh
+
+Replayed the existing dated public-seat Target+Quote payload through `run_committee.py joint-portfolio-paper-package` without new market input. The v2 receipt `outputs/pipeline_receipts/20261026_public_seat_joint_paper_v2/joint_paper_receipt.json` contains 5 paper orders, projected equity CNY 999,753.38 and 5 target-bound THS read-only reference rows at `ths_readonly_reference.json`. `execution_admitted=false`, broker/THS were not contacted and no persistent Ledger was mutated. The candidate remains `UNASSESSED_SEPARATE_GATE`; this refresh supplies the missing read-only reference artifact only.

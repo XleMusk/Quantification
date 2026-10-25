@@ -1030,7 +1030,7 @@
       "domain": "research",
       "result": "The saved public-seat Target+Quote payload reaches the shared research-only joint paper Orders, Fill and Cash/Position path.",
       "state": "VERIFIED_LOCAL",
-      "next": "Keep public-seat hypotheses under the separate research gate; rerun only with a new dated source and full candidate selection evidence.",
+      "next": "Keep public-seat hypotheses under the separate research gate; reuse the v2 read-only reference only for future authorized observation and rerun with a new dated source and full candidate selection evidence.",
       "prohibition": "Historical public-seat shadow inputs do not prove current quotes, live channel evidence, strategy return or promotion.",
       "actual_paths": [
         "outputs/paper_plans/20261025_public_seat_lag2_shadow_v2/target_payload.json",
@@ -1038,13 +1038,17 @@
         "trading/research/joint_portfolio_paper_package.py",
         "trading/research/tests/test_joint_portfolio_paper_package.py",
         "D:/Quantification/outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/joint_paper_receipt.json",
-        "D:/Quantification/outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/manifest_shape_failure.txt"
+        "D:/Quantification/outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/manifest_shape_failure.txt",
+        "D:/Quantification/outputs/pipeline_receipts/20261026_public_seat_joint_paper_v2/joint_paper_receipt.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261026_public_seat_joint_paper_v2/ths_readonly_reference.json"
       ],
       "evidence": [
         "D:/Quantification/outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/joint_paper_receipt.json",
-        "D:/Quantification/outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/manifest_shape_failure.txt"
+        "D:/Quantification/outputs/pipeline_receipts/20261025_public_seat_joint_paper_v1/manifest_shape_failure.txt",
+        "D:/Quantification/outputs/pipeline_receipts/20261026_public_seat_joint_paper_v2/joint_paper_receipt.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261026_public_seat_joint_paper_v2/ths_readonly_reference.json"
       ],
-      "acceptance": "Saved public-seat target day 2026-09-24 projects 5 paper orders through the shared route with execution_admitted=false; the original separate-gate status and one blocked route remain explicit."
+      "acceptance": "Saved public-seat target day 2026-09-24 projects 5 paper orders through the shared route and emits 5 target-bound THS read-only reference rows with execution_admitted=false; the original separate-gate status and one blocked route remain explicit."
     },
     {
       "id": "P13",
