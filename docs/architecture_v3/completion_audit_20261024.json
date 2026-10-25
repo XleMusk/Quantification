@@ -77,10 +77,14 @@
         "trading/research/retained_joint_candidate_comparison.py",
         "trading/research/tests/test_retained_joint_candidate_comparison.py",
         "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_receipt.json",
-        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md"
+        "outputs/pipeline_receipts/20261026_retained_joint_candidate_comparison_v1/retained_joint_comparison_report.md",
+        "trading/research/workbench_whole_flow_acceptance.py",
+        "trading/research/tests/test_workbench_whole_flow_acceptance.py",
+        "outputs/pipeline_receipts/20261026_workbench_whole_flow_acceptance_v1.json",
+        "outputs/research_reports/20261026_workbench_whole_flow_acceptance_v1.md"
       ],
       "gap": "Shared Engine/Ledger now has fixed, Alpha158, mature-factor and trend/half-momentum historical shadow target-to-order-to-fill-to-cash/position evidence; BrokerAdapter/THS read-only external evidence, PIT-safe inputs and production-shaped current inputs remain open",
-      "next_acceptance": "run fixed and candidate strategies through the same pinned Engine/Ledger with production-shaped market inputs, then keep BrokerAdapter/THS closed until external read-only evidence exists"
+      "next_acceptance": "keep the local engineering acceptance receipt current; BrokerAdapter/THS and account scope remain closed until external read-only evidence exists"
     },
     {
       "id": "historical_replay",

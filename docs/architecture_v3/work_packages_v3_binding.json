@@ -1156,10 +1156,23 @@
     {
       "id": "U06",
       "domain": "workbench",
-      "result": "Whole-flow UI acceptance reports engineering and market scope separately.",
-      "state": "UNBOUND",
-      "next": "Run after the first two slices have stable evidence.",
-      "prohibition": "Do not claim full UI acceptance while account/channel gates are blocked."
+      "result": "Whole-flow local engineering acceptance is recorded separately from blocked market/account scope.",
+      "state": "PARTIAL",
+      "next": "Keep the local acceptance receipt current; do not upgrade market/account scope until authorized current quotes, account evidence and THS observation exist.",
+      "prohibition": "Do not claim full UI acceptance while account/channel gates are blocked.",
+      "actual_paths": [
+        "trading/research/workbench_whole_flow_acceptance.py",
+        "trading/research/tests/test_workbench_whole_flow_acceptance.py",
+        "outputs/pipeline_receipts/20261026_workbench_whole_flow_acceptance_v1.json",
+        "outputs/research_reports/20261026_workbench_whole_flow_acceptance_v1.md"
+      ],
+      "evidence": [
+        "trading/research/workbench_whole_flow_acceptance.py",
+        "trading/research/tests/test_workbench_whole_flow_acceptance.py",
+        "outputs/pipeline_receipts/20261026_workbench_whole_flow_acceptance_v1.json",
+        "outputs/research_reports/20261026_workbench_whole_flow_acceptance_v1.md"
+      ],
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "P07",

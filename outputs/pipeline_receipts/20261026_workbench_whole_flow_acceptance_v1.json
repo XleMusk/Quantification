@@ -1,0 +1,49 @@
+{
+  "schema": "quantification_workbench_whole_flow_acceptance_v1",
+  "status": "ENGINEERING_VERIFIED_MARKET_SCOPE_BLOCKED",
+  "created_at": "2026-10-26T02:44:45.063089+08:00",
+  "engineering_scope": {
+    "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+    "lifecycle_stage_contract": [
+      "submitted",
+      "compute",
+      "result",
+      "download"
+    ],
+    "browser_observed_stages": [
+      "submit",
+      "refresh_queued",
+      "compute",
+      "refresh_completed",
+      "download"
+    ],
+    "browser_observed_contract": [
+      "submitted",
+      "refresh_queued",
+      "compute",
+      "result",
+      "download"
+    ],
+    "stage_contract_ok": true,
+    "execution_admitted": false,
+    "automatic_recovery": false,
+    "source_receipts": [
+      "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_v1.json",
+      "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json"
+    ]
+  },
+  "market_account_scope": {
+    "status": "BLOCKED_EXTERNAL_EVIDENCE",
+    "live_trading": false,
+    "broker_observed": false,
+    "ths_observed": false,
+    "current_market_data": false,
+    "reason": "Local seeded research UI evidence does not prove current market, account, broker or THS behavior."
+  },
+  "next_action": "Keep engineering path available; obtain separately authorized market/account evidence before claiming channel acceptance.",
+  "execution_admitted": false,
+  "limitations": [
+    "The receipt consumes saved local lifecycle/browser evidence and does not run or retry a task.",
+    "Download links prove result availability in the local workbench, not broker or account delivery."
+  ]
+}
