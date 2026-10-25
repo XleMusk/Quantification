@@ -1,0 +1,62 @@
+{
+  "schema": "f2_issuer_source_evidence_v1",
+  "status": "BLOCKED_DATA",
+  "execution_admitted": false,
+  "symbol": "000002.SZSE",
+  "period": "2023Q1",
+  "publication_date": "2023-04-29",
+  "decision_day": "2024-05-01",
+  "source_url": "https://static.cninfo.com.cn/finalpage/2023-04-29/1216686497.PDF",
+  "local_pdf": "D:\\QuantificationData\\trading\\research\\financials\\20261026_f2_issuer_2023q1\\000002.SZSE_2023Q1.pdf",
+  "saved_sha256": "0be2f3d7585e85a33e4acaa62a99caa8667ef65ba2678ee23e393c4ff638fd72",
+  "saved_bytes": 606447,
+  "text_engine": "pypdf",
+  "identity_checks": {
+    "symbol_present": true,
+    "year_present": true,
+    "quarter_report_title_present": true,
+    "period_text_present": true,
+    "currency_text_present": true,
+    "quarter_identity_requested": true
+  },
+  "retrieval": {
+    "requested_at": "2026-10-26T02:22:01.749717+08:00",
+    "retrieved_at": "2026-10-26T02:22:03.380861+08:00",
+    "http_status": 200,
+    "content_type": "application/pdf",
+    "content_length": 606447,
+    "response_sha256": "0be2f3d7585e85a33e4acaa62a99caa8667ef65ba2678ee23e393c4ff638fd72",
+    "server_last_modified_at": "2023-04-28T17:07:58+08:00",
+    "etag": "",
+    "error": null
+  },
+  "retrieved_source_hash_matches_saved": true,
+  "server_metadata_before_publication": true,
+  "historical_retrieval_asof_verified": false,
+  "revision_history_verified": false,
+  "scope_verified": false,
+  "reason_codes": [
+    "historical_retrieval_asof_unproven",
+    "revision_history_unproven",
+    "issuer_scope_semantics_require_mapping"
+  ],
+  "field_candidates": {
+    "parent_net_profit": {
+      "value": "1445811341.87",
+      "unit": "yuan",
+      "scope": "parent_attributable",
+      "page": 2
+    },
+    "total_assets": {
+      "value": "1743078594535.06",
+      "unit": "yuan",
+      "scope": "consolidated_group",
+      "page": 2
+    }
+  },
+  "limitations": [
+    "The current retrieval proves source identity and content hash, not historical retrieval/as-of availability.",
+    "Server Last-Modified is transport metadata and does not prove an issuer revision history.",
+    "Field candidates are not admitted to F2 until scope and historical PIT evidence pass."
+  ]
+}

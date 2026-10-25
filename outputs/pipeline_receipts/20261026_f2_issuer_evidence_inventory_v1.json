@@ -1,0 +1,72 @@
+{
+  "schema": "f2_issuer_evidence_inventory_v1",
+  "status": "SCOPED_ISSUER_EVIDENCE_FOUND_TARGET_PERIOD_PIT_PENDING",
+  "execution_admitted": false,
+  "target_sample": {
+    "symbol": "000002.SZSE",
+    "period": "2023Q1",
+    "decision_day": "2024-05-01",
+    "issuer_pdf_found": true,
+    "source_url": "https://static.cninfo.com.cn/finalpage/2023-04-29/1216686497.PDF",
+    "local_pdf": "D:\\QuantificationData\\trading\\research\\financials\\20261026_f2_issuer_2023q1\\000002.SZSE_2023Q1.pdf",
+    "sha256": "0be2f3d7585e85a33e4acaa62a99caa8667ef65ba2678ee23e393c4ff638fd72",
+    "publication_date": "2023-04-29",
+    "identity_checks": {
+      "symbol_present": true,
+      "quarter_report_title_present": true,
+      "period_text_present": true,
+      "currency_text_present": true
+    }
+  },
+  "available_scoped_evidence": {
+    "symbol": "000002.SZSE",
+    "period": "2024Q1",
+    "publication_date": "2024-04-30",
+    "source_url": "https://static.cninfo.com.cn/finalpage/2024-04-30/1219913619.PDF",
+    "local_pdf": "D:\\QuantificationData\\trading\\research\\financials\\20260930_162448_8be1e603\\field_checks\\20260930_q1_three_issuers\\000002.SZSE_2024Q1.pdf",
+    "sha256": "9b6448abe7897ee462f905fb1273630d1c157fa4f5cd2d73c8ac8ef3cd551341",
+    "pages": 14,
+    "issuer_check_artifact": "D:\\QuantificationData\\trading\\research\\financials\\20260930_162448_8be1e603\\field_checks\\20260930_q1_three_issuers\\result.json",
+    "verified_fields": [
+      "consolidated_net_profit",
+      "parent_attributable_profit",
+      "revenue",
+      "cost_of_sales",
+      "total_shares"
+    ],
+    "unverified_fields": [
+      "revision_history",
+      "historical_retrieval_asof",
+      "global_unit_contract",
+      "all_issuer_scope_semantics"
+    ]
+  },
+  "next_action": "Use the captured 2023Q1 issuer artifact as identity evidence, but obtain historical retrieval/as-of/revision and explicit scope mapping before F2 admission; do not run factor or account replay yet.",
+  "limitations": [
+    "The 2023Q1 CNINFO PDF is now identified and hash-matched on current retrieval.",
+    "Current retrieval occurred after the 2024-05-01 decision cutoff; it cannot prove historical as-of availability or revision history.",
+    "Candidate fields are retained as source observations only; they do not create a factor, target, order, fill or account replay."
+  ],
+  "target_evidence": {
+    "capture_receipt": "outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v1.json",
+    "report": "outputs/research_reports/20261026_f2_issuer_source_capture_v1.md",
+    "retrieved_source_hash_matches_saved": true,
+    "historical_retrieval_asof_verified": false,
+    "revision_history_verified": false,
+    "scope_verified": false,
+    "field_candidates": {
+      "parent_net_profit": {
+        "value": "1445811341.87",
+        "unit": "yuan",
+        "scope": "parent_attributable",
+        "page": 2
+      },
+      "total_assets": {
+        "value": "1743078594535.06",
+        "unit": "yuan",
+        "scope": "consolidated_group",
+        "page": 2
+      }
+    }
+  }
+}

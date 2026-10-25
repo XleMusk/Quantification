@@ -28,7 +28,7 @@
       "domain": "development",
       "result": "Bind existing entries, successful commands, commits, artifacts and only the remaining differences.",
       "state": "CODE_INTEGRATED",
-      "next": "Obtain original issuer-PDF retrieval/as-of/revision receipts; the funnel now consumes the publication sidecar and has an explicit market join but remains blocked on PIT.",
+      "next": "Use the captured 2023Q1 issuer artifact for identity and content-hash provenance, then obtain historical retrieval/as-of/revision and explicit scope evidence before PIT admission.",
       "prohibition": "Do not repeat a full inventory or treat a plan checker as production evidence.",
       "actual_paths": [
         "trading/research/f01_scoped_field_coverage.py",
@@ -60,7 +60,12 @@
         "trading/research/f2_fact_bridge.py",
         "trading/research/tests/test_f2_fact_bridge.py",
         "outputs/pipeline_receipts/20261026_f2_bridge_revalidated_v1.json",
-        "outputs/research_reports/20261026_f2_bridge_revalidated_v1.md"
+        "outputs/research_reports/20261026_f2_bridge_revalidated_v1.md",
+        "trading/research/f2_issuer_source_evidence.py",
+        "trading/research/tests/test_f2_issuer_source_evidence.py",
+        "outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v1.json",
+        "outputs/research_reports/20261026_f2_issuer_source_capture_v1.md",
+        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -109,22 +114,28 @@
       "domain": "data",
       "result": "First-disclosure event samples have source locations and unknown-coverage reasons.",
       "state": "PARTIAL",
-      "next": "Bind the scoped issuer-report facts and preserve unknown PIT coverage; do not treat the sample as full-market event coverage.",
+      "next": "The locked 2023Q1 issuer PDF is now identified and hash-matched; keep F2 BLOCKED_DATA until historical as-of/revision and scope semantics are proven.",
       "prohibition": "UNKNOWN prior coverage is not no prior information.",
       "actual_paths": [
         "outputs/financials/f01_scoped_field_coverage_20261024.json",
         "D:/QuantificationData/trading/research/financials/20260930_162448_8be1e603/field_checks/20260930_q1_three_issuers/facts.json",
         "trading/research/f01_scoped_field_coverage.py",
         "trading/tests/test_f01_scoped_field_coverage.py",
-        "run_committee.py"
-      ]
+        "run_committee.py",
+        "trading/research/f2_issuer_source_evidence.py",
+        "trading/research/tests/test_f2_issuer_source_evidence.py",
+        "outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v1.json",
+        "outputs/research_reports/20261026_f2_issuer_source_capture_v1.md",
+        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json"
+      ],
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "D02",
       "domain": "data",
       "result": "A callable point-in-time versioned read returns only facts available at the requested cutoff.",
       "state": "PARTIAL",
-      "next": "Keep the strict row-level publication/retrieval/as-of/revision/source checks and obtain original issuer evidence before exposing a PIT read.",
+      "next": "The locked 2023Q1 issuer PDF is now identified and hash-matched; keep F2 BLOCKED_DATA until historical as-of/revision and scope semantics are proven.",
       "prohibition": "Do not read the latest file implicitly.",
       "actual_paths": [
         "outputs/financials/f01_scoped_field_coverage_20261024.json",
@@ -140,7 +151,12 @@
         "trading/research/f2_fact_bridge.py",
         "trading/research/tests/test_f2_fact_bridge.py",
         "outputs/pipeline_receipts/20261026_f2_bridge_revalidated_v1.json",
-        "outputs/research_reports/20261026_f2_bridge_revalidated_v1.md"
+        "outputs/research_reports/20261026_f2_bridge_revalidated_v1.md",
+        "trading/research/f2_issuer_source_evidence.py",
+        "trading/research/tests/test_f2_issuer_source_evidence.py",
+        "outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v1.json",
+        "outputs/research_reports/20261026_f2_issuer_source_capture_v1.md",
+        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -149,7 +165,7 @@
       "domain": "data",
       "result": "Event master, U value, exclusions and source links are reproducible.",
       "state": "PARTIAL",
-      "next": "Use the revalidated bridge receipt as a blocked baseline; do not admit a fact until issuer scope and historical as-of/revision evidence are present.",
+      "next": "The locked 2023Q1 issuer PDF is now identified and hash-matched; keep F2 BLOCKED_DATA until historical as-of/revision and scope semantics are proven.",
       "prohibition": "Do not turn missing event evidence into zero return or exclusion without reason.",
       "actual_paths": [
         "outputs/pipeline_receipts/20261024_publication_event_contract_local_receipt.json",
@@ -176,7 +192,12 @@
         "trading/research/f2_fact_bridge.py",
         "trading/research/tests/test_f2_fact_bridge.py",
         "outputs/pipeline_receipts/20261026_f2_bridge_revalidated_v1.json",
-        "outputs/research_reports/20261026_f2_bridge_revalidated_v1.md"
+        "outputs/research_reports/20261026_f2_bridge_revalidated_v1.md",
+        "trading/research/f2_issuer_source_evidence.py",
+        "trading/research/tests/test_f2_issuer_source_evidence.py",
+        "outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v1.json",
+        "outputs/research_reports/20261026_f2_issuer_source_capture_v1.md",
+        "outputs/pipeline_receipts/20261026_f2_issuer_evidence_inventory_v1.json"
       ],
       "evidence_updated_on": "2026-10-26"
     },

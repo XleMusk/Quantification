@@ -1,0 +1,66 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+from trading.research import f2_issuer_source_evidence as evidence
+
+
+def test_capture_records_hash_and_keeps_current_fetch_blocked(tmp_path: Path, monkeypatch):
+    pdf = tmp_path / "000002.SZSE_2023Q1.pdf"
+    pdf.write_bytes(b"fixture-pdf")
+    monkeypatch.setattr(
+        evidence,
+        "extract_pdf_text",
+        lambda _path: (
+            "万科企业股份有限公司 2023 年第一季度报告 证券代码：000002 "
+            "报告期指 2023 年 1-3 月 本报告所用记账本位币均为人民币",
+            "fixture",
+        ),
+    )
+
+    result = evidence.capture_issuer_source(
+        symbol="000002.SZSE",
+        period="2023Q1",
+        publication_date="2023-04-29",
+        decision_day="2024-05-01",
+        source_url="https://static.cninfo.com.cn/finalpage/2023-04-29/1216686497.PDF",
+        local_pdf=pdf,
+        fetcher=lambda _url: {
+            "requested_at": "2026-10-26T02:30:00+08:00",
+            "retrieved_at": "2026-10-26T02:30:01+08:00",
+            "http_status": 200,
+            "content_type": "application/pdf",
+            "content_length": len(b"fixture-pdf"),
+            "response_sha256": evidence._hash_bytes(b"fixture-pdf"),
+            "server_last_modified_at": "2023-04-28T17:07:58+08:00",
+            "etag": "",
+            "payload": b"fixture-pdf",
+            "error": None,
+        },
+    )
+
+    assert result["status"] == "BLOCKED_DATA"
+    assert result["retrieved_source_hash_matches_saved"] is True
+    assert result["identity_checks"]["quarter_report_title_present"] is True
+    assert result["historical_retrieval_asof_verified"] is False
+    assert "historical_retrieval_asof_unproven" in result["reason_codes"]
+    assert result["execution_admitted"] is False
+
+
+def test_capture_fails_closed_for_missing_or_mismatched_source(tmp_path: Path, monkeypatch):
+    pdf = tmp_path / "report.pdf"
+    pdf.write_bytes(b"saved")
+    monkeypatch.setattr(evidence, "extract_pdf_text", lambda _path: ("000002", "fixture"))
+    result = evidence.capture_issuer_source(
+        symbol="000002.SZSE", period="2023Q1", publication_date="2023-04-29",
+        decision_day="2024-05-01", source_url="https://example.invalid/report.pdf", local_pdf=pdf,
+        fetcher=lambda _url: {
+            "requested_at": "2026-10-26T02:30:00+08:00", "retrieved_at": "2026-10-26T02:30:01+08:00",
+            "http_status": 404, "content_type": "", "content_length": 0,
+            "response_sha256": "", "server_last_modified_at": None, "etag": "",
+            "payload": b"", "error": "HTTPError",
+        },
+    )
+    assert result["status"] == "BLOCKED_DATA"
+    assert "issuer_source_http_not_200" in result["reason_codes"]
+    assert "retrieved_source_hash_does_not_match_saved_artifact" in result["reason_codes"]
