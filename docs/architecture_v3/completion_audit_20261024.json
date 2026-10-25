@@ -1,6 +1,6 @@
 {
   "schema": "quantification_goal_completion_audit_v1",
-  "audited_at": "2026-10-26T03:21:00+08:00",
+  "audited_at": "2026-10-26T03:58:00+08:00",
   "execution_admitted": false,
   "overall_status": "INCOMPLETE_ACTIVE",
   "items": [
@@ -94,10 +94,15 @@
         "trading/research/continuous_paper_acceptance.py",
         "trading/research/tests/test_continuous_paper_acceptance.py",
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
-        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md",
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
       ],
-      "gap": "Target-preview projection is now explicitly bounded; continuous D0/D1 persistence still requires the next real close.",
-      "next_acceptance": "keep the local engineering acceptance receipt current; BrokerAdapter/THS and account scope remain closed until external read-only evidence exists"
+      "gap": "Local scope boundary is explicit; real close input and external channel evidence remain separate.",
+      "next_acceptance": "keep the local engineering acceptance receipt current; BrokerAdapter/THS and account scope remain closed until external read-only evidence exists",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "historical_replay",
@@ -168,10 +173,15 @@
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
         "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md",
         "outputs/pipeline_receipts/20261026_target_preview_boundary_v1.json",
-        "outputs/research_reports/20261026_target_preview_boundary_v1.md"
+        "outputs/research_reports/20261026_target_preview_boundary_v1.md",
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
       ],
-      "gap": "2026-10-26 session not yet available; current cutoff is idempotently verified and seven-stage paper provenance is bound",
-      "next_acceptance": "Advance after the next closed session; consume TARGET_PREVIEW only through the fixed_daily D0/D1 path."
+      "gap": "Real 2026-10-26 close still needs execution; receipt now separates persistent fixed_daily rollover from TARGET_PREVIEW projections.",
+      "next_acceptance": "After the close, run the registered fixed_daily/post_close path with real StockDB inputs and verify both scope fields.",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "target_holdings",
@@ -188,10 +198,15 @@
         "outputs/paper_plans/20261024_lowvol_current_native_stockdb_reference_v2/receipt.json",
         "outputs/paper_plans/20261024_lowvol_current_native_stockdb_reference_v2/comparison.csv",
         "trading/research/paper_target_reconciliation.py",
-        "run_committee.py paper-target-native-reference"
+        "run_committee.py paper-target-native-reference",
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
       ],
-      "gap": "Local paper target quantities/deltas now have a reproducible native-vs-raw close reference (20/20, 0 mismatch); THS current quote/account/readback remains unavailable",
-      "next_acceptance": "authorized read-only capture with the same reference generation may compare current account/quote; never infer it from the paper close or local StockDB"
+      "gap": "Projection scope is explicit; real target/reconciliation remains pending the next closed-session StockDB run.",
+      "next_acceptance": "authorized read-only capture with the same reference generation may compare current account/quote; never infer it from the paper close or local StockDB",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "ths",

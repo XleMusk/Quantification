@@ -53,6 +53,10 @@ def test_post_close_advances_fixed_daily_before_d0_d1(tmp_path: Path, monkeypatc
     assert calls == ["fixed", "d0"]
     assert receipt["status"] == orchestrator.STATUS
     assert receipt["execution_admitted"] is False
+    assert receipt["persistent_fixed_daily_account_scope"] == "persistent_registered_account"
+    assert receipt["target_preview_projection_scope"]["fixed"] == "TARGET_PREVIEW"
+    assert receipt["target_preview_projection_scope"]["candidate"] == "TARGET_PREVIEW"
+    assert receipt["target_preview_projection_scope"]["continuous_account_consumer"] is False
     assert (tmp_path / "run" / "post_close_receipt.json").is_file()
 
 

@@ -900,7 +900,7 @@
       "domain": "operations",
       "result": "Calendar and business schedule calculate windows and classify missing inputs.",
       "state": "PARTIAL",
-      "next": "After the actual 2026-10-26 close, run the registered fixed_daily D0/D1 path and verify account_version plus local plan publication timing.",
+      "next": "After the actual 2026-10-26 close, run the registered fixed_daily D0/D1 path and preserve persistent_fixed_daily_account_scope separately from TARGET_PREVIEW projections.",
       "prohibition": "Do not use machine timezone or weekday inference.",
       "evidence_updated_on": "2026-10-26",
       "actual_paths": [
@@ -915,12 +915,22 @@
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_one_state.json",
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
-        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
-        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md",
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
       ]
     },
     {
@@ -964,7 +974,7 @@
       "domain": "operations",
       "result": "Business observability and capacity measurements expose bottlenecks.",
       "state": "PARTIAL",
-      "next": "Run the bound next-close D0/D1 contract after 2026-10-26 close with same-day strategy sources; preserve missing-row receipts and keep execution_admitted=false.",
+      "next": "Run the bound next-close D0/D1 contract after 2026-10-26 close with same-day strategy sources; keep persistent fixed_daily scope distinct from ephemeral TARGET_PREVIEW projections.",
       "prohibition": "Do not turn monitoring uncertainty into a false offline status.",
       "actual_paths": [
         "trading/research/daily_candidate_paper_batch.py",
@@ -1008,12 +1018,22 @@
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_one_state.json",
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
-        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/day_two_state.json",
-        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md"
+        "outputs/research_reports/20261026_continuous_paper_acceptance_v1.md",
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -1266,7 +1286,7 @@
       "domain": "workbench",
       "result": "Whole-flow local engineering acceptance is recorded separately from blocked market/account scope.",
       "state": "PARTIAL",
-      "next": "Keep local continuity and candidate TARGET_PREVIEW receipts separate; after the next closed session upgrade only with real StockDB/account scope evidence.",
+      "next": "Keep persistent fixed_daily scope and local TARGET_PREVIEW receipts separate; after the next closed session upgrade only with real StockDB/account scope evidence.",
       "prohibition": "Do not claim full UI acceptance while account/channel gates are blocked.",
       "actual_paths": [
         "trading/research/workbench_whole_flow_acceptance.py",
@@ -1285,7 +1305,13 @@
         "trading/research/tests/test_daily_candidate_paper_batch.py",
         "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/boundary_receipt.json",
         "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/run/batch_receipt.json",
-        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md"
+        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md",
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1299,7 +1325,13 @@
         "trading/research/tests/test_daily_candidate_paper_batch.py",
         "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/boundary_receipt.json",
         "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/run/batch_receipt.json",
-        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md"
+        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md",
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -1385,7 +1417,7 @@
       "domain": "operations",
       "result": "The next-close D0/D1 contract can optionally emit the fixed-plus-candidate budgeted joint paper package from the same frozen StockDB quote snapshot.",
       "state": "VERIFIED_LOCAL",
-      "next": "Run the optional joint route on the first real same-day close after the session finishes; keep its TARGET_PREVIEW receipt separate from the continuous D0/D1 rollover.",
+      "next": "Run the optional joint route on the first real same-day close; retain its TARGET_PREVIEW receipt and persistent fixed_daily scope as separate layers.",
       "prohibition": "The joint projection is paper-only and does not replace the individual candidate receipts or authorize channel actions.",
       "actual_paths": [
         "trading/research/next_close_d0_d1.py",
@@ -1400,7 +1432,11 @@
         "trading/research/tests/test_daily_candidate_paper_batch.py",
         "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/boundary_receipt.json",
         "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/run/batch_receipt.json",
-        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md"
+        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
       ],
       "evidence": [
         "trading/research/tests/test_next_close_d0_d1.py",
@@ -1410,7 +1446,12 @@
         "trading/research/tests/test_daily_candidate_paper_batch.py",
         "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/boundary_receipt.json",
         "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/run/batch_receipt.json",
-        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md"
+        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md",
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
       ],
       "acceptance": "The fixture D0/D1 run captures one same-day snapshot, projects fixed and candidate legs, and emits a two-order joint paper receipt under the budgeted policy with execution_admitted=false.",
       "evidence_updated_on": "2026-10-26"
@@ -1463,7 +1504,7 @@
       "domain": "portfolio",
       "result": "The two candidates routed as CONTINUE_RESEARCH_ONLY form one same-day Target+Quote joint paper package with budgeted board-aware orders.",
       "state": "VERIFIED_LOCAL",
-      "next": "Use the same selected bundle after the next real close when fresh same-day StockDB targets and quotes exist; retain TARGET_PREVIEW scope until fixed_daily consumes the plan.",
+      "next": "Use the same selected bundle after the next real close; retain TARGET_PREVIEW scope until fixed_daily consumes the plan.",
       "prohibition": "The historical joint projection does not promote either candidate or authorize channel actions.",
       "actual_paths": [
         "outputs/paper_plans/20261025_candidate_batch_v1/generated_inputs_v2/stockdb_low_vol_half_momentum_20/target_payload.json",
@@ -1475,7 +1516,13 @@
         "trading/research/tests/test_daily_candidate_paper_batch.py",
         "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/boundary_receipt.json",
         "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/run/batch_receipt.json",
-        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md"
+        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md",
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
       ],
       "evidence": [
         "D:/Quantification/outputs/pipeline_receipts/20261025_continue_candidates_joint_paper_v1/joint_paper_receipt.json",
@@ -1483,7 +1530,13 @@
         "trading/research/tests/test_daily_candidate_paper_batch.py",
         "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/boundary_receipt.json",
         "outputs/pipeline_receipts/20261026_candidate_batch_preview_boundary_v1/run/batch_receipt.json",
-        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md"
+        "outputs/research_reports/20261026_candidate_batch_preview_boundary_v1.md",
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
       ],
       "acceptance": "The 2026-10-13 aligned bundle produces 22 budgeted paper orders, retains 3 capacity_max_target_rows drops, and keeps execution_admitted=false.",
       "evidence_updated_on": "2026-10-26"

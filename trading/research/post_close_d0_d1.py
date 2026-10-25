@@ -18,6 +18,7 @@ from typing import Any, Sequence
 
 from . import next_close_d0_d1, stockdb_fixed_daily
 from .candidate_daily_input_bundle import build_input_bundle
+from .stockdb_paper_target_package import TARGET_PREVIEW
 
 
 SCHEMA = "stockdb_post_close_d0_d1_orchestration_v1"
@@ -171,6 +172,13 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
         "ths_interacted": False, "persistent_ledger_mutated": False,
         "input_fingerprint": fingerprint, "fingerprint_inputs": fingerprint_inputs,
         "fixed_run_dir": str(fixed_dir), "close_date": close_date,
+        "persistent_fixed_daily_account_scope": "persistent_registered_account",
+        "target_preview_projection_scope": {
+            "fixed": TARGET_PREVIEW,
+            "candidate": TARGET_PREVIEW,
+            "ledger_scope": "ephemeral_projection",
+            "continuous_account_consumer": False,
+        },
     }
     try:
         fixed_result = stockdb_fixed_daily.run(

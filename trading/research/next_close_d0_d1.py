@@ -33,7 +33,7 @@ from .joint_portfolio_paper_package import (
     _decision_rows,
     build_joint_paper_from_payloads,
 )
-from .stockdb_paper_target_package import build_paper_target_package
+from .stockdb_paper_target_package import TARGET_PREVIEW, build_paper_target_package
 from .exchange_calendar import load_calendar, next_exchange_session
 from . import stockdb_fixed_daily
 
@@ -409,6 +409,20 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
         "execution_admitted": False, "broker_interacted": False, "ths_interacted": False,
         "persistent_ledger_mutated": False, "input_fingerprint": fingerprint,
         "fingerprint_inputs": fingerprint_inputs, "reused_existing_run": False,
+        # The registered fixed_daily head is the only persistent-account
+        # binding. The fixed and candidate packages emitted below are
+        # one-shot TARGET_PREVIEW projections and never become the rollover
+        # account themselves.
+        "persistent_fixed_daily_account_scope": (
+            "persistent_registered_account" if fixed_run_dir is not None
+            else "direct_terminal_account_input"
+        ),
+        "target_preview_projection_scope": {
+            "fixed": TARGET_PREVIEW,
+            "candidate": TARGET_PREVIEW,
+            "ledger_scope": "ephemeral_projection",
+            "continuous_account_consumer": False,
+        },
     }
     try:
         receipt_base["calendar"] = _calendar_contract(close_date, execution_day, settlement_day, calendar_file)
@@ -547,7 +561,15 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
                              "paper_order_count": fixed_package["result"]["paper_order_count"],
                              "result": str(output / "fixed" / "result.json")},
                    "candidate_batch": {"receipt": batch["receipt_path"],
-                                       "candidate_count": batch["candidate_count"]},
+                                       "candidate_count": batch["candidate_count"],
+                                       "projection_mode": TARGET_PREVIEW,
+                                       "ledger_scope": "ephemeral_projection",
+                                       "continuous_account_consumer": False},
+                   "fixed_projection": {
+                       "projection_mode": TARGET_PREVIEW,
+                       "ledger_scope": "ephemeral_projection",
+                       "continuous_account_consumer": False,
+                   },
                    "joint_paper": ({
                        "status": joint_result["status"],
                        "receipt": joint_result.get("receipt_path"),

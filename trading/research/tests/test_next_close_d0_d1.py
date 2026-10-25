@@ -247,6 +247,24 @@ def test_next_close_binds_registered_account_generation_when_head_exists(tmp_pat
         initial_cash=100000.0)
     assert receipt["fixed_account"]["account_version"] == "generation-3:2026-10-23"
     assert receipt["fixed_account"]["head"]["path"].endswith("head.json")
+    assert receipt["persistent_fixed_daily_account_scope"] == "persistent_registered_account"
+    assert receipt["target_preview_projection_scope"] == {
+        "fixed": "TARGET_PREVIEW",
+        "candidate": "TARGET_PREVIEW",
+        "ledger_scope": "ephemeral_projection",
+        "continuous_account_consumer": False,
+    }
+
+
+def test_next_close_direct_terminal_input_cannot_claim_continuous_account(tmp_path, monkeypatch):
+    fixed, sources, catalog = _setup(tmp_path)
+    monkeypatch.setattr(contract, "freeze_snapshot", _fake_capture)
+    receipt = contract.run_contract(
+        sources, tmp_path / "run", fixed_terminal_account=fixed, fixed_strategy_id="fixed_close",
+        stockdb_root=tmp_path / "stockdb", catalog_path=catalog, close_date=DAY,
+        execution_day="2026-10-27", settlement_day="2026-10-28", initial_cash=100000.0)
+    assert receipt["persistent_fixed_daily_account_scope"] == "direct_terminal_account_input"
+    assert receipt["target_preview_projection_scope"]["continuous_account_consumer"] is False
 
 
 def test_next_close_can_emit_budgeted_joint_paper_package(tmp_path, monkeypatch):
