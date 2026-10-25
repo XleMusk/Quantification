@@ -1,0 +1,20 @@
+{
+  "schema": "quantification_cli_dispatch_cleanup_v1",
+  "created_at": "2026-10-26T02:56:10.835137+08:00",
+  "command": "joint-portfolio-paper-package",
+  "duplicate_route_count": 1,
+  "compatibility_help": {
+    "command": "D:/Quantification/env/python.exe run_committee.py joint-portfolio-paper-package --help",
+    "passed": true,
+    "required_options": [
+      "--execution-day",
+      "--settlement-day",
+      "--output-dir"
+    ]
+  },
+  "execution_admitted": false,
+  "research_spec_changed": false,
+  "account_path_changed": false,
+  "live_channel_interacted": false,
+  "next_action": "Keep one explicit launcher route; only change it with a command-level compatibility test."
+}
