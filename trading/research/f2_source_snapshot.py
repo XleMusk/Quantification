@@ -8,6 +8,7 @@ existing PIT gate can return ``HISTORICAL_EVIDENCE_READY``.
 
 from __future__ import annotations
 
+import argparse
 from collections.abc import Mapping, Sequence
 from hashlib import sha256
 import json
@@ -156,11 +157,39 @@ def write_source_snapshot_receipt(
     return receipt
 
 
+def main(argv: Sequence[str] | None = None) -> int:
+    """Run the source-snapshot gate from the project CLI."""
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--snapshot", type=Path, required=True,
+                        help="versioned f2_source_snapshot_v1 JSON manifest")
+    parser.add_argument("--decision-day", required=True,
+                        help="ISO decision cutoff date for the PIT gate")
+    parser.add_argument("--output", type=Path, required=True,
+                        help="receipt JSON path")
+    args = parser.parse_args(argv)
+    receipt = write_source_snapshot_receipt(
+        args.output, args.snapshot, decision_day=args.decision_day)
+    print(json.dumps({
+        "status": receipt["status"],
+        "decision_day": receipt["decision_day"],
+        "source_checks": receipt["source_checks"],
+        "execution_admitted": receipt["execution_admitted"],
+        "receipt": str(args.output.expanduser().resolve()),
+    }, ensure_ascii=False))
+    return 0
+
+
 __all__ = [
     "BLOCKED",
     "SCHEMA",
     "SNAPSHOT_SCHEMA",
     "build_source_snapshot_receipt",
     "load_source_snapshot",
+    "main",
     "write_source_snapshot_receipt",
 ]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

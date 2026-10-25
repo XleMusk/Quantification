@@ -43,3 +43,21 @@ def test_continuous_paper_acceptance_help_is_available():
     )
     assert result.returncode == 0
     assert "--output-dir" in result.stdout
+
+
+def test_f2_source_snapshot_route_is_registered_once():
+    source = (ROOT / "run_committee.py").read_text(encoding="utf-8")
+
+    assert source.count('if argv[:1] == ["f2-source-snapshot"]:') == 1
+
+
+def test_f2_source_snapshot_help_is_available():
+    result = subprocess.run(
+        [sys.executable, "-Xutf8", str(ROOT / "run_committee.py"),
+         "f2-source-snapshot", "--help"],
+        cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
+    )
+    assert result.returncode == 0
+    assert "--snapshot" in result.stdout
+    assert "--decision-day" in result.stdout
+    assert "--output" in result.stdout
