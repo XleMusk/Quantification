@@ -241,6 +241,11 @@ def _quote_for_target(quote: Mapping[str, Any], target: Mapping[str, Any]) -> di
 def _assert_target_day(target: Mapping[str, Any], close_date: str, label: str) -> None:
     if target.get("decision_day") != close_date:
         raise ValueError(f"{label} target decision_day must equal close_date {close_date}")
+    for field in ("source_day", "decision_source_day"):
+        if field in target and target.get(field) != close_date:
+            raise ValueError(f"{label} target {field} must equal close_date {close_date}")
+    if "decision_cutoff_at" in target and not isinstance(target.get("decision_cutoff_at"), str):
+        raise ValueError(f"{label} target decision_cutoff_at must be an ISO timestamp")
     if target.get("execution_admitted") is not False or target.get("research_only") is not True:
         raise ValueError(f"{label} target must remain research-only/unadmitted")
 
@@ -328,7 +333,15 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
         receipt_base.update({"close_date": close_date, "snapshot": snapshot_ref,
                              "requested_symbol_count": len(symbols), "missing_symbols": missing,
                              "fixed_source": fixed_source_ref,
-                             "candidate_source_manifest": _ref(source_manifest)})
+                             "candidate_source_manifest": _ref(source_manifest),
+                             "time_semantics": {
+                                 "source_day": close_date,
+                                 "decision_cutoff_at": metadata["captured_at"],
+                                 "quote_observed_at": metadata["captured_at"],
+                                 "artifact_created_at": receipt_base["created_at"],
+                                 "plan_published_at": None,
+                                 "interpretation": "The contract freezes a close-day input and writes a local artifact; it does not claim a user-facing publication time.",
+                             }})
         if decision_selection is not None:
             receipt_base["research_decision_selection"] = decision_selection
         if missing:

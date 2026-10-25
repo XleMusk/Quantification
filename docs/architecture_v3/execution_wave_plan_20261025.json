@@ -70,7 +70,7 @@
         "D:/Quantification/outputs/pipeline_receipts/20261025_long_window_strategy_comparison_h60_v1.json",
         "D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json"
       ],
-      "result": "The next-close contract now binds the optional versioned SSE calendar and rejects non-adjacent D0/D1 dates while preserving unresolved status when no calendar artifact is available."
+      "result": "The next-close contract binds the optional versioned SSE calendar, separates source_day/decision_cutoff_at/quote_observed_at/artifact_created_at, and rejects non-adjacent D0/D1 dates while preserving unresolved status when no calendar artifact is available."
     },
     {
       "id": "W2",

@@ -253,3 +253,8 @@ Ridge h60 相对基线的净收益差为 -4.7997 个百分点、最大回撤差�
 ## 2026-10-25 next-close pinned calendar binding
 
 `next_close_d0_d1.py` 现在可选绑定版本化 SSE 日历 `D:/QuantificationData/trading/research/calendar/cn_a_share_2026_sse_v1.json`。日历可用时，close→execution→settlement 必须是相邻交易日；日历缺失只记录 `calendar_artifact_unavailable`，不使用机器星期推断。新增契约测试后 D0/D1 测试为 `7 passed`，P21/W1 已绑定。
+
+
+## 2026-10-25 next-close time semantics
+
+D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `decision_cutoff_at`、`quote_observed_at`、本地 `artifact_created_at` 和明确为空的 `plan_published_at`。目标若自带 `source_day` 或 `decision_cutoff_at` 也会被校验；这区分资料归属、决策界限、报价观察和本地产物生成，避免把日期混用。D0/D1 测试仍为 `7 passed`。
