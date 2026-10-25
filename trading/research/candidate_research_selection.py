@@ -48,6 +48,17 @@ def _action(decision: str) -> tuple[str, str]:
     return "UNASSESSED_SEPARATE_GATE", "Keep the candidate in its own data and timing gate; no selection or promotion."
 
 
+def _next_step(action: str) -> str:
+    """Return the smallest next decision that can change this candidate state."""
+    if action == "STOP_RESEARCH_ONLY":
+        return "Keep the negative evidence; reopen only after a materially changed snapshot or rule."
+    if action == "BLOCKED_COVERAGE":
+        return "Obtain the missing common forward coverage before ranking or replaying this candidate."
+    if action == "CONTINUE_RESEARCH_ONLY":
+        return "Run the next predeclared untouched or causal experiment with the existing cost and timing contract."
+    return "Keep a separate gate; first satisfy the candidate timing, coverage and attribution conditions."
+
+
 def build_selection_plan(robustness: Mapping[str, Any], catalog: Mapping[str, Any]) -> dict[str, Any]:
     rows = robustness.get("strategies")
     entries = catalog.get("entries")
@@ -77,6 +88,7 @@ def build_selection_plan(robustness: Mapping[str, Any], catalog: Mapping[str, An
             "robustness_decision": decision,
             "research_action": action,
             "rationale": rationale,
+            "next_step": _next_step(action),
             "research_followup_allowed": action == "CONTINUE_RESEARCH_ONLY",
             "paper_allowed": False,
             "promotion_allowed": False,
@@ -128,10 +140,10 @@ def build_selection_plan(robustness: Mapping[str, Any], catalog: Mapping[str, An
 def build_report(result: Mapping[str, Any]) -> str:
     lines = ["# Candidate research selection", "",
              f"Status: `{result['status']}`; paper selection: `false`; promotion: `false`.", "",
-             "The strategy library now has a fixed research queue derived from the saved robustness matrix.", "",
-             "| Catalog candidate | Decision | Research action |", "|---|---|---|"]
+             "The strategy library now has a fixed research queue and an explicit next step for every candidate.", "",
+             "| Catalog candidate | Decision | Research action | Next step |", "|---|---|---|---|"]
     for row in result["rows"]:
-        lines.append(f"| {row['catalog_id']} | {row['robustness_decision']} | {row['research_action']} |")
+        lines.append(f"| {row['catalog_id']} | {row['robustness_decision']} | {row['research_action']} | {row['next_step']} |")
     lines += ["", f"Research follow-up queue: `{', '.join(result['research_followup_queue']) or 'empty'}`.",
               "No target, order, fill, broker or THS action was generated.", ""]
     return "\n".join(lines)

@@ -1,6 +1,6 @@
 {
   "schema": "quantification_candidate_strategy_catalog_v1",
-  "updated_on": "2026-10-25",
+  "updated_on": "2026-10-26",
   "execution_admitted": false,
   "selection_policy": "Diagnostics and paper results are not adoption decisions; different snapshots and windows are not directly ranked.",
   "entries": [
@@ -78,7 +78,8 @@
         "research_followup_allowed": false,
         "paper_allowed": false,
         "promotion_allowed": false,
-        "source_receipt": "outputs/pipeline_receipts/20261024_candidate_research_selection_v1.json"
+        "source_receipt": "outputs/pipeline_receipts/20261026_candidate_research_selection_v2.json",
+        "next_step": "Keep the negative evidence; reopen only after a materially changed snapshot or rule."
       }
     },
     {
@@ -125,7 +126,8 @@
         "research_followup_allowed": false,
         "paper_allowed": false,
         "promotion_allowed": false,
-        "source_receipt": "outputs/pipeline_receipts/20261024_candidate_research_selection_v1.json"
+        "source_receipt": "outputs/pipeline_receipts/20261026_candidate_research_selection_v2.json",
+        "next_step": "Obtain the missing common forward coverage before ranking or replaying this candidate."
       }
     },
     {
@@ -212,7 +214,8 @@
         "research_followup_allowed": true,
         "paper_allowed": false,
         "promotion_allowed": false,
-        "source_receipt": "outputs/pipeline_receipts/20261024_candidate_research_selection_v1.json"
+        "source_receipt": "outputs/pipeline_receipts/20261026_candidate_research_selection_v2.json",
+        "next_step": "Run the next predeclared untouched or causal experiment with the existing cost and timing contract."
       }
     },
     {
@@ -324,7 +327,8 @@
         "research_followup_allowed": false,
         "paper_allowed": false,
         "promotion_allowed": false,
-        "source_receipt": "outputs/pipeline_receipts/20261024_candidate_research_selection_v1.json"
+        "source_receipt": "outputs/pipeline_receipts/20261026_candidate_research_selection_v2.json",
+        "next_step": "Keep the negative evidence; reopen only after a materially changed snapshot or rule."
       }
     },
     {
@@ -511,7 +515,8 @@
         "research_followup_allowed": true,
         "paper_allowed": false,
         "promotion_allowed": false,
-        "source_receipt": "outputs/pipeline_receipts/20261024_candidate_research_selection_v1.json"
+        "source_receipt": "outputs/pipeline_receipts/20261026_candidate_research_selection_v2.json",
+        "next_step": "Run the next predeclared untouched or causal experiment with the existing cost and timing contract."
       }
     },
     {
@@ -548,7 +553,8 @@
         "research_followup_allowed": false,
         "paper_allowed": false,
         "promotion_allowed": false,
-        "source_receipt": "outputs/pipeline_receipts/20261024_candidate_research_selection_v1.json"
+        "source_receipt": "outputs/pipeline_receipts/20261026_candidate_research_selection_v2.json",
+        "next_step": "Keep a separate gate; first satisfy the candidate timing, coverage and attribution conditions."
       }
     },
     {
@@ -600,7 +606,8 @@
         "research_followup_allowed": false,
         "paper_allowed": false,
         "promotion_allowed": false,
-        "source_receipt": "outputs/pipeline_receipts/20261024_candidate_research_selection_v1.json"
+        "source_receipt": "outputs/pipeline_receipts/20261026_candidate_research_selection_v2.json",
+        "next_step": "Keep a separate gate; first satisfy the candidate timing, coverage and attribution conditions."
       }
     },
     {
@@ -655,7 +662,8 @@
         "research_followup_allowed": false,
         "paper_allowed": false,
         "promotion_allowed": false,
-        "source_receipt": "outputs/pipeline_receipts/20261024_candidate_research_selection_v1.json"
+        "source_receipt": "outputs/pipeline_receipts/20261026_candidate_research_selection_v2.json",
+        "next_step": "Keep a separate gate; first satisfy the candidate timing, coverage and attribution conditions."
       }
     },
     {
@@ -723,7 +731,8 @@
         "research_followup_allowed": false,
         "paper_allowed": false,
         "promotion_allowed": false,
-        "source_receipt": "outputs/pipeline_receipts/20261024_candidate_research_selection_v1.json"
+        "source_receipt": "outputs/pipeline_receipts/20261026_candidate_research_selection_v2.json",
+        "next_step": "Keep a separate gate; first satisfy the candidate timing, coverage and attribution conditions."
       }
     }
   ],

@@ -19,6 +19,7 @@ def test_saved_candidate_library_gets_fixed_research_queue():
     assert result["coverage_blocked"] == ["stockdb_momentum_12_1_20"]
     assert set(result["stopped"]) == {"stockdb_low_volatility_252_20", "alpha158_lgbm_candidate_panel_v1"}
     assert all(not row["paper_allowed"] and not row["promotion_allowed"] for row in result["rows"])
+    assert all(row["next_step"] for row in result["rows"])
 
 
 def test_unassessed_candidate_keeps_separate_gate():
@@ -29,6 +30,7 @@ def test_unassessed_candidate_keeps_separate_gate():
     row = next(x for x in result["rows"] if x["catalog_id"] == "shortline_native_lr_lgbm")
     assert row["research_action"] == "UNASSESSED_SEPARATE_GATE"
     assert row["research_followup_allowed"] is False
+    assert "separate gate" in row["next_step"]
 
 
 def test_synthetic_policy_keeps_mixed_as_research_only():

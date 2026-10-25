@@ -173,6 +173,43 @@ def test_next_close_accepts_same_day_prebuilt_target_payload(tmp_path, monkeypat
     assert json.loads((tmp_path / "run" / "inputs" / "candidate_a" / "target_payload.json").read_text())["strategy_id"] == "candidate_close"
 
 
+def test_source_target_returns_named_target_and_provenance(tmp_path):
+    target_path = _write(tmp_path / "target.json", {
+        "research_only": True,
+        "execution_admitted": False,
+        "strategy_id": "candidate_close",
+        "decision_day": DAY,
+        "weights": {"000001.SZSE": 1.0},
+    })
+
+    resolved = contract._source_target({"target": str(target_path), "strategy_id": "candidate_close"})
+
+    assert isinstance(resolved, contract.ResolvedTargetInput)
+    assert resolved.target["decision_day"] == DAY
+    assert resolved.source_ref["source_kind"] == "direct_target_payload"
+
+
+def test_source_target_rejects_ambiguous_source_and_crosses_no_boundary(tmp_path):
+    replay = _write(tmp_path / "replay.json", {"strategy_id": "candidate_close"})
+    terminal = _write(tmp_path / "terminal.json", {"strategy_id": "candidate_close"})
+
+    with pytest.raises(ValueError, match="exactly one"):
+        contract._source_target({"replay_result": str(replay), "terminal_account": str(terminal)})
+
+
+def test_source_target_rejects_direct_payload_that_is_admitted(tmp_path):
+    admitted = _write(tmp_path / "admitted.json", {
+        "research_only": True,
+        "execution_admitted": True,
+        "strategy_id": "candidate_close",
+        "decision_day": DAY,
+        "weights": {"000001.SZSE": 1.0},
+    })
+
+    with pytest.raises(ValueError, match="research-only and unadmitted"):
+        contract._source_target({"target": str(admitted), "strategy_id": "candidate_close"})
+
+
 def test_next_close_can_resolve_registered_fixed_daily_head(tmp_path, monkeypatch):
     _, sources, catalog = _setup(tmp_path)
     monkeypatch.setattr(contract.stockdb_fixed_daily, "resolve_terminal_account",

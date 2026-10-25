@@ -15,6 +15,7 @@ broker/THS state is touched.
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from hashlib import sha256
 import json
@@ -42,6 +43,20 @@ STATUS = "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1"
 BLOCKED_STATUS = "BLOCKED_MISSING_SAME_DAY_STOCKDB_ROWS"
 FAILED_STATUS = "FAILED_D0_D1_CAPTURE_OR_PROJECTION"
 DEFAULT_CATALOG = Path("docs/architecture_v3/candidate_strategy_catalog_20261024.json")
+
+
+@dataclass(frozen=True)
+class ResolvedTargetInput:
+    """Target plus the source receipt used to produce it.
+
+    The D0/D1 contract keeps the target payload and its provenance together so
+    callers do not have to remember which tuple position contains each
+    business fact.  The payload remains the existing mapping consumed by the
+    paper pipeline; this type only clarifies the boundary.
+    """
+
+    target: dict[str, Any]
+    source_ref: dict[str, str]
 
 
 def _read(path: Path) -> dict[str, Any]:
@@ -90,7 +105,7 @@ def _source_path(item: Mapping[str, Any]) -> tuple[Path, bool]:
     return path, terminal is not None
 
 
-def _source_target(item: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+def _source_target(item: Mapping[str, Any]) -> ResolvedTargetInput:
     direct_target = item.get("target")
     if direct_target:
         path = Path(direct_target).resolve()
@@ -102,14 +117,20 @@ def _source_target(item: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str, A
         requested_strategy = item.get("strategy_id")
         if requested_strategy is not None and target.get("strategy_id") != requested_strategy:
             raise ValueError("Direct target strategy_id does not match source manifest")
-        return target, {"path": str(path), "sha256": _sha256(path),
-                        "source_kind": "direct_target_payload"}
+        return ResolvedTargetInput(
+            target=target,
+            source_ref={"path": str(path), "sha256": _sha256(path),
+                        "source_kind": "direct_target_payload"},
+        )
     path, legacy = _source_path(item)
     payload = _read(path)
     target, _ = _target_payload(payload, legacy_account=legacy,
                                  strategy_id=item.get("strategy_id"))
-    return target, {"path": str(path), "sha256": _sha256(path),
-                    "source_kind": "legacy_terminal_account" if legacy else "nested_replay_result"}
+    return ResolvedTargetInput(
+        target=target,
+        source_ref={"path": str(path), "sha256": _sha256(path),
+                    "source_kind": "legacy_terminal_account" if legacy else "nested_replay_result"},
+    )
 
 
 def _candidate_items(path: Path) -> list[Mapping[str, Any]]:
@@ -348,8 +369,9 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
     }
     try:
         receipt_base["calendar"] = _calendar_contract(close_date, execution_day, settlement_day, calendar_file)
-        fixed_target, fixed_source_ref = _source_target({"terminal_account": str(fixed_source),
-                                                           "strategy_id": fixed_strategy_id})
+        fixed_input = _source_target({"terminal_account": str(fixed_source),
+                                      "strategy_id": fixed_strategy_id})
+        fixed_target, fixed_source_ref = fixed_input.target, fixed_input.source_ref
         _assert_target_day(fixed_target, close_date, "fixed")
         candidates = _candidate_items(source_manifest)
         decision_selection = None
@@ -360,7 +382,8 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
             candidate_id = str(item.get("candidate_id") or item.get("strategy_id") or "").strip()
             if not candidate_id:
                 raise ValueError("Each candidate requires candidate_id or strategy_id")
-            target, source_ref = _source_target(item)
+            resolved = _source_target(item)
+            target, source_ref = resolved.target, resolved.source_ref
             _assert_target_day(target, close_date, candidate_id)
             candidate_targets.append((candidate_id, target, source_ref))
         all_targets = [fixed_target, *(item[1] for item in candidate_targets)]
