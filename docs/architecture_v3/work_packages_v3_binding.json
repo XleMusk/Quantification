@@ -1084,6 +1084,24 @@
         "trading/research/tests/test_next_close_d0_d1.py"
       ],
       "acceptance": "A decision-bound candidate list retains only CONTINUE_RESEARCH_ONLY rows before target/quote capture; included and excluded rows are preserved, with execution_admitted=false."
+    },
+    {
+      "id": "P16",
+      "domain": "research",
+      "result": "The saved shortline LGBM target reaches the same research-only paper Orders, Fill and Cash/Position route as the LR sibling.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Keep LR and LGBM under the separate shortline gate; rerun after a new saved selection or complete panel source, preserving each terminal day.",
+      "prohibition": "The saved LGBM partial replay is not a full strategy return, live signal or promotion decision.",
+      "actual_paths": [
+        "D:/QuantificationData/trading/research/shortline_native_selection_replay/20261018_v1/lgbm/account.json",
+        "trading/research/joint_portfolio_paper_package.py",
+        "trading/research/tests/test_joint_portfolio_paper_package.py",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v1/joint_paper_receipt.json"
+      ],
+      "evidence": [
+        "D:/Quantification/outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v1/joint_paper_receipt.json"
+      ],
+      "acceptance": "Saved LGBM target day 2026-05-29 projects 5 paper orders with 5 available routes and execution_admitted=false; the shortline separate-gate state remains unchanged."
     }
   ]
 }

@@ -218,3 +218,8 @@ Ridge h60 相对基线的净收益差为 -4.7997 个百分点、最大回撤差�
 ## 2026-10-25 decision-bound next-close D0/D1
 
 `next_close_d0_d1.py` 新增可选 `--research-decision-receipt`。它在 StockDB 捕获前读取候选的 `decision_id`，仅保留 `CONTINUE_RESEARCH_ONLY`，并把纳入/排除记录写入 D0/D1 回执；固定腿、同日 Target+Quote、候选批次和联合纸面仍走原路径。新增测试覆盖过滤契约，D0/D1 与联合纸面相关测试共 `11 passed`；下一交易日可在真实收市后把该参数与新候选清单一起传入，周末未抓取行情。
+
+
+## 2026-10-25 shortline LGBM shared paper route
+
+已将保存的短线 LGBM 目标 `D:/QuantificationData/trading/research/shortline_native_selection_replay/20261018_v1/lgbm/account.json` 接入联合纸面路径。终止日 `2026-05-29`，严格容量策略生成 5 笔订单、5 条路由全部可用，回执为 `outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v1/joint_paper_receipt.json`，`execution_admitted=false`。LR 与 LGBM 现在均有共享 Orders→Fill→Cash/Position 证据，但各自终止日不同，仍保持短线独立闸门、完整窗口缺失和 score-gate 限制。P16、W3 与候选目录已绑定。
