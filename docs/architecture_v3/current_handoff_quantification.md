@@ -233,3 +233,8 @@ Ridge h60 相对基线的净收益差为 -4.7997 个百分点、最大回撤差�
 ## 2026-10-25 THS target readback comparator
 
 新增 `trading/ths/target_readback.py` 与统一命令 `run_committee.py ths-target-readback`。它读取联合纸面生成的只读参考和授权后导出的行，按 symbol/qty 返回 `readback_verified`、`readback_mismatch_stop` 或 `readback_incomplete_stop`；所有结果都保持 `submitted=false`、`execution_admitted=false`。合成夹具回执为 `outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json`，只证明契约，不代表真实 THS 观察。P18 与 W4 已绑定。
+
+
+## 2026-10-25 F1 archival PIT attempt
+
+为推进 F2 的真实 PIT 入口，对 3 个已绑定 Q1 2024 issuer PDF URL 查询 Wayback CDX。结果为 600004 与 688008 没有抓取记录，000002 只有 `2024-08-14` 的一次抓取，全部没有 `<=2024-05-01` 的存档，因此回执 `outputs/pipeline_receipts/20261025_f01_wayback_pit_attempt_v1.json` 保持 `BLOCKED_DATA`，0 行 PIT-safe、0 个 FinancialFact、0 次因子/账户回放。该失败实验已保留；下一步必须更换为带历史 retrieval/as-of 或 revision history 的可靠数据源，不重复同一 URL。

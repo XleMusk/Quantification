@@ -1139,6 +1139,23 @@
         "D:/Quantification/outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json"
       ],
       "acceptance": "A complete synthetic row export returns readback_verified with submitted=false and execution_admitted=false; mismatch and missing-row cases stop explicitly."
+    },
+    {
+      "id": "P19",
+      "domain": "data",
+      "result": "A bounded archival lookup tested the three F1 issuer URLs for pre-decision PIT captures and preserved the concrete BLOCKED_DATA outcome.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Replace the source with issuer-side retrieval/as-of or revision-history data before attempting F2 factor materialization.",
+      "prohibition": "A post-decision archive capture cannot be reinterpreted as historical PIT; do not repeat the same URLs.",
+      "actual_paths": [
+        "outputs/pipeline_receipts/20261025_f01_publication_sidecar_contract_v3.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_f01_wayback_pit_attempt_v1.json",
+        "trading/research/f2_fact_bridge.py"
+      ],
+      "evidence": [
+        "D:/Quantification/outputs/pipeline_receipts/20261025_f01_wayback_pit_attempt_v1.json"
+      ],
+      "acceptance": "Three URL checks produce zero captures on or before 2024-05-01; no fact, factor, target, order or account replay is created."
     }
   ]
 }

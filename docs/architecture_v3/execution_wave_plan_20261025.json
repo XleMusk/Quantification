@@ -99,9 +99,10 @@
         "outputs/f2_vertical_slice/20261025_synthetic/vertical_slice_receipt.json",
         "trading/research/f2_bridge_vertical_slice.py",
         "trading/research/tests/test_f2_bridge_vertical_slice.py",
-        "outputs/f2_vertical_slice/20261025_bridge_ready_synthetic/bridge_vertical_slice_receipt.json"
+        "outputs/f2_vertical_slice/20261025_bridge_ready_synthetic/bridge_vertical_slice_receipt.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261025_f01_wayback_pit_attempt_v1.json"
       ],
-      "result": "READY bridge plus explicit prior fact reaches F01 Signal -> Target Portfolio -> shared paper Engine/Ledger; blocked real sidecar remains BLOCKED_DATA."
+      "result": "READY bridge plus explicit prior fact reaches the shared paper path; the real sidecar remains BLOCKED_DATA. A bounded archival lookup found zero pre-2024-05-01 captures for the three issuer URLs, so the next F2 action must switch source."
     },
     {
       "id": "W3",

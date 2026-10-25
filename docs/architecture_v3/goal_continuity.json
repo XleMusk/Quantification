@@ -173,7 +173,8 @@
     "ths_target_readback_module": "D:/Quantification/trading/ths/target_readback.py",
     "ths_target_readback_test": "D:/Quantification/trading/tests/test_ths_target_readback.py",
     "ths_target_readback_synthetic_receipt": "D:/Quantification/outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json",
-    "ths_target_readback_command": "D:/Quantification/run_committee.py ths-target-readback"
+    "ths_target_readback_command": "D:/Quantification/run_committee.py ths-target-readback",
+    "f01_wayback_pit_attempt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261025_f01_wayback_pit_attempt_v1.json"
   },
   "project_handoff_file": "D:\\Quantification\\docs\\architecture_v3\\current_handoff_quantification.md",
   "handoff_file_collision_note": "The global capability_lab current_handoff is concurrently used by D:\\muse; resume D:\\Quantification from project_handoff_file."
