@@ -1,6 +1,6 @@
 {
   "schema": "quantification_goal_completion_audit_v1",
-  "audited_at": "2026-10-24T17:36:00+08:00",
+  "audited_at": "2026-10-26T02:18:00+08:00",
   "execution_admitted": false,
   "overall_status": "INCOMPLETE_ACTIVE",
   "items": [
@@ -108,10 +108,14 @@
         "outputs/stockdb_action_context_views/20261024_sidecar_v4/run.json",
         "outputs/pipeline_receipts/20261024_stockdb_low_volatility_252_20_long_replay_audit.json",
         "outputs/stockdb_rolling_low_volatility/20261024_195517_c8688fff/run.json",
-        "outputs/stockdb_rolling_low_volatility/20261024_195517_c8688fff/REPORT.md"
+        "outputs/stockdb_rolling_low_volatility/20261024_195517_c8688fff/REPORT.md",
+        "outputs/pipeline_receipts/20261026_common_window_strategy_comparison_v1.json",
+        "outputs/research_reports/20261026_common_window_strategy_comparison_v1.md",
+        "trading/research/common_window_strategy_comparison.py",
+        "trading/tests/test_common_window_strategy_comparison.py"
       ],
       "gap": "shared shadow packages and action-sidecar mapping are reproducible; v4 retains 138 events/177 artifacts and integrates into 180,948-row action context, but as-of history yields 0 PIT-safe rows and no action-adjusted replay",
-      "next_acceptance": "extend reliable snapshots and close PIT/membership/corporate-action evidence before adoption"
+      "next_acceptance": "run the common-window comparison after a fresh close when applicable, then keep PIT/forward and adoption gates separate"
     },
     {
       "id": "daily_paper",
@@ -445,10 +449,14 @@
         "trading/research/candidate_spec_registry.py",
         "trading/research/tests/test_candidate_spec_registry.py",
         "outputs/pipeline_receipts/20261024_candidate_spec_registry.json",
-        "run_committee.py candidate-spec-registry"
+        "run_committee.py candidate-spec-registry",
+        "outputs/pipeline_receipts/20261026_common_window_strategy_comparison_v1.json",
+        "outputs/research_reports/20261026_common_window_strategy_comparison_v1.md",
+        "trading/research/common_window_strategy_comparison.py",
+        "trading/tests/test_common_window_strategy_comparison.py"
       ],
       "gap": "catalog and one-to-one fixed specs are bound; actual per-event PIT/revision evidence, shortline and public-seat timing gates remain open",
-      "next_acceptance": "after the next complete close, refresh the common snapshot and revalidate all fixed specs before any candidate rerun"
+      "next_acceptance": "after the next complete close, refresh the common snapshot and revalidate the fixed specs and retained candidates before any candidate rerun"
     },
     {
       "id": "execution_gate",

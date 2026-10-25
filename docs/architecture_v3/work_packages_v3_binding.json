@@ -124,7 +124,7 @@
       "domain": "data",
       "result": "A callable point-in-time versioned read returns only facts available at the requested cutoff.",
       "state": "PARTIAL",
-      "next": "Use the F01 sidecar contract to bind source hashes/publication dates, then add original retrieval/as-of/revision evidence before exposing a PIT read.",
+      "next": "Keep the strict row-level publication/retrieval/as-of/revision/source checks and obtain original issuer evidence before exposing a PIT read.",
       "prohibition": "Do not read the latest file implicitly.",
       "actual_paths": [
         "outputs/financials/f01_scoped_field_coverage_20261024.json",
@@ -149,7 +149,7 @@
       "domain": "data",
       "result": "Event master, U value, exclusions and source links are reproducible.",
       "state": "PARTIAL",
-      "next": "Use the v4 per-artifact timing fields (including explicit source_retrieved_at provenance) to obtain original as-of/revision receipts; no action application until the contract passes.",
+      "next": "Use the revalidated bridge receipt as a blocked baseline; do not admit a fact until issuer scope and historical as-of/revision evidence are present.",
       "prohibition": "Do not turn missing event evidence into zero return or exclusion without reason.",
       "actual_paths": [
         "outputs/pipeline_receipts/20261024_publication_event_contract_local_receipt.json",
@@ -288,9 +288,14 @@
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261024_research_decision_matrix_v1.json",
-        "run_committee.py research-decision-matrix"
+        "run_committee.py research-decision-matrix",
+        "trading/research/common_window_strategy_comparison.py",
+        "trading/tests/test_common_window_strategy_comparison.py",
+        "outputs/pipeline_receipts/20261026_common_window_strategy_comparison_v1.json",
+        "outputs/research_reports/20261026_common_window_strategy_comparison_v1.md"
       ],
-      "acceptance": "Completed public-seat cases expose post-event return/opportunity, order/fill enterability, and fixed continue/stop research decisions; incomplete cases remain blocked with their error; all promotion and execution gates remain closed."
+      "acceptance": "Completed public-seat cases expose post-event return/opportunity, order/fill enterability, and fixed continue/stop research decisions; incomplete cases remain blocked with their error; all promotion and execution gates remain closed.",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "R03",
@@ -386,9 +391,14 @@
         "run_committee.py candidate-research-selection",
         "outputs/pipeline_receipts/20261025_public_seat_candidate_shared_paper_receipt_v1.json",
         "D:/Quantification/outputs/pipeline_receipts/20261026_leader_eight_type_turnover_joint_paper_v1/joint_paper_receipt.json",
-        "D:/Quantification/outputs/pipeline_receipts/20261026_leader_eight_type_turnover_joint_paper_v1/ths_readonly_reference.json"
+        "D:/Quantification/outputs/pipeline_receipts/20261026_leader_eight_type_turnover_joint_paper_v1/ths_readonly_reference.json",
+        "trading/research/common_window_strategy_comparison.py",
+        "trading/tests/test_common_window_strategy_comparison.py",
+        "outputs/pipeline_receipts/20261026_common_window_strategy_comparison_v1.json",
+        "outputs/research_reports/20261026_common_window_strategy_comparison_v1.md"
       ],
-      "acceptance": "Saved long-window, untouched-forward and capacity/cost artifacts produce explicit continue, mixed, stop or coverage-blocked research decisions; those decisions are bound into the candidate library with a research-only follow-up queue and closed paper/promotion gates."
+      "acceptance": "Saved long-window, untouched-forward and capacity/cost artifacts produce explicit continue, mixed, stop or coverage-blocked research decisions; those decisions are bound into the candidate library with a research-only follow-up queue and closed paper/promotion gates.",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "R06",
@@ -470,7 +480,14 @@
         "D:/Quantification/trading/tests/test_long_window_strategy_comparison.py",
         "run_committee.py long-window-strategy-comparison --include-h60"
       ],
-      "acceptance": "The h60 receipt has six rows, each with a fixed research decision; Ridge baseline and h60 preserve positive return/Sharpe signs; the unified launcher regenerates the receipt; focused comparison tests pass."
+      "acceptance": "The h60 receipt has six rows, each with a fixed research decision; Ridge baseline and h60 preserve positive return/Sharpe signs; the unified launcher regenerates the receipt; focused comparison tests pass.",
+      "evidence": [
+        "trading/research/common_window_strategy_comparison.py",
+        "trading/tests/test_common_window_strategy_comparison.py",
+        "outputs/pipeline_receipts/20261026_common_window_strategy_comparison_v1.json",
+        "outputs/research_reports/20261026_common_window_strategy_comparison_v1.md"
+      ],
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "L01",
@@ -1213,9 +1230,14 @@
         "D:/Quantification/outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json"
       ],
       "evidence": [
-        "D:/Quantification/outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json"
+        "D:/Quantification/outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json",
+        "trading/research/common_window_strategy_comparison.py",
+        "trading/tests/test_common_window_strategy_comparison.py",
+        "outputs/pipeline_receipts/20261026_common_window_strategy_comparison_v1.json",
+        "outputs/research_reports/20261026_common_window_strategy_comparison_v1.md"
       ],
-      "acceptance": "A complete synthetic row export returns readback_verified with submitted=false and execution_admitted=false; mismatch and missing-row cases stop explicitly."
+      "acceptance": "A complete synthetic row export returns readback_verified with submitted=false and execution_admitted=false; mismatch and missing-row cases stop explicitly.",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "P19",
