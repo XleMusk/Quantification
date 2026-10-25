@@ -21,7 +21,7 @@ from .candidate_shadow_paper import _target_payload
 SCHEMA = "candidate_daily_input_bundle_v1"
 STATUS = "COMPLETED_RESEARCH_ONLY_CANDIDATE_INPUT_BUNDLE"
 DEFAULT_CATALOG = Path("docs/architecture_v3/candidate_strategy_catalog_20261024.json")
-GATE_MODES = {"research_followup", "separate_gate"}
+GATE_MODES = {"research_followup", "separate_gate", "historical_shadow"}
 
 
 def _read(path: Path) -> dict[str, Any]:
@@ -84,6 +84,10 @@ def _catalog_gate(entry: Mapping[str, Any], candidate_id: str, gate_mode: str) -
         decision = selection.get("decision") or selection.get("action")
         if decision != "UNASSESSED_SEPARATE_GATE":
             raise ValueError(f"Separate-gate candidate lacks explicit unassessed decision: {candidate_id}")
+    if gate_mode == "historical_shadow":
+        decision = selection.get("decision") or selection.get("action")
+        if decision not in {"STOP_RESEARCH_ONLY", "BLOCKED_COVERAGE"}:
+            raise ValueError(f"Historical shadow requires a stopped or coverage-blocked candidate: {candidate_id}")
     return dict(selection)
 
 

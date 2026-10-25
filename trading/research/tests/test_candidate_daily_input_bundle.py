@@ -75,6 +75,24 @@ def test_bundle_rejects_catalog_stop_candidate(tmp_path: Path) -> None:
                            tmp_path / "bundle", catalog_path=catalog)
 
 
+def test_bundle_allows_explicit_historical_shadow_for_stopped_candidate(tmp_path: Path) -> None:
+    replay = _nested(tmp_path / "replay.json")
+    catalog = tmp_path / "catalog.json"
+    catalog.write_text(json.dumps({"entries": [
+        {"id": "candidate_a", "research_selection": {
+            "decision": "STOP_RESEARCH_ONLY",
+            "research_followup_allowed": False,
+            "paper_allowed": False,
+        }},
+    ]}), encoding="utf-8")
+    receipt = build_input_bundle(
+        [{"candidate_id": "candidate_a", "replay_result": str(replay)}],
+        tmp_path / "bundle", catalog_path=catalog, gate_mode="historical_shadow",
+    )
+    assert receipt["gate_mode"] == "historical_shadow"
+    assert receipt["candidates"][0]["catalog_selection"]["decision"] == "STOP_RESEARCH_ONLY"
+
+
 def test_bundle_allows_explicit_unassessed_separate_gate(tmp_path: Path) -> None:
     replay = _nested(tmp_path / "replay.json")
     catalog = tmp_path / "catalog.json"

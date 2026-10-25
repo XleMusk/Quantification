@@ -834,7 +834,7 @@
       "domain": "workbench",
       "result": "Research and account result trace to source, snapshot and comparison.",
       "state": "VERIFIED_LOCAL",
-      "next": "Re-run provenance against the next fixed_daily generation after the next close; keep fixed-strategy, trend, Ridge and public-seat inputs separate and retain the public-seat timing/PIT gate.",
+      "next": "Use historical_shadow only for preserved STOP/BLOCKED_COVERAGE replay diagnostics; normal follow-up remains decision-bound and excludes these candidates.",
       "prohibition": "Do not trace a market result to a synthetic source.",
       "actual_paths": [
         "outputs/pipeline_receipts/20261024_lowvol_paper_account_provenance.json",
@@ -890,7 +890,12 @@
         "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v5/pipeline_receipt.json",
         "outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v5/paper_batch/batch_receipt.json",
         "trading/research/next_close_d0_d1.py",
-        "trading/research/tests/test_next_close_d0_d1.py"
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "D:/QuantificationData/trading/research/candidate_shadow/alpha158_lgbm_20261025_v1/manifest.json",
+        "D:/QuantificationData/trading/research/candidate_shadow/alpha158_lgbm_20261025_v1/bundle_receipt.json",
+        "D:/QuantificationData/trading/research/candidate_shadow/alpha158_lgbm_20261025_v1/paper_batch/batch_receipt.json",
+        "run_committee.py candidate-daily-input-bundle --gate-mode historical_shadow",
+        "run_committee.py daily-candidate-paper-batch --gate-mode historical_shadow"
       ],
       "acceptance": "The saved Alpha158 score batch and cap500 replay trace provider snapshot, native features, factor panel, signal events, targets, orders, BrokerAdapter diagnostics, fills and cash/positions with hashes; execution_admitted remains false."
     },

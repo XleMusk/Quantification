@@ -92,6 +92,28 @@ def test_batch_rejects_catalog_stop_candidate(tmp_path: Path) -> None:
             execution_day="2026-10-24", settlement_day="2026-10-26", catalog_path=catalog)
 
 
+def test_batch_projects_explicit_historical_shadow_stop_candidate(tmp_path: Path) -> None:
+    target, quotes = _write_candidate(tmp_path, "candidate_a", "600004")
+    catalog = tmp_path / "catalog.json"
+    catalog.write_text(json.dumps({"entries": [
+        {"id": "catalog_candidate_a", "research_selection": {
+            "decision": "STOP_RESEARCH_ONLY",
+            "research_followup_allowed": False,
+            "paper_allowed": False,
+        }},
+    ]}), encoding="utf-8")
+    result = build_batch([
+        {"candidate_id": "catalog_candidate_a", "strategy_id": "candidate_a",
+         "target": target, "quotes": quotes},
+    ], tmp_path / "batch", initial_cash=1000000.0,
+        execution_day="2026-10-24", settlement_day="2026-10-26",
+        catalog_path=catalog, gate_mode="historical_shadow")
+    assert result["gate_mode"] == "historical_shadow"
+    assert result["candidates"][0]["target_count"] == 1
+    assert result["candidates"][0]["paper_order_count"] == 1
+    assert result["execution_admitted"] is False
+
+
 def test_batch_rejects_future_quote_day(tmp_path: Path) -> None:
     target, quotes = _write_candidate(tmp_path, "candidate_a", "600004")
     quote = json.loads(Path(quotes).read_text(encoding="utf-8"))

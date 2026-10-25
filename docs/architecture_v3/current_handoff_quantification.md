@@ -325,3 +325,12 @@ D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `de
 ## 2026-10-25 route-scoped latest-data policy
 
 后续最新行情或当前账户数据只影响直接依赖它的路线；不得以此停止代码交付、历史回放、pinned snapshot 纸面运行、候选比较、发布包或其他独立研究。每次缺口记录受影响路线和下一条可执行主线，继续推进其余工作。
+
+## 2026-10-25 historical shadow candidate route
+
+为保留停止/覆盖阻断候选的可复现主线证据，候选输入 bundle 与 D1 paper batch 新增显式 `gate_mode=historical_shadow`。它只接受 catalog 中 `STOP_RESEARCH_ONLY` 或 `BLOCKED_COVERAGE`，不会改变研究去留、不会进入正常 `research_followup`，也不会允许真实动作。使用冻结 Alpha158/LightGBM cap500 replay 生成：
+
+- `D:\QuantificationData\trading\research\candidate_shadow\alpha158_lgbm_20261025_v1\bundle_receipt.json`
+- `D:\QuantificationData\trading\research\candidate_shadow\alpha158_lgbm_20261025_v1\paper_batch\batch_receipt.json`
+
+结果为 1 个 STOP 候选、2 个目标、2 个纸面订单、0 条可用外部路由，期末权益投影 CNY 139,987.99；Target→Orders→Fill→Cash/Position 由既有共享 Ledger 投影，`execution_admitted=false`、broker/THS/persistent ledger 均未触碰。新增输入 bundle 与 batch focused tests 覆盖 gate 语义和纸面投影。
