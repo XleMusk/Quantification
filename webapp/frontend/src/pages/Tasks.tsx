@@ -1,12 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Check, RefreshCw, X, ArrowUpRight } from 'lucide-react';
-import { post } from '../api';
-import { type Dataset, type Job, timeText } from '../types';
+import { api, post } from '../api';
+import { type Dataset, type Job, type JobLifecycle, timeText } from '../types';
 import { Status, ErrorMessage } from '../components/Common';
 
 export function Tasks({ jobs, datasets, active, select, reload, openResult }: { jobs: Job[]; datasets: Dataset[]; active: string; select: (id: string) => void; reload: () => Promise<void>; openResult: (id: string) => void }) {
   const [error, setError] = useState(''); const [busy, setBusy] = useState(false);
   const item = jobs.find(j => j.id === active) || jobs[0];
+  const [lifecycle, setLifecycle] = useState<JobLifecycle | null>(null);
+  useEffect(() => {
+    if (!item) { setLifecycle(null); return; }
+    let current = true;
+    api<JobLifecycle>(`/jobs/${item.id}/lifecycle`).then(value => { if (current) setLifecycle(value); }).catch(e => { if (current) setError(e.message); });
+    return () => { current = false; };
+  }, [item?.id, item?.status, item?.progress, item?.updated_at]);
   async function cancel(id: string) { setBusy(true); setError(''); try { await post(`/jobs/${id}/cancel`); await reload(); } catch (e) { setError((e as Error).message); } finally { setBusy(false); } }
   async function retry(job: Job) { setBusy(true); setError(''); try { const next = await post<Job>('/jobs', { dataset_id: job.dataset_id, start: job.config.start, end: job.config.end, min_pairs: job.config.min_pairs }, crypto.randomUUID()); await reload(); select(next.id); } catch (e) { setError((e as Error).message); } finally { setBusy(false); } }
   return <>
@@ -18,6 +25,7 @@ export function Tasks({ jobs, datasets, active, select, reload, openResult }: { 
       {item.error && <ErrorMessage message={item.error} />}
       <ol className="logs">{item.logs.map((log, index) => <li key={index}><Check size={14} /><time>{new Date(log.time).toLocaleTimeString('zh-CN', { hour12: false })}</time><span>{log.message}</span></li>)}</ol>
       {!item.logs.length && <p className="subtle">等待计算进程领取任务</p>}
+      {lifecycle && <section className="task-lifecycle"><h3>交付链路</h3><div className="task-lifecycle-stages">{lifecycle.stages.map(stage => <span key={stage.id} className={`task-lifecycle-stage ${stage.status}`}><strong>{({ submitted: '已提交', compute: '计算', result: '结果', download: '下载' } as Record<string, string>)[stage.id] || stage.id}</strong><small>{stage.detail}</small></span>)}</div><p className="subtle">{lifecycle.recovery.next_action} · 自动恢复：{lifecycle.recovery.automatic ? '允许' : '关闭'} · 执行准入：关闭</p></section>}
     </section>}
   </>;
 }

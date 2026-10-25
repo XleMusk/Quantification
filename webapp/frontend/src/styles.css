@@ -186,3 +186,4 @@ td > .text-button { white-space: nowrap; }
   .leader-environment .research-heading h2 { font-size: 18px; }
   .leader-environment .research-heading button { flex-shrink: 0; }
 }
+.task-lifecycle{margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}.task-lifecycle-stages{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}.task-lifecycle-stage{display:flex;flex-direction:column;gap:5px;padding:10px;border:1px solid var(--line);background:#fff;border-radius:4px}.task-lifecycle-stage strong{font-size:12px}.task-lifecycle-stage small{color:var(--muted);line-height:1.4}.task-lifecycle-stage.completed,.task-lifecycle-stage.available{border-color:#9bcdb5;background:#f3fbf6}.task-lifecycle-stage.active{border-color:#aac9df;background:#f3f8fc}.task-lifecycle-stage.interrupted,.task-lifecycle-stage.failed,.task-lifecycle-stage.cancelled{border-color:#e4b5b5;background:#fff7f7}

@@ -79,6 +79,38 @@ def test_end_to_end_real_worker_function(client, dataset):
     assert client.get(f"/api/jobs/{item['id']}/files/not-a-file").status_code == 404
 
 
+def test_job_lifecycle_binds_submit_refresh_download_chain(client, dataset):
+    item = submit(client, dataset).json()
+    queued = client.get(f"/api/jobs/{item['id']}/lifecycle").json()
+    assert queued["schema"] == "quantification_workbench_job_lifecycle_v1"
+    assert queued["execution_admitted"] is False
+    assert [stage["id"] for stage in queued["stages"]] == ["submitted", "compute", "result", "download"]
+    assert queued["stages"][1]["status"] == "active"
+    assert queued["stages"][2]["status"] == "waiting"
+
+    worker.execute(store.claim_job())
+    completed = client.get(f"/api/jobs/{item['id']}/lifecycle").json()
+    assert completed["stages"][1]["status"] == "completed"
+    assert completed["stages"][2]["status"] == "available"
+    assert "result.json" in completed["available_files"]
+    assert "REPORT.md" in completed["available_files"]
+
+
+def test_job_lifecycle_exposes_manual_recovery_without_retry(client, dataset):
+    item = submit(client, dataset).json()
+    store.claim_job()
+    store.recover_interrupted()
+
+    lifecycle = client.get(f"/api/jobs/{item['id']}/lifecycle").json()
+
+    assert lifecycle["stages"][1]["status"] == "interrupted"
+    assert lifecycle["recovery"] == {
+        "status": "ready_for_resubmit",
+        "automatic": False,
+        "next_action": "确认失败原因后重新提交一个新任务",
+    }
+
+
 def test_idempotent_submit_and_conflicting_payload(client, dataset):
     first = submit(client, dataset, "repeat-key").json()
     second = submit(client, dataset, "repeat-key").json()
