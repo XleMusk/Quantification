@@ -360,14 +360,18 @@
         "outputs/paper_plans/20261025_public_seat_lag2_shadow_v2/shadow_receipt.json",
         "trading/research/tests/test_candidate_shadow_paper.py",
         "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v3/pipeline_receipt.json",
-        "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v3/paper_batch/public_seat_trend_hypotheses/result.json"
+        "outputs/paper_plans/20261025_public_seat_lag2_pipeline_v3/paper_batch/public_seat_trend_hypotheses/result.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261026_leader_eight_type_turnover_joint_paper_v1/joint_paper_receipt.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261026_leader_eight_type_turnover_joint_paper_v1/ths_readonly_reference.json"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261024_strategy_robustness_matrix_v1.json",
         "outputs/pipeline_receipts/20261024_candidate_research_selection_v1.json",
         "outputs/pipeline_receipts/20261024_candidate_spec_registry.json",
         "run_committee.py candidate-research-selection",
-        "outputs/pipeline_receipts/20261025_public_seat_candidate_shared_paper_receipt_v1.json"
+        "outputs/pipeline_receipts/20261025_public_seat_candidate_shared_paper_receipt_v1.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261026_leader_eight_type_turnover_joint_paper_v1/joint_paper_receipt.json",
+        "D:/Quantification/outputs/pipeline_receipts/20261026_leader_eight_type_turnover_joint_paper_v1/ths_readonly_reference.json"
       ],
       "acceptance": "Saved long-window, untouched-forward and capacity/cost artifacts produce explicit continue, mixed, stop or coverage-blocked research decisions; those decisions are bound into the candidate library with a research-only follow-up queue and closed paper/promotion gates."
     },

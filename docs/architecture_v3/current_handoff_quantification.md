@@ -338,3 +338,8 @@ D0/D1 回执新增 `time_semantics`：`source_day`、StockDB 捕获形成的 `de
 ## 2026-10-26 public-seat read-only reference refresh
 
 Replayed the existing dated public-seat Target+Quote payload through `run_committee.py joint-portfolio-paper-package` without new market input. The v2 receipt `outputs/pipeline_receipts/20261026_public_seat_joint_paper_v2/joint_paper_receipt.json` contains 5 paper orders, projected equity CNY 999,753.38 and 5 target-bound THS read-only reference rows at `ths_readonly_reference.json`. `execution_admitted=false`, broker/THS were not contacted and no persistent Ledger was mutated. The candidate remains `UNASSESSED_SEPARATE_GATE`; this refresh supplies the missing read-only reference artifact only.
+
+
+## 2026-10-26 leader-style shared paper route
+
+Reused the saved leader_turnover_eight_type Target+Quote at terminal day 2026-10-15 through run_committee.py joint-portfolio-paper-package. The shared paper package contains 5 targets, 5 paper orders, 5 available routes, projected equity CNY 999,754.44, and 5 THS read-only reference rows. Receipt: outputs/pipeline_receipts/20261026_leader_eight_type_turnover_joint_paper_v1/joint_paper_receipt.json; read-only reference: ths_readonly_reference.json in the same directory. execution_admitted=false; no broker or THS client was contacted and no persistent Ledger was mutated. The leader candidate separate gate, PIT boundary, and cross-year resource-stop state remain unchanged.
