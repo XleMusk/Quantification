@@ -1,0 +1,18 @@
+{
+  "schema": "quantification_internal_release_binding_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "version": "20261026_v19",
+  "manifest": "D:\\QuantificationData\\trading\\research\\releases\\20261026_v19\\release_manifest.json",
+  "manifest_sha256": "7211b64378348897def5082a85d36d4b823ec227a8b78b8ba23b3fcbed235481",
+  "git_commit": "0ec4933",
+  "execution_admitted": false,
+  "live_execution_ready": false,
+  "missing_required_code": [],
+  "shortline_replay": "outputs/pipeline_receipts/20261026_shortline_baostock_candidate_replay_v1.json",
+  "f01_semantic_contract": "trading/research/f01_financial_factor.py",
+  "limitations": [
+    "Shortline result uses independent BaoStock bounded raw bars, not StockDB/PIT/full-window validation.",
+    "F2 historical asof/revision evidence and THS observed read-only evidence remain unavailable.",
+    "No broker/THS login or account mutation."
+  ]
+}
