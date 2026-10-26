@@ -471,3 +471,7 @@ P31 已绑定：StockDB 覆盖诊断现在按批次一次读取 parquet 并建�
 ## 2026-10-26 internal release v26
 
 P31 覆盖诊断工作包已绑定内部研究发布 v26：`D:/QuantificationData/trading/research/releases/20261026_v26/release_manifest.json`，提交 `520f606`，`missing_required_code=[]`、`execution_admitted=false`、`live_execution_ready=false`。绑定回执 `outputs/pipeline_receipts/20261026_release_v26_binding_v1.json`。
+
+## 2026-10-26 P32 research adoption rollup v2
+
+已把最新候选采用矩阵、成熟因子 20/60-session 比较和 StockDB 短线 gate v3 汇总为 v2 研究回执：3 个继续研究、2 个停止原规格、1 个覆盖阻断、4 个独立 gate；`strategy_validated=0`、`execution_admitted=false`。回执 `outputs/pipeline_receipts/20261026_research_adoption_rollup_v2.json`，报告 `outputs/research_reports/20261026_research_adoption_rollup_v2.md`，测试 3 passed。

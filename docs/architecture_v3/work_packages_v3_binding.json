@@ -2218,6 +2218,27 @@
         "outputs/pipeline_receipts/20261026_stockdb_close_coverage_v1.json"
       ],
       "acceptance": "A batch request for 20 current holdings completes from the pinned snapshot without repeated full scans, records 20 missing 2026-10-26 rows, passes 2 focused tests, and leaves execution_admitted=false with no imputation."
+    },
+    {
+      "id": "P32",
+      "domain": "research",
+      "result": "The latest candidate adoption matrix, mature-factor horizon comparison and StockDB-backed shortline adoption gate are joined into a v2 research-only rollup with explicit continuation, stop and coverage decisions.",
+      "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
+      "next": "Regenerate after a valid post-close D0/D1 or changed strategy/data evidence; keep PIT, forward and channel gates separate.",
+      "prohibition": "Do not treat the rollup as strategy validation, paper/live promotion or a substitute for PIT/forward/THS evidence.",
+      "actual_paths": [
+        "trading/research/research_adoption_rollup.py",
+        "trading/research/tests/test_research_adoption_rollup.py",
+        "outputs/pipeline_receipts/20261026_research_adoption_rollup_v2.json",
+        "outputs/research_reports/20261026_research_adoption_rollup_v2.md"
+      ],
+      "evidence_updated_on": "2026-10-26",
+      "evidence": [
+        "outputs/pipeline_receipts/20261026_research_adoption_rollup_v2.json",
+        "outputs/research_reports/20261026_research_adoption_rollup_v2.md",
+        "trading/research/tests/test_research_adoption_rollup.py"
+      ],
+      "acceptance": "The rollup binds candidate v2, mature-factor horizon and shortline gate v3; records 3 continue-research-only, 2 stop, 1 blocked-coverage and 4 separate-gate candidates, keeps strategy_validated=0 and execution_admitted=false, and passes 3 focused tests."
     }
   ],
   "updated_at": "2026-10-26"
