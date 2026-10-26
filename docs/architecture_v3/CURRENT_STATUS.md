@@ -483,3 +483,7 @@ P32 策略采用汇总 v2 已绑定内部研究发布 v27：`D:/QuantificationDa
 ## 2026-10-26 THS readback duplicate-row gate
 
 THS 只读回读比较器现在显式拒绝重复参考证券，并将重复导出证券判为 `readback_mismatch_stop`，不再用字典覆盖前一行。新增重复参考/重复导出测试；THS focused suite `8 passed`。该改动仍不连接客户端、不提交、不改变 Ledger。
+
+## 2026-10-26 internal release v28
+
+P18 THS 重复回读行门禁已绑定内部研究发布 v28：`D:/QuantificationData/trading/research/releases/20261026_v28/release_manifest.json`，提交 `7c88e9b`，`missing_required_code=[]`、`execution_admitted=false`、`live_execution_ready=false`。绑定回执 `outputs/pipeline_receipts/20261026_release_v28_binding_v1.json`。
