@@ -1,0 +1,4 @@
+event_id,symbol,date,stage,model_hit5_probability,paper_candidate_only,stage_rank_pct,rank_pass,candidate_selected,model_kind,source_plan_day
+002103.SZSE|2026-10-15|s1,002103.SZSE,2026-10-15,1,0.127439428908846,True,0.06666666666666667,True,True,lgbm,2026-10-15
+603329.SSE|2026-10-15|s1,603329.SSE,2026-10-15,1,0.2850365184655088,True,0.03333333333333333,True,True,lgbm,2026-10-15
+603535.SSE|2026-10-15|s1,603535.SSE,2026-10-15,1,0.1262834287617084,True,0.1,True,True,lgbm,2026-10-15

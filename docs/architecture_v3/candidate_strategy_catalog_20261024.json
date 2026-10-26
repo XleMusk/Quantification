@@ -618,7 +618,7 @@
     {
       "id": "shortline_native_lr_lgbm",
       "family": "shortline_board_chain",
-      "state": "RESEARCH_ACCOUNT_PARTIAL_WITH_STOP_POINTS",
+      "state": "RESEARCH_ACCOUNT_PARTIAL_WITH_CANDIDATE_HANDOFF",
       "comparability_group": "shortline_saved_selection_2026",
       "metrics": {
         "lr_sessions": 103,
@@ -631,7 +631,9 @@
         "lr_engine_sessions_committed": 103,
         "lgbm_engine_sessions_committed": 95,
         "score_gate_rows": 25150,
-        "score_gate_candidate_rows": 0
+        "score_gate_candidate_rows": 0,
+        "candidate_handoff_rows_per_model": 3,
+        "candidate_handoff_models": 2
       },
       "evidence": [
         "outputs/shortline_native_selection_replay/20261018_v1/REPORT.md",
@@ -648,15 +650,25 @@
         "outputs/pipeline_receipts/20261025_shortline_lr_joint_paper_v1/joint_paper_receipt.json",
         "outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v1/joint_paper_receipt.json",
         "outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v2/joint_paper_receipt.json",
-        "outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v2/ths_readonly_reference.json"
+        "outputs/pipeline_receipts/20261025_shortline_lgbm_joint_paper_v2/ths_readonly_reference.json",
+        "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json",
+        "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lr_candidates.csv",
+        "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lgbm_candidates.csv",
+        "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lr_score_gate.json",
+        "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lgbm_score_gate.json",
+        "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lr_signal_frame.json",
+        "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lr_target_preview.json",
+        "outputs/research_reports/20261026_shortline_candidate_handoff_v1.md",
+        "trading/research/shortline_candidate_handoff.py",
+        "trading/research/tests/test_shortline_candidate_handoff.py"
       ],
       "limits": [
         "full strategy return unknown",
         "unresolved references preserved",
-        "current frozen score input has zero paper_candidate_only=true rows; panel replay correctly remains blocked",
         "machine audit preserves both stop points and null complete-window returns; no strategy adoption claim",
         "saved LR target reaches the shared research-only paper route; full strategy window remains incomplete",
-        "saved LGBM target reaches the shared research-only paper route; LR and LGBM terminal days remain separate"
+        "saved LGBM target reaches the shared research-only paper route; LR and LGBM terminal days remain separate",
+        "the new qualified preopen handoff has 3 explicitly selected rows per model and passes the read-only score gate; it is a new candidate input, not a complete-window return"
       ],
       "research_selection": {
         "decision": "UNASSESSED_SEPARATE_GATE",
@@ -665,7 +677,7 @@
         "paper_allowed": false,
         "promotion_allowed": false,
         "source_receipt": "outputs/pipeline_receipts/20261026_candidate_research_selection_v2.json",
-        "next_step": "Keep a separate gate; first satisfy the candidate timing, coverage and attribution conditions."
+        "next_step": "Replay the new qualified handoff through a complete raw-bar path after resolving the saved execution references; do not promote or change the frozen model."
       }
     },
     {

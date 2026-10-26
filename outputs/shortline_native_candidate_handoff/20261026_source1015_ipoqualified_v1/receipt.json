@@ -1,0 +1,80 @@
+{
+  "schema": "native_shortline_candidate_handoff_v1",
+  "status": "COMPLETED_RESEARCH_ONLY_CANDIDATE_HANDOFF",
+  "source_plan": {
+    "path": "D:\\QuantificationData\\trading\\research\\shortline_native_preopen\\20261016_source1015_ipoqualified_v1\\plan.json",
+    "sha256": "76eb6e4c7c386e3444ab3cb65c2763567ae7eb3837101df124cd6069d12481d5"
+  },
+  "policy_id": "native_stagewise_top10pct_daily_top5_known_no_limit_exclusion_preopen_paper_v1",
+  "source_day": "2026-10-15",
+  "execution_day": "2026-10-16",
+  "models": [
+    {
+      "model_kind": "lr",
+      "raw_preview": {
+        "path": "D:\\QuantificationData\\trading\\research\\shortline_native_preopen\\20261016_source1015_ipoqualified_v1\\lr_ranked_preview.csv",
+        "sha256": "5230af682bce8c23737628ce59d28fe86a20aa37c3114c0e13d9be181f9bf18d"
+      },
+      "candidate_file": {
+        "path": "D:\\Quantification\\outputs\\shortline_native_candidate_handoff\\.20261026_source1015_ipoqualified_v1.zm6okj98\\lr_candidates.csv",
+        "sha256": "486b2b648e6e752a3b6f832100acdc6ba5ce05f744d88151fe10bfc0d6b00e53"
+      },
+      "raw_rows": 34,
+      "selected_count": 3,
+      "selected_event_ids": [
+        "002815.SZSE|2026-10-15|s1",
+        "603535.SSE|2026-10-15|s1",
+        "603999.SSE|2026-10-15|s1"
+      ],
+      "raw_preview_modified": false,
+      "candidate_panel_input": true
+    },
+    {
+      "model_kind": "lgbm",
+      "raw_preview": {
+        "path": "D:\\QuantificationData\\trading\\research\\shortline_native_preopen\\20261016_source1015_ipoqualified_v1\\lgbm_ranked_preview.csv",
+        "sha256": "34bbef011e6db1cbc6052a9253a046fd74b427681fd510511d7415c4cf0900f1"
+      },
+      "candidate_file": {
+        "path": "D:\\Quantification\\outputs\\shortline_native_candidate_handoff\\.20261026_source1015_ipoqualified_v1.zm6okj98\\lgbm_candidates.csv",
+        "sha256": "8b64494f4577194a01bf96945a2ca3440b3910027cb56e00b8ed05ca02b63a88"
+      },
+      "raw_rows": 34,
+      "selected_count": 3,
+      "selected_event_ids": [
+        "002103.SZSE|2026-10-15|s1",
+        "603329.SSE|2026-10-15|s1",
+        "603535.SSE|2026-10-15|s1"
+      ],
+      "raw_preview_modified": false,
+      "candidate_panel_input": true
+    }
+  ],
+  "candidate_files": [
+    {
+      "path": "D:\\Quantification\\outputs\\shortline_native_candidate_handoff\\.20261026_source1015_ipoqualified_v1.zm6okj98\\lr_candidates.csv",
+      "sha256": "486b2b648e6e752a3b6f832100acdc6ba5ce05f744d88151fe10bfc0d6b00e53"
+    },
+    {
+      "path": "D:\\Quantification\\outputs\\shortline_native_candidate_handoff\\.20261026_source1015_ipoqualified_v1.zm6okj98\\lgbm_candidates.csv",
+      "sha256": "8b64494f4577194a01bf96945a2ca3440b3910027cb56e00b8ed05ca02b63a88"
+    }
+  ],
+  "raw_score_payloads_modified": false,
+  "source_plan_modified": false,
+  "research_only": true,
+  "candidate_panel_only": true,
+  "target_generation_allowed": false,
+  "paper_orders_generated": false,
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "limitations": [
+    "Candidate flags are written only to this new handoff; raw score files remain unchanged.",
+    "The handoff is suitable for research panel replay only and does not prove PIT membership, company-action safety or strategy validation."
+  ],
+  "receipt": {
+    "path": "D:\\Quantification\\outputs\\shortline_native_candidate_handoff\\20261026_source1015_ipoqualified_v1\\receipt.json",
+    "sha256": null
+  }
+}

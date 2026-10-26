@@ -1985,7 +1985,31 @@
       ],
       "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence.",
       "evidence_updated_on": "2026-10-26"
+    },
+    {
+      "id": "P22",
+      "domain": "research",
+      "result": "The published qualified native shortline preopen plan now feeds an immutable candidate handoff with 3 explicitly selected LR rows and 3 LightGBM rows; both model files pass the reusable score gate without modifying raw scores.",
+      "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
+      "next": "Replay the handoff through a complete raw-bar path after resolving saved execution references; keep PIT, company-action, full-window return and promotion gates closed.",
+      "prohibition": "Do not edit raw score flags, infer missing stage membership, or treat the handoff/score gate as a strategy validation or paper/live authorization.",
+      "actual_paths": [
+        "trading/research/shortline_candidate_handoff.py",
+        "trading/research/tests/test_shortline_candidate_handoff.py",
+        "run_committee.py shortline-native-candidate-handoff",
+        "D:/Quantification/outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json",
+        "D:/Quantification/outputs/research_reports/20261026_shortline_candidate_handoff_v1.md",
+        "D:/Quantification/outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lr_score_gate.json",
+        "D:/Quantification/outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lgbm_score_gate.json"
+      ],
+      "evidence": [
+        "D:/Quantification/outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json",
+        "D:/Quantification/outputs/research_reports/20261026_shortline_candidate_handoff_v1.md",
+        "D:/Quantification/outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lr_score_gate.json",
+        "D:/Quantification/outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lgbm_score_gate.json"
+      ],
+      "acceptance": "A hash-bound published qualified preopen plan is consumed without changing source bytes; the new LR and LightGBM candidate files contain exactly 3 selected rows each, paper_candidate_only=true, and both score gates return VERIFIED_SHORTLINE_SCORE_GATE_READY with execution_admitted=false."
     }
   ],
-  "updated_at": "2026-10-26"
+  "updated_at": "2026-10-26T09:35:00+08:00"
 }

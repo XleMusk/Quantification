@@ -1,0 +1,41 @@
+{
+  "status": "completed_research_target_weight_preview",
+  "strategy_id": "research:shortline_limitup_continuation_v1",
+  "decision_day": "2026-10-15",
+  "weights": {
+    "002815.SZSE": 0.2,
+    "603535.SSE": 0.2,
+    "603999.SSE": 0.2
+  },
+  "weight_sum": 0.6000000000000001,
+  "selector": "trading.engine.choose_targets",
+  "config": {
+    "signal": "equal_weight",
+    "lookback": 126,
+    "skip": 21,
+    "volatility_window": 60,
+    "rebalance_sessions": 5,
+    "holdings": 3,
+    "retain_rank": 3,
+    "gross_limit": 0.8,
+    "single_limit": 0.2,
+    "initial_cash": 100000,
+    "min_amount": 20000000,
+    "min_listing_days": 365,
+    "commission": 0.0003,
+    "minimum_commission": 5,
+    "sell_tax": 0.0005,
+    "transfer_fee": 1e-05,
+    "slippage_bps": 10,
+    "participation": 0.01,
+    "dividend_tax_reserve": 0.2
+  },
+  "research_only": true,
+  "target_holdings_generated": false,
+  "paper_orders_generated": false,
+  "execution_admitted": false,
+  "limitations": [
+    "Weights use only marked shortline scores; no prices, cash, held positions or T+1 state were supplied.",
+    "This is not a Portfolio/Ledger target and cannot be sent to a broker or Tonghuashun."
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "quantification_shortline_score_gate_audit_v1",
+  "status": "VERIFIED_SHORTLINE_SCORE_GATE_READY",
+  "input": {
+    "path": "D:\\Quantification\\outputs\\shortline_native_candidate_handoff\\20261026_source1015_ipoqualified_v1\\lr_candidates.csv",
+    "exists": true,
+    "sha256": "486b2b648e6e752a3b6f832100acdc6ba5ce05f744d88151fe10bfc0d6b00e53",
+    "rows": 3,
+    "date_min": "2026-10-15",
+    "date_max": "2026-10-15"
+  },
+  "paper_candidate_only_true": 3,
+  "paper_candidate_only_false": 0,
+  "paper_candidate_only_invalid": 0,
+  "event_id_duplicate_rows": 0,
+  "event_identity_key": [
+    "event_id",
+    "model_kind"
+  ],
+  "invalid_dates": 0,
+  "invalid_symbols": 0,
+  "invalid_stages": 0,
+  "invalid_scores": 0,
+  "requested_range": {
+    "start": "2026-10-15",
+    "end": "2026-10-15"
+  },
+  "selection_enabled": true,
+  "target_generation_allowed": false,
+  "strategy_validated": false,
+  "execution_admitted": false,
+  "issues": [],
+  "limitations": [
+    "A raw score file becomes a candidate-panel input only when rows are explicitly marked paper_candidate_only=true.",
+    "This audit does not change flags, select candidates, generate targets, orders or fills.",
+    "Passing this schema gate does not establish PIT publication, company-action safety or strategy validation."
+  ],
+  "observed_at": "2026-10-26T01:32:08.546149+00:00",
+  "receipt_path": "D:\\Quantification\\outputs\\shortline_native_candidate_handoff\\20261026_source1015_ipoqualified_v1\\lr_score_gate.json",
+  "report_path": "D:\\Quantification\\outputs\\shortline_native_candidate_handoff\\20261026_source1015_ipoqualified_v1\\lr_score_gate.md"
+}

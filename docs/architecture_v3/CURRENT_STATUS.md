@@ -377,3 +377,10 @@ D1 输入汇入已自动化：`candidate-daily-input-bundle` 从两个已保存�
 该入口又增加了可选 fixed leg：显式传入固定策略终态研究账户后，固定低波半动量 `20/20`、趋势候选 `20/20`、Ridge `5/5` 均通过同一个 `build_paper_target_package` 进入本地 Ledger 投影，固定 leg 的 target/quote 文件也保留 SHA-256。证明回执为 `outputs/paper_plans/20261025_candidate_batch_v1/pipeline_v3/pipeline_receipt.json`；`execution_admitted=false`，未修改固定纸面账户，未访问券商或同花顺。
 
 公开席位候选 `lag2_TREND_ANY_LHB` 的一个完整 241-session 案例已进入同一共享本地纸面投影，5 个目标、5 个纸面订单、4 个可用路由。回执 `outputs/pipeline_receipts/20261025_public_seat_candidate_shared_paper_receipt_v1.json` 明确保留 `UNASSESSED_SEPARATE_GATE`，没有把公开席位结果接入可选策略队列；`validation` 和 `boundary_assertions` 均显示外部账户、客户端、提交、撤单和持久账本状态为 false。
+
+
+## 2026-10-26 native shortline candidate handoff
+
+新增 `trading/research/shortline_candidate_handoff.py` 与 `shortline-native-candidate-handoff` 命令：它读取已发布且通过 IPO qualified 资格投影的 native preopen plan，仅复制明确 `candidate_selected=true` 的事件到新 handoff，不修改 raw score 或原 plan。2026-10-15→2026-10-16 的 LR/LGBM 各生成 3 行候选，两个独立 score gate 均返回 `VERIFIED_SHORTLINE_SCORE_GATE_READY`；LR 另生成 SignalFrame/target preview。该结果仍是研究候选输入，不是完整回放、PIT 验证或纸面/实盘授权。
+
+证据：`outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json`、`outputs/research_reports/20261026_shortline_candidate_handoff_v1.md`。

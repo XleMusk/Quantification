@@ -1,0 +1,152 @@
+{
+  "schema": "shortline_signal_frame_v1",
+  "status": "completed_research_signal_frame",
+  "candidate_preview": "D:\\Quantification\\outputs\\shortline_native_candidate_handoff\\20261026_source1015_ipoqualified_v1\\lr_candidates.csv",
+  "decision_day": "2026-10-15",
+  "signal_count": 3,
+  "signal_frame": {
+    "schema_version": 1,
+    "contract_type": "SignalFrame",
+    "day": "2026-10-15",
+    "signals": [
+      {
+        "schema_version": 1,
+        "contract_type": "Signal",
+        "security": {
+          "schema_version": 1,
+          "contract_type": "SecurityId",
+          "code": "002815",
+          "exchange": "SZSE"
+        },
+        "value": 0.0295367274191286,
+        "kind": "ranking_score",
+        "time": {
+          "schema_version": 1,
+          "contract_type": "SignalTime",
+          "event_time": "2026-10-15T15:00:00+08:00",
+          "available_at": "2026-10-15T15:05:00+08:00",
+          "published_at": null,
+          "received_at": null,
+          "computed_at": null,
+          "availability_evidence": "historical_eod_assumption"
+        },
+        "horizon_sessions": null,
+        "diagnostics": {
+          "paper_candidate_only": 1.0,
+          "stage": 1.0
+        }
+      },
+      {
+        "schema_version": 1,
+        "contract_type": "Signal",
+        "security": {
+          "schema_version": 1,
+          "contract_type": "SecurityId",
+          "code": "603535",
+          "exchange": "SSE"
+        },
+        "value": 0.0263973653486759,
+        "kind": "ranking_score",
+        "time": {
+          "schema_version": 1,
+          "contract_type": "SignalTime",
+          "event_time": "2026-10-15T15:00:00+08:00",
+          "available_at": "2026-10-15T15:05:00+08:00",
+          "published_at": null,
+          "received_at": null,
+          "computed_at": null,
+          "availability_evidence": "historical_eod_assumption"
+        },
+        "horizon_sessions": null,
+        "diagnostics": {
+          "paper_candidate_only": 1.0,
+          "stage": 1.0
+        }
+      },
+      {
+        "schema_version": 1,
+        "contract_type": "Signal",
+        "security": {
+          "schema_version": 1,
+          "contract_type": "SecurityId",
+          "code": "603999",
+          "exchange": "SSE"
+        },
+        "value": 0.0233157496713155,
+        "kind": "ranking_score",
+        "time": {
+          "schema_version": 1,
+          "contract_type": "SignalTime",
+          "event_time": "2026-10-15T15:00:00+08:00",
+          "available_at": "2026-10-15T15:05:00+08:00",
+          "published_at": null,
+          "received_at": null,
+          "computed_at": null,
+          "availability_evidence": "historical_eod_assumption"
+        },
+        "horizon_sessions": null,
+        "diagnostics": {
+          "paper_candidate_only": 1.0,
+          "stage": 1.0
+        }
+      }
+    ],
+    "source": "research:shortline_limitup_continuation_v1",
+    "context": {
+      "schema_version": 1,
+      "contract_type": "RunContext",
+      "account_id": "shortline_research_bridge",
+      "mode": "historical_replay"
+    }
+  },
+  "research_only": true,
+  "paper_target_generated": false,
+  "paper_orders_generated": false,
+  "ths_payload_generated": false,
+  "execution_admitted": false,
+  "limitations": [
+    "Scores are close-based research probabilities, not executable fill predictions.",
+    "No prices, target weights, account state, orders, Ledger or THS client state was accessed."
+  ],
+  "research_target": {
+    "status": "completed_research_target_weight_preview",
+    "strategy_id": "research:shortline_limitup_continuation_v1",
+    "decision_day": "2026-10-15",
+    "weights": {
+      "002815.SZSE": 0.2,
+      "603535.SSE": 0.2,
+      "603999.SSE": 0.2
+    },
+    "weight_sum": 0.6000000000000001,
+    "selector": "trading.engine.choose_targets",
+    "config": {
+      "signal": "equal_weight",
+      "lookback": 126,
+      "skip": 21,
+      "volatility_window": 60,
+      "rebalance_sessions": 5,
+      "holdings": 3,
+      "retain_rank": 3,
+      "gross_limit": 0.8,
+      "single_limit": 0.2,
+      "initial_cash": 100000,
+      "min_amount": 20000000,
+      "min_listing_days": 365,
+      "commission": 0.0003,
+      "minimum_commission": 5,
+      "sell_tax": 0.0005,
+      "transfer_fee": 1e-05,
+      "slippage_bps": 10,
+      "participation": 0.01,
+      "dividend_tax_reserve": 0.2
+    },
+    "research_only": true,
+    "target_holdings_generated": false,
+    "paper_orders_generated": false,
+    "execution_admitted": false,
+    "limitations": [
+      "Weights use only marked shortline scores; no prices, cash, held positions or T+1 state were supplied.",
+      "This is not a Portfolio/Ledger target and cannot be sent to a broker or Tonghuashun."
+    ]
+  }
+}

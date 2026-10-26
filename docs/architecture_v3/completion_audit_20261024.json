@@ -426,7 +426,7 @@
     {
       "id": "shortline",
       "requirement": "Shortline board-chain",
-      "status": "PARTIAL_STOP_POINTS",
+      "status": "PARTIAL_CANDIDATE_HANDOFF_BOUND",
       "evidence": [
         "outputs/shortline_native_selection_replay/20261018_v1/REPORT.md",
         "outputs/shortline_native_selection_replay/20261024_panel_contract_blocked.json",
@@ -435,10 +435,20 @@
         "outputs/pipeline_receipts/20261024_shortline_score_gate_audit_v1.json",
         "outputs/research_reports/20261024_shortline_score_gate_audit_v1.md",
         "trading/research/shortline_score_gate_audit.py",
-        "trading/research/tests/test_shortline_score_gate_audit.py"
+        "trading/research/tests/test_shortline_score_gate_audit.py",
+        "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json",
+        "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lr_candidates.csv",
+        "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lgbm_candidates.csv",
+        "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lr_score_gate.json",
+        "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lgbm_score_gate.json",
+        "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lr_signal_frame.json",
+        "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lr_target_preview.json",
+        "outputs/research_reports/20261026_shortline_candidate_handoff_v1.md",
+        "trading/research/shortline_candidate_handoff.py",
+        "trading/research/tests/test_shortline_candidate_handoff.py"
       ],
-      "gap": "The saved LR/LightGBM selection replay is now machine-audited through the shared Engine/Ledger with 103/95 committed sessions and preserved stop reasons; the reusable score gate audits 25,150 rows and confirms zero paper_candidate_only=true rows, so both complete-window returns remain null.",
-      "next_acceptance": "obtain a correctly marked frozen score file and resolve the saved corporate-action/reference inputs before any complete shortline return or paper promotion"
+      "gap": "The native qualified preopen plan now binds 3 LR and 3 LightGBM selected rows into new immutable candidate handoffs; both score gates pass without changing raw probabilities. The saved 187-session selection replay is still incomplete (103/95 sessions), PIT/company-action evidence is absent, and no complete strategy return or promotion is allowed.",
+      "next_acceptance": "Run the new handoff through a complete raw-bar panel replay after resolving the saved execution references, then compare the two models on the same window; retain execution_admitted=false until PIT and forward gates pass."
     },
     {
       "id": "seat_style",
