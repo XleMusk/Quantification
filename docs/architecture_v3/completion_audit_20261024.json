@@ -1,6 +1,6 @@
 {
   "schema": "quantification_goal_completion_audit_v1",
-  "audited_at": "2026-10-26T09:09:20+08:00",
+  "audited_at": "2026-10-26T11:00:00+08:00",
   "execution_admitted": false,
   "overall_status": "INCOMPLETE_ACTIVE",
   "items": [
@@ -631,9 +631,13 @@
         "outputs/pipeline_receipts/20261026_candidate_adoption_decision_v1.json",
         "outputs/research_reports/20261026_candidate_adoption_decision_v1.md",
         "outputs/pipeline_receipts/20261026_candidate_adoption_decision_v2.json",
-        "outputs/research_reports/20261026_candidate_adoption_decision_v2.md"
+        "outputs/research_reports/20261026_candidate_adoption_decision_v2.md",
+        "trading/research/research_adoption_rollup.py",
+        "trading/research/tests/test_research_adoption_rollup.py",
+        "outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json",
+        "outputs/research_reports/20261026_research_adoption_rollup_v1.md"
       ],
-      "gap": "Candidate catalog now has a reproducible adoption-gate receipt joining common-window, cost-pressure and latest selection evidence; real PIT/forward/channel gates remain open.",
+      "gap": "Unified research-only rollup now joins candidate adoption, mature-factor horizon and shortline model gates; PIT, untouched-forward and channel evidence remain open.",
       "next_acceptance": "After the next complete close, regenerate the same gate from the fresh snapshot before any candidate promotion decision.",
       "evidence_updated_on": "2026-10-26"
     },

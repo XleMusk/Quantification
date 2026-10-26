@@ -416,6 +416,10 @@ The internal research-only release now binds the shortline adoption gate, mature
 
 The same frozen LR/LightGBM candidates now replay through an independent BaoStock path beginning at each symbol's first available session and ending 2026-10-16. LR covers 2,634 sessions and LightGBM 4,074 sessions; both have zero dropped incomplete path rows. The shared Engine/Ledger result remains LR 1 order/2 fills and LightGBM 3 orders/6 fills. The new adoption gate is research-only and does not replace StockDB/PIT/forward evidence.
 
+## 2026-10-26 unified research adoption rollup
+
+`trading/research/research_adoption_rollup.py` now joins the existing candidate adoption matrix, the mature-factor 20/60-session comparison and the shortline LR/LightGBM adoption gate into one machine-readable research-only receipt. It preserves each route's separate decision and next gate, while keeping `execution_admitted=false`, `paper_allowed=false` and `promotion_allowed=false`. Receipt/report: `outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json` and `outputs/research_reports/20261026_research_adoption_rollup_v1.md`; focused tests: `3 passed`. This is a decision integration artifact, not strategy adoption or live-readiness evidence.
+
 ## 2026-10-26 release v21
 
 The internal research-only release binds the long shortline raw-path replay and v2 adoption gate. Manifest: D:/QuantificationData/trading/research/releases/20261026_v21/release_manifest.json. execution_admitted=false, live_execution_ready=false, missing_required_code=[].

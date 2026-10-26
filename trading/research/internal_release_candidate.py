@@ -31,6 +31,7 @@ REQUIRED_FILES = (
     "trading/research/shortline_baostock_raw_snapshot.py",
     "trading/research/shortline_adoption_gate.py",
     "trading/research/factor_replay_comparison.py",
+    "trading/research/research_adoption_rollup.py",
     "trading/research/workbench_manual_resubmit.py",
     "run_committee.py",
 )
@@ -58,10 +59,13 @@ EVIDENCE_FILES = (
     "outputs/research_reports/20261026_shortline_adoption_gate_v2.md",
     "outputs/pipeline_receipts/20261026_mature_factor_horizon_comparison_v1.json",
     "outputs/research_reports/20261026_mature_factor_horizon_comparison_v1.md",
+    "outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json",
+    "outputs/research_reports/20261026_research_adoption_rollup_v1.md",
     "outputs/pipeline_receipts/20261026_workbench_manual_resubmit_v1.json",
     "outputs/research_reports/20261026_workbench_manual_resubmit_v1.md",
     "trading/research/tests/test_shortline_adoption_gate.py",
     "trading/tests/test_factor_replay_comparison.py",
+    "trading/research/tests/test_research_adoption_rollup.py",
     "trading/research/tests/test_workbench_manual_resubmit.py",
 )
 

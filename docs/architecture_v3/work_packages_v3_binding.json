@@ -2150,6 +2150,17 @@
         "outputs/research_reports/20261026_shortline_adoption_gate_v2.md"
       ],
       "acceptance": "Both frozen model files replay through the shared Engine/Ledger over the long path with explicit 2634/4074 sessions, zero dropped incomplete rows, execution_admitted=false and no broker/THS interaction."
+    },
+    {
+      "id": "P29",
+      "domain": "research",
+      "result": "Candidate adoption, mature-factor horizon comparison and shortline LR/LightGBM gate now produce one research-only rollup with explicit next actions.",
+      "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
+      "next": "After the 2026-10-26 close, regenerate the rollup from the fresh D0/D1 and keep PIT, forward and channel gates separate.",
+      "prohibition": "Do not treat the rollup as paper/live adoption or as a substitute for PIT, untouched-forward or THS evidence.",
+      "actual_paths": "trading/research/research_adoption_rollup.py trading/research/tests/test_research_adoption_rollup.py run_committee.py research-adoption-rollup outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json outputs/research_reports/20261026_research_adoption_rollup_v1.md",
+      "evidence_updated_on": "2026-10-26",
+      "evidence": "outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json outputs/research_reports/20261026_research_adoption_rollup_v1.md"
     }
   ],
   "updated_at": "2026-10-26"

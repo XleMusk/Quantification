@@ -257,6 +257,9 @@ def main(argv=None):
     if argv[:1] == ["candidate-adoption-decision"]:
         from trading.research.candidate_adoption_decision import main as candidate_adoption_decision_main
         return candidate_adoption_decision_main(argv[1:])
+    if argv[:1] == ["research-adoption-rollup"]:
+        from trading.research.research_adoption_rollup import main as research_adoption_rollup_main
+        return research_adoption_rollup_main(argv[1:])
     if argv[:1] == ["shortline-adoption-gate"]:
         from trading.research.shortline_adoption_gate import main as shortline_adoption_gate_main
         return shortline_adoption_gate_main(argv[1:])
