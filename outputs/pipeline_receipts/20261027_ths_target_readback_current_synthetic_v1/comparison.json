@@ -11,6 +11,14 @@
   "duplicate_readback_symbols": [],
   "account_observed": false,
   "quote_observed": false,
+  "readback_provenance": {
+    "kind": "synthetic_fixture",
+    "capture_mode": null,
+    "source_file": null,
+    "source_sha256": null,
+    "client_interacted": false
+  },
+  "authorized_readonly_observation": false,
   "submitted": false,
   "execution_admitted": false,
   "ledger_mutated": false,

@@ -2162,14 +2162,18 @@
         "trading/ths/target_readback.py",
         "trading/tests/test_ths_target_readback.py",
         "run_committee.py ths-target-readback",
-        "outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json"
+        "outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json",
+        "outputs/pipeline_receipts/20261027_ths_target_readback_current_synthetic_v1/comparison.json",
+        "outputs/pipeline_receipts/20261027_ths_target_readback_current_synthetic_v1/report.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json",
-        "trading/tests/test_ths_target_readback.py"
+        "trading/tests/test_ths_target_readback.py",
+        "outputs/pipeline_receipts/20261027_ths_target_readback_current_synthetic_v1/comparison.json",
+        "outputs/pipeline_receipts/20261027_ths_target_readback_current_synthetic_v1/report.md"
       ],
-      "acceptance": "A complete synthetic row export returns readback_verified with submitted=false and execution_admitted=false; mismatch, missing-row and duplicate-export cases stop explicitly; duplicate reference symbols are rejected; focused tests pass.",
-      "evidence_updated_on": "2026-10-26"
+      "acceptance": "A complete synthetic row export returns readback_verified with submitted=false and execution_admitted=false; mismatch, missing-row and duplicate-export cases stop explicitly; duplicate reference symbols are rejected; a readback claiming account, quote or client observation must additionally carry authorized_read_only_export mode, timezone-aware observed_at, source_file and source_sha256; focused tests pass.",
+      "evidence_updated_on": "2026-10-27"
     },
     {
       "id": "P19",
@@ -2290,7 +2294,7 @@
         "outputs/pipeline_receipts/20261026_fixed_only_source_manifest_v1.json",
         "outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/post_close_receipt.json"
       ],
-      "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence. The loader rejects incomplete native snapshots, verifies plan/receipt/roster/raw hashes and exact date/roster rows, and fixed_daily schema dispatch passes focused tests without changing execution boundaries. The producer publishes complete plan/receipt/roster/raw files only for exact coverage and emitted BLOCKED_INCOMPLETE_STOCKDB_SNAPSHOT with 25 missing symbols for the current native snapshot without imputation. An explicit target-roster mode now packages a declared 20-symbol subset from that same snapshot without imputation; the 2026-10-26 package is 20/20, append-only evidence adds 20 rows, the registered derived fixed_daily head reaches 2026-10-26 generation 2, and fixed-only D0/D1 produces 20 target rows and 20 paper orders while keeping candidate count 0, paper/promotion closed and execution_admitted=false."
+      "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence. The loader rejects incomplete native snapshots, verifies plan/receipt/roster/raw hashes and exact date/roster rows, and fixed_daily schema dispatch passes focused tests without changing execution boundaries. The producer publishes complete plan/receipt/roster/raw files only for exact coverage and emitted BLOCKED_INCOMPLETE_STOCKDB_SNAPSHOT with 25 missing symbols for the current native snapshot without imputation. An explicit target-roster mode now packages a declared 20-symbol subset from that same snapshot without imputation; the 2026-10-26 package is 20/20, append-only evidence adds 20 rows, the registered derived fixed_daily head reaches 2026-10-26 generation 2, and fixed-only D0/D1 produces 20 target rows and 20 paper orders while keeping candidate count 0, paper/promotion closed and execution_admitted=false.",
       "evidence_updated_on": "2026-10-27"
     },
     {

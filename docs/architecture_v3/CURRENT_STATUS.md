@@ -672,3 +672,5 @@ Evidence: `outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v2.json`,
 
 新增 `run_committee.py f2-historical-gate`，将已保存的来源快照或显式 rows 接入现有 PIT/as-of/revision 合同。实际使用 CNINFO 000002.SZSE 2023Q1 当前来源快照生成 [`20261027_f2_historical_gate_cli_real_source_v1.json`](../../outputs/pipeline_receipts/20261027_f2_historical_gate_cli_real_source_v1.json)：1 行、0 行 ready，`asof_at` 和 `revision_id` 缺失被保留为 `BLOCKED_DATA`，没有补齐、因子计算或账户回放；`execution_admitted=false`。F2 historical gate 与 launcher 聚焦测试 `25 passed`，提交为 `4adab45`。
 
+同花顺只读回读比较器现在区分 `synthetic_fixture`、`offline_reference` 和带来源证明的 `authorized_read_only_export`。任何声称账户、行情或客户端已观察的回读，必须同时提供授权捕获模式、带时区的 `observed_at`、`source_file` 和 SHA-256；缺少这些字段会停止比较。现有 20 行合成回读仍为 `readback_verified`，但 `authorized_readonly_observation=false`；回执和报告为 `outputs/pipeline_receipts/20261027_ths_target_readback_current_synthetic_v1/comparison.json` 与 `report.md`，THS 真实观察仍未声称完成。
+

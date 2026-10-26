@@ -57,3 +57,42 @@ def test_target_readback_duplicate_reference_is_rejected():
     reference["rows"].append({"symbol": "000001.SZSE", "target_quantity": 100})
     with pytest.raises(ValueError, match="duplicate symbols"):
         compare_target_reference(reference, {"rows": []})
+
+
+def test_synthetic_readback_is_explicitly_unobserved():
+    result = compare_target_reference(_reference(), {
+        "synthetic_fixture": True,
+        "observed_at": "2026-10-27T01:20:00+08:00",
+        "account_observed": False,
+        "quote_observed": False,
+        "rows": [{"symbol": "000001.SZSE", "qty": 100}, {"symbol": "600000.SSE", "qty": 200}],
+    })
+    assert result["readback_provenance"]["kind"] == "synthetic_fixture"
+    assert result["authorized_readonly_observation"] is False
+
+
+def test_claimed_observation_requires_hash_bound_source():
+    with pytest.raises(ValueError, match="authorized_read_only_export"):
+        compare_target_reference(_reference(), {
+            "account_observed": True,
+            "quote_observed": False,
+            "client_interacted": True,
+            "rows": [{"symbol": "000001.SZSE", "qty": 100}, {"symbol": "600000.SSE", "qty": 200}],
+        })
+
+
+def test_authorized_readonly_observation_requires_no_submission():
+    result = compare_target_reference(_reference(), {
+        "capture_mode": "authorized_read_only_export",
+        "client_interacted": True,
+        "account_observed": True,
+        "quote_observed": True,
+        "observed_at": "2026-10-27T01:20:00+08:00",
+        "source_file": "D:/evidence/ths_readback.json",
+        "source_sha256": "a" * 64,
+        "rows": [{"symbol": "000001.SZSE", "qty": 100}, {"symbol": "600000.SSE", "qty": 200}],
+    })
+    assert result["status"] == "readback_verified"
+    assert result["authorized_readonly_observation"] is True
+    assert result["submitted"] is False
+    assert result["execution_admitted"] is False
