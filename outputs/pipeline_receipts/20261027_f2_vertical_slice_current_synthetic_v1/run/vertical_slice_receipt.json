@@ -1,0 +1,312 @@
+{
+  "schema": "f2_financial_vertical_slice_v1",
+  "status": "COMPLETED_RESEARCH_ONLY_F2_VERTICAL_SLICE",
+  "decision_day": "2024-05-01",
+  "execution_day": "2024-05-02",
+  "settlement_day": "2024-05-03",
+  "stages": [
+    "Data",
+    "Signal",
+    "Target Portfolio",
+    "Orders",
+    "BrokerAdapter",
+    "Fill",
+    "Cash/Position"
+  ],
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "account_replay": true,
+  "facts": [
+    {
+      "symbol": "000001.SZSE",
+      "fact_ids": [
+        "000001.SZSE:current",
+        "000001.SZSE:prior",
+        "000001.SZSE:assets"
+      ],
+      "result": {
+        "status": "READY",
+        "value": "0.006",
+        "available_at": {
+          "kind": "EXACT",
+          "start": "2024-04-30T12:00:00+08:00",
+          "end": null
+        },
+        "fact_ids": [
+          "000001.SZSE:current",
+          "000001.SZSE:prior",
+          "000001.SZSE:assets"
+        ],
+        "definition_version": "f01_asset_normalized_surprise_v1",
+        "reason": "all_facts_comparable_and_pre_event",
+        "event_window": {
+          "kind": "EXACT",
+          "start": "2024-05-01T15:00:00+08:00",
+          "end": null
+        },
+        "decision_cutoff": null
+      }
+    },
+    {
+      "symbol": "600000.SSE",
+      "fact_ids": [
+        "600000.SSE:current",
+        "600000.SSE:prior",
+        "600000.SSE:assets"
+      ],
+      "result": {
+        "status": "READY",
+        "value": "0.01",
+        "available_at": {
+          "kind": "EXACT",
+          "start": "2024-04-30T12:00:00+08:00",
+          "end": null
+        },
+        "fact_ids": [
+          "600000.SSE:current",
+          "600000.SSE:prior",
+          "600000.SSE:assets"
+        ],
+        "definition_version": "f01_asset_normalized_surprise_v1",
+        "reason": "all_facts_comparable_and_pre_event",
+        "event_window": {
+          "kind": "EXACT",
+          "start": "2024-05-01T15:00:00+08:00",
+          "end": null
+        },
+        "decision_cutoff": null
+      }
+    }
+  ],
+  "signal": {
+    "schema_version": 1,
+    "contract_type": "SignalFrame",
+    "day": "2024-05-01",
+    "signals": [
+      {
+        "schema_version": 1,
+        "contract_type": "Signal",
+        "security": {
+          "schema_version": 1,
+          "contract_type": "SecurityId",
+          "code": "600000",
+          "exchange": "SSE"
+        },
+        "value": 0.01,
+        "kind": "ranking_score",
+        "time": {
+          "schema_version": 1,
+          "contract_type": "SignalTime",
+          "event_time": "2024-05-01T15:00:00+08:00",
+          "available_at": "2024-05-01T15:05:00+08:00",
+          "published_at": null,
+          "received_at": null,
+          "computed_at": null,
+          "availability_evidence": "provided"
+        },
+        "horizon_sessions": null,
+        "diagnostics": {}
+      },
+      {
+        "schema_version": 1,
+        "contract_type": "Signal",
+        "security": {
+          "schema_version": 1,
+          "contract_type": "SecurityId",
+          "code": "000001",
+          "exchange": "SZSE"
+        },
+        "value": 0.006,
+        "kind": "ranking_score",
+        "time": {
+          "schema_version": 1,
+          "contract_type": "SignalTime",
+          "event_time": "2024-05-01T15:00:00+08:00",
+          "available_at": "2024-05-01T15:05:00+08:00",
+          "published_at": null,
+          "received_at": null,
+          "computed_at": null,
+          "availability_evidence": "provided"
+        },
+        "horizon_sessions": null,
+        "diagnostics": {}
+      }
+    ],
+    "source": "financial_f01_asset_normalized_surprise_v1",
+    "context": {
+      "schema_version": 1,
+      "contract_type": "RunContext",
+      "account_id": "f2_vertical_slice",
+      "mode": "historical_replay"
+    }
+  },
+  "signal_provenance": {
+    "000001.SZSE": {
+      "status": "READY",
+      "value": "0.006",
+      "available_at": {
+        "kind": "EXACT",
+        "start": "2024-04-30T12:00:00+08:00",
+        "end": null
+      },
+      "fact_ids": [
+        "000001.SZSE:current",
+        "000001.SZSE:prior",
+        "000001.SZSE:assets"
+      ],
+      "definition_version": "f01_asset_normalized_surprise_v1",
+      "reason": "all_facts_comparable_and_pre_event",
+      "event_window": {
+        "kind": "EXACT",
+        "start": "2024-05-01T15:00:00+08:00",
+        "end": null
+      },
+      "decision_cutoff": null
+    },
+    "600000.SSE": {
+      "status": "READY",
+      "value": "0.01",
+      "available_at": {
+        "kind": "EXACT",
+        "start": "2024-04-30T12:00:00+08:00",
+        "end": null
+      },
+      "fact_ids": [
+        "600000.SSE:current",
+        "600000.SSE:prior",
+        "600000.SSE:assets"
+      ],
+      "definition_version": "f01_asset_normalized_surprise_v1",
+      "reason": "all_facts_comparable_and_pre_event",
+      "event_window": {
+        "kind": "EXACT",
+        "start": "2024-05-01T15:00:00+08:00",
+        "end": null
+      },
+      "decision_cutoff": null
+    }
+  },
+  "package": {
+    "schema": "stockdb_paper_target_order_package_v1",
+    "status": "paper_target_order_package_complete",
+    "projection_mode": "TARGET_PREVIEW",
+    "ledger_scope": "ephemeral_projection",
+    "continuous_account_consumer": false,
+    "frozen_plan_published": false,
+    "online_paper": false,
+    "strategy_id": "f2_f01_current_synthetic_v1",
+    "decision_day": "2024-05-01",
+    "execution_day": "2024-05-02",
+    "quote_observed_at": "2024-05-01T15:00:00+08:00",
+    "quote_source": "explicit_same_day_fixture",
+    "cash_assumption_rmb": 100000.0,
+    "cost_model": {
+      "id": "cn_a_share_standard_ledger_costs_v1",
+      "config": {
+        "signal": "equal_weight",
+        "lookback": 126,
+        "skip": 21,
+        "volatility_window": 60,
+        "rebalance_sessions": 5,
+        "holdings": 2,
+        "retain_rank": 30,
+        "gross_limit": 0.8,
+        "single_limit": 0.2,
+        "initial_cash": 100000.0,
+        "min_amount": 20000000,
+        "min_listing_days": 365,
+        "commission": 0.0003,
+        "minimum_commission": 5,
+        "sell_tax": 0.0005,
+        "transfer_fee": 1e-05,
+        "slippage_bps": 10,
+        "participation": 0.01,
+        "dividend_tax_reserve": 0.2
+      },
+      "price_basis": "raw_rmb_quote_observation",
+      "fee_basis": "shared_local_ledger_rules"
+    },
+    "benchmark_binding": {
+      "id": "paper_target_projection_no_market_benchmark_v1",
+      "status": "NOT_APPLICABLE_TO_PAPER_TARGET_PROJECTION",
+      "reason": "This package projects one target set; it does not evaluate market-relative returns."
+    },
+    "weight_basis": "StockDB signal-frame target weights; maximum 80% gross and 20% single-name cap",
+    "lot_rounding": "existing execution_rule and shares_for_target",
+    "target_count": 2,
+    "paper_order_count": 2,
+    "route_available_count": 2,
+    "route_blocked_count": 0,
+    "estimated_target_notional_rmb": 39200.0,
+    "modeled_fees_rmb": 12.15,
+    "projected_final_cash_rmb": 60787.85,
+    "projected_final_equity_rmb": 99987.85,
+    "execution_admitted": false,
+    "account_observed": false,
+    "client_interacted": false,
+    "submitted": false,
+    "cancelled": false,
+    "ledger_persisted": false,
+    "limitations": [
+      "Initial cash is an independent research assumption, not an observed THS account balance.",
+      "Captured raw RMB quotes are references, not broker fills or submission instructions.",
+      "Paper fills use the shared local Ledger solely to project cash, fees and T+1 positions.",
+      "Unsupported routes stay in the research projection but have no THS form reference fields.",
+      "Settlement day is explicitly supplied by the caller; exchange-calendar admission is not inferred.",
+      "No THS interaction, order submission, cancellation, transfer or persistent Ledger mutation occurred.",
+      "This package is TARGET_PREVIEW only; it cannot stand in for a published D0 plan or an ONLINE_PAPER rollover."
+    ],
+    "artifacts": {
+      "target_holdings": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_f2_vertical_slice_current_synthetic_v1\\run\\paper_package\\target_holdings.csv",
+      "order_plan": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_f2_vertical_slice_current_synthetic_v1\\run\\paper_package\\order_plan.csv",
+      "ths_prefill_payloads": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_f2_vertical_slice_current_synthetic_v1\\run\\paper_package\\ths_prefill_payloads.csv",
+      "projected_account": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_f2_vertical_slice_current_synthetic_v1\\run\\paper_package\\projected_account.json",
+      "result": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_f2_vertical_slice_current_synthetic_v1\\run\\paper_package\\result.json"
+    }
+  },
+  "target_portfolio": {
+    "schema": "stockdb_research_target_v1",
+    "strategy_id": "f2_f01_current_synthetic_v1",
+    "decision_day": "2024-05-01",
+    "research_only": true,
+    "execution_admitted": false,
+    "weights": {
+      "600000.SSE": 0.2,
+      "000001.SZSE": 0.2
+    },
+    "signal_frame": {
+      "signals": [
+        {
+          "security": {
+            "code": "600000",
+            "exchange": "SSE"
+          },
+          "diagnostics": {
+            "rank": 1,
+            "score": 0.01,
+            "factor": "F01_asset_normalized_surprise_v1"
+          }
+        },
+        {
+          "security": {
+            "code": "000001",
+            "exchange": "SZSE"
+          },
+          "diagnostics": {
+            "rank": 2,
+            "score": 0.006,
+            "factor": "F01_asset_normalized_surprise_v1"
+          }
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Facts and quotes are explicit source inputs; no current provider data is fetched.",
+    "Paper fills are shared Ledger projections, not broker fills or THS instructions."
+  ],
+  "package_dir": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_f2_vertical_slice_current_synthetic_v1\\run\\paper_package",
+  "receipt_path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_f2_vertical_slice_current_synthetic_v1\\run\\vertical_slice_receipt.json"
+}

@@ -1,0 +1,135 @@
+{
+  "schema": "f2_vertical_slice_synthetic_spec_v1",
+  "source_kind": "synthetic_fixture",
+  "decision_day": "2024-05-01",
+  "execution_day": "2024-05-02",
+  "settlement_day": "2024-05-03",
+  "initial_cash": 100000,
+  "strategy_id": "f2_f01_current_synthetic_v1",
+  "quotes": {
+    "000001.SZSE": 10.0,
+    "600000.SSE": 12.0
+  },
+  "events": [
+    {
+      "symbol": "000001.SZSE",
+      "period": "2024Q1",
+      "historical_evidence": {
+        "status": "HISTORICAL_EVIDENCE_READY",
+        "schema": "f2_historical_evidence_contract_v1",
+        "symbol": "000001.SZSE",
+        "period": "2024Q1",
+        "evidence_kind": "synthetic_fixture",
+        "publication_date": "2024-04-27",
+        "retrieved_at": "2024-04-30T12:00:00+08:00",
+        "asof_at": "2024-04-30T12:00:00+08:00",
+        "revision_id": "000001.SZSE-2024Q1-synthetic-v1",
+        "source_file": "synthetic_fixture.pdf",
+        "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "pit_asof_safe": true
+      },
+      "current": {
+        "fact_id": "000001.SZSE:current",
+        "issuer_id": "000001.SZSE",
+        "metric_id": "parent_net_profit",
+        "period_start": "2024-01-01",
+        "period_end": "2024-03-31",
+        "period_kind": "single_quarter",
+        "scope_group": "consolidated_parent",
+        "currency": "CNY",
+        "unit": "yuan",
+        "value": "1200000",
+        "available_at": "2024-04-30T12:00:00+08:00",
+        "status": "OBSERVED"
+      },
+      "prior": {
+        "fact_id": "000001.SZSE:prior",
+        "issuer_id": "000001.SZSE",
+        "metric_id": "parent_net_profit",
+        "period_start": "2023-10-01",
+        "period_end": "2023-12-31",
+        "period_kind": "single_quarter",
+        "scope_group": "consolidated_parent",
+        "currency": "CNY",
+        "unit": "yuan",
+        "value": "900000",
+        "available_at": "2024-04-30T12:00:00+08:00",
+        "status": "OBSERVED"
+      },
+      "assets": {
+        "fact_id": "000001.SZSE:assets",
+        "issuer_id": "000001.SZSE",
+        "metric_id": "total_assets",
+        "period_start": "2024-01-01",
+        "period_end": "2024-03-31",
+        "period_kind": "point_in_time",
+        "scope_group": "consolidated_parent",
+        "currency": "CNY",
+        "unit": "yuan",
+        "value": "50000000",
+        "available_at": "2024-04-30T12:00:00+08:00",
+        "status": "OBSERVED"
+      }
+    },
+    {
+      "symbol": "600000.SSE",
+      "period": "2024Q1",
+      "historical_evidence": {
+        "status": "HISTORICAL_EVIDENCE_READY",
+        "schema": "f2_historical_evidence_contract_v1",
+        "symbol": "600000.SSE",
+        "period": "2024Q1",
+        "evidence_kind": "synthetic_fixture",
+        "publication_date": "2024-04-27",
+        "retrieved_at": "2024-04-30T12:00:00+08:00",
+        "asof_at": "2024-04-30T12:00:00+08:00",
+        "revision_id": "600000.SSE-2024Q1-synthetic-v1",
+        "source_file": "synthetic_fixture.pdf",
+        "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "pit_asof_safe": true
+      },
+      "current": {
+        "fact_id": "600000.SSE:current",
+        "issuer_id": "600000.SSE",
+        "metric_id": "parent_net_profit",
+        "period_start": "2024-01-01",
+        "period_end": "2024-03-31",
+        "period_kind": "single_quarter",
+        "scope_group": "consolidated_parent",
+        "currency": "CNY",
+        "unit": "yuan",
+        "value": "900000",
+        "available_at": "2024-04-30T12:00:00+08:00",
+        "status": "OBSERVED"
+      },
+      "prior": {
+        "fact_id": "600000.SSE:prior",
+        "issuer_id": "600000.SSE",
+        "metric_id": "parent_net_profit",
+        "period_start": "2023-10-01",
+        "period_end": "2023-12-31",
+        "period_kind": "single_quarter",
+        "scope_group": "consolidated_parent",
+        "currency": "CNY",
+        "unit": "yuan",
+        "value": "600000",
+        "available_at": "2024-04-30T12:00:00+08:00",
+        "status": "OBSERVED"
+      },
+      "assets": {
+        "fact_id": "600000.SSE:assets",
+        "issuer_id": "600000.SSE",
+        "metric_id": "total_assets",
+        "period_start": "2024-01-01",
+        "period_end": "2024-03-31",
+        "period_kind": "point_in_time",
+        "scope_group": "consolidated_parent",
+        "currency": "CNY",
+        "unit": "yuan",
+        "value": "30000000",
+        "available_at": "2024-04-30T12:00:00+08:00",
+        "status": "OBSERVED"
+      }
+    }
+  ]
+}

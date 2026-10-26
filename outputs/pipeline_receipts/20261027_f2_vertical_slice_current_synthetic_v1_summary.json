@@ -1,0 +1,38 @@
+{
+  "schema": "f2_vertical_slice_current_synthetic_evidence_v1",
+  "status": "COMPLETED_RESEARCH_ONLY_F2_VERTICAL_SLICE",
+  "source_kind": "synthetic_fixture",
+  "decision_day": "2024-05-01",
+  "execution_day": "2024-05-02",
+  "settlement_day": "2024-05-03",
+  "stages": [
+    "Data",
+    "Signal",
+    "Target Portfolio",
+    "Orders",
+    "BrokerAdapter",
+    "Fill",
+    "Cash/Position"
+  ],
+  "event_count": 2,
+  "target_count": 2,
+  "paper_order_count": 2,
+  "account_replay": true,
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "spec": {
+    "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_f2_vertical_slice_current_synthetic_v1\\spec.json",
+    "sha256": "0d9033d22e6a4d419bf5ea0ecbd0b5c83e3078f74075b4aead770df7f72a4077"
+  },
+  "receipt": {
+    "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_f2_vertical_slice_current_synthetic_v1\\run\\vertical_slice_receipt.json",
+    "sha256": "dfa98ac94418ef70e49a515ef2357397c2bd0d15626cf0969801a2169639c63f"
+  },
+  "limitations": [
+    "All facts, publication timing, revision IDs and quotes are explicit synthetic inputs.",
+    "This proves the local Data to Cash/Position consumer path only; it does not prove real issuer PIT evidence or factor validity.",
+    "No broker or THS interaction occurred."
+  ]
+}
