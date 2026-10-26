@@ -631,3 +631,7 @@ producer 完整包/缺数测试与 fixed_daily、rollup、launcher 测试共 `31
 `f2_issuer_source_evidence.py` now accepts `pypdf` text only when the required semantic field labels (`总资产` and `归属于上市公司股东的净利润`) are present; otherwise it falls back to Poppler. The regression test uses mojibake-like ticker/year output to prove that digits alone cannot satisfy the scope contract. The re-captured `000002.SZSE/2023Q1` receipt records verified issuer field scope and a content-hash match, while historical retrieval/as-of and revision history remain unproven, so status stays `BLOCKED_DATA`.
 
 Evidence: `outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v2.json`, `outputs/research_reports/20261026_f2_issuer_source_capture_v2.md`; focused F2 suite `24 passed`. No F2 fact, factor, target, order or account replay was admitted; `execution_admitted=false`.
+
+## 2026-10-27 F2 unified entrypoint
+
+`run_committee.py f2-issuer-source-evidence` now exposes the F2 issuer-source capture through the project entrypoint. The route only forwards explicit symbol, period, publication date, decision cutoff, source URL, local artifact and output path; it does not widen the PIT gate or create account state. Dispatch/help regression coverage passes together with the semantic extraction tests (`23 passed`).

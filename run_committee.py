@@ -893,6 +893,9 @@ def main(argv=None):
     if argv[:1] == ["f2-fact-bridge"]:
         from trading.research.f2_fact_bridge import main as f2_fact_bridge_main
         return f2_fact_bridge_main(argv[1:])
+    if argv[:1] == ["f2-issuer-source-evidence"]:
+        from trading.research.f2_issuer_source_evidence import main as f2_issuer_source_evidence_main
+        return f2_issuer_source_evidence_main(argv[1:])
     if argv[:1] == ["f2-source-snapshot"]:
         from trading.research.f2_source_snapshot import main as f2_source_snapshot_main
         return f2_source_snapshot_main(argv[1:])

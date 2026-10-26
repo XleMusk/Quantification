@@ -89,7 +89,8 @@
         "outputs/pipeline_receipts/20261026_f01_decision_cutoff_contract_v1.json",
         "outputs/research_reports/20261026_f01_decision_cutoff_contract_v1.md",
         "outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v2.json",
-        "outputs/research_reports/20261026_f2_issuer_source_capture_v2.md"
+        "outputs/research_reports/20261026_f2_issuer_source_capture_v2.md",
+        "run_committee.py f2-issuer-source-evidence"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -114,7 +115,8 @@
         "outputs/pipeline_receipts/20261026_f01_decision_cutoff_contract_v1.json",
         "outputs/research_reports/20261026_f01_decision_cutoff_contract_v1.md",
         "outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v2.json",
-        "outputs/research_reports/20261026_f2_issuer_source_capture_v2.md"
+        "outputs/research_reports/20261026_f2_issuer_source_capture_v2.md",
+        "run_committee.py f2-issuer-source-evidence"
       ]
     },
     {
