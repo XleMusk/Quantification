@@ -420,6 +420,8 @@ The same frozen LR/LightGBM candidates now replay through an independent BaoStoc
 
 `trading/research/research_adoption_rollup.py` now joins the existing candidate adoption matrix, the mature-factor 20/60-session comparison and the shortline LR/LightGBM adoption gate into one machine-readable research-only receipt. It preserves each route's separate decision and next gate, while keeping `execution_admitted=false`, `paper_allowed=false` and `promotion_allowed=false`. Receipt/report: `outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json` and `outputs/research_reports/20261026_research_adoption_rollup_v1.md`; focused tests: `3 passed`. This is a decision integration artifact, not strategy adoption or live-readiness evidence.
 
+The internal research-only release v22 binds this rollup at commit `1aed328`: `D:/QuantificationData/trading/research/releases/20261026_v22/release_manifest.json`, with `missing_required_code=[]`, `execution_admitted=false` and `live_execution_ready=false`. Binding evidence is `outputs/pipeline_receipts/20261026_release_v22_binding_v1.json`.
+
 ## 2026-10-26 release v21
 
 The internal research-only release binds the long shortline raw-path replay and v2 adoption gate. Manifest: D:/QuantificationData/trading/research/releases/20261026_v21/release_manifest.json. execution_admitted=false, live_execution_ready=false, missing_required_code=[].
