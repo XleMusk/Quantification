@@ -110,8 +110,27 @@
       "domain": "development",
       "result": "Isolated workspaces and runtime configuration are reproducible and cleanable.",
       "state": "PARTIAL",
-      "next": "Record a bounded worktree/runtime recipe for any package that writes code or durable state.",
-      "prohibition": "A worktree is not a safety sandbox and must not receive credentials."
+      "next": "Use the bounded runtime recipe for each package that writes code or durable state; create an isolated worktree only when the package actually needs one.",
+      "prohibition": "A worktree is not a safety sandbox and must not receive credentials.",
+      "evidence_updated_on": "2026-10-26",
+      "actual_paths": [
+        "trading/research/runtime_recipe.py",
+        "trading/research/tests/test_runtime_recipe.py",
+        "run_committee.py runtime-recipe",
+        "outputs/pipeline_receipts/20261026_runtime_recipe_v1.json",
+        "outputs/research_reports/20261026_runtime_recipe_v1.md",
+        "outputs/pipeline_receipts/20261026_runtime_recipe_v2.json",
+        "outputs/research_reports/20261026_runtime_recipe_v2.md"
+      ],
+      "evidence": [
+        "trading/research/runtime_recipe.py",
+        "trading/research/tests/test_runtime_recipe.py",
+        "run_committee.py runtime-recipe",
+        "outputs/pipeline_receipts/20261026_runtime_recipe_v1.json",
+        "outputs/research_reports/20261026_runtime_recipe_v1.md",
+        "outputs/pipeline_receipts/20261026_runtime_recipe_v2.json",
+        "outputs/research_reports/20261026_runtime_recipe_v2.md"
+      ]
     },
     {
       "id": "F03",
@@ -1312,19 +1331,27 @@
       "domain": "operations",
       "result": "Fault injection and stable running leave explicit residual risks.",
       "state": "PARTIAL",
-      "next": "Reuse focused failure receipts; add only a missing V3 scenario.",
+      "next": "Reuse the tamper-rejection receipt; add only a missing V3 failure scenario and keep automatic retry/external order recovery disabled.",
       "prohibition": "A passing happy path does not close recovery risk.",
       "actual_paths": [
         "trading/research/post_close_d0_d1.py",
         "trading/research/tests/test_post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_post_close_block_propagation_v1.json",
-        "outputs/research_reports/20261026_post_close_block_propagation_v1.md"
+        "outputs/research_reports/20261026_post_close_block_propagation_v1.md",
+        "trading/research/system_daily_refresh.py",
+        "trading/research/tests/test_system_daily_command_recovery.py",
+        "outputs/pipeline_receipts/20261026_system_daily_fault_injection_v1.json",
+        "outputs/research_reports/20261026_system_daily_fault_injection_v1.md"
       ],
       "evidence": [
         "trading/research/post_close_d0_d1.py",
         "trading/research/tests/test_post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_post_close_block_propagation_v1.json",
-        "outputs/research_reports/20261026_post_close_block_propagation_v1.md"
+        "outputs/research_reports/20261026_post_close_block_propagation_v1.md",
+        "trading/research/system_daily_refresh.py",
+        "trading/research/tests/test_system_daily_command_recovery.py",
+        "outputs/pipeline_receipts/20261026_system_daily_fault_injection_v1.json",
+        "outputs/research_reports/20261026_system_daily_fault_injection_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },

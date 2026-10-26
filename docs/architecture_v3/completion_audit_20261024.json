@@ -1,6 +1,6 @@
 {
   "schema": "quantification_goal_completion_audit_v1",
-  "audited_at": "2026-10-26T20:30:00+08:00",
+  "audited_at": "2026-10-26T21:20:00+08:00",
   "execution_admitted": false,
   "overall_status": "INCOMPLETE_ACTIVE",
   "items": [
@@ -29,7 +29,10 @@
         "webapp/backend/app/store.py",
         "webapp/frontend/src/pages/Tasks.tsx",
         "outputs/pipeline_receipts/20261026_workbench_recovery_chain_v1.json",
-        "outputs/research_reports/20261026_workbench_recovery_chain_v1.md"
+        "outputs/research_reports/20261026_workbench_recovery_chain_v1.md",
+        "trading/research/system_daily_refresh.py",
+        "outputs/pipeline_receipts/20261026_system_daily_fault_injection_v1.json",
+        "outputs/research_reports/20261026_system_daily_fault_injection_v1.md"
       ],
       "gap": "Local paper-task recovery now supports explicit manual idempotent resubmission with parent/child linkage and attempt evidence; real broker/THS recovery remains outside the execution gate.",
       "next_acceptance": "Use the linked child lifecycle in a local paper run and retain manual external-state reconciliation; do not add automatic broker retry.",
