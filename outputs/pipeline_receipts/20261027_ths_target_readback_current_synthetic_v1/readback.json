@@ -1,0 +1,89 @@
+{
+  "schema": "synthetic_ths_readonly_readback_fixture_v1",
+  "observed_at": "2026-10-27T01:20:00+08:00",
+  "synthetic_fixture": true,
+  "account_observed": false,
+  "quote_observed": false,
+  "rows": [
+    {
+      "symbol": "601158.SSE",
+      "qty": 140000
+    },
+    {
+      "symbol": "600900.SSE",
+      "qty": 19300
+    },
+    {
+      "symbol": "000538.SZSE",
+      "qty": 10700
+    },
+    {
+      "symbol": "001227.SZSE",
+      "qty": 280000
+    },
+    {
+      "symbol": "601607.SSE",
+      "qty": 35000
+    },
+    {
+      "symbol": "601006.SSE",
+      "qty": 112000
+    },
+    {
+      "symbol": "002936.SZSE",
+      "qty": 280000
+    },
+    {
+      "symbol": "601818.SSE",
+      "qty": 186600
+    },
+    {
+      "symbol": "600511.SSE",
+      "qty": 20700
+    },
+    {
+      "symbol": "601186.SSE",
+      "qty": 93300
+    },
+    {
+      "symbol": "000001.SZSE",
+      "qty": 50900
+    },
+    {
+      "symbol": "601816.SSE",
+      "qty": 112000
+    },
+    {
+      "symbol": "600905.SSE",
+      "qty": 186600
+    },
+    {
+      "symbol": "600941.SSE",
+      "qty": 5600
+    },
+    {
+      "symbol": "600018.SSE",
+      "qty": 112000
+    },
+    {
+      "symbol": "002507.SZSE",
+      "qty": 50900
+    },
+    {
+      "symbol": "601668.SSE",
+      "qty": 140000
+    },
+    {
+      "symbol": "000088.SZSE",
+      "qty": 140000
+    },
+    {
+      "symbol": "600035.SSE",
+      "qty": 140000
+    },
+    {
+      "symbol": "600177.SSE",
+      "qty": 70000
+    }
+  ]
+}

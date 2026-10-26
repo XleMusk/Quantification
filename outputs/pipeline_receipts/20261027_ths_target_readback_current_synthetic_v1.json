@@ -1,0 +1,34 @@
+{
+  "schema": "ths_target_readback_current_synthetic_evidence_v1",
+  "status": "READBACK_VERIFIED_SYNTHETIC_ONLY",
+  "reference_day": "2026-10-23",
+  "execution_day": "2026-10-26",
+  "row_count": 20,
+  "comparison_status": "readback_verified",
+  "account_observed": false,
+  "quote_observed": false,
+  "client_interacted": false,
+  "submitted": false,
+  "execution_admitted": false,
+  "ledger_mutated": false,
+  "synthetic_fixture": true,
+  "source_files": {
+    "reference": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_ths_target_readback_current_synthetic_v1\\reference.json",
+      "sha256": "5a71d975ea59dcd6c2fb72af3ac90fa4643e47a7c98a3f4678252ab8c28aa8ff"
+    },
+    "readback": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_ths_target_readback_current_synthetic_v1\\readback.json",
+      "sha256": "38bc05dd53a683e7033f40a96e8383bba65b989f9e5a07f8ee8c0fe8965433e6"
+    },
+    "comparison": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_ths_target_readback_current_synthetic_v1\\comparison.json",
+      "sha256": "0d4c0457be2e1ee1dde4d2a057b7c4b6a6964db9f823fb36a8f8e864a15900c6"
+    }
+  },
+  "limitations": [
+    "The rows are generated from the current TARGET_PREVIEW fixed D0/D1 target holdings and are not a captured THS client window.",
+    "A verified row match does not prove current account balances, quotes, submission or fills.",
+    "Real authorized read-only THS evidence remains required before channel validation."
+  ]
+}

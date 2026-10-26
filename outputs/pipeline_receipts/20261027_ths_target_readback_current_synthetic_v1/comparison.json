@@ -1,0 +1,22 @@
+{
+  "schema": "ths_target_readback_comparison_v1",
+  "status": "readback_verified",
+  "reference_day": "2026-10-23",
+  "observed_at": "2026-10-27T01:20:00+08:00",
+  "expected_rows": 20,
+  "received_rows": 20,
+  "missing_symbols": [],
+  "unexpected_symbols": [],
+  "quantity_mismatches": [],
+  "duplicate_readback_symbols": [],
+  "account_observed": false,
+  "quote_observed": false,
+  "submitted": false,
+  "execution_admitted": false,
+  "ledger_mutated": false,
+  "limitations": [
+    "A row match verifies the captured read-only export against the target reference; it is not a fill or account settlement.",
+    "Current quotes and account balances remain unknown unless explicitly present in the readback export.",
+    "Mismatch or incomplete rows must stop the route and must not be resent automatically."
+  ]
+}

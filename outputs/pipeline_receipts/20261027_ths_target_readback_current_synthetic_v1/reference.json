@@ -1,0 +1,91 @@
+{
+  "schema": "quantification_ths_readonly_target_reference_v1",
+  "reference_day": "2026-10-23",
+  "execution_day": "2026-10-26",
+  "source_scope": "TARGET_PREVIEW_fixed_low_volatility_252_20",
+  "synthetic_fixture": true,
+  "execution_admitted": false,
+  "prefill_allowed": false,
+  "rows": [
+    {
+      "symbol": "601158.SSE",
+      "target_quantity": 140000
+    },
+    {
+      "symbol": "600900.SSE",
+      "target_quantity": 19300
+    },
+    {
+      "symbol": "000538.SZSE",
+      "target_quantity": 10700
+    },
+    {
+      "symbol": "001227.SZSE",
+      "target_quantity": 280000
+    },
+    {
+      "symbol": "601607.SSE",
+      "target_quantity": 35000
+    },
+    {
+      "symbol": "601006.SSE",
+      "target_quantity": 112000
+    },
+    {
+      "symbol": "002936.SZSE",
+      "target_quantity": 280000
+    },
+    {
+      "symbol": "601818.SSE",
+      "target_quantity": 186600
+    },
+    {
+      "symbol": "600511.SSE",
+      "target_quantity": 20700
+    },
+    {
+      "symbol": "601186.SSE",
+      "target_quantity": 93300
+    },
+    {
+      "symbol": "000001.SZSE",
+      "target_quantity": 50900
+    },
+    {
+      "symbol": "601816.SSE",
+      "target_quantity": 112000
+    },
+    {
+      "symbol": "600905.SSE",
+      "target_quantity": 186600
+    },
+    {
+      "symbol": "600941.SSE",
+      "target_quantity": 5600
+    },
+    {
+      "symbol": "600018.SSE",
+      "target_quantity": 112000
+    },
+    {
+      "symbol": "002507.SZSE",
+      "target_quantity": 50900
+    },
+    {
+      "symbol": "601668.SSE",
+      "target_quantity": 140000
+    },
+    {
+      "symbol": "000088.SZSE",
+      "target_quantity": 140000
+    },
+    {
+      "symbol": "600035.SSE",
+      "target_quantity": 140000
+    },
+    {
+      "symbol": "600177.SSE",
+      "target_quantity": 70000
+    }
+  ]
+}

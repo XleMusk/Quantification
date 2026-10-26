@@ -1162,14 +1162,20 @@
       "actual_paths": [
         "trading/ths/adapter.py",
         "outputs/pipeline_receipts/20261026_ths_adapter_code_style_v1.json",
-        "outputs/research_reports/20261026_ths_adapter_code_style_v1.md"
+        "outputs/research_reports/20261026_ths_adapter_code_style_v1.md",
+        "trading/ths/target_readback.py",
+        "trading/tests/test_ths_target_readback.py",
+        "outputs/pipeline_receipts/20261027_ths_target_readback_current_synthetic_v1.json",
+        "outputs/research_reports/20261027_ths_target_readback_current_synthetic_v1.md"
       ],
       "evidence": [
         "trading/ths/adapter.py",
         "outputs/pipeline_receipts/20261026_ths_adapter_code_style_v1.json",
-        "outputs/research_reports/20261026_ths_adapter_code_style_v1.md"
+        "outputs/research_reports/20261026_ths_adapter_code_style_v1.md",
+        "outputs/pipeline_receipts/20261027_ths_target_readback_current_synthetic_v1.json",
+        "outputs/research_reports/20261027_ths_target_readback_current_synthetic_v1.md"
       ],
-      "evidence_updated_on": "2026-10-26"
+      "evidence_updated_on": "2026-10-27"
     },
     {
       "id": "E03",
