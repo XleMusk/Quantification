@@ -1,0 +1,52 @@
+{
+  "schema": "quantification_workbench_release_binding_receipt_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "generated_at": "2026-10-26T00:31:09.615365+00:00",
+  "acceptance": {
+    "endpoint": "GET /api/release",
+    "job_lifecycle_includes_release": true,
+    "latest_manifest_resolved": true,
+    "read_only": true,
+    "execution_admitted": false,
+    "live_execution_ready": false
+  },
+  "release": {
+    "schema": "quantification_workbench_release_status_v1",
+    "status": "AVAILABLE",
+    "reason": null,
+    "version": "20261026_v12",
+    "created_at": "2026-10-25T20:31:36.589215+00:00",
+    "manifest_path": "D:\\QuantificationData\\trading\\research\\releases\\20261026_v12\\release_manifest.json",
+    "git_commit": "456a2bced4065719b13968e38d23b77c3d10c198",
+    "execution_admitted": false,
+    "live_execution_ready": false,
+    "missing_required_code": [],
+    "missing_evidence": [],
+    "missing_paper_evidence": [],
+    "account_readiness": {
+      "research_paper_account": "BOUND_RESEARCH_ONLY",
+      "current_broker_quote": "MISSING",
+      "four_table_account_export": "MISSING",
+      "t_plus_1_sellable_export": "MISSING",
+      "ths_readonly_observation": "REFERENCE_ONLY_NOT_OBSERVED",
+      "execution_admitted": false,
+      "live_execution_ready": false
+    },
+    "read_only": true
+  },
+  "validation": {
+    "backend_tests": "D:/Quantification/env/python.exe -m pytest -q webapp/backend/tests/test_webapp.py",
+    "backend_tests_passed": 25,
+    "frontend_build": "npm run build",
+    "frontend_build_passed": true,
+    "frontend_warning": "Vite chunk-size warning only; build succeeded."
+  },
+  "source_files": [
+    "webapp/backend/app/release.py",
+    "webapp/backend/app/main.py",
+    "webapp/backend/tests/test_webapp.py",
+    "webapp/frontend/src/types.ts",
+    "webapp/frontend/src/pages/Tasks.tsx"
+  ],
+  "boundary": "The endpoint only reads a local research release manifest; it never creates a release or touches a broker/THS account."
+}
