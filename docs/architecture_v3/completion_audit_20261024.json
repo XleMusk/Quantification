@@ -426,7 +426,7 @@
     {
       "id": "shortline",
       "requirement": "Shortline board-chain",
-      "status": "PARTIAL_CANDIDATE_HANDOFF_BOUND",
+      "status": "PARTIAL_BOUNDED_REPLAY_COMPLETE_RESEARCH_ONLY",
       "evidence": [
         "outputs/shortline_native_selection_replay/20261018_v1/REPORT.md",
         "outputs/shortline_native_selection_replay/20261024_panel_contract_blocked.json",
@@ -447,9 +447,13 @@
         "trading/research/shortline_candidate_handoff.py",
         "trading/research/tests/test_shortline_candidate_handoff.py",
         "outputs/pipeline_receipts/20261026_shortline_candidate_panel_replay_blocked_v1.json",
-        "outputs/research_reports/20261026_shortline_candidate_panel_replay_blocked_v1.md"
+        "outputs/research_reports/20261026_shortline_candidate_panel_replay_blocked_v1.md",
+        "outputs/pipeline_receipts/20261026_shortline_baostock_candidate_replay_v1.json",
+        "outputs/research_reports/20261026_shortline_baostock_candidate_replay_v1.md",
+        "trading/research/shortline_baostock_raw_snapshot.py",
+        "trading/research/tests/test_shortline_baostock_raw_snapshot.py"
       ],
-      "gap": "The native qualified preopen plan now binds 3 LR and 3 LightGBM selected rows into new immutable candidate handoffs; both score gates pass. A two-session bounded Engine replay reaches target generation but all next-session buys are blocked by the existing unsupported_first_five_listing_sessions guard because the source path is incomplete; the saved 187-session selection replay remains incomplete (103/95 sessions), PIT/company-action evidence is absent, and no full return or promotion is allowed.",
+      "gap": "The qualified native preopen plan binds 3 LR and 3 LightGBM candidates; both score gates pass. A separate bounded BaoStock raw-bar path now completes the selected 2026-10-15 next-session Engine/Ledger replay: LR 1 order/2 fills, LGBM 3 orders/6 fills. This is not StockDB equivalence, full-window return, PIT/company-action proof, forward validation or promotion.",
       "next_acceptance": "Run the new handoff through a complete raw-bar panel replay after resolving the saved execution references, then compare the two models on the same window; retain execution_admitted=false until PIT and forward gates pass."
     },
     {

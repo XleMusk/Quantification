@@ -389,3 +389,8 @@ D1 输入汇入已自动化：`candidate-daily-input-bundle` 从两个已保存�
 ## 2026-10-26 F01 period semantics
 
 按 CTO 计划修正 F01 计算语义：`total_assets` 必须是 `point_in_time`，利润事实只能是 `single_quarter` 或 `cumulative`；不符合时在因子计算前返回 `INCOMPARABLE`，不把流量期间资产当分母。F01/F2 vertical focused suite `22 passed`。真实 000002.SZSE/2023Q1 仍因历史 retrieval/as-of/revision 缺失保持 `BLOCKED_DATA`。
+
+
+## 2026-10-26 shortline bounded BaoStock replay
+
+新增 `shortline-baostock-raw-snapshot` 可复用只读采集命令，用公开 BaoStock 补齐候选 2026-10-08..16 原始路径。10 月 15 日冻结 native LR/LGBM handoff 经过共享 Engine/Ledger：LR 1 笔订单/2 笔成交，LightGBM 3 笔订单/6 笔成交。该结果是独立 BaoStock bounded research replay，不是 StockDB 等价、PIT、完整窗口或采用证据。

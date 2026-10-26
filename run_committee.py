@@ -359,6 +359,9 @@ def main(argv=None):
     if argv[:1] == ["shortline-native-candidate-handoff"]:
         from trading.research.shortline_candidate_handoff import main as shortline_candidate_handoff_main
         return shortline_candidate_handoff_main(argv[1:])
+    if argv[:1] == ["shortline-baostock-raw-snapshot"]:
+        from trading.research.shortline_baostock_raw_snapshot import main as shortline_baostock_raw_snapshot_main
+        return shortline_baostock_raw_snapshot_main(argv[1:])
     if argv[:1] == ["shortline-native-preopen-forward"]:
         from trading.research.shortline_native_preopen_forward import main as shortline_native_preopen_forward_main
         return shortline_native_preopen_forward_main(argv[1:])

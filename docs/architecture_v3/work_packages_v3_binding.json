@@ -2036,6 +2036,26 @@
         "trading/research/tests/test_f2_vertical_slice.py"
       ],
       "acceptance": "The F01 pure function returns INCOMPARABLE/asset_period_kind_mismatch for total_assets marked single_quarter, accepts point_in_time assets in the ready fixture, and the focused F01/F2 suite passes without changing execution permissions."
+    },
+    {
+      "id": "P24",
+      "domain": "research",
+      "result": "A reusable BaoStock raw-bar snapshot command now completes the selected native shortline 2026-10-15 next-session replay through the shared Engine/Ledger: LR 1 order/2 fills and LightGBM 3 orders/6 fills.",
+      "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
+      "next": "Reconcile or replace the independent raw-bar path with complete StockDB evidence before comparing full returns; keep PIT, company-action, forward and promotion gates closed.",
+      "prohibition": "Do not present the independent BaoStock replay as StockDB, PIT-safe, full-window or paper/live evidence.",
+      "actual_paths": [
+        "trading/research/shortline_baostock_raw_snapshot.py",
+        "trading/research/tests/test_shortline_baostock_raw_snapshot.py",
+        "run_committee.py shortline-baostock-raw-snapshot",
+        "outputs/pipeline_receipts/20261026_shortline_baostock_candidate_replay_v1.json",
+        "outputs/research_reports/20261026_shortline_baostock_candidate_replay_v1.md"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261026_shortline_baostock_candidate_replay_v1.json",
+        "outputs/research_reports/20261026_shortline_baostock_candidate_replay_v1.md"
+      ],
+      "acceptance": "The new command writes a hash-bound independent raw-bar snapshot with execution_admitted=false; both frozen model handoffs replay through the shared Engine/Ledger with explicit orders/fills and no broker/THS interaction."
     }
   ],
   "updated_at": "2026-10-26T09:35:00+08:00"

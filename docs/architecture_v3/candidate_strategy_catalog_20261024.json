@@ -633,7 +633,11 @@
         "score_gate_rows": 25150,
         "score_gate_candidate_rows": 0,
         "candidate_handoff_rows_per_model": 3,
-        "candidate_handoff_models": 2
+        "candidate_handoff_models": 2,
+        "bounded_baostock_replay_lr_orders": 1,
+        "bounded_baostock_replay_lr_fills": 2,
+        "bounded_baostock_replay_lgbm_orders": 3,
+        "bounded_baostock_replay_lgbm_fills": 6
       },
       "evidence": [
         "outputs/shortline_native_selection_replay/20261018_v1/REPORT.md",
@@ -662,7 +666,11 @@
         "trading/research/shortline_candidate_handoff.py",
         "trading/research/tests/test_shortline_candidate_handoff.py",
         "outputs/pipeline_receipts/20261026_shortline_candidate_panel_replay_blocked_v1.json",
-        "outputs/research_reports/20261026_shortline_candidate_panel_replay_blocked_v1.md"
+        "outputs/research_reports/20261026_shortline_candidate_panel_replay_blocked_v1.md",
+        "outputs/pipeline_receipts/20261026_shortline_baostock_candidate_replay_v1.json",
+        "outputs/research_reports/20261026_shortline_baostock_candidate_replay_v1.md",
+        "trading/research/shortline_baostock_raw_snapshot.py",
+        "trading/research/tests/test_shortline_baostock_raw_snapshot.py"
       ],
       "limits": [
         "full strategy return unknown",
@@ -671,7 +679,8 @@
         "saved LR target reaches the shared research-only paper route; full strategy window remains incomplete",
         "saved LGBM target reaches the shared research-only paper route; LR and LGBM terminal days remain separate",
         "the new qualified preopen handoff has 3 explicitly selected rows per model and passes the read-only score gate; it is a new candidate input, not a complete-window return",
-        "the bounded handoff replay reached shared Engine target generation but was blocked for all buys by unsupported_first_five_listing_sessions; no orders/fills or return were claimed"
+        "the bounded handoff replay reached shared Engine target generation but was blocked for all buys by unsupported_first_five_listing_sessions; no orders/fills or return were claimed",
+        "a bounded BaoStock raw-bar replay completes the selected 2026-10-15 next-session route, but it is independent of StockDB and cannot establish full strategy return or PIT safety"
       ],
       "research_selection": {
         "decision": "UNASSESSED_SEPARATE_GATE",

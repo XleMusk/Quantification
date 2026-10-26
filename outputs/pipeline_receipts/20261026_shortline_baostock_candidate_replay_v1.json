@@ -1,0 +1,49 @@
+{
+  "schema": "shortline_baostock_candidate_replay_binding_v1",
+  "status": "COMPLETED_RESEARCH_ONLY_BOUNDED_REPLAY",
+  "source_handoff": "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json",
+  "raw_snapshot_manifest": "D:\\QuantificationData\\trading\\research\\shortline_native_candidate_handoff\\20261026_source1015_ipoqualified_v1\\baostock_raw_snapshot_20261001_1016_v2\\manifest.json",
+  "raw_snapshot_manifest_sha256": "de24fce030fac3613feb991c624cbac8f09175e3343c15a7ac26b4f22aed5c3a",
+  "models": [
+    {
+      "model_kind": "lr",
+      "result": "D:\\QuantificationData\\trading\\research\\shortline_native_candidate_handoff\\20261026_source1015_ipoqualified_v1\\panel_replay_lr_baostock_v2\\result.json",
+      "audit": "D:\\QuantificationData\\trading\\research\\shortline_native_candidate_handoff\\20261026_source1015_ipoqualified_v1\\panel_replay_lr_baostock_v2\\audit.json",
+      "replay_sessions": 7,
+      "symbols": 3,
+      "selected_event_rows": 3,
+      "orders": 1,
+      "fills": 2,
+      "net_return": -0.007600599999999957,
+      "max_drawdown": -0.007600599999999957,
+      "blocked_order_event_count": 2
+    },
+    {
+      "model_kind": "lgbm",
+      "result": "D:\\QuantificationData\\trading\\research\\shortline_native_candidate_handoff\\20261026_source1015_ipoqualified_v1\\panel_replay_lgbm_baostock_v2\\result.json",
+      "audit": "D:\\QuantificationData\\trading\\research\\shortline_native_candidate_handoff\\20261026_source1015_ipoqualified_v1\\panel_replay_lgbm_baostock_v2\\audit.json",
+      "replay_sessions": 7,
+      "symbols": 3,
+      "selected_event_rows": 3,
+      "orders": 3,
+      "fills": 6,
+      "net_return": -0.015633099999999955,
+      "max_drawdown": -0.015633099999999955,
+      "blocked_order_event_count": 0
+    }
+  ],
+  "execution_admitted": false,
+  "strategy_validated": false,
+  "paper_allowed": false,
+  "promotion_allowed": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "stockdb_replacement": false,
+  "pit_verified": false,
+  "corporate_actions_verified": false,
+  "limitations": [
+    "The replay uses an independent bounded BaoStock raw-bar path to complete the selected 2026-10-15 next-session experiment; it is not a StockDB replacement, full-market replay or PIT validation.",
+    "Scores were frozen before the replay; no labels or model refit were used.",
+    "The result is not a current paper plan, broker observation or promotion decision."
+  ]
+}
