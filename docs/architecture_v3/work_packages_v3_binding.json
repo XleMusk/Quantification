@@ -2056,7 +2056,30 @@
         "outputs/research_reports/20261026_shortline_baostock_candidate_replay_v1.md"
       ],
       "acceptance": "The new command writes a hash-bound independent raw-bar snapshot with execution_admitted=false; both frozen model handoffs replay through the shared Engine/Ledger with explicit orders/fills and no broker/THS interaction."
+    },
+    {
+      "id": "P25",
+      "domain": "research",
+      "result": "The native shortline LR/LightGBM handoff and bounded BaoStock replay now feed one explicit model-level adoption gate.",
+      "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
+      "next": "Complete StockDB-equivalent history, PIT/company-action/publication timing and untouched forward gates before any paper or promotion decision.",
+      "prohibition": "Do not treat bounded BaoStock replay or the adoption gate as paper/live authorization.",
+      "actual_paths": [
+        "trading/research/shortline_adoption_gate.py",
+        "trading/research/tests/test_shortline_adoption_gate.py",
+        "run_committee.py shortline-adoption-gate",
+        "outputs/pipeline_receipts/20261026_shortline_adoption_gate_v1.json",
+        "outputs/research_reports/20261026_shortline_adoption_gate_v1.md"
+      ],
+      "evidence_updated_on": "2026-10-26",
+      "evidence": [
+        "outputs/pipeline_receipts/20261026_shortline_baostock_candidate_replay_v1.json",
+        "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json",
+        "outputs/pipeline_receipts/20261026_shortline_adoption_gate_v1.json",
+        "outputs/research_reports/20261026_shortline_adoption_gate_v1.md",
+        "trading/research/tests/test_shortline_adoption_gate.py"
+      ]
     }
   ],
-  "updated_at": "2026-10-26T09:35:00+08:00"
-}
+  "updated_at": "2026-10-26"
+}`n

@@ -451,10 +451,15 @@
         "outputs/pipeline_receipts/20261026_shortline_baostock_candidate_replay_v1.json",
         "outputs/research_reports/20261026_shortline_baostock_candidate_replay_v1.md",
         "trading/research/shortline_baostock_raw_snapshot.py",
-        "trading/research/tests/test_shortline_baostock_raw_snapshot.py"
+        "trading/research/tests/test_shortline_baostock_raw_snapshot.py",
+        "trading/research/shortline_adoption_gate.py",
+        "trading/research/tests/test_shortline_adoption_gate.py",
+        "outputs/pipeline_receipts/20261026_shortline_adoption_gate_v1.json",
+        "outputs/research_reports/20261026_shortline_adoption_gate_v1.md"
       ],
-      "gap": "The qualified native preopen plan binds 3 LR and 3 LightGBM candidates; both score gates pass. A separate bounded BaoStock raw-bar path now completes the selected 2026-10-15 next-session Engine/Ledger replay: LR 1 order/2 fills, LGBM 3 orders/6 fills. This is not StockDB equivalence, full-window return, PIT/company-action proof, forward validation or promotion.",
-      "next_acceptance": "Run the new handoff through a complete raw-bar panel replay after resolving the saved execution references, then compare the two models on the same window; retain execution_admitted=false until PIT and forward gates pass."
+      "gap": "The native LR/LightGBM handoff and bounded BaoStock replay now feed an explicit model-level adoption gate: LR 1 order/2 fills and LGBM 3 orders/6 fills remain research-only. StockDB-equivalent full-window raw history, PIT/company-action/publication timing and untouched forward validation are still missing.",
+      "next_acceptance": "Run the same frozen candidates through a complete StockDB-equivalent raw-bar window and untouched forward window after resolving execution references; keep paper and promotion closed until PIT and company-action gates pass.",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "seat_style",
@@ -652,4 +657,4 @@
     }
   ],
   "completion_rule": "Do not mark complete while any required item is PARTIAL, BLOCKED, missing evidence or research-only when the objective requires current/real-channel proof."
-}
+}`n

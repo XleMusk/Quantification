@@ -618,7 +618,7 @@
     {
       "id": "shortline_native_lr_lgbm",
       "family": "shortline_board_chain",
-      "state": "RESEARCH_ACCOUNT_PARTIAL_WITH_CANDIDATE_HANDOFF",
+      "state": "RESEARCH_ONLY_BOUNDED_REPLAY_WITH_ADOPTION_GATE",
       "comparability_group": "shortline_saved_selection_2026",
       "metrics": {
         "lr_sessions": 103,
@@ -637,7 +637,9 @@
         "bounded_baostock_replay_lr_orders": 1,
         "bounded_baostock_replay_lr_fills": 2,
         "bounded_baostock_replay_lgbm_orders": 3,
-        "bounded_baostock_replay_lgbm_fills": 6
+        "bounded_baostock_replay_lgbm_fills": 6,
+        "bounded_adoption_gate_models": 2,
+        "bounded_adoption_gate_continue_research_only": 2
       },
       "evidence": [
         "outputs/shortline_native_selection_replay/20261018_v1/REPORT.md",
@@ -670,7 +672,11 @@
         "outputs/pipeline_receipts/20261026_shortline_baostock_candidate_replay_v1.json",
         "outputs/research_reports/20261026_shortline_baostock_candidate_replay_v1.md",
         "trading/research/shortline_baostock_raw_snapshot.py",
-        "trading/research/tests/test_shortline_baostock_raw_snapshot.py"
+        "trading/research/tests/test_shortline_baostock_raw_snapshot.py",
+        "trading/research/shortline_adoption_gate.py",
+        "trading/research/tests/test_shortline_adoption_gate.py",
+        "outputs/pipeline_receipts/20261026_shortline_adoption_gate_v1.json",
+        "outputs/research_reports/20261026_shortline_adoption_gate_v1.md"
       ],
       "limits": [
         "full strategy return unknown",
@@ -680,16 +686,17 @@
         "saved LGBM target reaches the shared research-only paper route; LR and LGBM terminal days remain separate",
         "the new qualified preopen handoff has 3 explicitly selected rows per model and passes the read-only score gate; it is a new candidate input, not a complete-window return",
         "the bounded handoff replay reached shared Engine target generation but was blocked for all buys by unsupported_first_five_listing_sessions; no orders/fills or return were claimed",
-        "a bounded BaoStock raw-bar replay completes the selected 2026-10-15 next-session route, but it is independent of StockDB and cannot establish full strategy return or PIT safety"
+        "a bounded BaoStock raw-bar replay completes the selected 2026-10-15 next-session route, but it is independent of StockDB and cannot establish full strategy return or PIT safety",
+        "the model-level adoption gate records CONTINUE_RESEARCH_ONLY for both bounded replays; it does not permit paper, promotion or live execution"
       ],
       "research_selection": {
-        "decision": "UNASSESSED_SEPARATE_GATE",
-        "action": "UNASSESSED_SEPARATE_GATE",
-        "research_followup_allowed": false,
+        "decision": "CONTINUE_RESEARCH_ONLY",
+        "action": "CONTINUE_RESEARCH_ONLY",
+        "research_followup_allowed": true,
         "paper_allowed": false,
         "promotion_allowed": false,
         "source_receipt": "outputs/pipeline_receipts/20261026_candidate_research_selection_v2.json",
-        "next_step": "Replay the new qualified handoff through a complete raw-bar path after resolving the saved execution references; do not promote or change the frozen model."
+        "next_step": "Complete StockDB-equivalent full-window and untouched-forward validation with PIT/company-action/publication evidence; retain the frozen candidates."
       }
     },
     {
@@ -833,4 +840,4 @@
     "paper_allowed": false,
     "promotion_allowed": false
   }
-}
+}`n

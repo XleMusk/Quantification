@@ -394,3 +394,9 @@ D1 输入汇入已自动化：`candidate-daily-input-bundle` 从两个已保存�
 ## 2026-10-26 shortline bounded BaoStock replay
 
 新增 `shortline-baostock-raw-snapshot` 可复用只读采集命令，用公开 BaoStock 补齐候选 2026-10-08..16 原始路径。10 月 15 日冻结 native LR/LGBM handoff 经过共享 Engine/Ledger：LR 1 笔订单/2 笔成交，LightGBM 3 笔订单/6 笔成交。该结果是独立 BaoStock bounded research replay，不是 StockDB 等价、PIT、完整窗口或采用证据。
+
+## 2026-10-26 shortline adoption gate
+
+	rading/research/shortline_adoption_gate.py now joins the immutable native LR/LightGBM handoff with the bounded BaoStock replay through an explicit model-level adoption gate. Both models are CONTINUE_RESEARCH_ONLY: LR 1 order/2 fills and LightGBM 3 orders/6 fills. The receipt keeps xecution_admitted=false, paper_allowed=false and promotion_allowed=false; StockDB-equivalent full-window, PIT/company-action/publication timing and untouched-forward evidence remain required.
+
+Evidence: outputs/pipeline_receipts/20261026_shortline_adoption_gate_v1.json and outputs/research_reports/20261026_shortline_adoption_gate_v1.md. Focused tests: 	est_shortline_adoption_gate.py, 	est_shortline_candidate_handoff.py, 	est_shortline_baostock_raw_snapshot.py -> 8 passed.
