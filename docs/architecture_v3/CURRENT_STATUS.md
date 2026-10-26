@@ -518,3 +518,8 @@ The handbook R2 implementation wave is bound to internal research release v31: D
 
 
 F05 bounded receipt v2 executed through the persistent run store: 4 paper runs admitted to the isolated store, 3 rejected requests persisted (concurrency limit, idempotency conflict, invalid request), no fifth run created, ledger_mutated=false, execution_admitted=false. Receipt: outputs/pipeline_receipts/20261026_persistent_task_decision_v2.json.
+
+
+## 2026-10-26 internal release v32
+
+F05 accepted bounded paper-task receipt is bound to internal release v32: D:/QuantificationData/trading/research/releases/20261026_v32/release_manifest.json; manifest SHA-256 bfb813ed30f5df6c42625f0c9279b63b3c7894fb2df195fe349aed87cb2aecf2; receipt outputs/pipeline_receipts/20261026_release_v32_binding_v1.json. execution_admitted=false and live_execution_ready=false remain closed.

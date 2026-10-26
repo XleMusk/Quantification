@@ -1,0 +1,17 @@
+{
+  "schema": "quantification_internal_release_binding_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "version": "20261026_v32",
+  "manifest": "D:\\QuantificationData\\trading\\research\\releases\\20261026_v32\\release_manifest.json",
+  "manifest_sha256": "bfb813ed30f5df6c42625f0c9279b63b3c7894fb2df195fe349aed87cb2aecf2",
+  "git_commit": "e276ae9ef59fa676bc7e768a020eaadb5f8930c4",
+  "execution_admitted": false,
+  "live_execution_ready": false,
+  "missing_required_code": [],
+  "work_package": "F05 bounded persistent paper task",
+  "limitations": [
+    "The four accepted runs and three durable rejections use an isolated local paper SQLite store.",
+    "No market data, broker, THS or real-account state is used or mutated.",
+    "Task timing/expense measurement for a full V3 paper slice remains a separate follow-up."
+  ]
+}
