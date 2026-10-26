@@ -1,0 +1,83 @@
+{
+  "schema": "quantification_persistent_task_decision_receipt_v1",
+  "status": "VERIFIED_LOCAL",
+  "execution_admitted": false,
+  "ledger_mutated": false,
+  "created_run_count": 4,
+  "active_run_count": 4,
+  "failure_count": 3,
+  "rejections": [
+    {
+      "id": 3,
+      "request_key": "f05-invalid",
+      "name": "",
+      "mode": "live",
+      "start": "2024-01-02",
+      "end": "2024-01-05",
+      "dataset": "D:\\VLA\\tmp\\quantification_f05_t8yt_208\\trading\\dataset",
+      "reason_code": "INVALID_RUN_REQUEST",
+      "reason": "Invalid run mode/name",
+      "context": {},
+      "created_at": "2026-10-26T13:02:00.959145+00:00",
+      "execution_admitted": false
+    },
+    {
+      "id": 2,
+      "request_key": "f05-paper-0",
+      "name": "f05-changed",
+      "mode": "replay",
+      "start": "2024-01-02",
+      "end": "2024-01-05",
+      "dataset": "D:\\VLA\\tmp\\quantification_f05_t8yt_208\\trading\\dataset",
+      "reason_code": "REQUEST_KEY_CONFLICT",
+      "reason": "request key already binds a different run",
+      "context": {
+        "existing_run_id": "59db4c1981df4b9baf356ea5f33b3a3c"
+      },
+      "created_at": "2026-10-26T13:02:00.957146+00:00",
+      "execution_admitted": false
+    },
+    {
+      "id": 1,
+      "request_key": "f05-over-limit",
+      "name": "f05-over-limit",
+      "mode": "replay",
+      "start": "2024-01-02",
+      "end": "2024-01-05",
+      "dataset": "D:\\VLA\\tmp\\quantification_f05_t8yt_208\\trading\\dataset",
+      "reason_code": "CONCURRENCY_LIMIT_REACHED",
+      "reason": "At most four concurrent simulation runs",
+      "context": {
+        "active_count": 4,
+        "limit": 4
+      },
+      "created_at": "2026-10-26T13:02:00.952533+00:00",
+      "execution_admitted": false
+    }
+  ],
+  "rejection_codes": [
+    "CONCURRENCY_LIMIT_REACHED",
+    "INVALID_RUN_REQUEST",
+    "REQUEST_KEY_CONFLICT"
+  ],
+  "failures": [
+    {
+      "request_key": "f05-over-limit",
+      "error": "At most four concurrent simulation runs"
+    },
+    {
+      "request_key": "f05-paper-0",
+      "error": "Conflicting run request key"
+    },
+    {
+      "request_key": "f05-invalid",
+      "error": "Invalid run mode/name"
+    }
+  ],
+  "acceptance": {
+    "concurrency_rejection_persisted": true,
+    "idempotency_conflict_persisted": true,
+    "invalid_request_persisted": true,
+    "no_fifth_run_created": true
+  }
+}

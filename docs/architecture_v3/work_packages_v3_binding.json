@@ -158,7 +158,7 @@
       "domain": "development",
       "result": "Persistent tasks and global concurrency/expense decisions are recoverable.",
       "state": "PARTIAL",
-      "next": "Re-use the durable rejection receipts in one accepted bounded paper-task run and measure its task/expense outcome; do not add a scheduler or auto-retry.",
+      "next": "Add task timing/expense measurement only when a bounded V3 paper slice has an accepted result; retain the current durable rejection boundary and do not add auto-retry.",
       "prohibition": "Do not fill task slots or expand budgets to make progress look larger.",
       "evidence_updated_on": "2026-10-26",
       "actual_paths": [
@@ -167,7 +167,9 @@
         "trading/research/persistent_task_decision_receipt.py",
         "trading/tests/test_persistent_task_store.py",
         "outputs/pipeline_receipts/20261026_persistent_task_decision_v1.json",
-        "outputs/research_reports/20261026_persistent_task_decision_v1.md"
+        "outputs/research_reports/20261026_persistent_task_decision_v1.md",
+        "outputs/pipeline_receipts/20261026_persistent_task_decision_v2.json",
+        "outputs/research_reports/20261026_persistent_task_decision_v2.md"
       ],
       "evidence": [
         "trading/store.py",
@@ -175,7 +177,9 @@
         "trading/research/persistent_task_decision_receipt.py",
         "trading/tests/test_persistent_task_store.py",
         "outputs/pipeline_receipts/20261026_persistent_task_decision_v1.json",
-        "outputs/research_reports/20261026_persistent_task_decision_v1.md"
+        "outputs/research_reports/20261026_persistent_task_decision_v1.md",
+        "outputs/pipeline_receipts/20261026_persistent_task_decision_v2.json",
+        "outputs/research_reports/20261026_persistent_task_decision_v2.md"
       ]
     },
     {
