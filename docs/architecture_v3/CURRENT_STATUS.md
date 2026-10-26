@@ -479,3 +479,7 @@ P31 覆盖诊断工作包已绑定内部研究发布 v26：`D:/QuantificationDat
 ## 2026-10-26 internal release v27
 
 P32 策略采用汇总 v2 已绑定内部研究发布 v27：`D:/QuantificationData/trading/research/releases/20261026_v27/release_manifest.json`，提交 `75aafb7`，`missing_required_code=[]`、`execution_admitted=false`、`live_execution_ready=false`。绑定回执 `outputs/pipeline_receipts/20261026_release_v27_binding_v1.json`。
+
+## 2026-10-26 THS readback duplicate-row gate
+
+THS 只读回读比较器现在显式拒绝重复参考证券，并将重复导出证券判为 `readback_mismatch_stop`，不再用字典覆盖前一行。新增重复参考/重复导出测试；THS focused suite `8 passed`。该改动仍不连接客户端、不提交、不改变 Ledger。

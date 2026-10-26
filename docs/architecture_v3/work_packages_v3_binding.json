@@ -1896,19 +1896,16 @@
       "next": "Use the comparator only after an authorized read-only export exists; preserve mismatch/incomplete outputs and never resend automatically.",
       "prohibition": "Synthetic readback verification is a contract test, not real THS observation or execution evidence.",
       "actual_paths": [
-        "D:/Quantification/trading/ths/target_readback.py",
-        "D:/Quantification/trading/tests/test_ths_target_readback.py",
+        "trading/ths/target_readback.py",
+        "trading/tests/test_ths_target_readback.py",
         "run_committee.py ths-target-readback",
-        "D:/Quantification/outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json"
+        "outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json"
       ],
       "evidence": [
-        "D:/Quantification/outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json",
-        "trading/research/common_window_strategy_comparison.py",
-        "trading/tests/test_common_window_strategy_comparison.py",
-        "outputs/pipeline_receipts/20261026_common_window_strategy_comparison_v1.json",
-        "outputs/research_reports/20261026_common_window_strategy_comparison_v1.md"
+        "outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json",
+        "trading/tests/test_ths_target_readback.py"
       ],
-      "acceptance": "A complete synthetic row export returns readback_verified with submitted=false and execution_admitted=false; mismatch and missing-row cases stop explicitly.",
+      "acceptance": "A complete synthetic row export returns readback_verified with submitted=false and execution_admitted=false; mismatch, missing-row and duplicate-export cases stop explicitly; duplicate reference symbols are rejected; focused tests pass.",
       "evidence_updated_on": "2026-10-26"
     },
     {

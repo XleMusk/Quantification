@@ -32,6 +32,16 @@ def compare_target_reference(reference: Mapping[str, Any], readback: Mapping[str
     if not isinstance(expected_rows, list) or not isinstance(received_rows, list):
         raise ValueError("Reference and readback must contain rows lists")
 
+    expected_symbols = [str(row.get("symbol")) for row in expected_rows
+                        if isinstance(row, Mapping) and row.get("symbol")]
+    received_symbols = [str(row.get("symbol")) for row in received_rows
+                        if isinstance(row, Mapping) and row.get("symbol")]
+    duplicate_expected = sorted({symbol for symbol in expected_symbols
+                                 if expected_symbols.count(symbol) > 1})
+    duplicate_received = sorted({symbol for symbol in received_symbols
+                                 if received_symbols.count(symbol) > 1})
+    if duplicate_expected:
+        raise ValueError(f"Target reference contains duplicate symbols: {duplicate_expected}")
     expected = {
         str(row.get("symbol")): int(row.get("target_quantity", 0))
         for row in expected_rows if isinstance(row, Mapping) and row.get("symbol")
@@ -47,7 +57,9 @@ def compare_target_reference(reference: Mapping[str, Any], readback: Mapping[str
         for symbol in sorted(set(expected) & set(received))
         if expected[symbol] != received[symbol]
     ]
-    if missing:
+    if duplicate_received:
+        status = "readback_mismatch_stop"
+    elif missing:
         status = "readback_incomplete_stop"
     elif unexpected or mismatches:
         status = "readback_mismatch_stop"
@@ -63,6 +75,7 @@ def compare_target_reference(reference: Mapping[str, Any], readback: Mapping[str
         "missing_symbols": missing,
         "unexpected_symbols": unexpected,
         "quantity_mismatches": mismatches,
+        "duplicate_readback_symbols": duplicate_received,
         "account_observed": readback.get("account_observed") is True,
         "quote_observed": readback.get("quote_observed") is True,
         "submitted": False,
