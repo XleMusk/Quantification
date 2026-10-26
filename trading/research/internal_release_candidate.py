@@ -28,6 +28,7 @@ REQUIRED_FILES = (
     "trading/research/stockdb_fixed_daily.py",
     "trading/research/shortline_candidate_handoff.py",
     "trading/research/f01_financial_factor.py",
+    "trading/research/shortline_baostock_raw_snapshot.py",
     "run_committee.py",
 )
 
@@ -43,6 +44,9 @@ EVIDENCE_FILES = (
     "outputs/research_reports/20261026_shortline_candidate_panel_replay_blocked_v1.md",
     "trading/research/tests/test_f01_financial_factor.py",
     "trading/research/tests/test_f2_vertical_slice.py",
+    "trading/research/tests/test_shortline_baostock_raw_snapshot.py",
+    "outputs/pipeline_receipts/20261026_shortline_baostock_candidate_replay_v1.json",
+    "outputs/research_reports/20261026_shortline_baostock_candidate_replay_v1.md",
 )
 
 PAPER_EVIDENCE_FILES = (
