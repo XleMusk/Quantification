@@ -27,6 +27,7 @@ REQUIRED_FILES = (
     "trading/research/post_close_d0_d1.py",
     "trading/research/stockdb_fixed_daily.py",
     "trading/research/shortline_candidate_handoff.py",
+    "trading/research/f01_financial_factor.py",
     "run_committee.py",
 )
 
@@ -40,6 +41,8 @@ EVIDENCE_FILES = (
     "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json",
     "outputs/pipeline_receipts/20261026_shortline_candidate_panel_replay_blocked_v1.json",
     "outputs/research_reports/20261026_shortline_candidate_panel_replay_blocked_v1.md",
+    "trading/research/tests/test_f01_financial_factor.py",
+    "trading/research/tests/test_f2_vertical_slice.py",
 )
 
 PAPER_EVIDENCE_FILES = (
