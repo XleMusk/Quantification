@@ -2425,11 +2425,25 @@
       "domain": "research",
       "result": "Candidate adoption, mature-factor horizon comparison and shortline LR/LightGBM gate now produce one research-only rollup with explicit next actions.",
       "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
-      "next": "After the 2026-10-26 close, regenerate the rollup from the fresh D0/D1 and keep PIT, forward and channel gates separate.",
+      "next": "After the next complete close, regenerate D0/D1, current-window comparison and adoption rollup together; keep PIT, forward, corporate-action and channel gates separate.",
       "prohibition": "Do not treat the rollup as paper/live adoption or as a substitute for PIT, untouched-forward or THS evidence.",
-      "actual_paths": "trading/research/research_adoption_rollup.py trading/research/tests/test_research_adoption_rollup.py run_committee.py research-adoption-rollup outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json outputs/research_reports/20261026_research_adoption_rollup_v1.md",
-      "evidence_updated_on": "2026-10-26",
-      "evidence": "outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json outputs/research_reports/20261026_research_adoption_rollup_v1.md"
+      "actual_paths": [
+        "trading/research/research_adoption_rollup.py",
+        "trading/research/tests/test_research_adoption_rollup.py",
+        "run_committee.py",
+        "research-adoption-rollup",
+        "outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json",
+        "outputs/research_reports/20261026_research_adoption_rollup_v1.md",
+        "outputs/pipeline_receipts/20261027_research_adoption_rollup_v6.json",
+        "outputs/research_reports/20261027_research_adoption_rollup_v6.md"
+      ],
+      "evidence_updated_on": "2026-10-27",
+      "evidence": [
+        "outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json",
+        "outputs/research_reports/20261026_research_adoption_rollup_v1.md",
+        "outputs/pipeline_receipts/20261027_research_adoption_rollup_v6.json",
+        "outputs/research_reports/20261027_research_adoption_rollup_v6.md"
+      ]
     },
     {
       "id": "P30",
@@ -2493,7 +2507,7 @@
       "domain": "research",
       "result": "The latest candidate adoption matrix, mature-factor horizon comparison, StockDB-backed shortline adoption gate and retained joint portfolio gate are joined into a research-only rollup with explicit continuation, stop and coverage decisions. A current-window receipt now compares the explicit 2026-10-26 fixed and half-momentum replay artifacts without changing the retained long-window receipt or rerunning either strategy. The latest rollup now binds the current-window fixed-versus-half-momentum receipt as a separate research gate and preserves its STOP_RESEARCH_ONLY result without promotion.",
       "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
-      "next": "下一次收市后同时刷新 D0/D1、current-window comparison 和 adoption rollup；继续保持 PIT、前向、公司行动和渠道门禁分离。",
+      "next": "After the next complete close, regenerate D0/D1, current-window comparison and adoption rollup together; keep PIT, forward, corporate-action and channel gates separate.",
       "prohibition": "Do not treat the rollup as strategy validation, paper/live promotion or a substitute for PIT/forward/THS evidence.",
       "actual_paths": [
         "trading/research/research_adoption_rollup.py",
@@ -2511,9 +2525,11 @@
         "outputs/research_reports/20261026_current_window_fixed_candidate_v1.md",
         "run_committee.py",
         "outputs/pipeline_receipts/20261026_research_adoption_rollup_v5.json",
-        "outputs/research_reports/20261026_research_adoption_rollup_v5.md"
+        "outputs/research_reports/20261026_research_adoption_rollup_v5.md",
+        "outputs/pipeline_receipts/20261027_research_adoption_rollup_v6.json",
+        "outputs/research_reports/20261027_research_adoption_rollup_v6.md"
       ],
-      "evidence_updated_on": "2026-10-26",
+      "evidence_updated_on": "2026-10-27",
       "evidence": [
         "outputs/pipeline_receipts/20261026_research_adoption_rollup_v2.json",
         "outputs/research_reports/20261026_research_adoption_rollup_v2.md",
@@ -2529,7 +2545,9 @@
         "outputs/pipeline_receipts/20261026_current_window_fixed_candidate_v1.json",
         "outputs/research_reports/20261026_current_window_fixed_candidate_v1.md",
         "outputs/pipeline_receipts/20261026_research_adoption_rollup_v5.json",
-        "outputs/research_reports/20261026_research_adoption_rollup_v5.md"
+        "outputs/research_reports/20261026_research_adoption_rollup_v5.md",
+        "outputs/pipeline_receipts/20261027_research_adoption_rollup_v6.json",
+        "outputs/research_reports/20261027_research_adoption_rollup_v6.md"
       ],
       "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3 and the retained joint target gate; records the separate joint decision as CONTINUE_RESEARCH_ONLY with NOT_COMPARABLE_PROJECTION_ONLY, keeps strategy_validated=0 and execution_admitted=false, and passes the focused rollup tests. The explicit current-window comparison binds the same StockDB snapshot, intersects the 2026-08-31..2026-10-26 saved-account dates, reports both legs, and keeps promotion_allowed=false. The rollup accepts the explicit current-window comparison, records both fixed and half-momentum rows with their research decisions, and keeps paper_allowed=false and promotion_allowed=false."
     },
