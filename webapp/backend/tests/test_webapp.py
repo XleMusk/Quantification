@@ -133,6 +133,37 @@ def test_recovery_endpoint_is_read_only_and_preserves_external_boundary(client, 
     assert store.job(item["id"])["status"] == "interrupted"
 
 
+def test_manual_resubmit_links_child_and_is_idempotent(client, dataset):
+    parent = submit(client, dataset).json()
+    store.claim_job()
+    store.recover_interrupted()
+    parent_before = store.job(parent["id"])
+
+    headers = {**HEADERS, "Idempotency-Key": "recovery-key-1"}
+    first = client.post(f"/api/jobs/{parent['id']}/resubmit", headers=headers)
+    assert first.status_code == 202, first.text
+    child = first.json()
+    assert child["parent_job_id"] == parent["id"]
+    assert child["recovery_attempt"] == 1
+    assert child["status"] == "queued"
+
+    repeated = client.post(f"/api/jobs/{parent['id']}/resubmit", headers=headers)
+    assert repeated.status_code == 202
+    assert repeated.json()["id"] == child["id"]
+    assert len(store.jobs()) == 2
+    assert store.job(parent["id"]) == parent_before
+
+
+def test_manual_resubmit_requires_recoverable_parent(client, dataset):
+    parent = submit(client, dataset).json()
+    response = client.post(
+        f"/api/jobs/{parent['id']}/resubmit",
+        headers={**HEADERS, "Idempotency-Key": "recovery-key-2"},
+    )
+    assert response.status_code == 409
+    assert len(store.jobs()) == 1
+
+
 def test_release_endpoint_binds_latest_research_manifest(tmp_path, monkeypatch, client):
     root = tmp_path / "releases"
     manifest = root / "20261026_v13" / "release_manifest.json"

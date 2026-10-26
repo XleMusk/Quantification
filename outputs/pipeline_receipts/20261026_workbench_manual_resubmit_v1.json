@@ -1,0 +1,22 @@
+{
+  "schema": "quantification_workbench_manual_resubmit_v1",
+  "status": "MANUAL_RESUBMIT_LINKED",
+  "captured_at": "2026-10-26T00:00:00+00:00",
+  "parent_job_id": "11e8db3c4d8b4fb396de3b3f8417568d",
+  "parent_status": "interrupted",
+  "child_job_id": "9bf5fe7fef694abc894d1eba3dad321c",
+  "child_status": "queued",
+  "recovery_attempt": 1,
+  "dataset_id": "dddddddddddddddddddddddddddddddd",
+  "config_equal": true,
+  "request_key_sha256": "959509bd9210af7028f925a224712068673c3ec58b773bae69952ea3ec6a29e0",
+  "automatic_retry": false,
+  "execution_admitted": false,
+  "live_trading": false,
+  "broker_or_ths_interacted": false,
+  "ledger_mutated": false,
+  "limitations": [
+    "The child is queued for a separate local research attempt; the parent remains immutable.",
+    "This receipt does not prove current market, broker, account, or Tonghuashun state."
+  ]
+}

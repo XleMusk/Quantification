@@ -222,6 +222,20 @@ def cancel_job(identifier: str):
     return store.cancel(identifier)
 
 
+@app.post("/api/jobs/{identifier}/resubmit", status_code=202)
+def resubmit_job(identifier: str, idempotency_key: str = Header(..., min_length=8, max_length=80)):
+    """Explicitly create an immutable child for a failed paper job.
+
+    Recovery is manual and idempotent: this endpoint never retries a worker or
+    touches an external account.  Reusing the same key returns the same child;
+    a new key records a new recovery attempt linked to the original job.
+    """
+    source = require_job(identifier)
+    if source["status"] not in {"failed", "interrupted", "cancelled"}:
+        raise HTTPException(409, "只有失败、中断或已取消的任务可以重新提交")
+    return store.resubmit_job(identifier, idempotency_key)
+
+
 @app.get("/api/jobs/{identifier}/result")
 def result(identifier: str):
     item = require_job(identifier)

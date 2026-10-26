@@ -46,6 +46,8 @@ def build_recovery_evidence(job: Mapping[str, Any]) -> dict[str, Any]:
         "schema": SCHEMA,
         "created_at": datetime.now().astimezone().isoformat(),
         "job_id": job.get("id") or job.get("job_id"),
+        "parent_job_id": job.get("parent_job_id"),
+        "recovery_attempt": int(job.get("recovery_attempt") or 0),
         "observed_status": status,
         "observed_error": job.get("error"),
         "decision": decision,

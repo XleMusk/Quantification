@@ -353,3 +353,11 @@ Reused the saved stockdb_value_size_activity_2023 account at terminal day 2023-1
 ## 2026-10-25 internal research release v2 and L06 readiness
 
 Extended internal_release_candidate.py to bind paper evidence and an explicit account_readiness matrix. The matrix records the research paper account as BOUND_RESEARCH_ONLY, current BrokerQuote/four-table export/sellable T+1 export as MISSING, and THS as REFERENCE_ONLY_NOT_OBSERVED; execution_admitted=false and live_execution_ready=false remain closed. L06 is now PARTIAL with the release evidence path reserved at D:/QuantificationData/trading/research/releases/20261025_v3/release_manifest.json.
+
+## 2026-10-26 workbench manual resubmit linkage
+
+The local workbench recovery gap is now closed for the paper task queue: `POST /api/jobs/{id}/resubmit` accepts only `failed`, `interrupted`, or `cancelled` jobs, requires an explicit `Idempotency-Key`, preserves the parent job and configuration, and creates a child with `parent_job_id` and `recovery_attempt`. Repeating the same key returns the same child; it never retries automatically or infers broker/Tonghuashun state. The Tasks page now uses this linked route instead of creating an orphan task.
+
+Focused evidence: `webapp/backend/tests/test_webapp.py` and `trading/research/tests/test_workbench_manual_resubmit.py` (`31 passed` across the focused workbench suite). The machine receipt is `outputs/pipeline_receipts/20261026_workbench_manual_resubmit_v1.json`, with report `outputs/research_reports/20261026_workbench_manual_resubmit_v1.md`; it records `MANUAL_RESUBMIT_LINKED`, `execution_admitted=false`, `automatic_retry=false`, `broker_or_ths_interacted=false`, and `ledger_mutated=false`.
+
+The parent remains `interrupted` and the linked child is queued for a separate local research attempt. This does not upgrade market/account evidence or permit external actions.

@@ -15,7 +15,7 @@ export function Tasks({ jobs, datasets, active, select, reload, openResult }: { 
     return () => { current = false; };
   }, [item?.id, item?.status, item?.progress, item?.updated_at]);
   async function cancel(id: string) { setBusy(true); setError(''); try { await post(`/jobs/${id}/cancel`); await reload(); } catch (e) { setError((e as Error).message); } finally { setBusy(false); } }
-  async function retry(job: Job) { setBusy(true); setError(''); try { const next = await post<Job>('/jobs', { dataset_id: job.dataset_id, start: job.config.start, end: job.config.end, min_pairs: job.config.min_pairs }, crypto.randomUUID()); await reload(); select(next.id); } catch (e) { setError((e as Error).message); } finally { setBusy(false); } }
+  async function retry(job: Job) { setBusy(true); setError(''); try { const next = await post<Job>(`/jobs/${job.id}/resubmit`, undefined, crypto.randomUUID()); await reload(); select(next.id); } catch (e) { setError((e as Error).message); } finally { setBusy(false); } }
   return <>
     <header className="page-header"><h1>任务管理</h1><button onClick={reload}><RefreshCw size={16} />刷新</button></header>
     {error && <ErrorMessage message={error} />}
