@@ -1,0 +1,20 @@
+{
+  "schema": "quantification_internal_release_binding_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "version": "20261026_v34",
+  "manifest": "D:\\QuantificationData\\trading\\research\\releases\\20261026_v34\\release_manifest.json",
+  "manifest_sha256": "44907bb93d84e0f308136f23f814c51e69ceb46e6949c160e7fd1dbc7c3b0e69",
+  "git_commit": "1a2922a80424dc64c316b06199f1e9f30e147403",
+  "execution_admitted": false,
+  "live_execution_ready": false,
+  "missing_required_code": [],
+  "work_packages": [
+    "F02 runtime recipe",
+    "O05 tampered recovery fault injection"
+  ],
+  "limitations": [
+    "Runtime recipe is local metadata evidence and does not create an isolated worktree or prove external environment availability.",
+    "Fault injection uses a saved paper/research command and does not prove broker or Tonghuashun recovery.",
+    "No broker/THS login, prefill, order, cancellation, transfer or account mutation."
+  ]
+}

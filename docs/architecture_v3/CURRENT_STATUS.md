@@ -536,3 +536,8 @@ F04 CLI dispatch cleanup v2 and D03 provenance evidence are bound to internal re
 F02 runtime recipe v2 captured a clean main worktree, project interpreter D:/Quantification/env/python.exe, trading import path, runtime directories and Git identity. Test_runtime_recipe: 3 passed. Receipt: outputs/pipeline_receipts/20261026_runtime_recipe_v2.json.
 
 O05 fault injection now rejects tampered producer_repeated/system_head_mutated/ledger_mutated recovery flags without rerunning the producer or mutating head/registration/plan. system_daily_command_recovery plus system_daily_refresh: 14 passed. Receipt: outputs/pipeline_receipts/20261026_system_daily_fault_injection_v1.json; commit ee2d7a3.
+
+
+## 2026-10-26 internal release v34
+
+F02 runtime recipe v2 and O05 fault-injection evidence are bound to internal release v34: D:/QuantificationData/trading/research/releases/20261026_v34/release_manifest.json; manifest SHA-256 44907bb93d84e0f308136f23f814c51e69ceb46e6949c160e7fd1dbc7c3b0e69; receipt outputs/pipeline_receipts/20261026_release_v34_binding_v1.json. execution_admitted=false and live_execution_ready=false remain closed.
