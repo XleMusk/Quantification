@@ -1277,7 +1277,9 @@
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/joint_paper/joint_paper_receipt.json",
         "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
-        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md"
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1310,7 +1312,9 @@
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/joint_paper/joint_paper_receipt.json",
         "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
-        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md"
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md"
       ]
     },
     {
@@ -1417,7 +1421,9 @@
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/joint_paper/joint_paper_receipt.json",
         "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
-        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md"
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1445,7 +1451,9 @@
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/joint_paper/joint_paper_receipt.json",
         "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
-        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md"
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md"
       ],
       "evidence_updated_on": "2026-10-27"
     },
@@ -2223,7 +2231,9 @@
         "outputs/pipeline_receipts/20261027_stockdb_fixed_daily_derived_research_v1.json",
         "outputs/research_reports/20261027_stockdb_fixed_daily_derived_research_v1.md",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
-        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md"
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md"
       ],
       "evidence": [
         "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
@@ -2250,7 +2260,9 @@
         "outputs/pipeline_receipts/20261027_stockdb_fixed_daily_derived_research_v1.json",
         "outputs/research_reports/20261027_stockdb_fixed_daily_derived_research_v1.md",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
-        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md"
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md"
       ],
       "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence. The loader rejects incomplete native snapshots, verifies plan/receipt/roster/raw hashes and exact date/roster rows, and fixed_daily schema dispatch passes focused tests without changing execution boundaries. The producer publishes complete plan/receipt/roster/raw files only for exact coverage and emitted BLOCKED_INCOMPLETE_STOCKDB_SNAPSHOT with 25 missing symbols for the current native snapshot without imputation.",
       "evidence_updated_on": "2026-10-27"
@@ -2435,14 +2447,18 @@
         "outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json",
         "outputs/research_reports/20261026_research_adoption_rollup_v1.md",
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v6.json",
-        "outputs/research_reports/20261027_research_adoption_rollup_v6.md"
+        "outputs/research_reports/20261027_research_adoption_rollup_v6.md",
+        "outputs/pipeline_receipts/20261027_research_adoption_rollup_v7.json",
+        "outputs/research_reports/20261027_research_adoption_rollup_v7.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
         "outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json",
         "outputs/research_reports/20261026_research_adoption_rollup_v1.md",
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v6.json",
-        "outputs/research_reports/20261027_research_adoption_rollup_v6.md"
+        "outputs/research_reports/20261027_research_adoption_rollup_v6.md",
+        "outputs/pipeline_receipts/20261027_research_adoption_rollup_v7.json",
+        "outputs/research_reports/20261027_research_adoption_rollup_v7.md"
       ]
     },
     {
@@ -2527,7 +2543,9 @@
         "outputs/pipeline_receipts/20261026_research_adoption_rollup_v5.json",
         "outputs/research_reports/20261026_research_adoption_rollup_v5.md",
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v6.json",
-        "outputs/research_reports/20261027_research_adoption_rollup_v6.md"
+        "outputs/research_reports/20261027_research_adoption_rollup_v6.md",
+        "outputs/pipeline_receipts/20261027_research_adoption_rollup_v7.json",
+        "outputs/research_reports/20261027_research_adoption_rollup_v7.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -2547,7 +2565,9 @@
         "outputs/pipeline_receipts/20261026_research_adoption_rollup_v5.json",
         "outputs/research_reports/20261026_research_adoption_rollup_v5.md",
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v6.json",
-        "outputs/research_reports/20261027_research_adoption_rollup_v6.md"
+        "outputs/research_reports/20261027_research_adoption_rollup_v6.md",
+        "outputs/pipeline_receipts/20261027_research_adoption_rollup_v7.json",
+        "outputs/research_reports/20261027_research_adoption_rollup_v7.md"
       ],
       "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3 and the retained joint target gate; records the separate joint decision as CONTINUE_RESEARCH_ONLY with NOT_COMPARABLE_PROJECTION_ONLY, keeps strategy_validated=0 and execution_admitted=false, and passes the focused rollup tests. The explicit current-window comparison binds the same StockDB snapshot, intersects the 2026-08-31..2026-10-26 saved-account dates, reports both legs, and keeps promotion_allowed=false. The rollup accepts the explicit current-window comparison, records both fixed and half-momentum rows with their research decisions, and keeps paper_allowed=false and promotion_allowed=false."
     },

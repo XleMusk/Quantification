@@ -294,6 +294,7 @@ def test_next_close_binds_registered_account_generation_when_head_exists(tmp_pat
         "schema": "stockdb_fixed_daily_v1",
         "generation": 3,
         "last_completed_day": "2026-10-23",
+        "execution_reference_mode": "derived_stockdb_research_only",
     })
     monkeypatch.setattr(contract.stockdb_fixed_daily, "resolve_terminal_account",
                         lambda _run_dir: (fixed, "fixed_close"))
@@ -304,6 +305,7 @@ def test_next_close_binds_registered_account_generation_when_head_exists(tmp_pat
         close_date=DAY, execution_day="2026-10-27", settlement_day="2026-10-28",
         initial_cash=100000.0)
     assert receipt["fixed_account"]["account_version"] == "generation-3:2026-10-23"
+    assert receipt["fixed_account"]["execution_reference_mode"] == "derived_stockdb_research_only"
     assert receipt["fixed_account"]["head"]["path"].endswith("head.json")
     assert receipt["persistent_fixed_daily_account_scope"] == "persistent_registered_account"
     assert receipt["target_preview_projection_scope"] == {

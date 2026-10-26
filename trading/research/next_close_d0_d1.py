@@ -374,11 +374,19 @@ def _fixed_account_binding(*, fixed_run_dir: str | Path | None,
     last_completed_day = head.get("last_completed_day")
     if not isinstance(generation, int) or not isinstance(last_completed_day, str):
         raise ValueError("fixed_daily head must expose generation and last_completed_day")
+    execution_reference_mode = head.get(
+        "execution_reference_mode", stockdb_fixed_daily.NATIVE_EXECUTION_REFERENCE)
+    if execution_reference_mode not in {
+        stockdb_fixed_daily.NATIVE_EXECUTION_REFERENCE,
+        stockdb_fixed_daily.DERIVED_EXECUTION_REFERENCE,
+    }:
+        raise ValueError("fixed_daily head has an unknown execution reference mode")
     return {
         "binding": "registered_fixed_daily",
         "account_version": f"generation-{generation}:{last_completed_day}",
         "generation": generation,
         "last_completed_day": last_completed_day,
+        "execution_reference_mode": execution_reference_mode,
         "run_dir": str(run_dir),
         "head": _ref(head_path),
         "terminal_account": str(fixed_source),
