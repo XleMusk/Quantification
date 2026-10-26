@@ -260,6 +260,9 @@ def main(argv=None):
     if argv[:1] == ["common-window-strategy-comparison"]:
         from trading.research.common_window_strategy_comparison import main as common_window_strategy_comparison_main
         return common_window_strategy_comparison_main(argv[1:])
+    if argv[:1] == ["current-window-strategy-comparison"]:
+        from trading.research.current_window_strategy_comparison import main as current_window_strategy_comparison_main
+        return current_window_strategy_comparison_main(argv[1:])
     if argv[:1] == ["candidate-adoption-decision"]:
         from trading.research.candidate_adoption_decision import main as candidate_adoption_decision_main
         return candidate_adoption_decision_main(argv[1:])

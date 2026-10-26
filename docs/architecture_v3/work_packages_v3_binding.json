@@ -2428,9 +2428,9 @@
     {
       "id": "P32",
       "domain": "research",
-      "result": "The latest candidate adoption matrix, mature-factor horizon comparison, StockDB-backed shortline adoption gate and retained joint portfolio gate are joined into a research-only rollup with explicit continuation, stop and coverage decisions.",
+      "result": "The latest candidate adoption matrix, mature-factor horizon comparison, StockDB-backed shortline adoption gate and retained joint portfolio gate are joined into a research-only rollup with explicit continuation, stop and coverage decisions. A current-window receipt now compares the explicit 2026-10-26 fixed and half-momentum replay artifacts without changing the retained long-window receipt or rerunning either strategy.",
       "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
-      "next": "在下一次变更收市后用同一 rollup 绑定新的 D0/D1；继续保持 PIT、前向、公司行动和渠道门禁分离。",
+      "next": "在下一次变更收市后用同一 D0/D1 合同和显式 current-window comparison 刷新新的收市证据；继续保持 PIT、前向、公司行动和渠道门禁分离。",
       "prohibition": "Do not treat the rollup as strategy validation, paper/live promotion or a substitute for PIT/forward/THS evidence.",
       "actual_paths": [
         "trading/research/research_adoption_rollup.py",
@@ -2441,7 +2441,12 @@
         "outputs/research_reports/20261026_research_adoption_rollup_v3.md",
         "outputs/pipeline_receipts/20261026_research_adoption_rollup_v4.json",
         "outputs/research_reports/20261026_research_adoption_rollup_v4.md",
-        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json"
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json",
+        "trading/research/current_window_strategy_comparison.py",
+        "trading/research/tests/test_current_window_strategy_comparison.py",
+        "outputs/pipeline_receipts/20261026_current_window_fixed_candidate_v1.json",
+        "outputs/research_reports/20261026_current_window_fixed_candidate_v1.md",
+        "run_committee.py"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -2453,9 +2458,13 @@
         "trading/research/research_adoption_rollup.py",
         "outputs/pipeline_receipts/20261026_research_adoption_rollup_v4.json",
         "outputs/research_reports/20261026_research_adoption_rollup_v4.md",
-        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json"
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json",
+        "trading/research/current_window_strategy_comparison.py",
+        "trading/research/tests/test_current_window_strategy_comparison.py",
+        "outputs/pipeline_receipts/20261026_current_window_fixed_candidate_v1.json",
+        "outputs/research_reports/20261026_current_window_fixed_candidate_v1.md"
       ],
-      "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3 and the retained joint target gate; records the separate joint decision as CONTINUE_RESEARCH_ONLY with NOT_COMPARABLE_PROJECTION_ONLY, keeps strategy_validated=0 and execution_admitted=false, and passes the focused rollup tests."
+      "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3 and the retained joint target gate; records the separate joint decision as CONTINUE_RESEARCH_ONLY with NOT_COMPARABLE_PROJECTION_ONLY, keeps strategy_validated=0 and execution_admitted=false, and passes the focused rollup tests. The explicit current-window comparison binds the same StockDB snapshot, intersects the 2026-08-31..2026-10-26 saved-account dates, reports both legs, and keeps promotion_allowed=false."
     },
     {
       "id": "P33",

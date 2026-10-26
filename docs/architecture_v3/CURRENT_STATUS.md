@@ -603,3 +603,9 @@ F2 的 publication contract 现在要求：日期型披露按 `[D 00:00, D+1 00:
 `f2_wayback_probe.py` 现在保留 Wayback CDX 14 位 UTC 捕获时间，写入 `retrieved_at`、`asof_at` 和 `capture_selection.selected_capture_at`，不再把捕获时点截成日期午夜。真实 `000002.SZSE/2023Q1` 探针重新运行后仍为 `BLOCKED_DATA`：唯一捕获为 `2025-09-05T23:50:23+00:00`，决策日 `2024-05-01` 前没有捕获，因此没有 PIT、因子或账户准入。17 个 F2 聚焦测试通过。
 
 证据：`outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v4.json`、`outputs/research_reports/20261026_f2_wayback_2023q1_v4.md`。
+
+## 2026-10-26 current-window fixed versus half-momentum comparison
+
+基于 2026-10-26 已完成的两个 StockDB rolling 账户产物，新增显式路径的同窗口比较入口 `run_committee.py current-window-strategy-comparison`，不改变既有长窗口回执，也不重跑策略。共同保存窗口为 2026-08-31..2026-10-26、35 个交易日：固定 `low_volatility_252_20` 净收益 0.8293%、最大回撤 -2.0255%、Sharpe 0.8366、25 笔订单；低波/半动量净收益 -9.4132%、最大回撤 -9.6664%、Sharpe -5.8082、40 笔订单。按固定研究规则，固定腿为 `CONTINUE_RESEARCH_ONLY`，半动量腿为 `STOP_RESEARCH_ONLY`；该结论只用于研究路由，不构成策略验证或采用。
+
+回执为 `outputs/pipeline_receipts/20261026_current_window_fixed_candidate_v1.json`，报告为 `outputs/research_reports/20261026_current_window_fixed_candidate_v1.md`，聚焦测试 `17 passed`。比较严格绑定共享 StockDB snapshot、Engine/Ledger 产物和执行边界，保持 `execution_admitted=false`、`strategy_validated=false`、`promotion_allowed=false`，没有 broker/THS 交互。

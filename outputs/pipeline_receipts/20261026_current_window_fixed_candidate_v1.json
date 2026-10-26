@@ -1,0 +1,108 @@
+{
+  "schema": "quantification_current_window_strategy_comparison_v1",
+  "status": "COMPLETED_RESEARCH_ONLY_CURRENT_WINDOW_COMPARISON",
+  "created_at": "2026-10-26T15:19:58.242204+00:00",
+  "execution_admitted": false,
+  "strategy_validated": false,
+  "ledger_mutated": false,
+  "broker_or_ths_interacted": false,
+  "promotion_allowed": false,
+  "stockdb_snapshot": "D:\\QuantificationData\\trading\\research\\full_market\\stockdb_2024_0101_1013_current_cutoff_v1",
+  "common_window": {
+    "start": "2026-08-31",
+    "end": "2026-10-26",
+    "sessions": 35,
+    "basis": "intersection_of_explicit_saved_daily_account_dates"
+  },
+  "comparison_contract": {
+    "shared_stockdb_snapshot": true,
+    "shared_engine_ledger_path": true,
+    "initial_cash_rmb": 140000.0,
+    "metrics": [
+      "sessions",
+      "orders",
+      "fills",
+      "net_return",
+      "max_drawdown",
+      "sharpe_zero_rf_252",
+      "fees_rmb",
+      "window_turnover_value"
+    ],
+    "research_decision_rule": "common-window net_return > 0 and Sharpe > 0 means CONTINUE_RESEARCH_ONLY",
+    "no_strategy_rerun": true,
+    "no_parameter_retuning": true
+  },
+  "strategies": [
+    {
+      "id": "low_volatility_252_20",
+      "label": "固定低波动",
+      "candidate_spec_id": "stockdb_low_volatility_252_20",
+      "metrics": {
+        "sessions": 35,
+        "window_start_equity": 140000.0,
+        "window_end_equity": 141161.07,
+        "net_return": 0.008293357142857172,
+        "max_drawdown": -0.02025487908141299,
+        "sharpe_zero_rf_252": 0.8365743043898471,
+        "window_turnover_value": 111837.0,
+        "orders": 25,
+        "fills": 44,
+        "fees_rmb": 129.93
+      },
+      "native_replay_window": {
+        "start": "2026-08-31",
+        "end": "2026-10-26",
+        "sessions": 35
+      },
+      "source_paths": {
+        "daily": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_224744_aec06dce\\low_volatility_252_20\\daily.csv",
+        "orders": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_224744_aec06dce\\low_volatility_252_20\\orders.csv",
+        "fills": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_224744_aec06dce\\low_volatility_252_20\\fills.csv",
+        "account": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_224744_aec06dce\\low_volatility_252_20\\account.json",
+        "replay": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_224744_aec06dce\\low_volatility_252_20\\replay.json"
+      },
+      "execution_admitted": false,
+      "strategy_validated": false,
+      "ledger_mutated": false,
+      "research_decision": "CONTINUE_RESEARCH_ONLY"
+    },
+    {
+      "id": "low_vol_half_momentum_20",
+      "label": "低波/半动量",
+      "candidate_spec_id": "stockdb_low_vol_half_momentum_20",
+      "metrics": {
+        "sessions": 35,
+        "window_start_equity": 169815.56,
+        "window_end_equity": 153830.46,
+        "net_return": -0.09413212782150238,
+        "max_drawdown": -0.09666428682978168,
+        "sharpe_zero_rf_252": -5.80815947562191,
+        "window_turnover_value": 213465.0,
+        "orders": 40,
+        "fills": 72,
+        "fees_rmb": 256.1
+      },
+      "native_replay_window": {
+        "start": "2024-01-02",
+        "end": "2026-10-26",
+        "sessions": 679
+      },
+      "source_paths": {
+        "daily": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_224200_61df5b84\\low_vol_half_momentum_20\\daily.csv",
+        "orders": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_224200_61df5b84\\low_vol_half_momentum_20\\orders.csv",
+        "fills": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_224200_61df5b84\\low_vol_half_momentum_20\\fills.csv",
+        "account": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_224200_61df5b84\\low_vol_half_momentum_20\\account.json",
+        "replay": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_224200_61df5b84\\low_vol_half_momentum_20\\replay.json"
+      },
+      "execution_admitted": false,
+      "strategy_validated": false,
+      "ledger_mutated": false,
+      "research_decision": "STOP_RESEARCH_ONLY"
+    }
+  ],
+  "limitations": [
+    "The comparison reads completed research-only account artifacts and does not rerun either strategy.",
+    "The terminal overlap is a short current-window diagnostic; it does not replace long-window or prospective validation.",
+    "PIT completeness, broker/THS observation, strategy validation and promotion remain unproven."
+  ]
+}
