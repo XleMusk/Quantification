@@ -246,6 +246,63 @@ def _current_window_summary(receipt: Mapping[str, Any], path: Path) -> dict[str,
     }
 
 
+def _public_seat_summary(receipt: Mapping[str, Any], path: Path) -> dict[str, Any]:
+    """Bind the public-seat timing/PIT gate already attached to candidate adoption.
+
+    Public-seat replays can be complete and still remain outside the ordinary D1
+    queue because disclosure publication time, historical membership and causal
+    attribution are not proven.  The rollup records that explicit state instead
+    of leaving the candidate as an unassessed row.
+    """
+    if receipt.get("schema") != "quantification_candidate_adoption_decision_v1":
+        raise ValueError(f"public-seat gate must come from candidate adoption receipt: {path}")
+    if receipt.get("execution_admitted") is not False:
+        raise ValueError(f"public-seat candidate gate crossed execution boundary: {path}")
+    gates = receipt.get("separate_gates")
+    if not isinstance(gates, Mapping):
+        raise ValueError(f"candidate adoption has no separate gates: {path}")
+    gate = gates.get("public_seat_trend_hypotheses")
+    if not isinstance(gate, Mapping):
+        raise ValueError(f"candidate adoption has no public-seat gate: {path}")
+    for key in ("paper_allowed", "promotion_allowed"):
+        if gate.get(key) is True:
+            raise ValueError(f"public-seat gate permits {key}: {path}")
+    counts = gate.get("case_counts")
+    if not isinstance(counts, Mapping):
+        raise ValueError(f"public-seat gate case counts are missing: {path}")
+    completed = int(counts.get("completed", 0) or 0)
+    total = int(counts.get("total", 0) or 0)
+    timing = gate.get("publication_timing_verified") is True
+    pit = gate.get("pit_membership_verified") is True
+    if completed <= 0 or total <= 0 or completed != total:
+        decision = "BLOCKED_INCOMPLETE_WINDOW"
+        reason = "public-seat replay is not a complete saved window"
+    elif not timing or not pit:
+        decision = "CONTINUE_RESEARCH_ONLY"
+        reason = "complete replay remains gated by publication timing and PIT membership"
+    else:
+        decision = "CONTINUE_RESEARCH_ONLY"
+        reason = "timing and PIT gates pass; causal attribution and untouched forward validation remain"
+    return {
+        "source": str(path.resolve()),
+        "source_sha256": _sha256(path),
+        "status": gate.get("status"),
+        "decision": decision,
+        "decision_reason": reason,
+        "case_counts": dict(counts),
+        "completed_sessions": gate.get("completed_sessions", 0),
+        "completed_orders": gate.get("completed_orders", 0),
+        "completed_fills": gate.get("completed_fills", 0),
+        "publication_timing_verified": timing,
+        "pit_membership_verified": pit,
+        "causal_seat_alpha_verified": gate.get("causal_seat_alpha_verified") is True,
+        "research_only": True,
+        "paper_allowed": False,
+        "promotion_allowed": False,
+        "next_gate": "causal attribution and untouched forward validation before adoption",
+    }
+
+
 def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
                  factor_path: Path = DEFAULT_FACTOR,
                  shortline_path: Path = DEFAULT_SHORTLINE,
@@ -267,6 +324,9 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
         "mature_factor_horizon": _factor_summary(factor, factor_path),
         "shortline_native_lr_lgbm": _shortline_summary(shortline, shortline_path),
     }
+    candidate_public_seat = (candidate.get("separate_gates") or {}).get("public_seat_trend_hypotheses")
+    if isinstance(candidate_public_seat, Mapping):
+        separate_gates["public_seat_trend_hypotheses"] = _public_seat_summary(candidate, candidate_path)
     if retained_joint_path is not None:
         separate_gates["retained_joint_portfolio"] = _retained_joint_summary(
             _read(retained_joint_path), retained_joint_path)
@@ -380,6 +440,16 @@ def render_markdown(receipt: Mapping[str, Any]) -> str:
                 f"- `{row['strategy_id']}`: {row['research_decision']}, "
                 f"return {float(row['net_return']):.4%}, orders {row['orders']}, fills {row['fills']}."
             )
+    public_seat = receipt["separate_gates"].get("public_seat_trend_hypotheses")
+    if public_seat is not None:
+        lines += [
+            "",
+            f"Public-seat gate: `{public_seat['decision']}`; "
+            f"{public_seat['case_counts']['completed']}/{public_seat['case_counts']['total']} cases complete; "
+            f"timing verified `{public_seat['publication_timing_verified']}`, "
+            f"PIT membership verified `{public_seat['pit_membership_verified']}`; "
+            "paper and promotion remain disabled.",
+        ]
     lines += ["", "All rows keep `paper_allowed=false`, `promotion_allowed=false`, and `execution_admitted=false`.", ""]
     return "\n".join(lines)
 
