@@ -1,0 +1,67 @@
+{
+  "schema": "quantification_google_engineering_applied_v1",
+  "source_document": "Quantification_Google_Applied_Design_20261026.pdf",
+  "source_role": "project_design_and_migration_guidance",
+  "not_google_internal_policy": true,
+  "execution_admitted": false,
+  "no_trade": true,
+  "candidate_panel_only": true,
+  "journeys": [
+    "financial_research",
+    "end_of_day_paper_run",
+    "failure_recovery",
+    "module_extension"
+  ],
+  "layers": [
+    "entry",
+    "application_use_case",
+    "business_core",
+    "adapter"
+  ],
+  "state_owners": {
+    "research_job": "research_store_and_worker",
+    "account_run": "account_worker_and_ledger_transaction",
+    "decision_plan": "strategy_and_application_use_case",
+    "published_snapshot": "data_source_adapter"
+  },
+  "delivery_requirements": [
+    "fixed_input_and_reproducible_command",
+    "actual_consumer",
+    "independent_expected_behavior",
+    "explicit_failure_receipt",
+    "run_snapshot_decision_identity",
+    "release_commit_and_gate"
+  ],
+  "mainline": [
+    {
+      "id": "A",
+      "name": "close_to_d0_d1_paper",
+      "next": "complete_stockdb_close_package_then_fixed_daily",
+      "acceptance": "exact_coverage_and_hash_consistent"
+    },
+    {
+      "id": "B",
+      "name": "same_sample_strategy_comparison",
+      "next": "fixed_and_candidate_common_window_comparison",
+      "acceptance": "continue_or_stop_research_only_with_no_auto_promotion"
+    },
+    {
+      "id": "C",
+      "name": "pit_financial_facts",
+      "next": "publication_asof_revision_evidence_then_f01",
+      "acceptance": "decision_cutoff_safe_or_explicit_blocked_data"
+    },
+    {
+      "id": "D",
+      "name": "ths_read_only_evidence",
+      "next": "authorized_read_only_observation_and_readback",
+      "acceptance": "raw_export_time_symbol_hash_without_submit"
+    },
+    {
+      "id": "E",
+      "name": "workbench_release_recovery",
+      "next": "reconnectable_job_rebuildable_release_recoverable_paper",
+      "acceptance": "traceable_job_or_run_and_execution_gate_closed"
+    }
+  ]
+}
