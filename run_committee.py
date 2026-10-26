@@ -5,6 +5,9 @@ import sys
 
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
+    if argv[:1] == ["persistent-task-decision-receipt"]:
+        from trading.research.persistent_task_decision_receipt import main as persistent_task_decision_main
+        return persistent_task_decision_main(argv[1:])
     if argv[:1] == ["monthly-max-vs-sigma-supplement"]:
         from trading.research.monthly_max_vs_sigma_supplement import main as monthly_max_sigma_supplement_main
         return monthly_max_sigma_supplement_main(argv[1:])

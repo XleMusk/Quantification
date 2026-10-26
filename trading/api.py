@@ -6621,6 +6621,13 @@ def create_run(body: RunInput, idempotency_key: str = Header(..., min_length=8, 
     return store.create(body.name, config.to_dict(), body.start, body.end, idempotency_key, body.mode, dataset)
 
 
+@router.get("/runs/rejections")
+def run_rejections(request_key: str | None = None):
+    """Read persisted run admission rejections without mutating a run."""
+
+    return store.rejection_receipts(request_key)
+
+
 @router.get("/runs/{identifier}")
 def run_detail(identifier: str):
     value = detail(identifier)

@@ -13,6 +13,26 @@ def now():
     return datetime.now(timezone.utc).isoformat()
 
 
+def _record_rejection(db, *, request_key, name, mode, start, end, dataset,
+                      reason_code, reason, context=None):
+    """Persist a rejected run decision without changing account state.
+
+    The run store is the durable boundary for concurrency and idempotency
+    decisions.  Keeping the rejection beside the request makes a failed
+    producer recoverable and explains why a task was not admitted, without
+    creating a second scheduler or retrying an unknown external action.
+    """
+
+    db.execute(
+        """INSERT INTO run_rejections(
+            request_key,name,mode,start,end,dataset,reason_code,reason,context,created_at
+        ) VALUES(?,?,?,?,?,?,?,?,?,?)""",
+        (str(request_key or ""), str(name or ""), str(mode or ""), str(start or ""),
+         str(end or ""), str(dataset or ""), str(reason_code), str(reason),
+         json.dumps(context or {}, ensure_ascii=False, sort_keys=True), now()),
+    )
+
+
 @contextmanager
 def connection():
     settings.prepare()
@@ -55,6 +75,18 @@ def initialize():
             terminal TEXT,
             created_at TEXT NOT NULL,
             updated_at TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS run_rejections(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            request_key TEXT NOT NULL,
+            name TEXT NOT NULL,
+            mode TEXT NOT NULL,
+            start TEXT NOT NULL,
+            end TEXT NOT NULL,
+            dataset TEXT NOT NULL,
+            reason_code TEXT NOT NULL,
+            reason TEXT NOT NULL,
+            context TEXT NOT NULL,
+            created_at TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY, value TEXT NOT NULL);
         """)
         if "dataset" not in {row[1] for row in db.execute("PRAGMA table_info(runs)")}:
@@ -78,19 +110,47 @@ def decode(row, full=False):
 
 
 def create(name, config, start, end, request_key, mode="replay", dataset=None):
-    config = StrategyConfig(**config).validate().to_dict()
-    if mode not in {"replay", "paper"} or not name.strip():
+    raw_dataset = str(dataset or settings.DATASET)
+    try:
+        config = StrategyConfig(**config).validate().to_dict()
+    except Exception as exc:
+        with connection() as db:
+            _record_rejection(db, request_key=request_key, name=name, mode=mode,
+                              start=start, end=end, dataset=raw_dataset,
+                              reason_code="INVALID_RUN_CONFIG", reason=str(exc))
+        raise
+    if mode not in {"replay", "paper"} or not isinstance(name, str) or not name.strip():
+        with connection() as db:
+            _record_rejection(db, request_key=request_key, name=name, mode=mode,
+                              start=start, end=end, dataset=raw_dataset,
+                              reason_code="INVALID_RUN_REQUEST",
+                              reason="Invalid run mode/name")
         raise ValueError("Invalid run mode/name")
     signature = json.dumps(config, sort_keys=True)
-    dataset = str(dataset or settings.DATASET)
+    dataset = raw_dataset
     with connection() as db:
         db.execute("BEGIN IMMEDIATE")
         prior = db.execute("SELECT * FROM runs WHERE request_key=?", (request_key,)).fetchone()
         if prior:
             if (prior["config"], prior["start"], prior["end"], prior["mode"], prior["dataset"]) != (signature, start, end, mode, dataset):
+                _record_rejection(
+                    db, request_key=request_key, name=name, mode=mode, start=start,
+                    end=end, dataset=dataset, reason_code="REQUEST_KEY_CONFLICT",
+                    reason="request key already binds a different run",
+                    context={"existing_run_id": prior["id"]},
+                )
+                db.commit()
                 raise ValueError("Conflicting run request key")
             return decode(prior)
-        if db.execute("SELECT COUNT(*) FROM runs WHERE status='running'").fetchone()[0] >= 4:
+        active_count = db.execute("SELECT COUNT(*) FROM runs WHERE status='running'").fetchone()[0]
+        if active_count >= 4:
+            _record_rejection(
+                db, request_key=request_key, name=name, mode=mode, start=start,
+                end=end, dataset=dataset, reason_code="CONCURRENCY_LIMIT_REACHED",
+                reason="At most four concurrent simulation runs",
+                context={"active_count": active_count, "limit": 4},
+            )
+            db.commit()
             raise ValueError("At most four concurrent simulation runs")
         identifier, stamp = uuid.uuid4().hex, now()
         db.execute("INSERT INTO runs VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (identifier, name[:80], "running", mode,
@@ -162,6 +222,26 @@ def recovery_receipts(run_id=None):
         else:
             rows = db.execute("SELECT * FROM worker_recovery WHERE run_id=? ORDER BY id DESC", (run_id,)).fetchall()
     return [dict(row, execution_admitted=False) for row in rows]
+
+
+def rejection_receipts(request_key=None):
+    """Return durable rejected-run decisions for operator recovery."""
+
+    with connection() as db:
+        if request_key is None:
+            rows = db.execute("SELECT * FROM run_rejections ORDER BY id DESC LIMIT 100").fetchall()
+        else:
+            rows = db.execute(
+                "SELECT * FROM run_rejections WHERE request_key=? ORDER BY id DESC",
+                (str(request_key),),
+            ).fetchall()
+    result = []
+    for row in rows:
+        item = dict(row)
+        item["context"] = json.loads(item["context"])
+        item["execution_admitted"] = False
+        result.append(item)
+    return result
 
 
 def register_research_attempt(run_key, attempt_key, strategy_id, request):
