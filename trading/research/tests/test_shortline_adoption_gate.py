@@ -48,6 +48,15 @@ def test_zero_fills_stays_blocked(tmp_path):
     assert result["summary"]["blocked"] == 1
 
 
+def test_long_path_replay_status_is_accepted(tmp_path):
+    replay, handoff = _write(tmp_path)
+    payload = json.loads(replay.read_text(encoding="utf-8"))
+    payload["status"] = "COMPLETED_RESEARCH_ONLY_LONG_PATH_REPLAY"
+    replay.write_text(json.dumps(payload), encoding="utf-8")
+    result = build_gate(replay, handoff)
+    assert result["models"][0]["research_action"] == "CONTINUE_RESEARCH_ONLY"
+
+
 def test_execution_boundary_is_required(tmp_path):
     replay, handoff = _write(tmp_path, execution_admitted=True)
     with pytest.raises(ValueError, match="execution boundary"):

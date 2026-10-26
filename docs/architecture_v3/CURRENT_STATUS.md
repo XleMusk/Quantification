@@ -411,3 +411,7 @@ Evidence: outputs/pipeline_receipts/20261026_shortline_adoption_gate_v1.json and
 ## 2026-10-26 release v20
 
 The internal research-only release now binds the shortline adoption gate, mature-factor horizon comparison and workbench manual resubmit. Manifest: D:/QuantificationData/trading/research/releases/20261026_v20/release_manifest.json. execution_admitted=false, live_execution_ready=false, and missing_required_code=[].
+
+## 2026-10-26 shortline long-path replay
+
+The same frozen LR/LightGBM candidates now replay through an independent BaoStock path beginning at each symbol's first available session and ending 2026-10-16. LR covers 2,634 sessions and LightGBM 4,074 sessions; both have zero dropped incomplete path rows. The shared Engine/Ledger result remains LR 1 order/2 fills and LightGBM 3 orders/6 fills. The new adoption gate is research-only and does not replace StockDB/PIT/forward evidence.

@@ -639,7 +639,10 @@
         "bounded_baostock_replay_lgbm_orders": 3,
         "bounded_baostock_replay_lgbm_fills": 6,
         "bounded_adoption_gate_models": 2,
-        "bounded_adoption_gate_continue_research_only": 2
+        "bounded_adoption_gate_continue_research_only": 2,
+        "long_path_replay_lr_sessions": 2634,
+        "long_path_replay_lgbm_sessions": 4074,
+        "long_path_replay_dropped_incomplete_path_rows": 0
       },
       "evidence": [
         "outputs/shortline_native_selection_replay/20261018_v1/REPORT.md",
@@ -676,7 +679,11 @@
         "trading/research/shortline_adoption_gate.py",
         "trading/research/tests/test_shortline_adoption_gate.py",
         "outputs/pipeline_receipts/20261026_shortline_adoption_gate_v1.json",
-        "outputs/research_reports/20261026_shortline_adoption_gate_v1.md"
+        "outputs/research_reports/20261026_shortline_adoption_gate_v1.md",
+        "outputs/pipeline_receipts/20261026_shortline_baostock_long_path_replay_v1.json",
+        "outputs/research_reports/20261026_shortline_baostock_long_path_replay_v1.md",
+        "outputs/pipeline_receipts/20261026_shortline_adoption_gate_v2.json",
+        "outputs/research_reports/20261026_shortline_adoption_gate_v2.md"
       ],
       "limits": [
         "full strategy return unknown",
@@ -687,7 +694,8 @@
         "the new qualified preopen handoff has 3 explicitly selected rows per model and passes the read-only score gate; it is a new candidate input, not a complete-window return",
         "the bounded handoff replay reached shared Engine target generation but was blocked for all buys by unsupported_first_five_listing_sessions; no orders/fills or return were claimed",
         "a bounded BaoStock raw-bar replay completes the selected 2026-10-15 next-session route, but it is independent of StockDB and cannot establish full strategy return or PIT safety",
-        "the model-level adoption gate records CONTINUE_RESEARCH_ONLY for both bounded replays; it does not permit paper, promotion or live execution"
+        "the model-level adoption gate records CONTINUE_RESEARCH_ONLY for both bounded replays; it does not permit paper, promotion or live execution",
+        "the long independent BaoStock path reaches each selected event day with zero dropped incomplete rows, but it is not StockDB-equivalent or PIT-safe"
       ],
       "research_selection": {
         "decision": "CONTINUE_RESEARCH_ONLY",
@@ -696,7 +704,7 @@
         "paper_allowed": false,
         "promotion_allowed": false,
         "source_receipt": "outputs/pipeline_receipts/20261026_candidate_research_selection_v2.json",
-        "next_step": "Complete StockDB-equivalent full-window and untouched-forward validation with PIT/company-action/publication evidence; retain the frozen candidates."
+        "next_step": "Use complete StockDB-equivalent history and an untouched forward window; retain frozen scores and the research-only adoption gate."
       }
     },
     {

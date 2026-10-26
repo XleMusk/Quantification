@@ -466,10 +466,14 @@
         "trading/research/shortline_adoption_gate.py",
         "trading/research/tests/test_shortline_adoption_gate.py",
         "outputs/pipeline_receipts/20261026_shortline_adoption_gate_v1.json",
-        "outputs/research_reports/20261026_shortline_adoption_gate_v1.md"
+        "outputs/research_reports/20261026_shortline_adoption_gate_v1.md",
+        "outputs/pipeline_receipts/20261026_shortline_baostock_long_path_replay_v1.json",
+        "outputs/research_reports/20261026_shortline_baostock_long_path_replay_v1.md",
+        "outputs/pipeline_receipts/20261026_shortline_adoption_gate_v2.json",
+        "outputs/research_reports/20261026_shortline_adoption_gate_v2.md"
       ],
-      "gap": "The native LR/LightGBM handoff and bounded BaoStock replay now feed an explicit model-level adoption gate: LR 1 order/2 fills and LGBM 3 orders/6 fills remain research-only. StockDB-equivalent full-window raw history, PIT/company-action/publication timing and untouched forward validation are still missing.",
-      "next_acceptance": "Run the same frozen candidates through a complete StockDB-equivalent raw-bar window and untouched forward window after resolving execution references; keep paper and promotion closed until PIT and company-action gates pass.",
+      "gap": "The native LR/LightGBM handoff now replays through a long independent BaoStock path with zero dropped incomplete rows to the 2026-10-16 execution day: LR 1 order/2 fills and LGBM 3 orders/6 fills. The model-level adoption gate remains research-only; StockDB equivalence, PIT/company-action/publication timing and untouched forward validation remain missing.",
+      "next_acceptance": "Replace the independent raw path with complete StockDB-equivalent history and run the frozen candidates on an untouched forward window; keep paper and promotion closed until PIT and company-action gates pass.",
       "evidence_updated_on": "2026-10-26"
     },
     {

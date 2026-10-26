@@ -2126,6 +2126,30 @@
         "trading/research/tests/test_workbench_manual_resubmit.py"
       ],
       "acceptance": "A manual resubmit reuses the parent configuration, increments recovery_attempt, links parent_job_id, and repeats the same idempotency key without creating a duplicate child; focused tests and frontend build pass."
+    },
+    {
+      "id": "P28",
+      "domain": "research",
+      "result": "The frozen native shortline LR/LightGBM handoff now replays through a long independent BaoStock raw path from each symbol first available session to 2026-10-16 with zero dropped incomplete path rows.",
+      "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
+      "next": "Replace the independent raw path with StockDB-equivalent history and run untouched-forward validation before adoption.",
+      "prohibition": "Do not present the long BaoStock path as StockDB, PIT-safe or paper/live evidence.",
+      "actual_paths": [
+        "trading/research/shortline_adoption_gate.py",
+        "trading/research/tests/test_shortline_adoption_gate.py",
+        "outputs/pipeline_receipts/20261026_shortline_baostock_long_path_replay_v1.json",
+        "outputs/research_reports/20261026_shortline_baostock_long_path_replay_v1.md",
+        "outputs/pipeline_receipts/20261026_shortline_adoption_gate_v2.json",
+        "outputs/research_reports/20261026_shortline_adoption_gate_v2.md"
+      ],
+      "evidence_updated_on": "2026-10-26",
+      "evidence": [
+        "outputs/pipeline_receipts/20261026_shortline_baostock_long_path_replay_v1.json",
+        "outputs/research_reports/20261026_shortline_baostock_long_path_replay_v1.md",
+        "outputs/pipeline_receipts/20261026_shortline_adoption_gate_v2.json",
+        "outputs/research_reports/20261026_shortline_adoption_gate_v2.md"
+      ],
+      "acceptance": "Both frozen model files replay through the shared Engine/Ledger over the long path with explicit 2634/4074 sessions, zero dropped incomplete rows, execution_admitted=false and no broker/THS interaction."
     }
   ],
   "updated_at": "2026-10-26"

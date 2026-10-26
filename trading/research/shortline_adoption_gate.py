@@ -16,6 +16,10 @@ from typing import Any, Mapping
 
 SCHEMA = "quantification_shortline_adoption_gate_v1"
 REPLAY_SCHEMA = "shortline_baostock_candidate_replay_binding_v1"
+REPLAY_STATUSES = {
+    "COMPLETED_RESEARCH_ONLY_BOUNDED_REPLAY",
+    "COMPLETED_RESEARCH_ONLY_LONG_PATH_REPLAY",
+}
 HANDOFF_SCHEMA = "native_shortline_candidate_handoff_v1"
 DEFAULT_REPLAY = Path("outputs/pipeline_receipts/20261026_shortline_baostock_candidate_replay_v1.json")
 DEFAULT_HANDOFF = Path("outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json")
@@ -77,7 +81,7 @@ def build_gate(replay_path: Path = DEFAULT_REPLAY, handoff_path: Path = DEFAULT_
     handoff = _read(handoff_path)
     _require(replay.get("schema") == REPLAY_SCHEMA, f"replay schema mismatch: {replay_path}")
     _require(handoff.get("schema") == HANDOFF_SCHEMA, f"handoff schema mismatch: {handoff_path}")
-    _require(replay.get("status") == "COMPLETED_RESEARCH_ONLY_BOUNDED_REPLAY", "replay is not complete")
+    _require(replay.get("status") in REPLAY_STATUSES, "replay is not complete")
     _require(replay.get("execution_admitted") is False, "replay crossed execution boundary")
     for field in ("paper_allowed", "promotion_allowed", "broker_interacted", "ths_interacted", "pit_verified", "corporate_actions_verified"):
         _require(replay.get(field) is False, f"replay boundary field is not false: {field}")
