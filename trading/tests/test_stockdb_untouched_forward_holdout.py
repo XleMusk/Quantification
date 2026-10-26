@@ -1,4 +1,5 @@
 from pathlib import Path
+import hashlib
 import json
 
 import pandas as pd
@@ -52,6 +53,9 @@ def test_forward_loader_accepts_native_stockdb_snapshot(tmp_path: Path):
     }), encoding="utf-8")
     receipt = _receipt_for_raw(view)
     assert receipt["status"] == "COMPLETED_NATIVE_STOCKDB_SNAPSHOT"
+    identity = receipt["snapshot_identity"]
+    assert identity["snapshot_sha256"] == hashlib.sha256((view / "snapshot.json").read_bytes()).hexdigest()
+    assert identity["files"]["daily.csv"]["sha256"] == hashlib.sha256((view / "daily.csv").read_bytes()).hexdigest()
     assert _load_forward_dates(view, start="2026-10-14", end="2026-10-15") == ["2026-10-14", "2026-10-15"]
     loaded = _load_forward_bars(view, {"301686.SZSE"}, start="2026-10-14", end="2026-10-15")
     assert len(loaded) == 2 and loaded["symbol"].tolist() == ["301686.SZSE", "301686.SZSE"]

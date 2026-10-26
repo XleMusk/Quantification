@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
 from pathlib import Path
 
@@ -36,6 +37,39 @@ def _read_json(path: Path) -> dict:
     if not isinstance(payload, dict):
         raise ValueError(f"JSON object required: {path}")
     return payload
+
+
+def _sha256(path: Path) -> str:
+    """Return a content hash for a small snapshot identity file."""
+
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def _snapshot_identity(raw_view: Path, snapshot: dict) -> dict:
+    """Bind a native snapshot receipt to the exact files consumed by holdout.
+
+    A forward result without a snapshot identity cannot be reproduced after a
+    later capture replaces the same directory.  Keep this identity local and
+    research-only; it does not infer PIT or source quality from the hash.
+    """
+
+    raw_view = Path(raw_view).resolve()
+    snapshot_path = raw_view / "snapshot.json"
+    files = {"snapshot": {"path": str(snapshot_path), "sha256": _sha256(snapshot_path)}}
+    for name in ("daily.csv", "raw_daily.parquet", "availability.csv"):
+        path = raw_view / name
+        if path.is_file():
+            files[name] = {"path": str(path), "sha256": _sha256(path)}
+    rows = snapshot.get("rows")
+    return {
+        "schema": snapshot.get("schema"),
+        "snapshot_path": str(snapshot_path),
+        "snapshot_sha256": files["snapshot"]["sha256"],
+        "captured_at": snapshot.get("captured_at"),
+        "effective_session_dates": list(snapshot.get("effective_session_dates") or []),
+        "rows": rows,
+        "files": files,
+    }
 
 
 def _resolve_replay(value: Path) -> tuple[Path, dict, Path]:
@@ -94,11 +128,13 @@ def _receipt_for_raw(raw_view: Path) -> dict:
             or snapshot.get("capture_complete") is not True
             or snapshot.get("execution_admitted") is not False):
         raise ValueError("A completed, unadmitted native StockDB snapshot is required")
+    identity = _snapshot_identity(raw_view, snapshot)
     return {
         "status": "COMPLETED_NATIVE_STOCKDB_SNAPSHOT",
         "execution_admitted": False,
         "snapshot_schema": snapshot.get("schema"),
         "rows": snapshot.get("rows"),
+        "snapshot_identity": identity,
     }
 
 
@@ -189,7 +225,7 @@ def _held_symbols(state: dict) -> set[str]:
 def evaluate(replay: Path, raw_view: Path, *, start: str, end: str,
              output: Path | None = None) -> tuple[Path, dict]:
     replay_path, result, account_path = _resolve_replay(replay)
-    receipt = _receipt_for_raw(raw_view)
+    raw_receipt = _receipt_for_raw(raw_view)
     state = json.loads(account_path.read_text(encoding="utf-8"))
     cutoff = str(result.get("end_date"))
     if str(start) <= cutoff:
@@ -223,7 +259,9 @@ def evaluate(replay: Path, raw_view: Path, *, start: str, end: str,
         "schema": "a_share_stockdb_untouched_forward_holdout_v1",
         "status": "completed_research_only_untouched_forward_holdout",
         "replay": str(replay_path), "raw_view": str(Path(raw_view).resolve()),
-        "raw_receipt_status": receipt["status"], "historical_cutoff": cutoff,
+        "raw_receipt_status": raw_receipt["status"],
+        "raw_snapshot_identity": raw_receipt.get("snapshot_identity"),
+        "historical_cutoff": cutoff,
         "forward_start": dates[0], "forward_end": dates[-1],
         "forward_sessions": len(dates), "held_symbols": sorted(held),
         "daily": daily, "metrics": metric,
@@ -244,6 +282,7 @@ def evaluate(replay: Path, raw_view: Path, *, start: str, end: str,
         "schema": "a_share_stockdb_untouched_forward_holdout_audit_v1",
         "status": "passed_research_only_untouched_holdout_gates",
         "result": str(out / "result.json"), "holdout_untouched": True,
+        "raw_snapshot_identity": raw_receipt.get("snapshot_identity"),
         "future_scores_used": False, "orders_generated": False, "fills_generated": False,
         "execution_admitted": False, "strategy_validated": False,
         "pit_verified": False, "company_actions_applied": False,
@@ -256,6 +295,8 @@ def evaluate(replay: Path, raw_view: Path, *, start: str, end: str,
         "audit": str(out / "audit.json"),
         "replay": str(replay_path),
         "raw_view": str(Path(raw_view).resolve()),
+        "raw_receipt_status": raw_receipt["status"],
+        "raw_snapshot_identity": raw_receipt.get("snapshot_identity"),
         "historical_cutoff": cutoff,
         "forward_start": dates[0], "forward_end": dates[-1],
         "forward_sessions": len(dates), "metrics": metric,
