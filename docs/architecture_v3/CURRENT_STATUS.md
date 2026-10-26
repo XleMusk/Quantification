@@ -613,3 +613,9 @@ F2 的 publication contract 现在要求：日期型披露按 `[D 00:00, D+1 00:
 ## 2026-10-26 adoption rollup binds current-window comparison
 
 `research-adoption-rollup` 新增 `--current-window-comparison`，将显式 2026-08-31..2026-10-26 固定/半动量同窗口比较作为独立研究 gate 绑定到 v5 rollup。回执 `outputs/pipeline_receipts/20261026_research_adoption_rollup_v5.json` 同时保留 D0/D1 close 2026-10-26、成熟因子、短线和联合投影 gate；固定腿继续 `CONTINUE_RESEARCH_ONLY`，半动量在 35 日终端窗口为 `STOP_RESEARCH_ONLY`。该绑定不把短窗口结果提升为策略验证，仍保持 `paper_allowed=false`、`promotion_allowed=false`、`execution_admitted=false`。聚焦测试 `24 passed`。
+
+## 2026-10-26 strict StockDB close package boundary
+
+新增 `trading/research/stockdb_close_package.py`，定义 `stockdb_close_package_v1` 的严格只读 loader：校验 plan/receipt/roster/raw 的哈希、精确收市日与标的清单、源 StockDB snapshot 的 manifest/daily 哈希和逐行 close 一致性，并拒绝不完整原生快照。`stockdb_fixed_daily.load_complete` 现在按 plan schema dispatch：仅 `stockdb_close_package_v1` 走新 loader，BaoStock 包继续走原有 loader；新增 `run_committee.py stockdb-close-package --package` 入口。当前没有可消费的完整 2026-10-26 全宇宙包，因此没有伪造或推进 persistent 账户。
+
+测试：`trading/research/tests/test_stockdb_close_package.py trading/research/tests/test_stockdb_fixed_daily.py trading/research/tests/test_research_adoption_rollup.py trading/research/tests/test_current_window_strategy_comparison.py trading/tests/test_run_committee_dispatch.py` 共 `36 passed`。

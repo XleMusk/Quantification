@@ -22,11 +22,12 @@ from ..settings import DATA_ROOT, ROOT
 from ..target_exit_lifecycle import FULL_EXIT_LIFECYCLE
 from ..worker import lock
 from . import stockdb_rolling_low_volatility as rolling
-from .baostock_full_close import load_complete
+from .baostock_full_close import load_complete as _baostock_load_complete
 from .exchange_calendar import _closed_days
 from .experiment import load_replay_checkpoint
 from .leader_recent_source_history import source_proof
 from .lowvol_supplement_append import SCHEMA as APPEND_SCHEMA
+from .stockdb_close_package import load_complete as _stockdb_load_complete
 
 SCHEMA = "stockdb_fixed_persistent_daily_research_v1"
 METHOD = "explicit_rolling_checkpoint_calendar_full_exit_daily_v1"
@@ -36,6 +37,48 @@ FLAGS = {"candidate_panel_only": True, "research_only": True,
          "strategy_validated": False, "source_verified": False,
          "pit_verified": False, "corporate_actions_verified": False,
          "broker_connected": False, "personal_account_claimed": False}
+
+
+def load_complete(folder):
+    """Dispatch a strict close package without weakening BaoStock checks."""
+    folder = Path(folder).resolve()
+    plan_path = folder / "plan.json"
+    if not plan_path.is_file():
+        raise FileNotFoundError(f"Complete close package is missing plan.json: {folder}")
+    schema = _read(plan_path).get("schema")
+    if schema == "stockdb_close_package_v1":
+        return _stockdb_load_complete(folder)
+    return _baostock_load_complete(folder)
+
+
+def _source_proof_for_package(raw, source, calendar_hash):
+    """Normalize strict StockDB and BaoStock close proofs for fixed_daily."""
+    receipt = source["receipt"]
+    plan = source["plan"]
+    if receipt.get("schema") != "stockdb_close_package_v1":
+        return source_proof(raw, source, calendar_hash)
+    day = plan["day"]
+    if (source.get("read_only_verified") is not True
+            or raw.empty or not raw.date.eq(day).all()
+            or receipt.get("day") != day
+            or plan.get("calendar_sha256") != calendar_hash
+            or receipt.get("full_dated_roster_inventory_complete") is not True):
+        raise ValueError("Each StockDB close package must retain its exact day, calendar and complete roster")
+    return {
+        "day": day,
+        "source_folder": source["source_folder"],
+        "raw_daily_sha256": receipt["raw_daily_sha256"],
+        "roster_raw_sha256": plan["roster_sha256"],
+        "calendar_sha256": calendar_hash,
+        "ordinary_inventory_rows": len(raw),
+        "read_only_verified": True,
+        "source_inventory_complete": True,
+        "receipt_status": receipt["status"],
+        "full_dated_roster_inventory_complete": True,
+        "source_schema": receipt["schema"],
+        "source_updated_at": receipt.get("updated_at"),
+        "source_completed_at": receipt.get("completed_at"),
+    }
 
 
 def _now():
@@ -483,7 +526,7 @@ def run(run_dir, through, *, packages=(), supplemental_raw_view=None):
                 available = _stamp(receipt.get("completed_at") or receipt["updated_at"])
                 if available > _now() or available < _stamp(day + "T15:00:00+08:00"):
                     raise ValueError("Complete source clock cannot be future or before its close")
-                proof = source_proof(raw, source, plan["calendar_sha256"])
+                proof = _source_proof_for_package(raw, source, plan["calendar_sha256"])
                 if day in proofs:
                     if any(proofs[day].get(key) != value for key, value in proof.items()):
                         raise ValueError("Package does not match the raw supplement actually used")

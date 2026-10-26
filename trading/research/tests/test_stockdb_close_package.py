@@ -7,6 +7,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from trading.research import stockdb_fixed_daily
 from trading.research.stockdb_close_package import load_complete
 
 
@@ -45,6 +46,7 @@ def _package(tmp_path: Path, *, missing_snapshot_symbol: bool = False) -> Path:
         "schema": "stockdb_close_package_v1", "day": "2026-10-26",
         "roster_symbols": symbols, "roster_sha256": roster_digest,
         "raw_daily_sha256": digest,
+        "calendar_sha256": "calendar-v1",
         "source_snapshot": {"path": str(snapshot_json), "sha256": _sha(snapshot_json)},
         "source_verified": False, "pit_verified": False, "strategy_validated": False,
         "selection_enabled": False, "execution_admitted": False,
@@ -53,7 +55,7 @@ def _package(tmp_path: Path, *, missing_snapshot_symbol: bool = False) -> Path:
     receipt = {
         **plan, "status": "complete_stockdb_close_package_research_only",
         "completed_at": "2026-10-26T23:00:00+08:00",
-        "full_dated_roster_inventory_complete": not missing_snapshot_symbol,
+        "full_dated_roster_inventory_complete": True,
     }
     (root / "plan.json").write_text(json.dumps(plan), encoding="utf-8")
     (root / "receipt.json").write_text(json.dumps(receipt), encoding="utf-8")
@@ -77,3 +79,18 @@ def test_changed_raw_hash_is_rejected(tmp_path: Path) -> None:
     (package / "raw_daily.csv").write_text("symbol,date,close\n000001.SZSE,2026-10-26,10.0\n600001.SSE,2026-10-26,11.0\n", encoding="utf-8")
     with pytest.raises(ValueError, match="raw daily hash changed"):
         load_complete(package)
+
+
+def test_fixed_daily_dispatches_the_stockdb_schema(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    package = tmp_path / "package"
+    package.mkdir()
+    (package / "plan.json").write_text(json.dumps({"schema": "stockdb_close_package_v1"}), encoding="utf-8")
+    marker = {"called": False}
+
+    def load(path):
+        marker["called"] = True
+        return "raw", {"schema": "stockdb_close_package_v1"}
+
+    monkeypatch.setattr(stockdb_fixed_daily, "_stockdb_load_complete", load)
+    assert stockdb_fixed_daily.load_complete(package) == ("raw", {"schema": "stockdb_close_package_v1"})
+    assert marker["called"] is True

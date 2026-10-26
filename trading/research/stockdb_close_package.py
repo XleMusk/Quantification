@@ -112,6 +112,10 @@ def load_complete_close(folder: str | Path) -> tuple[dict[str, Any], pd.DataFram
     day = date.fromisoformat(str(plan["day"])).isoformat()
     if day != plan["day"] or receipt["day"] != day:
         raise ValueError("StockDB close package day is not canonical ISO")
+    if (not isinstance(plan.get("calendar_sha256"), str)
+            or plan["calendar_sha256"] != receipt.get("calendar_sha256")
+            or receipt.get("full_dated_roster_inventory_complete") is not True):
+        raise ValueError("StockDB close package must retain the exact calendar and complete roster proof")
     symbols = plan.get("roster_symbols")
     if (not isinstance(symbols, list) or not symbols
             or symbols != sorted(set(str(value) for value in symbols))):

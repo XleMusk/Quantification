@@ -218,6 +218,9 @@ def main(argv=None):
     if argv[:1] == ["stockdb-fixed-daily"]:
         from trading.research.stockdb_fixed_daily import main as fixed_daily_main
         return fixed_daily_main(argv[1:])
+    if argv[:1] == ["stockdb-close-package"]:
+        from trading.research.stockdb_close_package import main as stockdb_close_package_main
+        return stockdb_close_package_main(argv[1:])
     if argv[:1] == ["continuous-paper-acceptance"]:
         from trading.research.continuous_paper_acceptance import main as continuous_paper_acceptance_main
         return continuous_paper_acceptance_main(argv[1:])
