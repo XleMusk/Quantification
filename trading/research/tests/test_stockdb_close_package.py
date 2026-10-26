@@ -94,3 +94,12 @@ def test_fixed_daily_dispatches_the_stockdb_schema(tmp_path: Path, monkeypatch: 
     monkeypatch.setattr(stockdb_fixed_daily, "_stockdb_load_complete", load)
     assert stockdb_fixed_daily.load_complete(package) == ("raw", {"schema": "stockdb_close_package_v1"})
     assert marker["called"] is True
+
+
+def test_fixed_daily_normalizes_stockdb_source_proof(tmp_path: Path) -> None:
+    package = _package(tmp_path)
+    raw, metadata = load_complete(package)
+    proof = stockdb_fixed_daily._source_proof_for_package(raw, metadata, "calendar-v1")
+    assert proof["source_schema"] == "stockdb_close_package_v1"
+    assert proof["source_inventory_complete"] is True
+    assert proof["roster_raw_sha256"] == metadata["plan"]["roster_sha256"]
