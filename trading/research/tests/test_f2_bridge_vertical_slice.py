@@ -6,14 +6,14 @@ from trading.research.f2_vertical_slice import BLOCKED, COMPLETED
 DAY = "2024-05-01"
 
 
-def _typed(symbol, metric, value, start, end):
+def _typed(symbol, metric, value, start, end, period_kind="single_quarter"):
     return {
         "fact_id": f"{symbol}:{metric}:{end}",
         "issuer_id": symbol,
         "metric_id": metric,
         "period_start": start,
         "period_end": end,
-        "period_kind": "single_quarter",
+        "period_kind": period_kind,
         "scope_group": "consolidated_parent",
         "currency": "CNY",
         "unit": "yuan",
@@ -41,7 +41,7 @@ def _inputs():
             },
             "facts": [
                 _typed(symbol, "parent_net_profit", 1200000, "2024-01-01", "2024-03-31"),
-                _typed(symbol, "total_assets", 50000000, "2024-01-01", "2024-03-31"),
+                _typed(symbol, "total_assets", 50000000, "2024-01-01", "2024-03-31", "point_in_time"),
             ],
         }],
     }

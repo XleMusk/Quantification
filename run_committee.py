@@ -881,6 +881,9 @@ def main(argv=None):
     if argv[:1] == ["f2-source-snapshot"]:
         from trading.research.f2_source_snapshot import main as f2_source_snapshot_main
         return f2_source_snapshot_main(argv[1:])
+    if argv[:1] == ["f2-wayback-probe"]:
+        from trading.research.f2_wayback_probe import main as f2_wayback_probe_main
+        return f2_wayback_probe_main(argv[1:])
     if argv[:1] == ["f2-vertical-slice"]:
         from trading.research.f2_vertical_slice import main as f2_vertical_slice_main
         return f2_vertical_slice_main(argv[1:])
