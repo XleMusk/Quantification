@@ -1,6 +1,6 @@
 {
   "schema": "quantification_goal_completion_audit_v1",
-  "audited_at": "2026-10-26T21:20:00+08:00",
+  "audited_at": "2026-10-26",
   "execution_admitted": false,
   "overall_status": "INCOMPLETE_ACTIVE",
   "items": [
@@ -132,7 +132,8 @@
         "outputs/stockdb_source_coverage/20261026_201700_39ada9fb/run.json",
         "outputs/stockdb_source_coverage/20261026_201700_39ada9fb/REPORT.md",
         "outputs/weekly_reviews/20261026_weekly_review_receipt_v2.json",
-        "outputs/weekly_reviews/20261026_weekly_review_v2.md"
+        "outputs/weekly_reviews/20261026_weekly_review_v2.md",
+        "outputs/pipeline_receipts/20261026_fixed_only_d0_d1_v1/contract_receipt.json"
       ],
       "gap": "The shared local path and post-close coordinator are executable, but the 2026-10-26 run is waiting for an exact complete close package; no D0/D1 target or account result is claimed until the source package is attached.",
       "next_acceptance": "keep the local engineering acceptance receipt current; BrokerAdapter/THS and account scope remain closed until external read-only evidence exists",
@@ -217,10 +218,12 @@
         "outputs/research_reports/20261026_next_close_snapshot_coverage_v1.md",
         "trading/research/tests/test_post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_post_close_block_propagation_v1.json",
-        "outputs/research_reports/20261026_post_close_block_propagation_v1.md"
+        "outputs/research_reports/20261026_post_close_block_propagation_v1.md",
+        "outputs/pipeline_receipts/20261026_fixed_only_d0_d1_v1/contract_receipt.json",
+        "outputs/research_reports/20261026_fixed_only_d0_d1_v1.md"
       ],
-      "gap": "Real 2026-10-26 close still needs execution; next-close and post-close now preserve explicit snapshot coverage and propagate D0/D1 blocks without false success.",
-      "next_acceptance": "After the close, run the registered fixed_daily/post_close path with real StockDB inputs and verify both scope fields.",
+      "gap": "Persistent daily account remains at 2026-10-23 until a complete 2026-10-26 fixed source is available; the 2026-10-23 frozen close now has a complete fixed-only D0/D1 TARGET_PREVIEW projection.",
+      "next_acceptance": "After the next complete changed close, run fixed and same-day candidate inputs together and publish the persistent D0/D1 continuation; keep TARGET_PREVIEW separate from the persisted account.",
       "evidence_updated_on": "2026-10-26"
     },
     {
@@ -574,10 +577,12 @@
         "trading/research/tests/test_f01_financial_factor.py",
         "trading/research/tests/test_f2_vertical_slice.py",
         "outputs/pipeline_receipts/20261026_f01_decision_cutoff_contract_v1.json",
-        "outputs/research_reports/20261026_f01_decision_cutoff_contract_v1.md"
+        "outputs/research_reports/20261026_f01_decision_cutoff_contract_v1.md",
+        "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v3.json",
+        "outputs/research_reports/20261026_f2_wayback_2023q1_v3.md"
       ],
-      "gap": "F01 semantic contracts now require parent-profit inputs to be single_quarter or cumulative and total_assets to be point_in_time; the focused F01/F2 vertical tests pass (22). The real locked 000002.SZSE/2023Q1 source remains blocked because historical retrieval/as-of and revision identity are absent, so 0 PIT-safe rows and 0 real F01 facts remain.",
-      "next_acceptance": "Supply a pre-decision retrieval/as-of receipt and revision payload for this exact 2023Q1 artifact; do not substitute 2024Q1 or current fetch metadata.",
+      "gap": "F01 semantic contracts and deterministic archive selection are implemented, but the real 000002.SZSE/2023Q1 source remains BLOCKED_DATA: the latest eligible archive is after the 2024-05-01 decision cutoff and has no revision identity, so 0 PIT-safe rows and 0 real F01 facts remain.",
+      "next_acceptance": "Obtain a pre-decision issuer retrieval/as-of capture with revision-safe identity, then bridge only facts passing the cutoff into the shared factor/account path.",
       "evidence_updated_on": "2026-10-26"
     },
     {

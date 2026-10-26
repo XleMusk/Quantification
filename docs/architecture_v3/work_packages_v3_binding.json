@@ -267,7 +267,7 @@
       "domain": "data",
       "result": "A callable point-in-time versioned read returns only facts available at the requested cutoff.",
       "state": "PARTIAL",
-      "next": "A real locked 2023Q1 source snapshot is now wired and correctly remains BLOCKED_DATA; supply pre-decision retrieval/as-of and revision evidence before PIT admission.",
+      "next": "Use the deterministic latest-on-or-before-cutoff archive selection; supply a pre-decision issuer retrieval/as-of capture plus revision identity before PIT admission.",
       "prohibition": "Do not read the latest file implicitly.",
       "actual_paths": [
         "outputs/financials/f01_scoped_field_coverage_20261024.json",
@@ -308,7 +308,9 @@
         "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/source_snapshot.json",
         "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/receipt.json",
         "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/fact_bridge_receipt.json",
-        "outputs/research_reports/20261026_f2_real_source_snapshot_v1.md"
+        "outputs/research_reports/20261026_f2_real_source_snapshot_v1.md",
+        "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v3.json",
+        "outputs/research_reports/20261026_f2_wayback_2023q1_v3.md"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -327,7 +329,11 @@
         "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/source_snapshot.json",
         "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/receipt.json",
         "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/fact_bridge_receipt.json",
-        "outputs/research_reports/20261026_f2_real_source_snapshot_v1.md"
+        "outputs/research_reports/20261026_f2_real_source_snapshot_v1.md",
+        "trading/research/f2_wayback_probe.py",
+        "trading/research/tests/test_f2_wayback_probe.py",
+        "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v3.json",
+        "outputs/research_reports/20261026_f2_wayback_2023q1_v3.md"
       ]
     },
     {
@@ -1157,7 +1163,7 @@
       "domain": "operations",
       "result": "Calendar and business schedule calculate windows and classify missing inputs.",
       "state": "PARTIAL",
-      "next": "After the actual 2026-10-26 close, run the registered fixed_daily D0/D1 path; pinned calendar can now derive adjacent sessions when explicit days are omitted, while persistent_fixed_daily_account_scope stays separate from TARGET_PREVIEW projections.",
+      "next": "Run the same registered fixed_daily D0/D1 contract after each changed close; the 2026-10-23 historical close now has a complete fixed-only receipt, while same-day candidate inputs remain required for the full comparison path.",
       "prohibition": "Do not use machine timezone or weekday inference.",
       "evidence_updated_on": "2026-10-26",
       "actual_paths": [
@@ -1203,7 +1209,10 @@
         "trading/research/exchange_calendar.py",
         "trading/research/tests/test_exchange_calendar.py",
         "outputs/pipeline_receipts/20261026_d0_d1_calendar_resolution_v1.json",
-        "outputs/research_reports/20261026_d0_d1_calendar_resolution_v1.md"
+        "outputs/research_reports/20261026_d0_d1_calendar_resolution_v1.md",
+        "outputs/pipeline_receipts/20261026_fixed_only_source_manifest_v1.json",
+        "outputs/pipeline_receipts/20261026_fixed_only_d0_d1_v1/contract_receipt.json",
+        "outputs/research_reports/20261026_fixed_only_d0_d1_v1.md"
       ]
     },
     {
@@ -1247,7 +1256,7 @@
       "domain": "operations",
       "result": "Business observability and capacity measurements expose bottlenecks.",
       "state": "PARTIAL",
-      "next": "Run the bound next-close D0/D1 contract after 2026-10-26 close with same-day strategy sources; use pinned-calendar date resolution when desired and keep persistent fixed_daily scope distinct from ephemeral TARGET_PREVIEW projections.",
+      "next": "On the next changed close, pass the same-day fixed and candidate manifests into next-close-d0-d1; the fixed-only historical run is complete, and missing candidate input remains an explicit route-level gap.",
       "prohibition": "Do not turn monitoring uncertainty into a false offline status.",
       "actual_paths": [
         "trading/research/daily_candidate_paper_batch.py",
@@ -1322,7 +1331,9 @@
         "trading/research/exchange_calendar.py",
         "trading/research/tests/test_exchange_calendar.py",
         "outputs/pipeline_receipts/20261026_d0_d1_calendar_resolution_v1.json",
-        "outputs/research_reports/20261026_d0_d1_calendar_resolution_v1.md"
+        "outputs/research_reports/20261026_d0_d1_calendar_resolution_v1.md",
+        "outputs/pipeline_receipts/20261026_fixed_only_d0_d1_v1/contract_receipt.json",
+        "outputs/research_reports/20261026_fixed_only_d0_d1_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -2313,7 +2324,7 @@
     {
       "id": "P32",
       "domain": "research",
-      "result": "The latest candidate adoption matrix, mature-factor horizon comparison and StockDB-backed shortline adoption gate are joined into a v2 research-only rollup with explicit continuation, stop and coverage decisions.",
+      "result": "The latest candidate adoption matrix, mature-factor horizon comparison, StockDB-backed shortline adoption gate and retained joint portfolio gate are joined into a research-only rollup with explicit continuation, stop and coverage decisions.",
       "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
       "next": "Regenerate after a valid post-close D0/D1 or changed strategy/data evidence; keep PIT, forward and channel gates separate.",
       "prohibition": "Do not treat the rollup as strategy validation, paper/live promotion or a substitute for PIT/forward/THS evidence.",
@@ -2321,15 +2332,19 @@
         "trading/research/research_adoption_rollup.py",
         "trading/research/tests/test_research_adoption_rollup.py",
         "outputs/pipeline_receipts/20261026_research_adoption_rollup_v2.json",
-        "outputs/research_reports/20261026_research_adoption_rollup_v2.md"
+        "outputs/research_reports/20261026_research_adoption_rollup_v2.md",
+        "outputs/pipeline_receipts/20261026_research_adoption_rollup_v3.json",
+        "outputs/research_reports/20261026_research_adoption_rollup_v3.md"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
         "outputs/pipeline_receipts/20261026_research_adoption_rollup_v2.json",
         "outputs/research_reports/20261026_research_adoption_rollup_v2.md",
-        "trading/research/tests/test_research_adoption_rollup.py"
+        "trading/research/tests/test_research_adoption_rollup.py",
+        "outputs/pipeline_receipts/20261026_research_adoption_rollup_v3.json",
+        "outputs/research_reports/20261026_research_adoption_rollup_v3.md"
       ],
-      "acceptance": "The rollup binds candidate v2, mature-factor horizon and shortline gate v3; records 3 continue-research-only, 2 stop, 1 blocked-coverage and 4 separate-gate candidates, keeps strategy_validated=0 and execution_admitted=false, and passes 3 focused tests."
+      "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3 and the retained joint target gate; records the separate joint decision as CONTINUE_RESEARCH_ONLY with NOT_COMPARABLE_PROJECTION_ONLY, keeps strategy_validated=0 and execution_admitted=false, and passes the focused rollup tests."
     },
     {
       "id": "P33",

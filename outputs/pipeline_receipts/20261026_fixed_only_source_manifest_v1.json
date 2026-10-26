@@ -1,0 +1,9 @@
+{
+  "schema": "stockdb_next_close_candidate_source_manifest_v1",
+  "status": "FIXED_ONLY_RESEARCH_PAPER_INPUT",
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "candidates": [],
+  "limitations": ["No candidate target is included; this receipt validates the fixed strategy D0/D1 account leg only."]
+}

@@ -541,3 +541,15 @@ O05 fault injection now rejects tampered producer_repeated/system_head_mutated/l
 ## 2026-10-26 internal release v34
 
 F02 runtime recipe v2 and O05 fault-injection evidence are bound to internal release v34: D:/QuantificationData/trading/research/releases/20261026_v34/release_manifest.json; manifest SHA-256 44907bb93d84e0f308136f23f814c51e69ceb46e6949c160e7fd1dbc7c3b0e69; receipt outputs/pipeline_receipts/20261026_release_v34_binding_v1.json. execution_admitted=false and live_execution_ready=false remain closed.
+
+## 2026-10-26 P32 retained joint gate v3
+
+The research adoption rollup now accepts the retained half-momentum/Ridge joint comparison as a separate gate. It binds the terminal target and paper projection while preserving the explicit `NOT_COMPARABLE_PROJECTION_ONLY` return boundary; no joint return uplift is inferred from a target projection. Receipt/report: `outputs/pipeline_receipts/20261026_research_adoption_rollup_v3.json` and `outputs/research_reports/20261026_research_adoption_rollup_v3.md`. Focused tests: `trading/research/tests/test_research_adoption_rollup.py` (3 passed) and `trading/research/tests/test_retained_joint_candidate_comparison.py` (1 passed). `execution_admitted=false`, `paper_allowed=false`, and `promotion_allowed=false` remain closed.
+
+
+## 2026-10-26 fixed-only historical D0/D1 delivery
+
+在已登记的 `fixed_daily/20261024_lowvol_current` 上，使用冻结 StockDB 2026-10-23 收市快照完成一次完整的固定策略 D0/D1 研究纸面包：20/20 标的覆盖，20 个目标、20 个纸面订单、20 条可用路由，模型费用 CNY 101.20，期末现金/权益投影 CNY 28,012.80 / CNY 139,898.80。联合纸面同样完成 20 个目标和 20 个订单，回执为 `outputs/pipeline_receipts/20261026_fixed_only_d0_d1_v1/contract_receipt.json`，报告为 `outputs/research_reports/20261026_fixed_only_d0_d1_v1.md`。本包保持 `TARGET_PREVIEW`、`execution_admitted=false`，没有券商/同花顺交互、持久 Ledger 写入或真实账户变更；候选数为 0，下一次变更收市必须传入同日候选清单才能完成完整联合比较。
+
+### F2 PIT capture selection update (2026-10-26)
+`f2_wayback_probe.py` now selects the latest Wayback capture on or before the decision cutoff, independent of CDX row order, and records the selection policy in the receipt. The real `000002.SZSE/2023Q1` probe found one capture after `2024-05-01`, so the new v3 receipt remains `BLOCKED_DATA`; no PIT fact or factor was admitted. Focused F2 tests passed (`20 passed` across the Wayback, historical gate, source snapshot and fact bridge suites).
