@@ -120,6 +120,25 @@ def _captures(payload: bytes) -> list[dict[str, str]]:
     return rows
 
 
+def _select_capture(captures: list[dict[str, str]], decision_day: date) -> tuple[list[dict[str, str]], dict[str, str] | None]:
+    """Select the latest capture on or before the cutoff when available.
+
+    CDX can return several captures for the same source after digest
+    collapsing.  The latest eligible capture is the strongest historical
+    availability observation; choosing the first row would make the result
+    depend on archive ordering and could select an unnecessarily old copy.
+    When no eligible capture exists, retain the latest observed capture only
+    as failure evidence.
+    """
+    cutoff = decision_day.isoformat().replace("-", "")
+    ordered = sorted(
+        (row for row in captures if row.get("timestamp")),
+        key=lambda row: row.get("timestamp", ""),
+    )
+    before = [row for row in ordered if row.get("timestamp", "")[:8] <= cutoff]
+    return before, (before[-1] if before else (ordered[-1] if ordered else None))
+
+
 def probe_wayback(
     *,
     symbol: str,
@@ -135,9 +154,7 @@ def probe_wayback(
     response = fetcher(query)
     captures = _captures(response.get("payload", b"")) if response.get("http_status") == 200 else []
     decision = date.fromisoformat(decision_day)
-    before = [row for row in captures if row.get("timestamp", "")[:8] <= decision.isoformat().replace("-", "")]
-    selected = sorted(before or captures, key=lambda row: row.get("timestamp", ""))
-    selected_row = selected[0] if selected else None
+    before, selected_row = _select_capture(captures, decision)
     archive_timestamp = selected_row.get("timestamp") if selected_row else None
     archive_date = f"{archive_timestamp[:4]}-{archive_timestamp[4:6]}-{archive_timestamp[6:8]}" if archive_timestamp and len(archive_timestamp) >= 8 else None
     archive_response: dict[str, Any] | None = None
@@ -198,6 +215,11 @@ def probe_wayback(
         "captures": captures,
         "captures_on_or_before_decision_day": before,
         "selected_capture": selected_row,
+        "capture_selection": {
+            "policy": "latest_on_or_before_decision_day_v1",
+            "eligible_count": len(before),
+            "observed_count": len(captures),
+        },
         "historical_evidence": {**gate, "reason_codes": reasons, "status": BLOCKED if reasons else gate["status"]},
         "factor_computed": False,
         "account_replay": False,
