@@ -9,7 +9,7 @@ import pandas as pd
 import pytest
 
 from quant_learning_starter.factor_lab import LABEL, synthetic_panel
-from webapp.backend.app import data, main, settings, store
+from webapp.backend.app import data, main, release, settings, store
 from webapp.workers import factor_worker as worker
 
 HEADERS = {"X-Local-Request": "1", "Origin": settings.UI_ORIGIN}
@@ -131,6 +131,51 @@ def test_recovery_endpoint_is_read_only_and_preserves_external_boundary(client, 
     assert evidence["execution_admitted"] is False
     assert evidence["broker_or_ths_interacted"] is False
     assert store.job(item["id"])["status"] == "interrupted"
+
+
+def test_release_endpoint_binds_latest_research_manifest(tmp_path, monkeypatch, client):
+    root = tmp_path / "releases"
+    manifest = root / "20261026_v13" / "release_manifest.json"
+    manifest.parent.mkdir(parents=True)
+    manifest.write_text(json.dumps({
+        "version": "20261026_v13",
+        "created_at": "2026-10-26T00:00:00+00:00",
+        "execution_admitted": False,
+        "live_execution_ready": False,
+        "missing_required_code": [],
+        "missing_evidence": ["ths-readonly"],
+        "missing_paper_evidence": [],
+        "account_readiness": {"ths_readonly_observation": "REFERENCE_ONLY_NOT_OBSERVED"},
+        "git": {"commit": "abc123456789"},
+    }), encoding="utf-8")
+    monkeypatch.setattr(release, "RELEASE_ROOT", root)
+
+    response = client.get("/api/release")
+
+    assert response.status_code == 200
+    value = response.json()
+    assert value["schema"] == "quantification_workbench_release_status_v1"
+    assert value["status"] == "AVAILABLE"
+    assert value["version"] == "20261026_v13"
+    assert value["git_commit"] == "abc123456789"
+    assert value["execution_admitted"] is False
+    assert value["live_execution_ready"] is False
+    assert value["read_only"] is True
+
+
+def test_job_lifecycle_includes_read_only_release_binding(client, dataset, tmp_path, monkeypatch):
+    root = tmp_path / "releases"
+    manifest = root / "20261026_v13" / "release_manifest.json"
+    manifest.parent.mkdir(parents=True)
+    manifest.write_text(json.dumps({"version": "20261026_v13", "git": {"commit": "abc12345"}}), encoding="utf-8")
+    monkeypatch.setattr(release, "RELEASE_ROOT", root)
+
+    item = submit(client, dataset).json()
+    lifecycle = client.get(f"/api/jobs/{item['id']}/lifecycle").json()
+
+    assert lifecycle["release"]["version"] == "20261026_v13"
+    assert lifecycle["release"]["git_commit"] == "abc12345"
+    assert lifecycle["release"]["execution_admitted"] is False
 
 
 def test_idempotent_submit_and_conflicting_payload(client, dataset):

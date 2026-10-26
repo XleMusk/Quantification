@@ -11,6 +11,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 import pandas as pd
 
 from . import data, store
+from .release import latest_release
 from .settings import MAX_UPLOAD, STORAGE, UI_ORIGIN
 from trading import store as trading_store
 from trading.api import router as trading_router
@@ -67,6 +68,12 @@ def require_job(identifier):
 @app.get("/api/health")
 def health():
     return {"status": "ok", "worker": store.worker_status(), "mode": "research_only", "live_trading": False}
+
+
+@app.get("/api/release")
+def release_status():
+    """Expose the latest local research-only release without mutating it."""
+    return latest_release()
 
 
 @app.get("/api/datasets")
@@ -194,6 +201,7 @@ def job_lifecycle(identifier: str):
             "next_action": "确认失败原因后重新提交一个新任务" if recovery_ready else "保持当前任务状态并继续刷新",
         },
         "recovery_evidence": recovery_evidence,
+        "release": latest_release(),
         "source": {"dataset_id": item["dataset_id"], "updated_at": item["updated_at"]},
     }
 

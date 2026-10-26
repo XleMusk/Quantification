@@ -34,7 +34,7 @@ from .joint_portfolio_paper_package import (
     build_joint_paper_from_payloads,
 )
 from .stockdb_paper_target_package import TARGET_PREVIEW, build_paper_target_package
-from .exchange_calendar import load_calendar, next_exchange_session
+from .exchange_calendar import adjacent_d0_d1_sessions, load_calendar, next_exchange_session
 from . import stockdb_fixed_daily
 
 
@@ -386,7 +386,8 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
                  stockdb_root: str | Path = DEFAULT_STOCKDB,
                  stockdb_snapshot: str | Path | None = None,
                  catalog_path: str | Path | None = DEFAULT_CATALOG,
-                 close_date: str, execution_day: str, settlement_day: str,
+                 close_date: str, execution_day: str | None = None,
+                 settlement_day: str | None = None,
                  initial_cash: float, minute_time: str = "",
                  gate_mode: str = "research_followup",
                  research_decision_receipt: str | Path | None = None,
@@ -394,6 +395,14 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
                  joint_capacity_policy: str | None = None,
                  joint_max_target_rows: int = 22) -> dict[str, Any]:
     close_date = _canonical_day(close_date, "close_date")
+    if execution_day is None and settlement_day is None:
+        if calendar_path is None:
+            raise ValueError(
+                "execution_day and settlement_day are required when calendar_path is omitted"
+            )
+        execution_day, settlement_day, _ = adjacent_d0_d1_sessions(close_date, Path(calendar_path))
+    elif execution_day is None or settlement_day is None:
+        raise ValueError("Provide both execution_day and settlement_day, or neither")
     execution_day = _canonical_day(execution_day, "execution_day")
     settlement_day = _canonical_day(settlement_day, "settlement_day")
     if not close_date < execution_day < settlement_day:
@@ -650,8 +659,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--catalog", type=Path, default=DEFAULT_CATALOG)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--close-date", required=True)
-    parser.add_argument("--execution-day", required=True)
-    parser.add_argument("--settlement-day", required=True)
+    parser.add_argument("--execution-day",
+                        help="optional with --calendar; otherwise required")
+    parser.add_argument("--settlement-day",
+                        help="optional with --calendar; otherwise required")
     parser.add_argument("--initial-cash", type=float, required=True)
     parser.add_argument("--minute-time", default="")
     parser.add_argument("--gate-mode", choices=("research_followup", "separate_gate"), default="research_followup")

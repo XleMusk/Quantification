@@ -3,7 +3,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from trading.research.exchange_calendar import next_exchange_session
+import pytest
+
+from trading.research.exchange_calendar import adjacent_d0_d1_sessions, next_exchange_session
 
 
 def _calendar(path: Path) -> None:
@@ -40,3 +42,19 @@ def test_year_scoped_calendar_resolves_in_year(tmp_path: Path):
 
     assert session == "2026-12-31"
     assert evidence["status"] == "resolved_authoritative_static_calendar"
+
+
+def test_adjacent_d0_d1_sessions_resolve_both_days_from_pinned_calendar(tmp_path: Path):
+    path = tmp_path / "calendar.json"
+    _calendar(path)
+
+    execution, settlement, evidence = adjacent_d0_d1_sessions("2026-10-26", path)
+
+    assert (execution, settlement) == ("2026-10-27", "2026-10-28")
+    assert evidence["status"] == "resolved_authoritative_static_calendar"
+    assert evidence["execution"]["calendar_id"] == "fixture_2026"
+
+
+def test_adjacent_d0_d1_sessions_refuses_missing_calendar(tmp_path: Path):
+    with pytest.raises(ValueError, match="calendar_artifact_unavailable"):
+        adjacent_d0_d1_sessions("2026-10-26", tmp_path / "missing.json")

@@ -60,6 +60,37 @@ def test_post_close_advances_fixed_daily_before_d0_d1(tmp_path: Path, monkeypatc
     assert (tmp_path / "run" / "post_close_receipt.json").is_file()
 
 
+def test_post_close_resolves_execution_and_settlement_from_calendar(tmp_path: Path, monkeypatch) -> None:
+    source, fixed_dir, package, stockdb = _inputs(tmp_path)
+    calendar = tmp_path / "calendar.json"
+    calendar.write_text(json.dumps({
+        "schema": "cn_a_share_exchange_calendar_v1", "calendar_id": "fixture_2026",
+        "year": 2026, "closed_ranges": [], "open_sessions": [],
+    }), encoding="utf-8")
+
+    monkeypatch.setattr(orchestrator.stockdb_fixed_daily, "run", lambda *args, **kwargs: {
+        "status": "continued_research_only", "last_completed_day": CLOSE,
+        "execution_admitted": False,
+    })
+    observed: dict[str, str] = {}
+
+    def d0_run(*args, **kwargs):
+        observed["execution_day"] = kwargs["execution_day"]
+        observed["settlement_day"] = kwargs["settlement_day"]
+        return {"status": "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1",
+                "execution_admitted": False}
+
+    monkeypatch.setattr(orchestrator.next_close_d0_d1, "run_contract", d0_run)
+    receipt = orchestrator.run_pipeline(
+        source, tmp_path / "run", fixed_run_dir=fixed_dir, packages=[package],
+        close_date=CLOSE, calendar_path=calendar,
+        initial_cash=100000.0, stockdb_root=stockdb)
+
+    assert receipt["status"] == orchestrator.STATUS
+    assert observed == {"execution_day": "2026-10-27", "settlement_day": "2026-10-28"}
+    assert receipt["session_resolution"]["mode"] == "pinned_calendar"
+
+
 def test_post_close_waits_for_complete_fixed_source_without_d0_projection(tmp_path: Path, monkeypatch) -> None:
     source, fixed_dir, package, stockdb = _inputs(tmp_path)
     monkeypatch.setattr(orchestrator.stockdb_fixed_daily, "run", lambda *args, **kwargs: {

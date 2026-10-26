@@ -97,3 +97,33 @@ def next_exchange_session(
         "status": "calendar_search_exhausted",
         "calendar_id": str(payload.get("calendar_id", "")),
     }
+
+
+def adjacent_d0_d1_sessions(
+    close_date: str,
+    calendar_path: Path | None = None,
+) -> tuple[str, str, dict[str, Any]]:
+    """Resolve the execution and settlement sessions after a closed D0.
+
+    The caller must provide a pinned calendar.  This helper intentionally does
+    not fall back to weekday arithmetic: a paper rollover must never invent a
+    trading session at a calendar boundary.  The returned metadata is kept in
+    the caller's receipt so an automated post-close run remains reproducible.
+    """
+    execution_day, execution_meta = next_exchange_session(close_date, calendar_path)
+    if execution_day is None:
+        raise ValueError(
+            "Cannot resolve execution_day from the pinned exchange calendar: "
+            + str(execution_meta.get("status"))
+        )
+    settlement_day, settlement_meta = next_exchange_session(execution_day, calendar_path)
+    if settlement_day is None:
+        raise ValueError(
+            "Cannot resolve settlement_day from the pinned exchange calendar: "
+            + str(settlement_meta.get("status"))
+        )
+    return execution_day, settlement_day, {
+        "status": "resolved_authoritative_static_calendar",
+        "execution": execution_meta,
+        "settlement": settlement_meta,
+    }

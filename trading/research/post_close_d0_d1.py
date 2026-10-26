@@ -18,6 +18,7 @@ from typing import Any, Sequence
 
 from . import next_close_d0_d1, stockdb_fixed_daily
 from .candidate_daily_input_bundle import build_input_bundle
+from .exchange_calendar import adjacent_d0_d1_sessions
 from .stockdb_paper_target_package import TARGET_PREVIEW
 
 
@@ -101,7 +102,8 @@ def _assert_unadmitted(payload: dict[str, Any], label: str) -> None:
 
 def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
                  fixed_run_dir: str | Path, packages: Sequence[str | Path],
-                 close_date: str, execution_day: str, settlement_day: str,
+                 close_date: str, execution_day: str | None = None,
+                 settlement_day: str | None = None,
                  initial_cash: float, stockdb_root: str | Path,
                  stockdb_snapshot: str | Path | None = None,
                  catalog_path: str | Path | None = None,
@@ -126,6 +128,23 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
     if replay_manifest is not None and catalog is None:
         raise ValueError("candidate_replay_manifest requires a registered candidate catalog")
     calendar = Path(calendar_path).resolve() if calendar_path is not None else None
+    session_resolution: dict[str, Any] = {
+        "mode": "explicit_arguments",
+        "calendar": str(calendar) if calendar is not None else None,
+    }
+    if execution_day is None and settlement_day is None:
+        if calendar is None:
+            raise ValueError(
+                "execution_day and settlement_day are required when calendar_path is omitted"
+            )
+        execution_day, settlement_day, metadata = adjacent_d0_d1_sessions(close_date, calendar)
+        session_resolution = {
+            "mode": "pinned_calendar",
+            "calendar": str(calendar),
+            "metadata": metadata,
+        }
+    elif execution_day is None or settlement_day is None:
+        raise ValueError("Provide both execution_day and settlement_day, or neither")
     decision = Path(research_decision_receipt).resolve() if research_decision_receipt is not None else None
     supplement = Path(supplemental_raw_view).resolve() if supplemental_raw_view is not None else None
     for path, label in ((source, "source manifest"), (replay_manifest, "candidate replay manifest"),
@@ -173,6 +192,8 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
         "ths_interacted": False, "persistent_ledger_mutated": False,
         "input_fingerprint": fingerprint, "fingerprint_inputs": fingerprint_inputs,
         "fixed_run_dir": str(fixed_dir), "close_date": close_date,
+        "execution_day": execution_day, "settlement_day": settlement_day,
+        "session_resolution": session_resolution,
         "persistent_fixed_daily_account_scope": "persistent_registered_account",
         "target_preview_projection_scope": {
             "fixed": TARGET_PREVIEW,
@@ -271,8 +292,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--package", type=Path, action="append", default=[],
                         help="complete close-source package; repeat for each missing fixed_daily day")
     parser.add_argument("--close-date", required=True)
-    parser.add_argument("--execution-day", required=True)
-    parser.add_argument("--settlement-day", required=True)
+    parser.add_argument("--execution-day",
+                        help="optional with --calendar; otherwise required")
+    parser.add_argument("--settlement-day",
+                        help="optional with --calendar; otherwise required")
     parser.add_argument("--initial-cash", type=float, required=True)
     parser.add_argument("--stockdb-root", type=Path, required=True)
     parser.add_argument("--stockdb-snapshot", type=Path,

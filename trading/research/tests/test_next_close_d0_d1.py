@@ -135,6 +135,27 @@ def test_next_close_can_use_pinned_snapshot_without_live_capture(tmp_path, monke
     assert receipt["stockdb_snapshot_source"] == str(snapshot.resolve())
 
 
+def test_next_close_resolves_d0_d1_dates_from_pinned_calendar(tmp_path, monkeypatch):
+    fixed, sources, catalog = _setup(tmp_path)
+    calendar = _write(tmp_path / "calendar.json", {
+        "schema": "cn_a_share_exchange_calendar_v1", "calendar_id": "fixture_2026",
+        "year": 2026, "closed_ranges": [], "open_sessions": [],
+    })
+    monkeypatch.setattr(contract, "freeze_snapshot", _fake_capture)
+
+    receipt = contract.run_contract(
+        sources, tmp_path / "run", fixed_terminal_account=fixed,
+        fixed_strategy_id="fixed_close", stockdb_root=tmp_path / "stockdb",
+        catalog_path=catalog, close_date=DAY, calendar_path=calendar,
+        initial_cash=100000.0)
+
+    assert receipt["status"] == contract.STATUS
+    assert receipt["time_semantics"]["source_day"] == DAY
+    assert receipt["calendar"]["execution"]["status"] == "resolved_authoritative_static_calendar"
+    assert receipt["fingerprint_inputs"]["execution_day"] == "2026-10-27"
+    assert receipt["fingerprint_inputs"]["settlement_day"] == "2026-10-28"
+
+
 def test_next_close_marks_pinned_snapshot_without_requested_date_as_stale(tmp_path, monkeypatch):
     fixed, sources, catalog = _setup(tmp_path)
     snapshot = tmp_path / "stale_snapshot"
