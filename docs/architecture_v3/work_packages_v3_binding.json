@@ -2598,7 +2598,9 @@
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v7.json",
         "outputs/research_reports/20261027_research_adoption_rollup_v7.md",
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v8.json",
-        "outputs/research_reports/20261027_research_adoption_rollup_v8.md"
+        "outputs/research_reports/20261027_research_adoption_rollup_v8.md",
+        "outputs/pipeline_receipts/20261027_research_adoption_rollup_v9.json",
+        "outputs/research_reports/20261027_research_adoption_rollup_v9.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -2622,9 +2624,11 @@
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v7.json",
         "outputs/research_reports/20261027_research_adoption_rollup_v7.md",
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v8.json",
-        "outputs/research_reports/20261027_research_adoption_rollup_v8.md"
+        "outputs/research_reports/20261027_research_adoption_rollup_v8.md",
+        "outputs/pipeline_receipts/20261027_research_adoption_rollup_v9.json",
+        "outputs/research_reports/20261027_research_adoption_rollup_v9.md"
       ],
-      "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3, the retained joint target gate and the complete public-seat replay gate; records the separate joint decision as CONTINUE_RESEARCH_ONLY with NOT_COMPARABLE_PROJECTION_ONLY and the public-seat decision as CONTINUE_RESEARCH_ONLY with publication timing, PIT membership and causal attribution still false; keeps strategy_validated=0 and execution_admitted=false, and passes the focused rollup tests. The explicit current-window comparison binds the same StockDB snapshot, intersects the 2026-08-31..2026-10-26 saved-account dates, reports both legs, and keeps promotion_allowed=false. The rollup accepts the explicit current-window and public-seat gates, records both fixed and half-momentum rows with their research decisions, and keeps paper_allowed=false and promotion_allowed=false."
+      "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3, the retained joint target gate, the complete public-seat replay gate and the candidate same-day freshness gate; records the separate joint decision as CONTINUE_RESEARCH_ONLY with NOT_COMPARABLE_PROJECTION_ONLY, the public-seat decision as CONTINUE_RESEARCH_ONLY with publication timing, PIT membership and causal attribution still false, and the stale candidate input as BLOCKED_STALE_CANDIDATE_INPUT before D0/D1 projection; keeps strategy_validated=0 and execution_admitted=false, and passes the focused rollup tests. The explicit current-window comparison binds the same StockDB snapshot, intersects the 2026-08-31..2026-10-26 saved-account dates, reports both legs, and keeps promotion_allowed=false. The rollup accepts the explicit current-window, public-seat and freshness gates, records both fixed and half-momentum rows with their research decisions, and keeps paper_allowed=false and promotion_allowed=false."
     },
     {
       "id": "P33",

@@ -686,3 +686,5 @@ F2 historical gate CLI 现在对输入行声明的 `source_file/source_sha256` �
 
 新增 `candidate-same-day-gate`，在候选进入 D0/D1 target projection 前校验每个 target 的 `decision_day`。对保存的 `stockdb_low_vol_half_momentum_20` 2026-10-23 manifest 请求 2026-10-26 close，回执明确为 `BLOCKED_STALE_CANDIDATE_INPUT`，没有生成 target、订单或账户状态；回执为 `outputs/pipeline_receipts/20261027_candidate_same_day_gate_20261026.json`。该闸门已接入 `run_committee.py`，候选 gate/F2/launcher 测试共 `33 passed`，`execution_admitted=false` 保持不变。
 
+研究采用汇总 v9 已绑定该 freshness gate：2026-10-23 的旧候选输入在 2026-10-26 请求下保持 `BLOCKED_STALE_CANDIDATE_INPUT`，没有进入 D0/D1；回执和报告为 `outputs/pipeline_receipts/20261027_research_adoption_rollup_v9.json` 与 `outputs/research_reports/20261027_research_adoption_rollup_v9.md`，paper/promotion 仍关闭。
+
