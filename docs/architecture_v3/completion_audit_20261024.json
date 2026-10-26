@@ -713,7 +713,10 @@
         "outputs/research_reports/20261026_release_v27_binding_v1.md",
         "D:/QuantificationData/trading/research/releases/20261026_v28/release_manifest.json",
         "outputs/pipeline_receipts/20261026_release_v28_binding_v1.json",
-        "outputs/research_reports/20261026_release_v28_binding_v1.md"
+        "outputs/research_reports/20261026_release_v28_binding_v1.md",
+        "D:/QuantificationData/trading/research/releases/20261026_v29/release_manifest.json",
+        "outputs/pipeline_receipts/20261026_release_v29_binding_v1.json",
+        "outputs/research_reports/20261026_release_v29_binding_v1.md"
       ],
       "gap": "none for current policy",
       "next_acceptance": "keep false until independent authorization and readiness audit",

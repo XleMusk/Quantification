@@ -491,3 +491,7 @@ P18 THS 重复回读行门禁已绑定内部研究发布 v28：`D:/Quantificatio
 ## 2026-10-26 weekly research review v2
 
 周复盘回执 `outputs/weekly_reviews/20261026_weekly_review_receipt_v2.json` 已更新：候选采用状态为 3 个继续研究、2 个停止原规格、1 个覆盖阻断、4 个独立 gate；成熟因子保持 NO_ADOPTION_RESEARCH_ONLY；短线 LR/LGBM 保持研究-only。2026-10-26 StockDB 仅 226/5,211 行，当前 20 个固定持仓全部缺失；THS 重复回读门禁已测试但没有真实客户端观察。最大阻碍仍是完整收市源、F1 PIT/as-of/revision、授权 THS 只读证据。
+
+## 2026-10-26 internal release v29
+
+周复盘 v2 已绑定内部研究发布 v29：`D:/QuantificationData/trading/research/releases/20261026_v29/release_manifest.json`，提交 `8239aa2`，`missing_required_code=[]`、`execution_admitted=false`、`live_execution_ready=false`。绑定回执 `outputs/pipeline_receipts/20261026_release_v29_binding_v1.json`。
