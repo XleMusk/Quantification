@@ -586,7 +586,9 @@
         "run_committee.py candidate-adoption-decision",
         "trading/tests/test_run_committee_dispatch.py",
         "outputs/pipeline_receipts/20261026_candidate_adoption_decision_v1.json",
-        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md"
+        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md",
+        "outputs/pipeline_receipts/20261026_candidate_adoption_decision_v2.json",
+        "outputs/research_reports/20261026_candidate_adoption_decision_v2.md"
       ],
       "gap": "Candidate catalog now has a reproducible adoption-gate receipt joining common-window, cost-pressure and latest selection evidence; real PIT/forward/channel gates remain open.",
       "next_acceptance": "After the next complete close, regenerate the same gate from the fresh snapshot before any candidate promotion decision.",

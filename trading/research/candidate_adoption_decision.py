@@ -103,6 +103,33 @@ def _pressure_index(receipt: Mapping[str, Any]) -> dict[str, Mapping[str, Any]]:
     return indexed
 
 
+def _separate_public_seat_gate(path: Path) -> dict[str, Any]:
+    """Bind completed public-seat diagnostics without merging their timing gate."""
+    receipt = _read(path)
+    if receipt.get("schema") != "quantification_public_seat_replay_audit_v1":
+        raise ValueError(f"public-seat audit schema mismatch: {path}")
+    if receipt.get("execution_admitted") is not False:
+        raise ValueError("public-seat audit crossed execution boundary")
+    counts = receipt.get("case_counts")
+    if not isinstance(counts, Mapping):
+        raise ValueError("public-seat audit case_counts are missing")
+    return {
+        "source": str(path.resolve()),
+        "source_sha256": _sha256(path),
+        "status": receipt.get("status"),
+        "case_counts": dict(counts),
+        "completed_sessions": receipt.get("completed_sessions", 0),
+        "completed_orders": receipt.get("completed_orders", 0),
+        "completed_fills": receipt.get("completed_fills", 0),
+        "research_only": True,
+        "paper_allowed": False,
+        "promotion_allowed": False,
+        "publication_timing_verified": receipt.get("publication_timing_verified") is True,
+        "pit_membership_verified": receipt.get("pit_membership_verified") is True,
+        "next_gate": "dated_publication_and_PIT_membership_before_adoption",
+    }
+
+
 def _decision(selection: Mapping[str, Any], common: Mapping[str, Any]) -> tuple[str, str]:
     action = selection.get("research_action")
     if action == "STOP_RESEARCH_ONLY":
@@ -119,7 +146,8 @@ def _decision(selection: Mapping[str, Any], common: Mapping[str, Any]) -> tuple[
 
 
 def build_decision(common_path: Path = DEFAULT_COMMON, cost_path: Path = DEFAULT_COST,
-                   selection_path: Path = DEFAULT_SELECTION) -> dict[str, Any]:
+                   selection_path: Path = DEFAULT_SELECTION,
+                   public_seat_audit_path: Path | None = None) -> dict[str, Any]:
     common = _read(common_path)
     cost = _read(cost_path)
     selection = _read(selection_path)
@@ -188,6 +216,9 @@ def build_decision(common_path: Path = DEFAULT_COMMON, cost_path: Path = DEFAULT
             "max_cost_pressure": None,
             "strategy_validated": False,
         })
+    separate_gates = {}
+    if public_seat_audit_path is not None:
+        separate_gates["public_seat_trend_hypotheses"] = _separate_public_seat_gate(public_seat_audit_path)
     return {
         "schema": SCHEMA,
         "status": "COMPLETED_RESEARCH_ONLY_ADOPTION_GATE",
@@ -205,6 +236,7 @@ def build_decision(common_path: Path = DEFAULT_COMMON, cost_path: Path = DEFAULT
             "selection_sha256": _sha256(selection_path),
         },
         "strategies": decisions,
+        "separate_gates": separate_gates,
         "summary": {
             "continue_research_only": sum(row["research_action"] == "CONTINUE_RESEARCH_ONLY" for row in decisions),
             "stop_research_only": sum(row["research_action"] == "STOP_RESEARCH_ONLY" for row in decisions),
@@ -239,13 +271,17 @@ def render_markdown(receipt: Mapping[str, Any]) -> str:
             f"{pressure_text} | {'yes' if row['strategy_validated'] else 'no'} |"
         )
     lines += ["", "All rows keep `paper_allowed=false`, `promotion_allowed=false`, and `execution_admitted=false`.", ""]
+    for key, gate in (receipt.get("separate_gates") or {}).items():
+        lines += [f"Separate gate `{key}`: `{gate['status']}`, {gate['case_counts']['completed']} completed cases, "
+                  f"next gate `{gate['next_gate']}`.", ""]
     return "\n".join(lines)
 
 
 def write_outputs(*, common_path: Path = DEFAULT_COMMON, cost_path: Path = DEFAULT_COST,
                   selection_path: Path = DEFAULT_SELECTION, output: Path = DEFAULT_OUTPUT,
-                  report: Path = DEFAULT_REPORT) -> tuple[Path, Path]:
-    receipt = build_decision(common_path, cost_path, selection_path)
+                  report: Path = DEFAULT_REPORT,
+                  public_seat_audit_path: Path | None = None) -> tuple[Path, Path]:
+    receipt = build_decision(common_path, cost_path, selection_path, public_seat_audit_path)
     output.parent.mkdir(parents=True, exist_ok=True)
     report.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -260,9 +296,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--selection", type=Path, default=DEFAULT_SELECTION)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
+    parser.add_argument("--public-seat-audit", type=Path,
+                        help="optional completed public-seat audit kept as a separate adoption gate")
     args = parser.parse_args(argv)
     output, report = write_outputs(common_path=args.common_window, cost_path=args.cost_pressure,
-                                   selection_path=args.selection, output=args.output, report=args.report)
+                                   selection_path=args.selection, output=args.output, report=args.report,
+                                   public_seat_audit_path=args.public_seat_audit)
     print(json.dumps({"status": "COMPLETED_RESEARCH_ONLY_ADOPTION_GATE", "output": str(output), "report": str(report)}, ensure_ascii=False))
     return 0
 

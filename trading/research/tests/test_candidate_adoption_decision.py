@@ -82,3 +82,21 @@ def test_variant_inherits_selection_by_candidate_family(tmp_path):
     assert row["strategy_id"] == "candidate-a-h60"
     assert row["selection_strategy_id"] == "candidate-a"
     assert row["research_action"] == "CONTINUE_RESEARCH_ONLY"
+
+
+def test_public_seat_audit_is_bound_as_separate_gate(tmp_path):
+    common, cost, selection = _write_receipts(tmp_path)
+    audit = tmp_path / "public_seat_audit.json"
+    audit.write_text(json.dumps({
+        "schema": "quantification_public_seat_replay_audit_v1",
+        "status": "VERIFIED_PUBLIC_SEAT_REPLAY_AUDIT",
+        "execution_admitted": False,
+        "case_counts": {"total": 9, "completed": 9, "failed_or_stopped": 0},
+        "completed_sessions": 2169, "completed_orders": 6133, "completed_fills": 9173,
+        "publication_timing_verified": False, "pit_membership_verified": False,
+    }), encoding="utf-8")
+    result = build_decision(common, cost, selection, public_seat_audit_path=audit)
+    gate = result["separate_gates"]["public_seat_trend_hypotheses"]
+    assert gate["case_counts"]["completed"] == 9
+    assert gate["paper_allowed"] is False
+    assert gate["next_gate"] == "dated_publication_and_PIT_membership_before_adoption"
