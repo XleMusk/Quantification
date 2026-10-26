@@ -635,3 +635,7 @@ Evidence: `outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v2.json`,
 ## 2026-10-27 F2 unified entrypoint
 
 `run_committee.py f2-issuer-source-evidence` now exposes the F2 issuer-source capture through the project entrypoint. The route only forwards explicit symbol, period, publication date, decision cutoff, source URL, local artifact and output path; it does not widen the PIT gate or create account state. Dispatch/help regression coverage passes together with the semantic extraction tests (`23 passed`).
+
+## 2026-10-27 workbench recovery unified entrypoint
+
+新增 `run_committee.py workbench-recovery-evidence` 统一入口，消费保存的本地 job observation，生成纸面恢复回执和报告。CLI 实际回执 `outputs/pipeline_receipts/20261027_workbench_recovery_cli_v1.json` 将 interrupted job 分类为 `MANUAL_RESUBMIT_REQUIRED`，自动重试、券商/同花顺交互和真实执行均为 false；5 个聚焦测试通过。该包不修改任务、不创建账户、不连接外部渠道。

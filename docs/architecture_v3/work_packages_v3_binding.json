@@ -1195,7 +1195,11 @@
         "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
         "outputs/research_reports/20261026_workbench_release_binding_v1.md",
-        "webapp/backend/app/release.py"
+        "webapp/backend/app/release.py",
+        "run_committee.py workbench-recovery-evidence",
+        "trading/tests/test_workbench_recovery_dispatch.py",
+        "outputs/pipeline_receipts/20261027_workbench_recovery_cli_v1.json",
+        "outputs/research_reports/20261027_workbench_recovery_cli_v1.md"
       ],
       "evidence": [
         "webapp/backend/app/main.py",
@@ -1206,7 +1210,11 @@
         "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
         "outputs/research_reports/20261026_workbench_release_binding_v1.md",
-        "webapp/backend/app/release.py"
+        "webapp/backend/app/release.py",
+        "run_committee.py workbench-recovery-evidence",
+        "trading/tests/test_workbench_recovery_dispatch.py",
+        "outputs/pipeline_receipts/20261027_workbench_recovery_cli_v1.json",
+        "outputs/research_reports/20261027_workbench_recovery_cli_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -1745,7 +1753,11 @@
         "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
         "outputs/research_reports/20261026_workbench_release_binding_v1.md",
-        "webapp/backend/app/release.py"
+        "webapp/backend/app/release.py",
+        "run_committee.py workbench-recovery-evidence",
+        "trading/tests/test_workbench_recovery_dispatch.py",
+        "outputs/pipeline_receipts/20261027_workbench_recovery_cli_v1.json",
+        "outputs/research_reports/20261027_workbench_recovery_cli_v1.md"
       ],
       "evidence": [
         "webapp/backend/app/main.py",
@@ -1765,7 +1777,11 @@
         "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
         "outputs/research_reports/20261026_workbench_release_binding_v1.md",
-        "webapp/backend/app/release.py"
+        "webapp/backend/app/release.py",
+        "run_committee.py workbench-recovery-evidence",
+        "trading/tests/test_workbench_recovery_dispatch.py",
+        "outputs/pipeline_receipts/20261027_workbench_recovery_cli_v1.json",
+        "outputs/research_reports/20261027_workbench_recovery_cli_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },

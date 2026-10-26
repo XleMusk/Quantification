@@ -239,6 +239,9 @@ def main(argv=None):
     if argv[:1] == ["paper-plan-reconciliation-audit"]:
         from trading.research.paper_plan_reconciliation_audit import main as paper_plan_reconciliation_audit_main
         return paper_plan_reconciliation_audit_main(argv[1:])
+    if argv[:1] == ["workbench-recovery-evidence"]:
+        from trading.research.workbench_recovery_evidence import main as workbench_recovery_evidence_main
+        return workbench_recovery_evidence_main(argv[1:])
     if argv[:1] == ["paper-exposure-stress"]:
         from trading.research.paper_exposure_stress import main as paper_exposure_stress_main
         return paper_exposure_stress_main(argv[1:])
