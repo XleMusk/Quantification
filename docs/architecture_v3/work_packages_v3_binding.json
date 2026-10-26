@@ -196,7 +196,11 @@
         "outputs/pipeline_receipts/20261026_persistent_task_decision_v1.json",
         "outputs/research_reports/20261026_persistent_task_decision_v1.md",
         "outputs/pipeline_receipts/20261026_persistent_task_decision_v2.json",
-        "outputs/research_reports/20261026_persistent_task_decision_v2.md"
+        "outputs/research_reports/20261026_persistent_task_decision_v2.md",
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md"
       ],
       "evidence": [
         "trading/store.py",
@@ -206,16 +210,30 @@
         "outputs/pipeline_receipts/20261026_persistent_task_decision_v1.json",
         "outputs/research_reports/20261026_persistent_task_decision_v1.md",
         "outputs/pipeline_receipts/20261026_persistent_task_decision_v2.json",
-        "outputs/research_reports/20261026_persistent_task_decision_v2.md"
+        "outputs/research_reports/20261026_persistent_task_decision_v2.md",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md"
       ]
     },
     {
       "id": "F06",
       "domain": "development",
       "result": "Agent throughput and expense are measured per accepted business capability.",
-      "state": "UNBOUND",
-      "next": "Measure only after a bounded V3 slice has a real acceptance artifact.",
-      "prohibition": "Do not use token count or task count as delivery."
+      "state": "PARTIAL",
+      "next": "Extend the same local measurement to accepted paper-task receipts; do not treat wall time as provider expense or strategy evidence.",
+      "prohibition": "Do not use token count or task count as delivery.",
+      "evidence_updated_on": "2026-10-26",
+      "actual_paths": [
+        "trading/research/next_close_d0_d1.py",
+        "trading/research/tests/test_next_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md"
+      ],
+      "evidence": [
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md"
+      ],
+      "acceptance": "A bounded accepted D0/D1 slice records local monotonic wall time, retains external provider expense as unknown, and leaves execution_admitted=false."
     },
     {
       "id": "D01",

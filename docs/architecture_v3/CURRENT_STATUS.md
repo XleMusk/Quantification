@@ -563,3 +563,7 @@ The research adoption rollup now accepts the retained half-momentum/Ridge joint 
 - Failure evidence is retained in `outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v1/contract_receipt.json`; successful receipt is `outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/contract_receipt.json`.
 - Boundaries remain unchanged: `execution_admitted=false`; no broker/THS interaction; TARGET_PREVIEW only; persistent fixed_daily rollover still waits for a complete changed close.
 
+## 2026-10-26 F05/F06 local task measurement
+
+在已验收的固定腿 + 候选腿 D0/D1 纸面包上，`next_close_d0_d1.py` 现在为成功、缺数阻断和失败回执统一记录 `local_task_measurement_v1`：本地单调时钟墙钟耗时、完成时间和未量化的外部 provider 成本。测量不进入业务输入指纹，不改变 Engine/Ledger、费用规则或执行权限。新回执 `outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json` 记录 40/40 覆盖、22 笔联合纸面订单和 `wall_seconds=0.132335`；报告为 `outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md`。`test_next_close_d0_d1.py`：19 passed。F06 已从 UNBOUND 推进为 PARTIAL；provider expense、真实渠道耗时和持久任务吞吐仍未宣称已测量。
+

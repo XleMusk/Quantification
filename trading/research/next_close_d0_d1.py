@@ -20,6 +20,7 @@ from datetime import date, datetime, timezone
 from hashlib import sha256
 import json
 from pathlib import Path
+import time
 from typing import Any, Mapping, Sequence
 from urllib.error import URLError
 
@@ -451,8 +452,10 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
     if output.exists() and any(output.iterdir()):
         raise FileExistsError("D0/D1 output exists without a contract receipt; inspect preserved failure evidence")
     output.mkdir(parents=True, exist_ok=True)
+    started_monotonic = time.perf_counter()
+    started_at = receipt_base_created_at = datetime.now(timezone.utc).isoformat()
     receipt_base = {
-        "schema": SCHEMA, "status": "CAPTURING_D0_D1", "created_at": datetime.now(timezone.utc).isoformat(),
+        "schema": SCHEMA, "status": "CAPTURING_D0_D1", "created_at": receipt_base_created_at,
         "execution_admitted": False, "broker_interacted": False, "ths_interacted": False,
         "persistent_ledger_mutated": False, "input_fingerprint": fingerprint,
         "fingerprint_inputs": fingerprint_inputs, "reused_existing_run": False,
@@ -471,6 +474,24 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
             "continuous_account_consumer": False,
         },
     }
+
+    def _measurement() -> dict[str, Any]:
+        """Record local task cost after a bounded paper slice has run.
+
+        This is an engineering measurement only: it contains no provider,
+        account or execution claim and is deliberately excluded from the
+        input fingerprint so reruns remain keyed by business inputs.
+        """
+        return {
+            "schema": "local_task_measurement_v1",
+            "started_at": started_at,
+            "finished_at": datetime.now(timezone.utc).isoformat(),
+            "wall_seconds": round(max(0.0, time.perf_counter() - started_monotonic), 6),
+            "clock_basis": "local_monotonic_wall_clock",
+            "external_provider_cost_cny": None,
+            "execution_admitted": False,
+        }
+
     try:
         receipt_base["calendar"] = _calendar_contract(close_date, execution_day, settlement_day, calendar_file)
         fixed_input = _source_target({"terminal_account": str(fixed_source),
@@ -525,7 +546,8 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
             receipt_base.update(status=BLOCKED_STATUS,
                                 reason="Missing same-day StockDB rows; no price was carried forward",
                                 artifacts={"snapshot": str(snapshot_dir),
-                                           "missing_symbols": missing})
+                                           "missing_symbols": missing},
+                                task_measurement=_measurement())
             receipt_path.write_text(json.dumps(receipt_base, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
             return receipt_base
 
@@ -634,7 +656,8 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
                        "Targets are strategy-adapter inputs and must already be same-day outputs.",
                        "StockDB rows are local read-only observations; no PIT or corporate-action promotion occurs.",
                        "Paper fills are shared Ledger projections, not broker fills or THS instructions.",
-                   ]}
+                   ],
+                   "task_measurement": _measurement()}
         receipt["receipt_path"] = str(receipt_path)
         receipt_path.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         return receipt
@@ -644,7 +667,8 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
                    "failure_class": _failure_class(error),
                    "automatic_retry": False,
                    "failure_evidence": {"output_dir": str(output),
-                                        "snapshot_dir": str(output / "snapshot")}}
+                                        "snapshot_dir": str(output / "snapshot")},
+                   "task_measurement": _measurement()}
         receipt_path.write_text(json.dumps(failure, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         raise
 

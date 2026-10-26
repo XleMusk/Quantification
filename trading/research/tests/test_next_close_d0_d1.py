@@ -94,6 +94,11 @@ def test_next_close_contract_captures_same_day_quotes_and_shared_bindings(tmp_pa
     assert receipt["snapshot_coverage"]["requested_close_date"] == DAY
     assert receipt["snapshot_coverage"]["missing_symbols"] == []
     assert receipt["fixed_account"]["binding"] == "direct_terminal_account"
+    measurement = receipt["task_measurement"]
+    assert measurement["schema"] == "local_task_measurement_v1"
+    assert measurement["wall_seconds"] >= 0
+    assert measurement["external_provider_cost_cny"] is None
+    assert measurement["execution_admitted"] is False
     manifest = json.loads((tmp_path / "run" / "inputs" / "candidate_manifest.json").read_text())
     assert manifest["plan_published_at"] == receipt["time_semantics"]["plan_published_at"]
     reused = contract.run_contract(
