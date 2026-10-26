@@ -26,6 +26,7 @@ REQUIRED_FILES = (
     "trading/research/next_close_d0_d1.py",
     "trading/research/post_close_d0_d1.py",
     "trading/research/stockdb_fixed_daily.py",
+    "trading/research/shortline_candidate_handoff.py",
     "run_committee.py",
 )
 
@@ -35,6 +36,8 @@ EVIDENCE_FILES = (
     "docs/architecture_v3/candidate_strategy_catalog_20261024.json",
     "outputs/pipeline_receipts/20261025_f2_alternate_financials_bridge_v2.json",
     "outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json",
+    "outputs/research_reports/20261026_shortline_candidate_handoff_v1.md",
+    "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json",
 )
 
 PAPER_EVIDENCE_FILES = (

@@ -2000,13 +2000,17 @@
         "D:/Quantification/outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json",
         "D:/Quantification/outputs/research_reports/20261026_shortline_candidate_handoff_v1.md",
         "D:/Quantification/outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lr_score_gate.json",
-        "D:/Quantification/outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lgbm_score_gate.json"
+        "D:/Quantification/outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lgbm_score_gate.json",
+        "outputs/pipeline_receipts/20261026_release_v15_binding_v1.json",
+        "outputs/research_reports/20261026_release_v15_binding_v1.md"
       ],
       "evidence": [
         "D:/Quantification/outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json",
         "D:/Quantification/outputs/research_reports/20261026_shortline_candidate_handoff_v1.md",
         "D:/Quantification/outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lr_score_gate.json",
-        "D:/Quantification/outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lgbm_score_gate.json"
+        "D:/Quantification/outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lgbm_score_gate.json",
+        "outputs/pipeline_receipts/20261026_release_v15_binding_v1.json",
+        "outputs/research_reports/20261026_release_v15_binding_v1.md"
       ],
       "acceptance": "A hash-bound published qualified preopen plan is consumed without changing source bytes; the new LR and LightGBM candidate files contain exactly 3 selected rows each, paper_candidate_only=true, and both score gates return VERIFIED_SHORTLINE_SCORE_GATE_READY with execution_admitted=false."
     }
