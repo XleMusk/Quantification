@@ -495,3 +495,7 @@ P18 THS 重复回读行门禁已绑定内部研究发布 v28：`D:/Quantificatio
 ## 2026-10-26 internal release v29
 
 周复盘 v2 已绑定内部研究发布 v29：`D:/QuantificationData/trading/research/releases/20261026_v29/release_manifest.json`，提交 `8239aa2`，`missing_required_code=[]`、`execution_admitted=false`、`live_execution_ready=false`。绑定回执 `outputs/pipeline_receipts/20261026_release_v29_binding_v1.json`。
+
+## 2026-10-26 P33 W4 actual HTTP chain
+
+已按工程手册实际运行 W4 工作台链：通过 `POST /api/jobs` 提交合成研究任务，同一 `Idempotency-Key` 重复提交返回同一 job；启动本地 factor worker 后任务完成，生命周期返回 result/download 可用，result JSON 可读，`summary.csv`、`REPORT.md`、`result.json` 均实际下载成功。回执 `outputs/pipeline_receipts/20261026_workbench_w4_actual_http_receipt_v2.json`，`execution_admitted=false`，无 Broker/THS 交互。

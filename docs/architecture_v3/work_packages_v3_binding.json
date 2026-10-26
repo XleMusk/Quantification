@@ -2236,6 +2236,26 @@
         "trading/research/tests/test_research_adoption_rollup.py"
       ],
       "acceptance": "The rollup binds candidate v2, mature-factor horizon and shortline gate v3; records 3 continue-research-only, 2 stop, 1 blocked-coverage and 4 separate-gate candidates, keeps strategy_validated=0 and execution_admitted=false, and passes 3 focused tests."
+    },
+    {
+      "id": "P33",
+      "domain": "development",
+      "result": "The local W4 workbench HTTP chain was exercised against the seeded synthetic dataset: POST /api/jobs, same-key idempotent repeat, lifecycle polling, completed result read and file downloads all succeeded.",
+      "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
+      "next": "Repeat with an isolated environment when needed; external broker/THS evidence remains separate and unauthorized.",
+      "prohibition": "Synthetic workbench completion is not market evidence, account evidence or live execution; no automatic retry or external channel interaction.",
+      "actual_paths": [
+        "webapp/backend/app/main.py",
+        "webapp/workers/factor_worker.py",
+        "outputs/pipeline_receipts/20261026_workbench_w4_actual_http_receipt_v1.json",
+        "outputs/pipeline_receipts/20261026_workbench_w4_actual_http_receipt_v2.json"
+      ],
+      "evidence_updated_on": "2026-10-26",
+      "evidence": [
+        "outputs/pipeline_receipts/20261026_workbench_w4_actual_http_receipt_v2.json",
+        "webapp/backend/tests/test_webapp.py"
+      ],
+      "acceptance": "A real local HTTP submission returns one stable job id on same-key repeat; worker reaches completed, lifecycle exposes result/download stages, result JSON is readable, three files download with nonzero bytes, and execution_admitted=false."
     }
   ],
   "updated_at": "2026-10-26"
