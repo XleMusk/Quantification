@@ -1124,9 +1124,6 @@ def main(argv=None):
     if argv[:1] == ["stockdb-live-coverage"]:
         from trading.research.stockdb_live_coverage import main as stockdb_live_coverage_main
         return stockdb_live_coverage_main(argv[1:])
-    if argv[:1] == ["stockdb-baostock-extension"]:
-        from trading.research.stockdb_baostock_extension import main as stockdb_baostock_extension_main
-        return stockdb_baostock_extension_main(argv[1:])
     if argv[:1] == ["shortline-touchability"]:
         from trading.research.shortline_touchability import main as shortline_touchability_main
         return shortline_touchability_main(argv[1:])

@@ -1,0 +1,20 @@
+{
+  "schema": "quantification_cli_dispatch_cleanup_v2",
+  "status": "VERIFIED_LOCAL",
+  "route_count": 391,
+  "unique_route_count": 391,
+  "duplicate_routes_removed": [
+    "stockdb-baostock-extension"
+  ],
+  "compatibility_checks": {
+    "tests": "D:/Quantification/env/python.exe -m pytest -q trading/tests/test_run_committee_dispatch.py",
+    "passed": 12,
+    "stockdb_baostock_extension_help": true
+  },
+  "execution_admitted": false,
+  "external_interaction": false,
+  "acceptance": {
+    "all_route_guards_unique": true,
+    "help_compatible": true
+  }
+}

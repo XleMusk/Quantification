@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -14,6 +15,23 @@ def test_joint_portfolio_paper_package_route_is_registered_once():
     source = (ROOT / "run_committee.py").read_text(encoding="utf-8")
 
     assert source.count('if argv[:1] == ["joint-portfolio-paper-package"]:') == 1
+
+
+def test_all_launcher_route_guards_are_unique():
+    source = (ROOT / "run_committee.py").read_text(encoding="utf-8")
+    routes = re.findall(r'argv\[:1\] == \["([^"]+)"\]', source)
+    assert routes
+    assert len(routes) == len(set(routes))
+
+
+def test_stockdb_baostock_extension_help_remains_compatible():
+    result = subprocess.run(
+        [sys.executable, "-Xutf8", str(ROOT / "run_committee.py"),
+         "stockdb-baostock-extension", "--help"],
+        cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
+    )
+    assert result.returncode == 0
+    assert "usage:" in result.stdout.lower()
 
 
 def test_joint_portfolio_paper_package_help_remains_compatible():
