@@ -1,0 +1,291 @@
+{
+  "schema": "quantification_research_adoption_rollup_v1",
+  "status": "COMPLETED_RESEARCH_ONLY_ADOPTION_ROLLUP",
+  "execution_admitted": false,
+  "paper_allowed": false,
+  "promotion_allowed": false,
+  "inputs": {
+    "candidate_adoption": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_candidate_adoption_decision_v2.json",
+      "sha256": "0a4ea9b0f7c32cc1e641cd08a82d70efed16e6b0abe8bf5b6ae68885e3059e1b"
+    },
+    "mature_factor_comparison": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_mature_factor_horizon_comparison_v1.json",
+      "sha256": "19241db7a2d89f757609d5e836c06cb85a3a9c85d7de84efa88131f33aec0ba8"
+    },
+    "shortline_adoption": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_shortline_adoption_gate_v3.json",
+      "sha256": "96f67d457bd9504f3375e692da0be61554e01334d9648360e1d7295bff304e99"
+    },
+    "d0_d1_paper": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v2\\next_close\\contract_receipt.json",
+      "sha256": "5c1abfd07aca30fd9e87273df9a11d512795b84a2e4cc9b36dcfdfe8c4da6f58"
+    },
+    "current_window_comparison": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_current_window_fixed_candidate_v1.json",
+      "sha256": "bd223da6b575072c79270e95ad7e7f97176386a3428e03c47ace03fa6717b4d0"
+    }
+  },
+  "candidate_summary": {
+    "continue_research_only": 3,
+    "stop_research_only": 2,
+    "blocked_coverage": 1,
+    "unassessed_separate_gate": 4,
+    "strategy_validated": 0
+  },
+  "candidate_decisions": [
+    {
+      "strategy_id": "low_vol_half_momentum_20",
+      "label": "低波/半动量",
+      "research_action": "CONTINUE_RESEARCH_ONLY",
+      "decision_reason": "common-window evidence is research-only and not strategy validated",
+      "strategy_validated": false
+    },
+    {
+      "strategy_id": "mature_factor_balanced_ridge",
+      "label": "成熟因子 Ridge",
+      "research_action": "CONTINUE_RESEARCH_ONLY",
+      "decision_reason": "common-window evidence is research-only and not strategy validated",
+      "strategy_validated": false
+    },
+    {
+      "strategy_id": "mature_factor_balanced_ridge_h60",
+      "label": "成熟因子 Ridge（60-session variant）",
+      "research_action": "CONTINUE_RESEARCH_ONLY",
+      "decision_reason": "common-window evidence is research-only and not strategy validated",
+      "strategy_validated": false
+    },
+    {
+      "strategy_id": "fixed_low_volatility_252_20",
+      "label": "stockdb_low_volatility_252_20",
+      "research_action": "STOP_RESEARCH_ONLY",
+      "decision_reason": "Preserve the negative evidence and do not repeat the same lineage without changed data or code.",
+      "strategy_validated": false
+    },
+    {
+      "strategy_id": "momentum_12_1_20",
+      "label": "stockdb_momentum_12_1_20",
+      "research_action": "BLOCKED_COVERAGE",
+      "decision_reason": "Obtain the missing common forward coverage before ranking or replay.",
+      "strategy_validated": false
+    },
+    {
+      "strategy_id": "alpha158_lgbm_cap500",
+      "label": "alpha158_lgbm_candidate_panel_v1",
+      "research_action": "STOP_RESEARCH_ONLY",
+      "decision_reason": "Preserve the negative evidence and do not repeat the same lineage without changed data or code.",
+      "strategy_validated": false
+    },
+    {
+      "strategy_id": null,
+      "label": "stockdb_value_size_activity_2023",
+      "research_action": "UNASSESSED_SEPARATE_GATE",
+      "decision_reason": "Keep the candidate in its own data and timing gate; no selection or promotion.",
+      "strategy_validated": false
+    },
+    {
+      "strategy_id": null,
+      "label": "shortline_native_lr_lgbm",
+      "research_action": "UNASSESSED_SEPARATE_GATE",
+      "decision_reason": "Keep the candidate in its own data and timing gate; no selection or promotion.",
+      "strategy_validated": false
+    },
+    {
+      "strategy_id": null,
+      "label": "public_seat_trend_hypotheses",
+      "research_action": "UNASSESSED_SEPARATE_GATE",
+      "decision_reason": "Keep the candidate in its own data and timing gate; no selection or promotion.",
+      "strategy_validated": false
+    },
+    {
+      "strategy_id": null,
+      "label": "leader_eight_type_replay_engine",
+      "research_action": "UNASSESSED_SEPARATE_GATE",
+      "decision_reason": "Keep the candidate in its own data and timing gate; no selection or promotion.",
+      "strategy_validated": false
+    }
+  ],
+  "separate_gates": {
+    "mature_factor_horizon": {
+      "status": "COMPLETED_RESEARCH_ONLY_HORIZON_COMPARISON",
+      "decision": "NO_ADOPTION_RESEARCH_ONLY",
+      "baseline": {
+        "strategy_id": "stockdb_factor_monthly_ridge_v1",
+        "horizon_sessions": null,
+        "sessions": 648,
+        "net_return": 0.36976350000000013,
+        "max_drawdown": -0.18138374409643643,
+        "sharpe_zero_rf_252": 0.7614069513373845
+      },
+      "variant": {
+        "strategy_id": "mature_factor_balanced_ridge_h60",
+        "horizon_sessions": 60,
+        "sessions": 648,
+        "net_return": 0.32176678571428585,
+        "max_drawdown": -0.1910393802223842,
+        "sharpe_zero_rf_252": 0.7394977565296924
+      },
+      "variant_minus_baseline": {
+        "net_return": -0.04799671428571428,
+        "max_drawdown": -0.009655636125947775,
+        "sharpe_zero_rf_252": -0.021909194807692045
+      },
+      "paper_allowed": false,
+      "promotion_allowed": false,
+      "next_gate": "PIT-complete untouched holdout before horizon selection"
+    },
+    "shortline_native_lr_lgbm": {
+      "status": "COMPLETED_RESEARCH_ONLY_SHORTLINE_ADOPTION_GATE",
+      "models": [
+        {
+          "model_kind": "lr",
+          "research_action": "CONTINUE_RESEARCH_ONLY",
+          "replay_sessions": 2634,
+          "orders": 1,
+          "fills": 2,
+          "net_return": -0.006031600000000026,
+          "decision_reason": "bounded replay completed; PIT, full-window and forward gates remain open",
+          "paper_allowed": false,
+          "promotion_allowed": false
+        },
+        {
+          "model_kind": "lgbm",
+          "research_action": "CONTINUE_RESEARCH_ONLY",
+          "replay_sessions": 3863,
+          "orders": 3,
+          "fills": 6,
+          "net_return": -0.012714799999999915,
+          "decision_reason": "bounded replay completed; PIT, full-window and forward gates remain open",
+          "paper_allowed": false,
+          "promotion_allowed": false
+        }
+      ],
+      "summary": {
+        "models": 2,
+        "continue_research_only": 2,
+        "blocked": 0,
+        "orders": 4,
+        "fills": 8
+      },
+      "next_gates": [
+        "complete StockDB-equivalent raw-bar history for the selected symbols",
+        "prove PIT membership, company-action treatment and publication timing",
+        "run the same frozen candidates on an untouched forward window",
+        "keep the candidate research-only until all gates pass"
+      ],
+      "paper_allowed": false,
+      "promotion_allowed": false
+    },
+    "public_seat_trend_hypotheses": {
+      "source": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_candidate_adoption_decision_v2.json",
+      "source_sha256": "0a4ea9b0f7c32cc1e641cd08a82d70efed16e6b0abe8bf5b6ae68885e3059e1b",
+      "status": "VERIFIED_PUBLIC_SEAT_REPLAY_AUDIT",
+      "decision": "CONTINUE_RESEARCH_ONLY",
+      "decision_reason": "complete replay remains gated by publication timing and PIT membership",
+      "case_counts": {
+        "total": 9,
+        "completed": 9,
+        "failed_or_stopped": 0
+      },
+      "completed_sessions": 2169,
+      "completed_orders": 6133,
+      "completed_fills": 9173,
+      "publication_timing_verified": false,
+      "pit_membership_verified": false,
+      "causal_seat_alpha_verified": false,
+      "research_only": true,
+      "paper_allowed": false,
+      "promotion_allowed": false,
+      "next_gate": "causal attribution and untouched forward validation before adoption"
+    },
+    "retained_joint_portfolio": {
+      "status": "COMPLETED_RESEARCH_ONLY_RETAINED_JOINT_COMPARISON",
+      "decision": "CONTINUE_RESEARCH_ONLY",
+      "return_incremental_status": "NOT_COMPARABLE_PROJECTION_ONLY",
+      "strategy_ids": [
+        "trend_low_vol_half_momentum_20",
+        "stockdb_factor_monthly_ridge_v1"
+      ],
+      "decision_day": "2026-10-13",
+      "target_count": 22,
+      "paper_order_count": 22,
+      "route_available_count": 21,
+      "route_blocked_count": 1,
+      "promotion_allowed": false,
+      "source": {
+        "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_retained_joint_candidate_comparison_v1\\retained_joint_comparison_receipt.json",
+        "sha256": "b81561ab8506bb0fab45716f1e5c5eb7e10d9818521ea0dce3585f0c08afb024"
+      },
+      "next_gate": "forward_account_replay_with_same_window_and_cost_model"
+    },
+    "latest_d0_d1_paper": {
+      "status": "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1",
+      "close_date": "2026-10-23",
+      "requested_symbol_count": 40,
+      "available_symbol_count": 40,
+      "missing_symbols": [],
+      "fixed_strategy_id": "low_volatility_252_20",
+      "fixed_target_count": 20,
+      "fixed_paper_order_count": 20,
+      "candidate_count": 1,
+      "joint_paper_order_count": 22,
+      "source_scope": "persistent_registered_account",
+      "source": {
+        "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v2\\next_close\\contract_receipt.json",
+        "sha256": "5c1abfd07aca30fd9e87273df9a11d512795b84a2e4cc9b36dcfdfe8c4da6f58"
+      },
+      "paper_allowed": false,
+      "promotion_allowed": false,
+      "next_gate": "reuse the same contract on the next closed session; persistent rollover still requires a complete fixed_daily close package"
+    },
+    "latest_current_window": {
+      "status": "COMPLETED_RESEARCH_ONLY_CURRENT_WINDOW_COMPARISON",
+      "common_window": {
+        "start": "2026-08-31",
+        "end": "2026-10-26",
+        "sessions": 35,
+        "basis": "intersection_of_explicit_saved_daily_account_dates"
+      },
+      "stockdb_snapshot": "D:\\QuantificationData\\trading\\research\\full_market\\stockdb_2024_0101_1013_current_cutoff_v1",
+      "strategies": [
+        {
+          "strategy_id": "low_volatility_252_20",
+          "label": "固定低波动",
+          "research_decision": "CONTINUE_RESEARCH_ONLY",
+          "net_return": 0.008293357142857172,
+          "max_drawdown": -0.02025487908141299,
+          "sharpe_zero_rf_252": 0.8365743043898471,
+          "orders": 25,
+          "fills": 44,
+          "fees_rmb": 129.93
+        },
+        {
+          "strategy_id": "low_vol_half_momentum_20",
+          "label": "低波/半动量",
+          "research_decision": "STOP_RESEARCH_ONLY",
+          "net_return": -0.09413212782150238,
+          "max_drawdown": -0.09666428682978168,
+          "sharpe_zero_rf_252": -5.80815947562191,
+          "orders": 40,
+          "fills": 72,
+          "fees_rmb": 256.1
+        }
+      ],
+      "source": {
+        "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_current_window_fixed_candidate_v1.json",
+        "sha256": "bd223da6b575072c79270e95ad7e7f97176386a3428e03c47ace03fa6717b4d0"
+      },
+      "paper_allowed": false,
+      "promotion_allowed": false,
+      "next_gate": "keep the terminal comparison as a diagnostic until long-window, PIT and prospective evidence agree"
+    }
+  },
+  "next_actions": [
+    "D0/D1 close 2026-10-23 is complete for the target set; reuse the same contract on the next closed session and keep persistent fixed_daily rollover gated by a complete close package.",
+    "Current-window 2026-08-31..2026-10-26 is bound as a terminal diagnostic; do not promote from this short slice.",
+    "Run a PIT-complete untouched holdout before selecting a mature-factor horizon.",
+    "Replace the shortline independent raw path with StockDB-equivalent history and untouched-forward validation.",
+    "Replay the retained joint target over a matching forward account before any portfolio adoption decision.",
+    "Keep all candidates research-only until PIT, forward and channel evidence gates pass."
+  ]
+}
