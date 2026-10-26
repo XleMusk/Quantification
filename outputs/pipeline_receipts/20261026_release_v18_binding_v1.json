@@ -1,0 +1,19 @@
+{
+  "schema": "quantification_internal_release_binding_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "version": "20261026_v18",
+  "manifest": "D:\\QuantificationData\\trading\\research\\releases\\20261026_v18\\release_manifest.json",
+  "manifest_sha256": "4e238ecb666d1a13af761ba635958961b2cabe35cb6ca240dc913dee229b6a21",
+  "git_commit": "90b88f3",
+  "execution_admitted": false,
+  "live_execution_ready": false,
+  "missing_required_code": [],
+  "shortline_candidate_handoff": "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json",
+  "shortline_replay_stop": "outputs/pipeline_receipts/20261026_shortline_candidate_panel_replay_blocked_v1.json",
+  "f01_semantic_contract": "trading/research/f01_financial_factor.py",
+  "limitations": [
+    "F01 period semantics are enforced, but real 2023Q1 historical retrieval/as-of/revision evidence is still absent.",
+    "Shortline full return/PIT/company-action/forward gates and THS observed read-only evidence remain unavailable.",
+    "No broker/THS login or account mutation."
+  ]
+}
