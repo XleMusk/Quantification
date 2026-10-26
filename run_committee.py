@@ -1013,6 +1013,9 @@ def main(argv=None):
     if argv[:1] == ["factor-candidate-replay"]:
         from trading.research.factor_candidate_replay import main as factor_candidate_replay_main
         return factor_candidate_replay_main(argv[1:])
+    if argv[:1] == ["factor-replay-comparison"]:
+        from trading.research.factor_replay_comparison import main as factor_replay_comparison_main
+        return factor_replay_comparison_main(argv[1:])
     if argv[:1] == ["factor-execution-projection"]:
         from trading.research.factor_execution_projection import main as factor_execution_projection_main
         return factor_execution_projection_main(argv[1:])
