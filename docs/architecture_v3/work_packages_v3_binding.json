@@ -1163,7 +1163,7 @@
       "domain": "operations",
       "result": "Calendar and business schedule calculate windows and classify missing inputs.",
       "state": "PARTIAL",
-      "next": "Run the same registered fixed_daily D0/D1 contract after each changed close; the 2026-10-23 historical close now has a complete fixed-only receipt, while same-day candidate inputs remain required for the full comparison path.",
+      "next": "Run the same registered fixed_daily D0/D1 contract after each changed close; the 2026-10-23 close now has both fixed and same-day candidate TARGET_PREVIEW legs, while persistent rollover still requires a complete changed close.",
       "prohibition": "Do not use machine timezone or weekday inference.",
       "evidence_updated_on": "2026-10-26",
       "actual_paths": [
@@ -1190,7 +1190,12 @@
         "trading/research/exchange_calendar.py",
         "trading/research/tests/test_exchange_calendar.py",
         "outputs/pipeline_receipts/20261026_d0_d1_calendar_resolution_v1.json",
-        "outputs/research_reports/20261026_d0_d1_calendar_resolution_v1.md"
+        "outputs/research_reports/20261026_d0_d1_calendar_resolution_v1.md",
+        "outputs/pipeline_receipts/20261026_candidate_source_manifest_v1.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v1/contract_receipt.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/contract_receipt.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/joint_paper/joint_paper_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1212,7 +1217,12 @@
         "outputs/research_reports/20261026_d0_d1_calendar_resolution_v1.md",
         "outputs/pipeline_receipts/20261026_fixed_only_source_manifest_v1.json",
         "outputs/pipeline_receipts/20261026_fixed_only_d0_d1_v1/contract_receipt.json",
-        "outputs/research_reports/20261026_fixed_only_d0_d1_v1.md"
+        "outputs/research_reports/20261026_fixed_only_d0_d1_v1.md",
+        "outputs/pipeline_receipts/20261026_candidate_source_manifest_v1.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v1/contract_receipt.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/contract_receipt.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/joint_paper/joint_paper_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md"
       ]
     },
     {
@@ -1256,7 +1266,7 @@
       "domain": "operations",
       "result": "Business observability and capacity measurements expose bottlenecks.",
       "state": "PARTIAL",
-      "next": "On the next changed close, pass the same-day fixed and candidate manifests into next-close-d0-d1; the fixed-only historical run is complete, and missing candidate input remains an explicit route-level gap.",
+      "next": "On each changed close, pass fixed and same-day candidate manifests into next-close-d0-d1; the 2026-10-23 package now proves 40/40 quote coverage, one candidate batch and a 22-order budgeted joint projection.",
       "prohibition": "Do not turn monitoring uncertainty into a false offline status.",
       "actual_paths": [
         "trading/research/daily_candidate_paper_batch.py",
@@ -1312,7 +1322,12 @@
         "trading/research/exchange_calendar.py",
         "trading/research/tests/test_exchange_calendar.py",
         "outputs/pipeline_receipts/20261026_d0_d1_calendar_resolution_v1.json",
-        "outputs/research_reports/20261026_d0_d1_calendar_resolution_v1.md"
+        "outputs/research_reports/20261026_d0_d1_calendar_resolution_v1.md",
+        "outputs/pipeline_receipts/20261026_candidate_source_manifest_v1.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v1/contract_receipt.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/contract_receipt.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/joint_paper/joint_paper_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1333,7 +1348,12 @@
         "outputs/pipeline_receipts/20261026_d0_d1_calendar_resolution_v1.json",
         "outputs/research_reports/20261026_d0_d1_calendar_resolution_v1.md",
         "outputs/pipeline_receipts/20261026_fixed_only_d0_d1_v1/contract_receipt.json",
-        "outputs/research_reports/20261026_fixed_only_d0_d1_v1.md"
+        "outputs/research_reports/20261026_fixed_only_d0_d1_v1.md",
+        "outputs/pipeline_receipts/20261026_candidate_source_manifest_v1.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v1/contract_receipt.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/contract_receipt.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/joint_paper/joint_paper_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },

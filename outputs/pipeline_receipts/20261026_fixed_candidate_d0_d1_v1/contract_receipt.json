@@ -1,0 +1,129 @@
+{
+  "schema": "stockdb_next_close_d0_d1_contract_v1",
+  "status": "FAILED_D0_D1_CAPTURE_OR_PROJECTION",
+  "created_at": "2026-10-26T13:45:02.917063+00:00",
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "input_fingerprint": "c493b77cf852148283a769822a14ad65504ffa7b6f119a4a3af6ff5a890e65a8",
+  "fingerprint_inputs": {
+    "close_date": "2026-10-23",
+    "execution_day": "2026-10-26",
+    "settlement_day": "2026-10-27",
+    "stockdb_root": "C:\\Users\\13944\\Desktop\\free-stockdb-windows-v0.3.5-more-power\\stockdb",
+    "sources": {
+      "source_manifest": {
+        "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_candidate_source_manifest_v1.json",
+        "sha256": "31d85dd23dbd206860060399db27d300d9fa1857bc915d481424043a63cabb05"
+      },
+      "fixed_source": {
+        "path": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261024_095044_30bcb5ff\\low_volatility_252_20\\account.json",
+        "sha256": "8959724c4c4287f8760baf1c03524d7d28fdb15a0a4894256eaca4ca1f848331",
+        "strategy_id": "low_volatility_252_20"
+      },
+      "catalog": {
+        "path": "D:\\Quantification\\docs\\architecture_v3\\candidate_strategy_catalog_20261024.json",
+        "sha256": "eb5c7144bac782431842e791dd9292e0592a8a431759205dbb4baaad441d55f8"
+      },
+      "calendar": {
+        "path": "D:\\QuantificationData\\trading\\research\\calendar\\cn_a_share_2026_sse_v1.json",
+        "sha256": "4ec5846eefc41d44cc1681043708a17a8540e89700706f1b9406b63fb77a4439"
+      },
+      "stockdb_snapshot": {
+        "path": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261024_recent_full_v1\\snapshot.json",
+        "sha256": "557da9d859ae162093665d1d9c009093218d9ae8e91801b9da1b01e33eeaeafc"
+      }
+    },
+    "initial_cash": 140000.0,
+    "minute_time": "",
+    "gate_mode": "research_followup",
+    "joint_capacity_policy": "budgeted",
+    "joint_max_target_rows": 22,
+    "calendar_path": "D:\\QuantificationData\\trading\\research\\calendar\\cn_a_share_2026_sse_v1.json",
+    "stockdb_snapshot": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261024_recent_full_v1"
+  },
+  "reused_existing_run": false,
+  "persistent_fixed_daily_account_scope": "persistent_registered_account",
+  "target_preview_projection_scope": {
+    "fixed": "TARGET_PREVIEW",
+    "candidate": "TARGET_PREVIEW",
+    "ledger_scope": "ephemeral_projection",
+    "continuous_account_consumer": false
+  },
+  "calendar": {
+    "status": "resolved_authoritative_static_calendar",
+    "calendar_id": "cn_a_share_2026_sse_v1",
+    "path": "D:\\QuantificationData\\trading\\research\\calendar\\cn_a_share_2026_sse_v1.json",
+    "execution": {
+      "status": "resolved_authoritative_static_calendar",
+      "calendar_id": "cn_a_share_2026_sse_v1",
+      "calendar_source_url": "https://www.sse.com.cn/disclosure/dealinstruc/closed/",
+      "calendar_source_published": "2025-12-22"
+    },
+    "settlement": {
+      "status": "resolved_authoritative_static_calendar",
+      "calendar_id": "cn_a_share_2026_sse_v1",
+      "calendar_source_url": "https://www.sse.com.cn/disclosure/dealinstruc/closed/",
+      "calendar_source_published": "2025-12-22"
+    }
+  },
+  "close_date": "2026-10-23",
+  "snapshot": {
+    "path": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261024_recent_full_v1\\snapshot.json",
+    "sha256": "557da9d859ae162093665d1d9c009093218d9ae8e91801b9da1b01e33eeaeafc"
+  },
+  "stockdb_snapshot_source": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261024_recent_full_v1",
+  "requested_symbol_count": 40,
+  "missing_symbols": [],
+  "snapshot_coverage": {
+    "status": "COMPLETE",
+    "reason": null,
+    "requested_close_date": "2026-10-23",
+    "effective_session_dates": [
+      "2026-10-20",
+      "2026-10-22",
+      "2026-10-23"
+    ],
+    "requested_symbol_count": 40,
+    "available_symbol_count": 40,
+    "missing_symbols": []
+  },
+  "fixed_source": {
+    "path": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261024_095044_30bcb5ff\\low_volatility_252_20\\account.json",
+    "sha256": "8959724c4c4287f8760baf1c03524d7d28fdb15a0a4894256eaca4ca1f848331",
+    "source_kind": "legacy_terminal_account"
+  },
+  "fixed_account": {
+    "binding": "registered_fixed_daily",
+    "account_version": "generation-0:2026-10-23",
+    "generation": 0,
+    "last_completed_day": "2026-10-23",
+    "run_dir": "D:\\QuantificationData\\trading\\fixed_daily\\20261024_lowvol_current",
+    "head": {
+      "path": "D:\\QuantificationData\\trading\\fixed_daily\\20261024_lowvol_current\\head.json",
+      "sha256": "2682b48e184898954ff9a8ff7e9f7eaf0c0ca98735c43516762637eb8718d8d8"
+    },
+    "terminal_account": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261024_095044_30bcb5ff\\low_volatility_252_20\\account.json"
+  },
+  "candidate_source_manifest": {
+    "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_candidate_source_manifest_v1.json",
+    "sha256": "31d85dd23dbd206860060399db27d300d9fa1857bc915d481424043a63cabb05"
+  },
+  "time_semantics": {
+    "source_day": "2026-10-23",
+    "decision_cutoff_at": "2026-10-24T09:46:02.941781+08:00",
+    "quote_observed_at": "2026-10-24T09:46:02.941781+08:00",
+    "artifact_created_at": "2026-10-26T13:45:02.917063+00:00",
+    "plan_published_at": "2026-10-26T13:45:03.007599+00:00",
+    "interpretation": "plan_published_at is the local frozen-artifact publication time; it is not a broker or Tonghuashun submission timestamp."
+  },
+  "error_type": "ValueError",
+  "error": "Candidate quote clock is not on its decision day: stockdb_low_vol_half_momentum_20",
+  "failure_class": "BUSINESS_FAILURE",
+  "automatic_retry": false,
+  "failure_evidence": {
+    "output_dir": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v1",
+    "snapshot_dir": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v1\\snapshot"
+  }
+}

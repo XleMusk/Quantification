@@ -84,6 +84,8 @@ def test_next_close_contract_captures_same_day_quotes_and_shared_bindings(tmp_pa
     quote = json.loads((tmp_path / "run" / "inputs" / "candidate_a" / "quote_payload.json").read_text())
     assert target["decision_day"] == DAY
     assert quote["snapshot_date"] == DAY
+    assert quote["observed_at"] == DAY + "T15:00:00+08:00"
+    assert quote["source_available_at"] == "2026-10-26T15:05:00+08:00"
     assert quote["prices"]["000001.SZSE"]["observed_date"] == DAY
     assert receipt["time_semantics"]["source_day"] == DAY
     assert receipt["time_semantics"]["decision_cutoff_at"] == "2026-10-26T15:05:00+08:00"

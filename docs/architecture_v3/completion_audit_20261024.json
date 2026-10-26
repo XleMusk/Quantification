@@ -220,9 +220,14 @@
         "outputs/pipeline_receipts/20261026_post_close_block_propagation_v1.json",
         "outputs/research_reports/20261026_post_close_block_propagation_v1.md",
         "outputs/pipeline_receipts/20261026_fixed_only_d0_d1_v1/contract_receipt.json",
-        "outputs/research_reports/20261026_fixed_only_d0_d1_v1.md"
+        "outputs/research_reports/20261026_fixed_only_d0_d1_v1.md",
+        "outputs/pipeline_receipts/20261026_candidate_source_manifest_v1.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v1/contract_receipt.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/contract_receipt.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/joint_paper/joint_paper_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md"
       ],
-      "gap": "Persistent daily account remains at 2026-10-23 until a complete 2026-10-26 fixed source is available; the 2026-10-23 frozen close now has a complete fixed-only D0/D1 TARGET_PREVIEW projection.",
+      "gap": "Persistent daily account remains at 2026-10-23 until a complete 2026-10-26 fixed source is available; the 2026-10-23 frozen close now has fixed-only and fixed+candidate D0/D1 TARGET_PREVIEW projections.",
       "next_acceptance": "After the next complete changed close, run fixed and same-day candidate inputs together and publish the persistent D0/D1 continuation; keep TARGET_PREVIEW separate from the persisted account.",
       "evidence_updated_on": "2026-10-26"
     },
@@ -664,9 +669,14 @@
         "trading/research/research_adoption_rollup.py",
         "trading/research/tests/test_research_adoption_rollup.py",
         "outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json",
-        "outputs/research_reports/20261026_research_adoption_rollup_v1.md"
+        "outputs/research_reports/20261026_research_adoption_rollup_v1.md",
+        "outputs/pipeline_receipts/20261026_candidate_source_manifest_v1.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v1/contract_receipt.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/contract_receipt.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/joint_paper/joint_paper_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md"
       ],
-      "gap": "Unified research-only rollup now joins candidate adoption, mature-factor horizon and shortline model gates; PIT, untouched-forward and channel evidence remain open.",
+      "gap": "Unified research-only rollup now joins candidate adoption, mature-factor horizon, shortline model gates, retained joint gate and a 2026-10-23 fixed+candidate D0/D1 TARGET_PREVIEW; PIT, untouched-forward and channel evidence remain open.",
       "next_acceptance": "After the next complete close, regenerate the same gate from the fresh snapshot before any candidate promotion decision.",
       "evidence_updated_on": "2026-10-26"
     },

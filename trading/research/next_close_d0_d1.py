@@ -236,7 +236,12 @@ def _snapshot_quote(snapshot_dir: Path, symbols: Sequence[str], close_date: str,
     quote = {
         "schema": "ths_raw_quote_observation_v1",
         "source": "local_stockdb_snapshot_daily_close",
-        "observed_at": observed_at,
+        # The quote observation belongs to the frozen close day.  The
+        # snapshot capture clock may be later (for example, a next-morning
+        # batch), so retain it separately instead of making a D0 quote look
+        # like a D1 observation to the candidate paper adapter.
+        "observed_at": f"{close_date}T15:00:00+08:00",
+        "source_available_at": observed_at,
         "price_basis": "raw_rmb",
         "snapshot_date": close_date,
         "snapshot": _ref(snapshot_dir / "snapshot.json"),

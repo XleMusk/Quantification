@@ -1,0 +1,26 @@
+{
+  "schema": "stockdb_next_close_candidate_source_manifest_v1",
+  "status": "CANDIDATE_RESEARCH_PAPER_INPUT",
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "candidates": [
+    {
+      "candidate_id": "stockdb_low_vol_half_momentum_20",
+      "strategy_id": "stockdb_low_vol_half_momentum_20",
+      "terminal_account": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_214427_f57e9c67\\low_vol_half_momentum_20\\account.json"
+    }
+  ],
+  "source_basis": {
+    "kind": "legacy_stockdb_rolling_terminal_account",
+    "decision_day": "2026-10-23",
+    "source_run": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_214427_f57e9c67",
+    "source_end": "2026-10-23",
+    "execution_admitted": false,
+    "strategy_validated": false
+  },
+  "limitations": [
+    "Terminal account is a research-only replay state; no PIT membership or corporate-action promotion.",
+    "Candidate remains subject to catalog research gate and is not a promotion or execution instruction."
+  ]
+}

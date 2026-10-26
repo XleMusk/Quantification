@@ -553,3 +553,13 @@ The research adoption rollup now accepts the retained half-momentum/Ridge joint 
 
 ### F2 PIT capture selection update (2026-10-26)
 `f2_wayback_probe.py` now selects the latest Wayback capture on or before the decision cutoff, independent of CDX row order, and records the selection policy in the receipt. The real `000002.SZSE/2023Q1` probe found one capture after `2024-05-01`, so the new v3 receipt remains `BLOCKED_DATA`; no PIT fact or factor was admitted. Focused F2 tests passed (`20 passed` across the Wayback, historical gate, source snapshot and fact bridge suites).
+
+## 2026-10-26 fixed + candidate D0/D1 continuation
+
+- Completed a same-day research-only D0/D1 package for close `2026-10-23`, execution `2026-10-26`, settlement `2026-10-27`.
+- Fixed `low_volatility_252_20` and candidate `stockdb_low_vol_half_momentum_20` used the shared `next-close-d0-d1` route; StockDB coverage was `40/40`, candidate batch produced `20` targets and `20` paper orders, and the budgeted joint projection produced `22` orders.
+- The candidate terminal account was extended through `2026-10-23` from the pinned StockDB replay plus the retained local supplement. This remains research-only and is not a promotion decision.
+- Fixed a timing defect in `trading/research/next_close_d0_d1.py`: a next-morning snapshot capture no longer makes a close-day quote appear to be observed on D1. Quote `observed_at` is bound to the close day at `15:00 +08:00`; the actual snapshot capture clock is retained as `source_available_at`. Focused tests: `19 passed`.
+- Failure evidence is retained in `outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v1/contract_receipt.json`; successful receipt is `outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/contract_receipt.json`.
+- Boundaries remain unchanged: `execution_admitted=false`; no broker/THS interaction; TARGET_PREVIEW only; persistent fixed_daily rollover still waits for a complete changed close.
+
