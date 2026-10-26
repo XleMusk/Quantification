@@ -85,6 +85,8 @@ PAPER_EVIDENCE_FILES = (
     "D:/QuantificationData/trading/research/candidate_shadow/value_size_activity_2023_20261025_v1/paper_batch/joint_paper_receipt.json",
     "D:/Quantification/outputs/pipeline_receipts/20261026_leader_eight_type_turnover_joint_paper_v1/joint_paper_receipt.json",
     "D:/Quantification/outputs/pipeline_receipts/20261026_public_seat_joint_paper_v2/joint_paper_receipt.json",
+    "D:/Quantification/outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/contract_receipt.json",
+    "D:/Quantification/outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md",
 )
 
 

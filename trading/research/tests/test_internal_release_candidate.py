@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from trading.research.internal_release_candidate import build_release
+from trading.research.internal_release_candidate import PAPER_EVIDENCE_FILES
 
 
 def test_internal_release_manifest_binds_code_and_keeps_live_gate_closed(tmp_path: Path) -> None:
@@ -28,3 +29,14 @@ def test_internal_release_manifest_binds_code_and_keeps_live_gate_closed(tmp_pat
 def test_internal_release_rejects_invalid_version(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="version"):
         build_release(tmp_path, tmp_path / "release", version="bad version")
+
+
+def test_internal_release_default_paper_evidence_includes_current_joint_d0_d1() -> None:
+    assert (
+        "D:/Quantification/outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/contract_receipt.json"
+        in PAPER_EVIDENCE_FILES
+    )
+    assert (
+        "D:/Quantification/outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md"
+        in PAPER_EVIDENCE_FILES
+    )
