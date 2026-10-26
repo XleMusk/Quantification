@@ -142,16 +142,24 @@
       "id": "F04",
       "domain": "development",
       "result": "Launcher route is explicit and the duplicate joint-portfolio-paper-package dispatch is removed; command help compatibility is tested.",
-      "state": "PARTIAL",
-      "next": "Keep the single route covered by the compatibility test; do not introduce dynamic dispatch before a real command boundary requires it.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Keep the explicit single route covered by the uniqueness and help compatibility tests; do not introduce dynamic dispatch before a real command boundary requires it.",
       "prohibition": "A green isolated branch is not a green integrated release.",
       "actual_paths": [
         "run_committee.py",
         "trading/tests/test_run_committee_dispatch.py",
         "outputs/pipeline_receipts/20261026_cli_dispatch_cleanup_v1.json",
-        "outputs/research_reports/20261026_cli_dispatch_cleanup_v1.md"
+        "outputs/research_reports/20261026_cli_dispatch_cleanup_v1.md",
+        "outputs/pipeline_receipts/20261026_cli_dispatch_cleanup_v2.json",
+        "outputs/research_reports/20261026_cli_dispatch_cleanup_v2.md"
       ],
-      "evidence_updated_on": "2026-10-26"
+      "evidence_updated_on": "2026-10-26",
+      "evidence": [
+        "run_committee.py",
+        "trading/tests/test_run_committee_dispatch.py",
+        "outputs/pipeline_receipts/20261026_cli_dispatch_cleanup_v2.json",
+        "outputs/research_reports/20261026_cli_dispatch_cleanup_v2.md"
+      ]
     },
     {
       "id": "F05",

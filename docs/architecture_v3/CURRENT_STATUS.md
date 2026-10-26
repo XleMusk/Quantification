@@ -523,3 +523,6 @@ F05 bounded receipt v2 executed through the persistent run store: 4 paper runs a
 ## 2026-10-26 internal release v32
 
 F05 accepted bounded paper-task receipt is bound to internal release v32: D:/QuantificationData/trading/research/releases/20261026_v32/release_manifest.json; manifest SHA-256 bfb813ed30f5df6c42625f0c9279b63b3c7894fb2df195fe349aed87cb2aecf2; receipt outputs/pipeline_receipts/20261026_release_v32_binding_v1.json. execution_admitted=false and live_execution_ready=false remain closed.
+
+
+F04 CLI dispatch cleanup v2 removed the duplicate stockdb-baostock-extension guard. The launcher now has 391 unique static routes; compatibility/uniqueness tests passed 12. Receipt: outputs/pipeline_receipts/20261026_cli_dispatch_cleanup_v2.json; commit 43b5b2e.
