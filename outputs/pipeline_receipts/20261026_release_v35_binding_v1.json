@@ -1,0 +1,24 @@
+{
+  "schema": "quantification_release_binding_v1",
+  "status": "RESEARCH_ONLY_INTERNAL_RELEASE_CANDIDATE",
+  "version": "20261026_v35",
+  "manifest": "D:/QuantificationData/trading/research/releases/20261026_v35/release_manifest.json",
+  "paper_evidence_count": 11,
+  "missing_required_code": 0,
+  "missing_evidence": 0,
+  "missing_paper_evidence": 0,
+  "execution_admitted": false,
+  "live_execution_ready": false,
+  "included_new_evidence": [
+    "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json",
+    "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md",
+    "outputs/pipeline_receipts/20261026_workbench_lifecycle_job_id_v2.json",
+    "outputs/research_reports/20261026_workbench_lifecycle_job_id_v2.md"
+  ],
+  "account_readiness": {
+    "current_broker_quote": "MISSING",
+    "four_table_account_export": "MISSING",
+    "t_plus_1_sellable_export": "MISSING",
+    "ths_readonly_observation": "REFERENCE_ONLY_NOT_OBSERVED"
+  }
+}

@@ -570,3 +570,7 @@ The research adoption rollup now accepts the retained half-momentum/Ridge joint 
 ## 2026-10-26 工作台生命周期绑定
 
 工作台 `submitted → compute → result → download` 生命周期的每个阶段现在都返回同一个 `job_id`，后端与前端 `JobLifecycle` 类型同步。排队态和完成态的四阶段绑定测试已通过 28 项；回执 `outputs/pipeline_receipts/20261026_workbench_lifecycle_job_id_v2.json`，报告 `outputs/research_reports/20261026_workbench_lifecycle_job_id_v2.md`。该改动只改善本地 research-only 工作台的刷新/重连可追踪性，`execution_admitted=false`，没有券商、同花顺或真实账户交互。
+
+## 2026-10-26 internal release v35 refresh
+
+研究发布 v35 已纳入 fixed+candidate D0/D1 v3 本地任务测量和工作台生命周期 job_id 绑定证据：`D:/QuantificationData/trading/research/releases/20261026_v35/release_manifest.json`。发布范围仍是 research-only；`execution_admitted=false`、`live_execution_ready=false`，没有真实登录、预填提交或账户变更。
