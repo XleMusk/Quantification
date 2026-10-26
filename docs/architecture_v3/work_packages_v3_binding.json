@@ -2079,7 +2079,54 @@
         "outputs/research_reports/20261026_shortline_adoption_gate_v1.md",
         "trading/research/tests/test_shortline_adoption_gate.py"
       ]
+    },
+    {
+      "id": "P26",
+      "domain": "research",
+      "result": "Two completed mature-factor Ridge replays are compared on the same 648-session Engine/Ledger window with aligned daily equity and an explicit no-adoption outcome.",
+      "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
+      "next": "Use a PIT-complete untouched holdout before selecting a horizon or promoting the factor candidate.",
+      "prohibition": "Do not treat the 20/60-session diagnostic comparison as independent alpha or paper/live authorization.",
+      "actual_paths": [
+        "trading/research/factor_replay_comparison.py",
+        "trading/tests/test_factor_replay_comparison.py",
+        "run_committee.py factor-replay-comparison",
+        "outputs/pipeline_receipts/20261026_mature_factor_horizon_comparison_v1.json",
+        "outputs/research_reports/20261026_mature_factor_horizon_comparison_v1.md"
+      ],
+      "evidence_updated_on": "2026-10-26",
+      "evidence": [
+        "outputs/pipeline_receipts/20261026_mature_factor_horizon_comparison_v1.json",
+        "outputs/research_reports/20261026_mature_factor_horizon_comparison_v1.md"
+      ],
+      "acceptance": "The comparison validates identical 648-session dates, aligns daily equity, reports metric deltas and preserves execution_admitted=false/paper_allowed=false/promotion_allowed=false."
+    },
+    {
+      "id": "P27",
+      "domain": "development",
+      "result": "The local workbench can explicitly resubmit a failed, interrupted or cancelled paper job as an immutable linked child with idempotency and recovery evidence.",
+      "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
+      "next": "Use the linked child lifecycle in the local workbench; external broker/THS state remains manual and read-only.",
+      "prohibition": "No automatic retry, account mutation, broker/THS interaction or live execution is allowed.",
+      "actual_paths": [
+        "webapp/backend/app/main.py",
+        "webapp/backend/app/store.py",
+        "webapp/frontend/src/pages/Tasks.tsx",
+        "trading/research/workbench_manual_resubmit.py",
+        "trading/research/workbench_recovery_evidence.py",
+        "trading/research/tests/test_workbench_manual_resubmit.py",
+        "webapp/backend/tests/test_webapp.py",
+        "outputs/pipeline_receipts/20261026_workbench_manual_resubmit_v1.json",
+        "outputs/research_reports/20261026_workbench_manual_resubmit_v1.md"
+      ],
+      "evidence_updated_on": "2026-10-26",
+      "evidence": [
+        "outputs/pipeline_receipts/20261026_workbench_manual_resubmit_v1.json",
+        "outputs/research_reports/20261026_workbench_manual_resubmit_v1.md",
+        "trading/research/tests/test_workbench_manual_resubmit.py"
+      ],
+      "acceptance": "A manual resubmit reuses the parent configuration, increments recovery_attempt, links parent_job_id, and repeats the same idempotency key without creating a duplicate child; focused tests and frontend build pass."
     }
   ],
   "updated_at": "2026-10-26"
-}`n
+}

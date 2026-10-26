@@ -400,3 +400,10 @@ D1 输入汇入已自动化：`candidate-daily-input-bundle` 从两个已保存�
 	rading/research/shortline_adoption_gate.py now joins the immutable native LR/LightGBM handoff with the bounded BaoStock replay through an explicit model-level adoption gate. Both models are CONTINUE_RESEARCH_ONLY: LR 1 order/2 fills and LightGBM 3 orders/6 fills. The receipt keeps xecution_admitted=false, paper_allowed=false and promotion_allowed=false; StockDB-equivalent full-window, PIT/company-action/publication timing and untouched-forward evidence remain required.
 
 Evidence: outputs/pipeline_receipts/20261026_shortline_adoption_gate_v1.json and outputs/research_reports/20261026_shortline_adoption_gate_v1.md. Focused tests: 	est_shortline_adoption_gate.py, 	est_shortline_candidate_handoff.py, 	est_shortline_baostock_raw_snapshot.py -> 8 passed.
+
+
+## 2026-10-26 mainline factor and workbench delivery
+
+成熟因子 Ridge 20-session 与预声明 60-session 变体已在相同 648 个交易日、同一 Engine/Ledger 路径上完成可复现比较：60-session 净收益低 4.7997 个百分点、最大回撤多 0.9656 个百分点；结果保持 NO_ADOPTION_RESEARCH_ONLY。证据为 outputs/pipeline_receipts/20261026_mature_factor_horizon_comparison_v1.json。
+
+工作台新增手动恢复重提交：失败/中断/取消任务通过 POST /api/jobs/{id}/resubmit 生成带 parent_job_id、recovery_attempt 的不可变子任务，重复幂等键不会重复创建；自动重试、券商/同花顺交互和实盘仍关闭。证据为 outputs/pipeline_receipts/20261026_workbench_manual_resubmit_v1.json。

@@ -21,10 +21,16 @@
         "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
         "webapp/backend/app/release.py",
         "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
-        "outputs/research_reports/20261026_workbench_release_binding_v1.md"
+        "outputs/research_reports/20261026_workbench_release_binding_v1.md",
+        "trading/research/workbench_manual_resubmit.py",
+        "trading/research/tests/test_workbench_manual_resubmit.py",
+        "outputs/pipeline_receipts/20261026_workbench_manual_resubmit_v1.json",
+        "outputs/research_reports/20261026_workbench_manual_resubmit_v1.md",
+        "webapp/backend/app/store.py",
+        "webapp/frontend/src/pages/Tasks.tsx"
       ],
-      "gap": "Local two-session continuity now covers partial fill, restart and idempotency; next real close still must prove the same behavior on StockDB/fixed_daily inputs.",
-      "next_acceptance": "repeat after the next closed-session paper advance and keep live-channel evidence blocked",
+      "gap": "Local paper-task recovery now supports explicit manual idempotent resubmission with parent/child linkage and attempt evidence; real broker/THS recovery remains outside the execution gate.",
+      "next_acceptance": "Use the linked child lifecycle in a local paper run and retain manual external-state reconciliation; do not add automatic broker retry.",
       "evidence_updated_on": "2026-10-26"
     },
     {
@@ -418,10 +424,15 @@
         "outputs/pipeline_receipts/20261024_stockdb_dated_action_context_sidecar_v4_receipt.json",
         "outputs/stockdb_action_context_views/20261024_sidecar_v4/run.json",
         "outputs/pipeline_receipts/20261024_action_publication_sidecar_v5.json",
-        "outputs/research_reports/20261024_action_publication_sidecar_v5.md"
+        "outputs/research_reports/20261024_action_publication_sidecar_v5.md",
+        "trading/research/factor_replay_comparison.py",
+        "trading/tests/test_factor_replay_comparison.py",
+        "outputs/pipeline_receipts/20261026_mature_factor_horizon_comparison_v1.json",
+        "outputs/research_reports/20261026_mature_factor_horizon_comparison_v1.md"
       ],
-      "gap": "dated action context and historical shadow package are complete; reusable sidecar scans 138 event rows/177 source artifacts with 138 verified hashes but 0 asof_at and 0 PIT-safe rows, so action application and strategy validation remain unverified",
-      "next_acceptance": "obtain per-event source publication receipt, retrieval timestamp and revision identity, then bind the PIT filter before action-adjusted replay"
+      "gap": "Mature-factor Ridge baseline and 60-session horizon now have a same-window, aligned daily-equity comparison: the 60-session variant is -4.7997 percentage points in net return with -0.9656 percentage points more drawdown. This remains a research diagnostic because PIT-complete source timing and untouched holdout evidence are still missing.",
+      "next_acceptance": "Run the predeclared factor horizon on a PIT-complete untouched forward window, then make an explicit adoption decision without changing the frozen parameters.",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "shortline",
@@ -657,4 +668,4 @@
     }
   ],
   "completion_rule": "Do not mark complete while any required item is PARTIAL, BLOCKED, missing evidence or research-only when the objective requires current/real-channel proof."
-}`n
+}
