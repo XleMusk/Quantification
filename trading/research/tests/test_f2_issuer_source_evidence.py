@@ -1,8 +1,30 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
+from types import SimpleNamespace
 
 from trading.research import f2_issuer_source_evidence as evidence
+
+
+def test_extract_pdf_text_falls_back_when_pypdf_is_mojibake(tmp_path: Path, monkeypatch):
+    pdf = tmp_path / "report.pdf"
+    pdf.write_bytes(b"fixture")
+
+    class FakeReader:
+        def __init__(self, _path):
+            self.pages = [SimpleNamespace(extract_text=lambda: "000002 2023")]
+
+    monkeypatch.setitem(sys.modules, "pypdf", SimpleNamespace(PdfReader=FakeReader))
+    monkeypatch.setattr(evidence.shutil, "which", lambda _name: "pdftotext.exe")
+    monkeypatch.setattr(
+        evidence.subprocess,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout="总资产 归属于上市公司股东的净利润"),
+    )
+    text, engine = evidence.extract_pdf_text(pdf)
+    assert engine == "pdftotext"
+    assert "总资产" in text
 
 
 def test_map_field_scope_distinguishes_flow_and_instant_stock():

@@ -87,7 +87,9 @@
         "trading/research/f01_financial_factor.py",
         "trading/research/tests/test_f01_financial_factor.py",
         "outputs/pipeline_receipts/20261026_f01_decision_cutoff_contract_v1.json",
-        "outputs/research_reports/20261026_f01_decision_cutoff_contract_v1.md"
+        "outputs/research_reports/20261026_f01_decision_cutoff_contract_v1.md",
+        "outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v2.json",
+        "outputs/research_reports/20261026_f2_issuer_source_capture_v2.md"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -110,7 +112,9 @@
         "trading/research/f01_financial_factor.py",
         "trading/research/tests/test_f01_financial_factor.py",
         "outputs/pipeline_receipts/20261026_f01_decision_cutoff_contract_v1.json",
-        "outputs/research_reports/20261026_f01_decision_cutoff_contract_v1.md"
+        "outputs/research_reports/20261026_f01_decision_cutoff_contract_v1.md",
+        "outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v2.json",
+        "outputs/research_reports/20261026_f2_issuer_source_capture_v2.md"
       ]
     },
     {

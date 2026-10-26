@@ -625,3 +625,9 @@ F2 的 publication contract 现在要求：日期型披露按 `[D 00:00, D+1 00:
 新增 `trading/research/stockdb_close_package_builder.py` 与 `run_committee.py stockdb-close-package-build`。该入口只读取已保存 StockDB snapshot、availability、日历和精确日期，完整覆盖时生成 loader 可消费的 `plan.json`、`receipt.json`、`roster.csv`、`raw_daily.csv`；覆盖不足时只写阻断回执，不生成可被 fixed_daily 消费的包。对当前 `stockdb_20261026_recent_full_v1` 实际运行结果为 `BLOCKED_INCOMPLETE_STOCKDB_SNAPSHOT`：5,201 个请求标的中 5,176 个可用，25 个缺失，阻断回执为 `D:/QuantificationData/trading/research/stockdb_close_packages/20261026_native_full_universe_v2_blocked/receipt.json`，没有填充或改写源数据。
 
 producer 完整包/缺数测试与 fixed_daily、rollup、launcher 测试共 `31 passed`。
+
+## 2026-10-26 F2 semantic extraction boundary
+
+`f2_issuer_source_evidence.py` now accepts `pypdf` text only when the required semantic field labels (`总资产` and `归属于上市公司股东的净利润`) are present; otherwise it falls back to Poppler. The regression test uses mojibake-like ticker/year output to prove that digits alone cannot satisfy the scope contract. The re-captured `000002.SZSE/2023Q1` receipt records verified issuer field scope and a content-hash match, while historical retrieval/as-of and revision history remain unproven, so status stays `BLOCKED_DATA`.
+
+Evidence: `outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v2.json`, `outputs/research_reports/20261026_f2_issuer_source_capture_v2.md`; focused F2 suite `24 passed`. No F2 fact, factor, target, order or account replay was admitted; `execution_admitted=false`.

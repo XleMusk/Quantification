@@ -105,7 +105,11 @@ def extract_pdf_text(path: Path) -> tuple[str, str]:
         text = "\n".join(page.extract_text() or "" for page in PdfReader(str(path)).pages)
     except Exception:
         text = ""
-    if "000002" in text and "2023" in text:
+    # Some Chinese issuer PDFs produce mojibake through pypdf while still
+    # retaining the ticker/year digits.  Require the semantic table terms
+    # before accepting that extraction; otherwise prefer Poppler's layout
+    # output, which preserves the field labels used by the scope contract.
+    if "总资产" in text and "归属于上市公司股东的净利润" in text:
         return text, "pypdf"
     executable = shutil.which("pdftotext")
     if executable:
