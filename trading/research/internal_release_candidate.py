@@ -38,6 +38,8 @@ EVIDENCE_FILES = (
     "outputs/pipeline_receipts/20261025_ths_target_readback_synthetic_v1.json",
     "outputs/research_reports/20261026_shortline_candidate_handoff_v1.md",
     "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json",
+    "outputs/pipeline_receipts/20261026_shortline_candidate_panel_replay_blocked_v1.json",
+    "outputs/research_reports/20261026_shortline_candidate_panel_replay_blocked_v1.md",
 )
 
 PAPER_EVIDENCE_FILES = (
