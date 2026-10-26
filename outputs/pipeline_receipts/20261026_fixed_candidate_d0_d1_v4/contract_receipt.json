@@ -1,0 +1,156 @@
+{
+  "schema": "stockdb_next_close_d0_d1_contract_v1",
+  "status": "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1",
+  "created_at": "2026-10-26T14:54:35.754822+00:00",
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "input_fingerprint": "ace5c9c94078163b55e0f7024718768d377628498e0bf68aedc579daed2a0101",
+  "fingerprint_inputs": {
+    "close_date": "2026-10-26",
+    "execution_day": "2026-10-27",
+    "settlement_day": "2026-10-28",
+    "stockdb_root": "C:\\Users\\13944\\Desktop\\free-stockdb-windows-v0.3.5-more-power\\stockdb",
+    "sources": {
+      "source_manifest": {
+        "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_candidate_source_manifest_v2.json",
+        "sha256": "548451091cefa0d39972dcdbde8d703973e63cd7e2fc87f2b15536382a62550d"
+      },
+      "fixed_source": {
+        "path": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_224744_aec06dce\\low_volatility_252_20\\account.json",
+        "sha256": "8f427086b19297e897fb6579355b6f08c2ea79e0af5339f575a123aed6d48170",
+        "strategy_id": "low_volatility_252_20"
+      },
+      "catalog": {
+        "path": "D:\\Quantification\\docs\\architecture_v3\\candidate_strategy_catalog_20261024.json",
+        "sha256": "eb5c7144bac782431842e791dd9292e0592a8a431759205dbb4baaad441d55f8"
+      },
+      "stockdb_snapshot": {
+        "path": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261026_recent_full_v1\\snapshot.json",
+        "sha256": "1edc4b58f16341da5d9119a9a6769dbf71d82302a20802cd7f60b4657c48b368"
+      }
+    },
+    "initial_cash": 140000.0,
+    "minute_time": "",
+    "gate_mode": "research_followup",
+    "joint_capacity_policy": "budgeted",
+    "joint_max_target_rows": 22,
+    "calendar_path": null,
+    "stockdb_snapshot": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261026_recent_full_v1"
+  },
+  "reused_existing_run": false,
+  "persistent_fixed_daily_account_scope": "direct_terminal_account_input",
+  "target_preview_projection_scope": {
+    "fixed": "TARGET_PREVIEW",
+    "candidate": "TARGET_PREVIEW",
+    "ledger_scope": "ephemeral_projection",
+    "continuous_account_consumer": false
+  },
+  "calendar": {
+    "status": "resolved_authoritative_static_calendar",
+    "calendar_id": "cn_a_share_2026_sse_v1",
+    "path": null,
+    "execution": {
+      "status": "resolved_authoritative_static_calendar",
+      "calendar_id": "cn_a_share_2026_sse_v1",
+      "calendar_source_url": "https://www.sse.com.cn/disclosure/dealinstruc/closed/",
+      "calendar_source_published": "2025-12-22"
+    },
+    "settlement": {
+      "status": "resolved_authoritative_static_calendar",
+      "calendar_id": "cn_a_share_2026_sse_v1",
+      "calendar_source_url": "https://www.sse.com.cn/disclosure/dealinstruc/closed/",
+      "calendar_source_published": "2025-12-22"
+    }
+  },
+  "close_date": "2026-10-26",
+  "snapshot": {
+    "path": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261026_recent_full_v1\\snapshot.json",
+    "sha256": "1edc4b58f16341da5d9119a9a6769dbf71d82302a20802cd7f60b4657c48b368"
+  },
+  "stockdb_snapshot_source": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261026_recent_full_v1",
+  "requested_symbol_count": 40,
+  "missing_symbols": [],
+  "snapshot_coverage": {
+    "status": "COMPLETE",
+    "reason": null,
+    "requested_close_date": "2026-10-26",
+    "effective_session_dates": [
+      "2026-10-26"
+    ],
+    "requested_symbol_count": 40,
+    "available_symbol_count": 40,
+    "missing_symbols": []
+  },
+  "fixed_source": {
+    "path": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_224744_aec06dce\\low_volatility_252_20\\account.json",
+    "sha256": "8f427086b19297e897fb6579355b6f08c2ea79e0af5339f575a123aed6d48170",
+    "source_kind": "legacy_terminal_account"
+  },
+  "fixed_account": {
+    "binding": "direct_terminal_account",
+    "account_version": null,
+    "reason": "direct terminal payload has no committed fixed_daily head",
+    "terminal_account": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_224744_aec06dce\\low_volatility_252_20\\account.json"
+  },
+  "candidate_source_manifest": {
+    "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_candidate_source_manifest_v2.json",
+    "sha256": "548451091cefa0d39972dcdbde8d703973e63cd7e2fc87f2b15536382a62550d"
+  },
+  "time_semantics": {
+    "source_day": "2026-10-26",
+    "decision_cutoff_at": "2026-10-26T22:35:38.898149+08:00",
+    "quote_observed_at": "2026-10-26T22:35:38.898149+08:00",
+    "artifact_created_at": "2026-10-26T14:54:35.754822+00:00",
+    "plan_published_at": "2026-10-26T14:54:35.843729+00:00",
+    "interpretation": "plan_published_at is the local frozen-artifact publication time; it is not a broker or Tonghuashun submission timestamp."
+  },
+  "fixed": {
+    "strategy_id": "low_volatility_252_20",
+    "target_count": 20,
+    "paper_order_count": 20,
+    "result": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\fixed\\result.json"
+  },
+  "candidate_batch": {
+    "receipt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\candidate_batch\\batch_receipt.json",
+    "candidate_count": 1,
+    "projection_mode": "TARGET_PREVIEW",
+    "ledger_scope": "ephemeral_projection",
+    "continuous_account_consumer": false
+  },
+  "fixed_projection": {
+    "projection_mode": "TARGET_PREVIEW",
+    "ledger_scope": "ephemeral_projection",
+    "continuous_account_consumer": false
+  },
+  "joint_paper": {
+    "status": "COMPLETED_RESEARCH_ONLY_JOINT_PAPER_PACKAGE",
+    "receipt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\joint_paper\\joint_paper_receipt.json",
+    "paper_order_count": 22,
+    "capacity_policy": "budgeted"
+  },
+  "cost_benchmark_binding": {
+    "cost_model_id": "cn_a_share_standard_ledger_costs_v1",
+    "benchmark_binding_id": "paper_target_projection_no_market_benchmark_v1"
+  },
+  "artifacts": {
+    "snapshot": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261026_recent_full_v1",
+    "target_quote_manifest": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\inputs\\candidate_manifest.json"
+  },
+  "limitations": [
+    "Targets are strategy-adapter inputs and must already be same-day outputs.",
+    "StockDB rows are local read-only observations; no PIT or corporate-action promotion occurs.",
+    "Paper fills are shared Ledger projections, not broker fills or THS instructions."
+  ],
+  "task_measurement": {
+    "schema": "local_task_measurement_v1",
+    "started_at": "2026-10-26T14:54:35.754822+00:00",
+    "finished_at": "2026-10-26T14:54:35.876989+00:00",
+    "wall_seconds": 0.122256,
+    "clock_basis": "local_monotonic_wall_clock",
+    "external_provider_cost_cny": null,
+    "execution_admitted": false
+  },
+  "receipt_path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\contract_receipt.json"
+}

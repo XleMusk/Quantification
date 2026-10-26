@@ -208,7 +208,9 @@
         "trading/research/next_close_d0_d1.py",
         "trading/research/tests/test_next_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json",
-        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md"
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md"
       ],
       "evidence": [
         "trading/store.py",
@@ -220,7 +222,9 @@
         "outputs/pipeline_receipts/20261026_persistent_task_decision_v2.json",
         "outputs/research_reports/20261026_persistent_task_decision_v2.md",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json",
-        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md"
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md"
       ]
     },
     {
@@ -235,11 +239,15 @@
         "trading/research/next_close_d0_d1.py",
         "trading/research/tests/test_next_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json",
-        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md"
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json",
-        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md"
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md"
       ],
       "acceptance": "A bounded accepted D0/D1 slice records local monotonic wall time, retains external provider expense as unknown, and leaves execution_admitted=false."
     },
@@ -1217,7 +1225,7 @@
       "domain": "operations",
       "result": "Calendar and business schedule calculate windows and classify missing inputs.",
       "state": "PARTIAL",
-      "next": "Run the same registered fixed_daily D0/D1 contract after each changed close; the 2026-10-23 close now has both fixed and same-day candidate TARGET_PREVIEW legs, while persistent rollover still requires a complete changed close.",
+      "next": "继续在每个新收市日复用同一 D0/D1 合同；当前 2026-10-26 已完成直接终端账户的固定+候选联合纸面，只有严格完整的同日 close package 到位后才推进 persistent fixed_daily rollover。",
       "prohibition": "Do not use machine timezone or weekday inference.",
       "evidence_updated_on": "2026-10-26",
       "actual_paths": [
@@ -1249,7 +1257,11 @@
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v1/contract_receipt.json",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/contract_receipt.json",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/joint_paper/joint_paper_receipt.json",
-        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md"
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md",
+        "outputs/pipeline_receipts/20261026_candidate_source_manifest_v2.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/joint_paper/joint_paper_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1276,7 +1288,11 @@
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v1/contract_receipt.json",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/contract_receipt.json",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/joint_paper/joint_paper_receipt.json",
-        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md"
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md",
+        "outputs/pipeline_receipts/20261026_candidate_source_manifest_v2.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/joint_paper/joint_paper_receipt.json",
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md"
       ]
     },
     {

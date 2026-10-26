@@ -1,0 +1,28 @@
+{
+  "schema": "stockdb_next_close_candidate_source_manifest_v1",
+  "status": "CANDIDATE_RESEARCH_PAPER_INPUT",
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "candidates": [
+    {
+      "candidate_id": "stockdb_low_vol_half_momentum_20",
+      "strategy_id": "low_vol_half_momentum_20",
+      "terminal_account": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_224200_61df5b84\\low_vol_half_momentum_20\\account.json"
+    }
+  ],
+  "source_basis": {
+    "kind": "stockdb_rolling_terminal_account_continuation",
+    "decision_day": "2026-10-26",
+    "source_run": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261026_224200_61df5b84",
+    "source_end": "2026-10-26",
+    "execution_admitted": false,
+    "strategy_validated": false,
+    "same_close_snapshot": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261026_recent_full_v1\\snapshot.json"
+  },
+  "limitations": [
+    "Terminal account is a research-only replay state; no PIT membership or corporate-action promotion.",
+    "Source is eligible only for research follow-up and paper projection; it is not a promotion or execution instruction.",
+    "The 2026-10-26 frozen StockDB snapshot is a local read-only observation with 25 of 5201 requested symbols missing; D0/D1 validates only the target symbol set."
+  ]
+}

@@ -581,6 +581,12 @@ F2 的 publication contract 现在要求：日期型披露按 `[D 00:00, D+1 00:
 
 证据：`outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v2/receipt.json`、`outputs/research_reports/20261026_f2_publication_boundary_contract_v1.md`。
 
+## 2026-10-26 Google engineering D0/D1 v4
+
+已把 2026-10-26 收市后的 StockDB 冻结快照、固定 `low_volatility_252_20` 和候选 `stockdb_low_vol_half_momentum_20` 接入同一 `next-close-d0-d1` 合同。目标集合覆盖 40/40；固定腿生成 20 个 TARGET_PREVIEW 目标和 20 个纸面订单；候选批次进入研究 follow-up 门禁；预算型联合投影生成 22 个纸面订单。输入清单为 `outputs/pipeline_receipts/20261026_candidate_source_manifest_v2.json`，回执为 `outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json`，报告为 `outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md`。
+
+本包遵循 Google Applied Design 的明确边界：输入快照、账户、策略、费用和时间语义均写入 fingerprint；`persistent_ledger_mutated=false`、`execution_admitted=false`，没有 Broker/THS 交互，结果只属于 TARGET_PREVIEW 和共享 Ledger 的临时纸面投影。由于 `stockdb_fixed_daily` 仍只接受严格完整的 BaoStock close package，当前 v4 使用直接终端账户输入，不能宣称 persistent fixed_daily 已滚动推进；完整同日 close package 到位后再通过注册账户入口发布。
+
 ## 2026-10-26 Google engineering refactor: explicit unknown publication boundary
 
 修正了 `publication_event_contract.evaluate_publication_evidence` 在 publication 元数据缺失或格式错误时引用未初始化窗口的错误路径。现在该路径返回 `publication_boundary_unknown`，并保持 `pit_asof_safe=false`；新增缺失 `publication_date` 与错误 `publication_time` 反例。F2 聚焦测试共 23 passed。证据：`outputs/pipeline_receipts/20261026_publication_boundary_unknown_v1.json`、`outputs/research_reports/20261026_publication_boundary_unknown_v1.md`。

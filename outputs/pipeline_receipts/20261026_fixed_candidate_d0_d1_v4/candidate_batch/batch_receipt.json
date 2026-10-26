@@ -1,0 +1,73 @@
+{
+  "schema": "daily_candidate_paper_batch_v2",
+  "status": "COMPLETED_RESEARCH_ONLY_CANDIDATE_BATCH",
+  "observed_at": "2026-10-26T14:54:35.863811+00:00",
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "execution_day": "2026-10-27",
+  "settlement_day": "2026-10-28",
+  "manifest": {
+    "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\inputs\\candidate_manifest.json",
+    "sha256": "3d55c137dfcfb7c7853988f0da399185c5557138320c449295c9687dd72cf2a7",
+    "candidate_count": 1
+  },
+  "catalog": {
+    "path": "D:\\Quantification\\docs\\architecture_v3\\candidate_strategy_catalog_20261024.json",
+    "sha256": "eb5c7144bac782431842e791dd9292e0592a8a431759205dbb4baaad441d55f8"
+  },
+  "gate_mode": "research_followup",
+  "projection_mode": "TARGET_PREVIEW",
+  "ledger_scope": "ephemeral_projection",
+  "continuous_account_consumer": false,
+  "candidate_count": 1,
+  "candidates": [
+    {
+      "candidate_id": "stockdb_low_vol_half_momentum_20",
+      "strategy_id": "low_vol_half_momentum_20",
+      "decision_day": "2026-10-26",
+      "execution_day": "2026-10-27",
+      "target_count": 20,
+      "paper_order_count": 20,
+      "route_available_count": 20,
+      "modeled_fees_rmb": 101.2,
+      "projected_final_cash_rmb": 28070.8,
+      "projected_final_equity_rmb": 139898.8,
+      "projection_mode": "TARGET_PREVIEW",
+      "ledger_scope": "ephemeral_projection",
+      "continuous_account_consumer": false,
+      "cost_model_id": "cn_a_share_standard_ledger_costs_v1",
+      "benchmark_binding_id": "paper_target_projection_no_market_benchmark_v1",
+      "target": {
+        "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\inputs\\stockdb_low_vol_half_momentum_20\\target_payload.json",
+        "sha256": "770c2d3215a8de293f00a2294a61fd16e7ca98b3b194c6534882e1b89e7095c3"
+      },
+      "quotes": {
+        "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\inputs\\stockdb_low_vol_half_momentum_20\\quote_payload.json",
+        "sha256": "12a0f5171712557e11b0b3299e6f455001a7a0a5e1bcc9d95dbda205c4eed977"
+      },
+      "catalog_selection": {
+        "decision": "MIXED_EVIDENCE_RESEARCH_ONLY",
+        "action": "CONTINUE_RESEARCH_ONLY",
+        "research_followup_allowed": true,
+        "paper_allowed": false,
+        "promotion_allowed": false,
+        "source_receipt": "outputs/pipeline_receipts/20261026_candidate_research_selection_v2.json",
+        "next_step": "Run the next predeclared untouched or causal experiment with the existing cost and timing contract."
+      },
+      "gate_mode": "research_followup",
+      "package_result": {
+        "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\candidate_batch\\stockdb_low_vol_half_momentum_20\\result.json",
+        "sha256": "b5a00427f325ff258338472733124b19a499e5b8c70d6baa7c621eb4cfc8440e"
+      }
+    }
+  ],
+  "output_dir": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\candidate_batch",
+  "limitations": [
+    "Targets and quotes are explicit strategy-adapter inputs; this batch does not create signals or fetch market data.",
+    "Projected fills are local shared-Ledger paper projections and are not broker fills.",
+    "The batch is separate from the persistent fixed_daily account and is not a THS prefill payload.",
+    "Every candidate is TARGET_PREVIEW only; the batch cannot publish a frozen plan or roll a continuous paper account."
+  ]
+}

@@ -1,0 +1,2106 @@
+{
+  "schema": "quantification_joint_portfolio_paper_package_v1",
+  "status": "COMPLETED_RESEARCH_ONLY_JOINT_PAPER_PACKAGE",
+  "created_at": "2026-10-26T22:54:35.870010+08:00",
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "joint": {
+    "schema": "quantification_joint_portfolio_acceptance_v1",
+    "status": "VERIFIED_RESEARCH_ONLY_JOINT_PORTFOLIO",
+    "execution_admitted": false,
+    "research_only": true,
+    "common_terminal_day": "2026-10-26",
+    "strategy_ids": [
+      "low_volatility_252_20",
+      "low_vol_half_momentum_20"
+    ],
+    "sleeve_weight": 0.5,
+    "initial_cash_cny": 140000.0,
+    "constraints": {
+      "gross_limit": 0.8,
+      "single_limit": 0.2,
+      "merged_gross_weight": 0.8000000000000004,
+      "merged_max_single_weight": 0.02,
+      "actual_gross_weight": 0.4379642857142857,
+      "actual_max_single_weight": 0.02,
+      "gross_pass": true,
+      "single_pass": true,
+      "lot_size": 100
+    },
+    "accounts": [
+      {
+        "strategy_id": "low_volatility_252_20",
+        "path": "payload://low_volatility_252_20",
+        "day": "2026-10-26",
+        "targets": {
+          "601158.SSE": 0.04,
+          "600900.SSE": 0.04,
+          "000538.SZSE": 0.04,
+          "001227.SZSE": 0.04,
+          "601607.SSE": 0.04,
+          "601006.SSE": 0.04,
+          "002936.SZSE": 0.04,
+          "601818.SSE": 0.04,
+          "600511.SSE": 0.04,
+          "601186.SSE": 0.04,
+          "000001.SZSE": 0.04,
+          "601816.SSE": 0.04,
+          "600905.SSE": 0.04,
+          "600018.SSE": 0.04,
+          "002507.SZSE": 0.04,
+          "000088.SZSE": 0.04,
+          "600035.SSE": 0.04,
+          "600177.SSE": 0.04,
+          "600941.SSE": 0.04,
+          "601668.SSE": 0.04
+        },
+        "prices": {
+          "601158.SSE": 4,
+          "600900.SSE": 30,
+          "000538.SZSE": 54,
+          "001227.SZSE": 2,
+          "601607.SSE": 17,
+          "601006.SSE": 5,
+          "002936.SZSE": 2,
+          "601818.SSE": 3,
+          "600511.SSE": 28,
+          "601186.SSE": 6,
+          "000001.SZSE": 11,
+          "601816.SSE": 5,
+          "600905.SSE": 3,
+          "600018.SSE": 5,
+          "002507.SZSE": 11,
+          "000088.SZSE": 4,
+          "600035.SSE": 4,
+          "600177.SSE": 8,
+          "600941.SSE": 101,
+          "601668.SSE": 5
+        },
+        "account_cash_cents": 0,
+        "account_equity_cents": 0,
+        "orders": 0,
+        "fills": 0
+      },
+      {
+        "strategy_id": "low_vol_half_momentum_20",
+        "path": "payload://low_vol_half_momentum_20",
+        "day": "2026-10-26",
+        "targets": {
+          "601918.SSE": 0.04,
+          "600428.SSE": 0.04,
+          "600236.SSE": 0.04,
+          "002452.SZSE": 0.04,
+          "002832.SZSE": 0.04,
+          "002135.SZSE": 0.04,
+          "605098.SSE": 0.04,
+          "002066.SZSE": 0.04,
+          "601339.SSE": 0.04,
+          "600201.SSE": 0.04,
+          "600989.SSE": 0.04,
+          "000792.SZSE": 0.04,
+          "002064.SZSE": 0.04,
+          "601886.SSE": 0.04,
+          "603012.SSE": 0.04,
+          "600985.SSE": 0.04,
+          "002493.SZSE": 0.04,
+          "603391.SSE": 0.04,
+          "000301.SZSE": 0.04,
+          "002648.SZSE": 0.04
+        },
+        "prices": {
+          "601918.SSE": 9,
+          "600428.SSE": 10,
+          "600236.SSE": 9,
+          "002452.SZSE": 10,
+          "002832.SZSE": 27,
+          "002135.SZSE": 5,
+          "605098.SSE": 53,
+          "002066.SZSE": 16,
+          "601339.SSE": 7,
+          "600201.SSE": 13,
+          "600989.SSE": 22,
+          "000792.SZSE": 22,
+          "002064.SZSE": 9,
+          "601886.SSE": 12,
+          "603012.SSE": 8,
+          "600985.SSE": 14,
+          "002493.SZSE": 12,
+          "603391.SSE": 71,
+          "000301.SZSE": 12,
+          "002648.SZSE": 25
+        },
+        "account_cash_cents": 0,
+        "account_equity_cents": 0,
+        "orders": 0,
+        "fills": 0
+      }
+    ],
+    "target_rows": [
+      {
+        "symbol": "600941.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 101,
+        "desired_notional_cents": 280000,
+        "target_quantity": 2700,
+        "target_notional_cents": 272700,
+        "actual_weight": 0.01947857142857143,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 7300,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "000538.SZSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 54,
+        "desired_notional_cents": 280000,
+        "target_quantity": 5100,
+        "target_notional_cents": 275400,
+        "actual_weight": 0.019671428571428572,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 4600,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "605098.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 53,
+        "desired_notional_cents": 280000,
+        "target_quantity": 5200,
+        "target_notional_cents": 275600,
+        "actual_weight": 0.019685714285714286,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 4400,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "603391.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 71,
+        "desired_notional_cents": 280000,
+        "target_quantity": 3900,
+        "target_notional_cents": 276900,
+        "actual_weight": 0.01977857142857143,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 3100,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "002832.SZSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 27,
+        "desired_notional_cents": 280000,
+        "target_quantity": 10300,
+        "target_notional_cents": 278100,
+        "actual_weight": 0.019864285714285713,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 1900,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "601607.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 17,
+        "desired_notional_cents": 280000,
+        "target_quantity": 16400,
+        "target_notional_cents": 278800,
+        "actual_weight": 0.019914285714285714,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 1200,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "600900.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 30,
+        "desired_notional_cents": 280000,
+        "target_quantity": 9300,
+        "target_notional_cents": 279000,
+        "actual_weight": 0.019928571428571427,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 1000,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "000001.SZSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 11,
+        "desired_notional_cents": 280000,
+        "target_quantity": 25400,
+        "target_notional_cents": 279400,
+        "actual_weight": 0.019957142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 600,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "000792.SZSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 22,
+        "desired_notional_cents": 280000,
+        "target_quantity": 12700,
+        "target_notional_cents": 279400,
+        "actual_weight": 0.019957142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 600,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "002507.SZSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 11,
+        "desired_notional_cents": 280000,
+        "target_quantity": 25400,
+        "target_notional_cents": 279400,
+        "actual_weight": 0.019957142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 600,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "600989.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 22,
+        "desired_notional_cents": 280000,
+        "target_quantity": 12700,
+        "target_notional_cents": 279400,
+        "actual_weight": 0.019957142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 600,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "600201.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 13,
+        "desired_notional_cents": 280000,
+        "target_quantity": 21500,
+        "target_notional_cents": 279500,
+        "actual_weight": 0.019964285714285716,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 500,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "000301.SZSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 12,
+        "desired_notional_cents": 280000,
+        "target_quantity": 23300,
+        "target_notional_cents": 279600,
+        "actual_weight": 0.01997142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 400,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "002493.SZSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 12,
+        "desired_notional_cents": 280000,
+        "target_quantity": 23300,
+        "target_notional_cents": 279600,
+        "actual_weight": 0.01997142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 400,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "601186.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 6,
+        "desired_notional_cents": 280000,
+        "target_quantity": 46600,
+        "target_notional_cents": 279600,
+        "actual_weight": 0.01997142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 400,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "601886.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 12,
+        "desired_notional_cents": 280000,
+        "target_quantity": 23300,
+        "target_notional_cents": 279600,
+        "actual_weight": 0.01997142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 400,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "002064.SZSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 9,
+        "desired_notional_cents": 280000,
+        "target_quantity": 31100,
+        "target_notional_cents": 279900,
+        "actual_weight": 0.019992857142857142,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 100,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "600236.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 9,
+        "desired_notional_cents": 280000,
+        "target_quantity": 31100,
+        "target_notional_cents": 279900,
+        "actual_weight": 0.019992857142857142,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 100,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "600905.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 3,
+        "desired_notional_cents": 280000,
+        "target_quantity": 93300,
+        "target_notional_cents": 279900,
+        "actual_weight": 0.019992857142857142,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 100,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "601818.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 3,
+        "desired_notional_cents": 280000,
+        "target_quantity": 93300,
+        "target_notional_cents": 279900,
+        "actual_weight": 0.019992857142857142,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 100,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "601918.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 9,
+        "desired_notional_cents": 280000,
+        "target_quantity": 31100,
+        "target_notional_cents": 279900,
+        "actual_weight": 0.019992857142857142,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 100,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "000088.SZSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 4,
+        "desired_notional_cents": 280000,
+        "target_quantity": 70000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0,
+        "lot_feasible": true
+      }
+    ],
+    "economic_target_rows": [
+      {
+        "symbol": "000001.SZSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 11,
+        "desired_notional_cents": 280000,
+        "target_quantity": 25400,
+        "target_notional_cents": 279400,
+        "actual_weight": 0.019957142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 600,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "000088.SZSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 4,
+        "desired_notional_cents": 280000,
+        "target_quantity": 70000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "000301.SZSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 12,
+        "desired_notional_cents": 280000,
+        "target_quantity": 23300,
+        "target_notional_cents": 279600,
+        "actual_weight": 0.01997142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 400,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "000538.SZSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 54,
+        "desired_notional_cents": 280000,
+        "target_quantity": 5100,
+        "target_notional_cents": 275400,
+        "actual_weight": 0.019671428571428572,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 4600,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "000792.SZSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 22,
+        "desired_notional_cents": 280000,
+        "target_quantity": 12700,
+        "target_notional_cents": 279400,
+        "actual_weight": 0.019957142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 600,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "001227.SZSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 2,
+        "desired_notional_cents": 280000,
+        "target_quantity": 140000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "002064.SZSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 9,
+        "desired_notional_cents": 280000,
+        "target_quantity": 31100,
+        "target_notional_cents": 279900,
+        "actual_weight": 0.019992857142857142,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 100,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "002066.SZSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 16,
+        "desired_notional_cents": 280000,
+        "target_quantity": 17500,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "002135.SZSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 5,
+        "desired_notional_cents": 280000,
+        "target_quantity": 56000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "002452.SZSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 10,
+        "desired_notional_cents": 280000,
+        "target_quantity": 28000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "002493.SZSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 12,
+        "desired_notional_cents": 280000,
+        "target_quantity": 23300,
+        "target_notional_cents": 279600,
+        "actual_weight": 0.01997142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 400,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "002507.SZSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 11,
+        "desired_notional_cents": 280000,
+        "target_quantity": 25400,
+        "target_notional_cents": 279400,
+        "actual_weight": 0.019957142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 600,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "002648.SZSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 25,
+        "desired_notional_cents": 280000,
+        "target_quantity": 11200,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "002832.SZSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 27,
+        "desired_notional_cents": 280000,
+        "target_quantity": 10300,
+        "target_notional_cents": 278100,
+        "actual_weight": 0.019864285714285713,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 1900,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "002936.SZSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 2,
+        "desired_notional_cents": 280000,
+        "target_quantity": 140000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "600018.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 5,
+        "desired_notional_cents": 280000,
+        "target_quantity": 56000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "600035.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 4,
+        "desired_notional_cents": 280000,
+        "target_quantity": 70000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "600177.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 8,
+        "desired_notional_cents": 280000,
+        "target_quantity": 35000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "600201.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 13,
+        "desired_notional_cents": 280000,
+        "target_quantity": 21500,
+        "target_notional_cents": 279500,
+        "actual_weight": 0.019964285714285716,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 500,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "600236.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 9,
+        "desired_notional_cents": 280000,
+        "target_quantity": 31100,
+        "target_notional_cents": 279900,
+        "actual_weight": 0.019992857142857142,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 100,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "600428.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 10,
+        "desired_notional_cents": 280000,
+        "target_quantity": 28000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "600511.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 28,
+        "desired_notional_cents": 280000,
+        "target_quantity": 10000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "600900.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 30,
+        "desired_notional_cents": 280000,
+        "target_quantity": 9300,
+        "target_notional_cents": 279000,
+        "actual_weight": 0.019928571428571427,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 1000,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "600905.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 3,
+        "desired_notional_cents": 280000,
+        "target_quantity": 93300,
+        "target_notional_cents": 279900,
+        "actual_weight": 0.019992857142857142,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 100,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "600941.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 101,
+        "desired_notional_cents": 280000,
+        "target_quantity": 2700,
+        "target_notional_cents": 272700,
+        "actual_weight": 0.01947857142857143,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 7300,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "600985.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 14,
+        "desired_notional_cents": 280000,
+        "target_quantity": 20000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "600989.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 22,
+        "desired_notional_cents": 280000,
+        "target_quantity": 12700,
+        "target_notional_cents": 279400,
+        "actual_weight": 0.019957142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 600,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "601006.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 5,
+        "desired_notional_cents": 280000,
+        "target_quantity": 56000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "601158.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 4,
+        "desired_notional_cents": 280000,
+        "target_quantity": 70000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "601186.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 6,
+        "desired_notional_cents": 280000,
+        "target_quantity": 46600,
+        "target_notional_cents": 279600,
+        "actual_weight": 0.01997142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 400,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "601339.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 7,
+        "desired_notional_cents": 280000,
+        "target_quantity": 40000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "601607.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 17,
+        "desired_notional_cents": 280000,
+        "target_quantity": 16400,
+        "target_notional_cents": 278800,
+        "actual_weight": 0.019914285714285714,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 1200,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "601668.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 5,
+        "desired_notional_cents": 280000,
+        "target_quantity": 56000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "601816.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 5,
+        "desired_notional_cents": 280000,
+        "target_quantity": 56000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "601818.SSE",
+        "contributors": [
+          "low_volatility_252_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 3,
+        "desired_notional_cents": 280000,
+        "target_quantity": 93300,
+        "target_notional_cents": 279900,
+        "actual_weight": 0.019992857142857142,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 100,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "601886.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 12,
+        "desired_notional_cents": 280000,
+        "target_quantity": 23300,
+        "target_notional_cents": 279600,
+        "actual_weight": 0.01997142857142857,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 400,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "601918.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 9,
+        "desired_notional_cents": 280000,
+        "target_quantity": 31100,
+        "target_notional_cents": 279900,
+        "actual_weight": 0.019992857142857142,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 100,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "603012.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 8,
+        "desired_notional_cents": 280000,
+        "target_quantity": 35000,
+        "target_notional_cents": 280000,
+        "actual_weight": 0.02,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 0
+      },
+      {
+        "symbol": "603391.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 71,
+        "desired_notional_cents": 280000,
+        "target_quantity": 3900,
+        "target_notional_cents": 276900,
+        "actual_weight": 0.01977857142857143,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 3100,
+        "lot_feasible": true
+      },
+      {
+        "symbol": "605098.SSE",
+        "contributors": [
+          "low_vol_half_momentum_20"
+        ],
+        "target_weight": 0.02,
+        "mark_cents": 53,
+        "desired_notional_cents": 280000,
+        "target_quantity": 5200,
+        "target_notional_cents": 275600,
+        "actual_weight": 0.019685714285714286,
+        "lot_rounding_policy": "FLOOR_TO_LOT",
+        "quantity_step": 100,
+        "lot_rounding_residual_cents": 4400,
+        "lot_feasible": true
+      }
+    ],
+    "dropped_rows": [
+      {
+        "symbol": "001227.SZSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "002066.SZSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "002135.SZSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "002452.SZSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "002648.SZSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "002936.SZSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "600018.SSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "600035.SSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "600177.SSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "600428.SSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "600511.SSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "600985.SSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "601006.SSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "601158.SSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "601339.SSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "601668.SSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "601816.SSE",
+        "reason": "capacity_max_target_rows"
+      },
+      {
+        "symbol": "603012.SSE",
+        "reason": "capacity_max_target_rows"
+      }
+    ],
+    "capacity_policy": "budgeted",
+    "max_target_rows": 22,
+    "target_notional_cents": 6131500,
+    "cash_residual_cents": 7868500,
+    "orders_created": false,
+    "fills_created": false,
+    "ledger_mutated": false,
+    "broker_or_ths_interacted": false,
+    "blockers": {
+      "lot_infeasible_symbols": [],
+      "capacity_dropped_symbols": [
+        "001227.SZSE",
+        "002066.SZSE",
+        "002135.SZSE",
+        "002452.SZSE",
+        "002648.SZSE",
+        "002936.SZSE",
+        "600018.SSE",
+        "600035.SSE",
+        "600177.SSE",
+        "600428.SSE",
+        "600511.SSE",
+        "600985.SSE",
+        "601006.SSE",
+        "601158.SSE",
+        "601339.SSE",
+        "601668.SSE",
+        "601816.SSE",
+        "603012.SSE"
+      ]
+    },
+    "lot_rounding_policy": "round_up_one_lot_if_positive_target_and_within_single_limit_else_block",
+    "acceptance": {
+      "common_day": true,
+      "gross_pass": true,
+      "single_pass": true,
+      "integer_lots": true,
+      "all_positive_targets_lot_feasible": true,
+      "cash_nonnegative": true,
+      "no_execution_side_effect": true
+    },
+    "limitations": [
+      "Only aligned saved terminal accounts are included; other candidates with another day are excluded.",
+      "The target is a research projection, not a current paper or broker order plan.",
+      "PIT, fresh holdout and promotion gates remain separate from portfolio arithmetic."
+    ]
+  },
+  "target_payload": {
+    "schema": "joint_research_target_v1",
+    "strategy_id": "joint_low_volatility_252_20_low_vol_half_momentum_20",
+    "decision_day": "2026-10-26",
+    "research_only": true,
+    "execution_admitted": false,
+    "weights": {
+      "000001.SZSE": 0.019957142857142857,
+      "000088.SZSE": 0.02,
+      "000301.SZSE": 0.01997142857142857,
+      "000538.SZSE": 0.019671428571428572,
+      "000792.SZSE": 0.019957142857142857,
+      "002064.SZSE": 0.019992857142857142,
+      "002493.SZSE": 0.01997142857142857,
+      "002507.SZSE": 0.019957142857142857,
+      "002832.SZSE": 0.019864285714285713,
+      "600201.SSE": 0.019964285714285716,
+      "600236.SSE": 0.019992857142857142,
+      "600900.SSE": 0.019928571428571427,
+      "600905.SSE": 0.019992857142857142,
+      "600941.SSE": 0.01947857142857143,
+      "600989.SSE": 0.019957142857142857,
+      "601186.SSE": 0.01997142857142857,
+      "601607.SSE": 0.019914285714285714,
+      "601818.SSE": 0.019992857142857142,
+      "601886.SSE": 0.01997142857142857,
+      "601918.SSE": 0.019992857142857142,
+      "603391.SSE": 0.01977857142857143,
+      "605098.SSE": 0.019685714285714286
+    },
+    "quantities": {
+      "000001.SZSE": 25400,
+      "000088.SZSE": 70000,
+      "000301.SZSE": 23300,
+      "000538.SZSE": 5100,
+      "000792.SZSE": 12700,
+      "002064.SZSE": 31100,
+      "002493.SZSE": 23300,
+      "002507.SZSE": 25400,
+      "002832.SZSE": 10300,
+      "600201.SSE": 21500,
+      "600236.SSE": 31100,
+      "600900.SSE": 9300,
+      "600905.SSE": 93300,
+      "600941.SSE": 2700,
+      "600989.SSE": 12700,
+      "601186.SSE": 46600,
+      "601607.SSE": 16400,
+      "601818.SSE": 93300,
+      "601886.SSE": 23300,
+      "601918.SSE": 31100,
+      "603391.SSE": 3900,
+      "605098.SSE": 5200
+    },
+    "signal_frame": {
+      "signals": [
+        {
+          "security": {
+            "code": "000001",
+            "exchange": "SZSE"
+          },
+          "diagnostics": {
+            "rank": 1,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.019957142857142857,
+            "target_quantity": 25400,
+            "contributors": [
+              "low_volatility_252_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "000088",
+            "exchange": "SZSE"
+          },
+          "diagnostics": {
+            "rank": 2,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.02,
+            "target_quantity": 70000,
+            "contributors": [
+              "low_volatility_252_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "000301",
+            "exchange": "SZSE"
+          },
+          "diagnostics": {
+            "rank": 3,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.01997142857142857,
+            "target_quantity": 23300,
+            "contributors": [
+              "low_vol_half_momentum_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "000538",
+            "exchange": "SZSE"
+          },
+          "diagnostics": {
+            "rank": 4,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.019671428571428572,
+            "target_quantity": 5100,
+            "contributors": [
+              "low_volatility_252_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "000792",
+            "exchange": "SZSE"
+          },
+          "diagnostics": {
+            "rank": 5,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.019957142857142857,
+            "target_quantity": 12700,
+            "contributors": [
+              "low_vol_half_momentum_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "002064",
+            "exchange": "SZSE"
+          },
+          "diagnostics": {
+            "rank": 6,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.019992857142857142,
+            "target_quantity": 31100,
+            "contributors": [
+              "low_vol_half_momentum_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "002493",
+            "exchange": "SZSE"
+          },
+          "diagnostics": {
+            "rank": 7,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.01997142857142857,
+            "target_quantity": 23300,
+            "contributors": [
+              "low_vol_half_momentum_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "002507",
+            "exchange": "SZSE"
+          },
+          "diagnostics": {
+            "rank": 8,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.019957142857142857,
+            "target_quantity": 25400,
+            "contributors": [
+              "low_volatility_252_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "002832",
+            "exchange": "SZSE"
+          },
+          "diagnostics": {
+            "rank": 9,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.019864285714285713,
+            "target_quantity": 10300,
+            "contributors": [
+              "low_vol_half_momentum_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "600201",
+            "exchange": "SSE"
+          },
+          "diagnostics": {
+            "rank": 10,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.019964285714285716,
+            "target_quantity": 21500,
+            "contributors": [
+              "low_vol_half_momentum_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "600236",
+            "exchange": "SSE"
+          },
+          "diagnostics": {
+            "rank": 11,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.019992857142857142,
+            "target_quantity": 31100,
+            "contributors": [
+              "low_vol_half_momentum_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "600900",
+            "exchange": "SSE"
+          },
+          "diagnostics": {
+            "rank": 12,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.019928571428571427,
+            "target_quantity": 9300,
+            "contributors": [
+              "low_volatility_252_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "600905",
+            "exchange": "SSE"
+          },
+          "diagnostics": {
+            "rank": 13,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.019992857142857142,
+            "target_quantity": 93300,
+            "contributors": [
+              "low_volatility_252_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "600941",
+            "exchange": "SSE"
+          },
+          "diagnostics": {
+            "rank": 14,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.01947857142857143,
+            "target_quantity": 2700,
+            "contributors": [
+              "low_volatility_252_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "600989",
+            "exchange": "SSE"
+          },
+          "diagnostics": {
+            "rank": 15,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.019957142857142857,
+            "target_quantity": 12700,
+            "contributors": [
+              "low_vol_half_momentum_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "601186",
+            "exchange": "SSE"
+          },
+          "diagnostics": {
+            "rank": 16,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.01997142857142857,
+            "target_quantity": 46600,
+            "contributors": [
+              "low_volatility_252_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "601607",
+            "exchange": "SSE"
+          },
+          "diagnostics": {
+            "rank": 17,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.019914285714285714,
+            "target_quantity": 16400,
+            "contributors": [
+              "low_volatility_252_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "601818",
+            "exchange": "SSE"
+          },
+          "diagnostics": {
+            "rank": 18,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.019992857142857142,
+            "target_quantity": 93300,
+            "contributors": [
+              "low_volatility_252_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "601886",
+            "exchange": "SSE"
+          },
+          "diagnostics": {
+            "rank": 19,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.01997142857142857,
+            "target_quantity": 23300,
+            "contributors": [
+              "low_vol_half_momentum_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "601918",
+            "exchange": "SSE"
+          },
+          "diagnostics": {
+            "rank": 20,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.019992857142857142,
+            "target_quantity": 31100,
+            "contributors": [
+              "low_vol_half_momentum_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "603391",
+            "exchange": "SSE"
+          },
+          "diagnostics": {
+            "rank": 21,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.01977857142857143,
+            "target_quantity": 3900,
+            "contributors": [
+              "low_vol_half_momentum_20"
+            ]
+          }
+        },
+        {
+          "security": {
+            "code": "605098",
+            "exchange": "SSE"
+          },
+          "diagnostics": {
+            "rank": 22,
+            "score": 0.02,
+            "economic_target_weight": 0.02,
+            "executable_weight": 0.019685714285714286,
+            "target_quantity": 5200,
+            "contributors": [
+              "low_vol_half_momentum_20"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "quote_payload": {
+    "schema": "ths_raw_quote_observation_v1",
+    "source": "aligned_target_quote_payload",
+    "observed_at": "2026-10-26T15:00:00+08:00",
+    "price_basis": "raw_rmb",
+    "snapshot_date": "2026-10-26",
+    "execution_admitted": false,
+    "client_interacted": false,
+    "prices": {
+      "000001.SZSE": {
+        "price_rmb": 0.11,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "000088.SZSE": {
+        "price_rmb": 0.04,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "000301.SZSE": {
+        "price_rmb": 0.12,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "000538.SZSE": {
+        "price_rmb": 0.54,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "000792.SZSE": {
+        "price_rmb": 0.22,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "002064.SZSE": {
+        "price_rmb": 0.09,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "002493.SZSE": {
+        "price_rmb": 0.12,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "002507.SZSE": {
+        "price_rmb": 0.11,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "002832.SZSE": {
+        "price_rmb": 0.27,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "600201.SSE": {
+        "price_rmb": 0.13,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "600236.SSE": {
+        "price_rmb": 0.09,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "600900.SSE": {
+        "price_rmb": 0.3,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "600905.SSE": {
+        "price_rmb": 0.03,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "600941.SSE": {
+        "price_rmb": 1.01,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "600989.SSE": {
+        "price_rmb": 0.22,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "601186.SSE": {
+        "price_rmb": 0.06,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "601607.SSE": {
+        "price_rmb": 0.17,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "601818.SSE": {
+        "price_rmb": 0.03,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "601886.SSE": {
+        "price_rmb": 0.12,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "601918.SSE": {
+        "price_rmb": 0.09,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "603391.SSE": {
+        "price_rmb": 0.71,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      },
+      "605098.SSE": {
+        "price_rmb": 0.53,
+        "source": "aligned_target_quote_payload",
+        "observed_date": "2026-10-26"
+      }
+    }
+  },
+  "ths_readonly_reference": {
+    "schema": "quantification_ths_readonly_target_reference_v1",
+    "status": "READONLY_REFERENCE_REQUEST_CREATED",
+    "source_joint_strategy_ids": [
+      "low_volatility_252_20",
+      "low_vol_half_momentum_20"
+    ],
+    "reference_day": "2026-10-26",
+    "rows": [
+      {
+        "symbol": "000001.SZSE",
+        "target_weight": 0.019957142857142857,
+        "target_quantity": 25400,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "000088.SZSE",
+        "target_weight": 0.02,
+        "target_quantity": 70000,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "000301.SZSE",
+        "target_weight": 0.01997142857142857,
+        "target_quantity": 23300,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "000538.SZSE",
+        "target_weight": 0.019671428571428572,
+        "target_quantity": 5100,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "000792.SZSE",
+        "target_weight": 0.019957142857142857,
+        "target_quantity": 12700,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "002064.SZSE",
+        "target_weight": 0.019992857142857142,
+        "target_quantity": 31100,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "002493.SZSE",
+        "target_weight": 0.01997142857142857,
+        "target_quantity": 23300,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "002507.SZSE",
+        "target_weight": 0.019957142857142857,
+        "target_quantity": 25400,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "002832.SZSE",
+        "target_weight": 0.019864285714285713,
+        "target_quantity": 10300,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "600201.SSE",
+        "target_weight": 0.019964285714285716,
+        "target_quantity": 21500,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "600236.SSE",
+        "target_weight": 0.019992857142857142,
+        "target_quantity": 31100,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "600900.SSE",
+        "target_weight": 0.019928571428571427,
+        "target_quantity": 9300,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "600905.SSE",
+        "target_weight": 0.019992857142857142,
+        "target_quantity": 93300,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "600941.SSE",
+        "target_weight": 0.01947857142857143,
+        "target_quantity": 2700,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "600989.SSE",
+        "target_weight": 0.019957142857142857,
+        "target_quantity": 12700,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "601186.SSE",
+        "target_weight": 0.01997142857142857,
+        "target_quantity": 46600,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "601607.SSE",
+        "target_weight": 0.019914285714285714,
+        "target_quantity": 16400,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "601818.SSE",
+        "target_weight": 0.019992857142857142,
+        "target_quantity": 93300,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "601886.SSE",
+        "target_weight": 0.01997142857142857,
+        "target_quantity": 23300,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "601918.SSE",
+        "target_weight": 0.019992857142857142,
+        "target_quantity": 31100,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "603391.SSE",
+        "target_weight": 0.01977857142857143,
+        "target_quantity": 3900,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      },
+      {
+        "symbol": "605098.SSE",
+        "target_weight": 0.019685714285714286,
+        "target_quantity": 5200,
+        "quote_status": "awaiting_authorized_ths_read_only_observation",
+        "account_status": "awaiting_authorized_ths_read_only_observation",
+        "readback_status": "not_observed",
+        "prefill_status": "reference_only_not_prefillable",
+        "execution_admitted": false
+      }
+    ],
+    "execution_admitted": false,
+    "client_interacted": false,
+    "prefill_allowed": false,
+    "submitted": false,
+    "cancelled": false,
+    "readback_observed": false,
+    "limitations": [
+      "This is a local reference for a future authorized THS read-only observation.",
+      "Historical StockDB marks and projected quantities are not current THS quotes or account state.",
+      "No login, prefill, submission, cancellation, transfer or Ledger mutation occurred."
+    ]
+  },
+  "paper_package": {
+    "result": {
+      "schema": "stockdb_paper_target_order_package_v1",
+      "status": "paper_target_order_package_complete",
+      "projection_mode": "TARGET_PREVIEW",
+      "ledger_scope": "ephemeral_projection",
+      "continuous_account_consumer": false,
+      "frozen_plan_published": false,
+      "online_paper": false,
+      "strategy_id": "joint_low_volatility_252_20_low_vol_half_momentum_20",
+      "decision_day": "2026-10-26",
+      "execution_day": "2026-10-27",
+      "quote_observed_at": "2026-10-26T15:00:00+08:00",
+      "quote_source": "aligned_target_quote_payload",
+      "cash_assumption_rmb": 140000.0,
+      "cost_model": {
+        "id": "cn_a_share_standard_ledger_costs_v1",
+        "config": {
+          "signal": "equal_weight",
+          "lookback": 126,
+          "skip": 21,
+          "volatility_window": 60,
+          "rebalance_sessions": 5,
+          "holdings": 22,
+          "retain_rank": 30,
+          "gross_limit": 0.8,
+          "single_limit": 0.02,
+          "initial_cash": 140000.0,
+          "min_amount": 20000000,
+          "min_listing_days": 365,
+          "commission": 0.0003,
+          "minimum_commission": 5,
+          "sell_tax": 0.0005,
+          "transfer_fee": 1e-05,
+          "slippage_bps": 10,
+          "participation": 0.01,
+          "dividend_tax_reserve": 0.2
+        },
+        "price_basis": "raw_rmb_quote_observation",
+        "fee_basis": "shared_local_ledger_rules"
+      },
+      "benchmark_binding": {
+        "id": "paper_target_projection_no_market_benchmark_v1",
+        "status": "NOT_APPLICABLE_TO_PAPER_TARGET_PROJECTION",
+        "reason": "This package projects one target set; it does not evaluate market-relative returns."
+      },
+      "weight_basis": "StockDB signal-frame target weights; maximum 80% gross and 20% single-name cap",
+      "lot_rounding": "existing execution_rule and shares_for_target",
+      "target_count": 22,
+      "paper_order_count": 22,
+      "route_available_count": 22,
+      "route_blocked_count": 0,
+      "estimated_target_notional_rmb": 61315.0,
+      "modeled_fees_rmb": 110.66,
+      "projected_final_cash_rmb": 78574.34,
+      "projected_final_equity_rmb": 139889.34,
+      "execution_admitted": false,
+      "account_observed": false,
+      "client_interacted": false,
+      "submitted": false,
+      "cancelled": false,
+      "ledger_persisted": false,
+      "limitations": [
+        "Initial cash is an independent research assumption, not an observed THS account balance.",
+        "Captured raw RMB quotes are references, not broker fills or submission instructions.",
+        "Paper fills use the shared local Ledger solely to project cash, fees and T+1 positions.",
+        "Unsupported routes stay in the research projection but have no THS form reference fields.",
+        "Settlement day is explicitly supplied by the caller; exchange-calendar admission is not inferred.",
+        "No THS interaction, order submission, cancellation, transfer or persistent Ledger mutation occurred.",
+        "This package is TARGET_PREVIEW only; it cannot stand in for a published D0 plan or an ONLINE_PAPER rollover."
+      ],
+      "artifacts": {
+        "target_holdings": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\joint_paper\\paper_package\\target_holdings.csv",
+        "order_plan": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\joint_paper\\paper_package\\order_plan.csv",
+        "ths_prefill_payloads": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\joint_paper\\paper_package\\ths_prefill_payloads.csv",
+        "projected_account": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\joint_paper\\paper_package\\projected_account.json",
+        "result": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\joint_paper\\paper_package\\result.json"
+      }
+    },
+    "target_count": 22,
+    "paper_order_count": 22,
+    "route_available_count": 22,
+    "projected_final_cash_rmb": 78574.34,
+    "projected_final_equity_rmb": 139889.34
+  },
+  "limitations": [
+    "Saved terminal marks are historical research observations, not current broker quotes.",
+    "Paper fills use the shared local Ledger and do not mutate a persistent account.",
+    "No THS or broker client was contacted and no submission payload was sent."
+  ],
+  "paper_package_dir": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\joint_paper\\paper_package",
+  "ths_readonly_reference_path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\joint_paper\\ths_readonly_reference.json",
+  "receipt_path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_candidate_d0_d1_v4\\joint_paper\\joint_paper_receipt.json"
+}
