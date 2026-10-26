@@ -1239,9 +1239,9 @@
       "domain": "operations",
       "result": "Calendar and business schedule calculate windows and classify missing inputs.",
       "state": "PARTIAL",
-      "next": "继续在每个新收市日复用同一 D0/D1 合同；当前 2026-10-26 已完成直接终端账户的固定+候选联合纸面，只有严格完整的同日 close package 到位后才推进 persistent fixed_daily rollover。",
+      "next": "On the next complete close, reuse the same post-close coordinator with the latest registered fixed_daily head, strict close packages and same-day candidate manifest; keep TARGET_PREVIEW and persistent account scope distinct.",
       "prohibition": "Do not use machine timezone or weekday inference.",
-      "evidence_updated_on": "2026-10-26",
+      "evidence_updated_on": "2026-10-27",
       "actual_paths": [
         "trading/research/next_close_d0_d1.py",
         "trading/research/tests/test_next_close_d0_d1.py",
@@ -1275,7 +1275,9 @@
         "outputs/pipeline_receipts/20261026_candidate_source_manifest_v2.json",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/joint_paper/joint_paper_receipt.json",
-        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md"
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1306,7 +1308,9 @@
         "outputs/pipeline_receipts/20261026_candidate_source_manifest_v2.json",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/joint_paper/joint_paper_receipt.json",
-        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md"
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md"
       ]
     },
     {
@@ -1350,7 +1354,7 @@
       "domain": "operations",
       "result": "Business observability and capacity measurements expose bottlenecks.",
       "state": "PARTIAL",
-      "next": "On each changed close, pass fixed and same-day candidate manifests into next-close-d0-d1; the 2026-10-23 package now proves 40/40 quote coverage, one candidate batch and a 22-order budgeted joint projection.",
+      "next": "On each changed close, pass the registered fixed_daily head and same-day candidate manifest through post-close D0/D1; retain the 40/40 coverage, 20 fixed targets, one candidate and 22-order joint projection as the bounded reference.",
       "prohibition": "Do not turn monitoring uncertainty into a false offline status.",
       "actual_paths": [
         "trading/research/daily_candidate_paper_batch.py",
@@ -1411,7 +1415,9 @@
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v1/contract_receipt.json",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/contract_receipt.json",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/joint_paper/joint_paper_receipt.json",
-        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md"
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1437,9 +1443,11 @@
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v1/contract_receipt.json",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/contract_receipt.json",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v2/joint_paper/joint_paper_receipt.json",
-        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md"
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md"
       ],
-      "evidence_updated_on": "2026-10-26"
+      "evidence_updated_on": "2026-10-27"
     },
     {
       "id": "O05",
@@ -2213,7 +2221,9 @@
         "trading/research/tests/test_stockdb_rolling_reference_basis.py",
         "trading/research/tests/test_stockdb_fixed_daily.py",
         "outputs/pipeline_receipts/20261027_stockdb_fixed_daily_derived_research_v1.json",
-        "outputs/research_reports/20261027_stockdb_fixed_daily_derived_research_v1.md"
+        "outputs/research_reports/20261027_stockdb_fixed_daily_derived_research_v1.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md"
       ],
       "evidence": [
         "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
@@ -2238,7 +2248,9 @@
         "outputs/pipeline_receipts/20261027_stockdb_close_package_fixed_daily_consumer_v1.json",
         "outputs/research_reports/20261027_stockdb_close_package_fixed_daily_consumer_v1.md",
         "outputs/pipeline_receipts/20261027_stockdb_fixed_daily_derived_research_v1.json",
-        "outputs/research_reports/20261027_stockdb_fixed_daily_derived_research_v1.md"
+        "outputs/research_reports/20261027_stockdb_fixed_daily_derived_research_v1.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md"
       ],
       "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence. The loader rejects incomplete native snapshots, verifies plan/receipt/roster/raw hashes and exact date/roster rows, and fixed_daily schema dispatch passes focused tests without changing execution boundaries. The producer publishes complete plan/receipt/roster/raw files only for exact coverage and emitted BLOCKED_INCOMPLETE_STOCKDB_SNAPSHOT with 25 missing symbols for the current native snapshot without imputation.",
       "evidence_updated_on": "2026-10-27"
