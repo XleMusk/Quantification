@@ -85,11 +85,13 @@ def test_job_lifecycle_binds_submit_refresh_download_chain(client, dataset):
     assert queued["schema"] == "quantification_workbench_job_lifecycle_v1"
     assert queued["execution_admitted"] is False
     assert [stage["id"] for stage in queued["stages"]] == ["submitted", "compute", "result", "download"]
+    assert {stage["job_id"] for stage in queued["stages"]} == {item["id"]}
     assert queued["stages"][1]["status"] == "active"
     assert queued["stages"][2]["status"] == "waiting"
 
     worker.execute(store.claim_job())
     completed = client.get(f"/api/jobs/{item['id']}/lifecycle").json()
+    assert {stage["job_id"] for stage in completed["stages"]} == {item["id"]}
     assert completed["stages"][1]["status"] == "completed"
     assert completed["stages"][2]["status"] == "available"
     assert "result.json" in completed["available_files"]

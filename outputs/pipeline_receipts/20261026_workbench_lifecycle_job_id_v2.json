@@ -1,0 +1,24 @@
+{
+  "schema": "quantification_workbench_lifecycle_job_id_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "observed_at": "2026-10-26T22:00:00+08:00",
+  "route": "local_workbench_job_lifecycle",
+  "acceptance": {
+    "stages": ["submitted", "compute", "result", "download"],
+    "stage_job_id_bound": true,
+    "queued_compute_status": "active",
+    "queued_result_status": "waiting",
+    "completed_result_status": "available",
+    "available_result_file": "result.json",
+    "backend_test_count": 28
+  },
+  "execution_mode": "research_only",
+  "execution_admitted": false,
+  "live_trading": false,
+  "broker_or_ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "limitations": [
+    "The lifecycle endpoint and TypeScript contract are locally verified; browser automation and external account acceptance are separate.",
+    "A job result is a local research artifact, not a broker fill or Tonghuashun submission."
+  ]
+}

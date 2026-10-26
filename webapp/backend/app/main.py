@@ -189,10 +189,10 @@ def job_lifecycle(identifier: str):
         "execution_admitted": False,
         "live_trading": False,
         "stages": [
-            {"id": "submitted", "status": "completed", "detail": "任务已登记并绑定数据集与参数"},
-            {"id": "compute", "status": compute_status, "detail": f"{status} · {item['progress']}%"},
-            {"id": "result", "status": "available" if result_ready else "waiting", "detail": "结果 JSON 已保存" if result_ready else "任务完成前不可读取"},
-            {"id": "download", "status": "available" if available_files else "waiting", "detail": f"可下载 {len(available_files)} 个文件" if available_files else "暂无结果文件"},
+            {"job_id": identifier, "id": "submitted", "status": "completed", "detail": "任务已登记并绑定数据集与参数"},
+            {"job_id": identifier, "id": "compute", "status": compute_status, "detail": f"{status} · {item['progress']}%"},
+            {"job_id": identifier, "id": "result", "status": "available" if result_ready else "waiting", "detail": "结果 JSON 已保存" if result_ready else "任务完成前不可读取"},
+            {"job_id": identifier, "id": "download", "status": "available" if available_files else "waiting", "detail": f"可下载 {len(available_files)} 个文件" if available_files else "暂无结果文件"},
         ],
         "available_files": available_files,
         "recovery": {
