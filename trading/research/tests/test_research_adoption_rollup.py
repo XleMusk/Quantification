@@ -32,20 +32,39 @@ def _fixtures(tmp_path):
         "models": [{"model_kind": "lr", "research_action": "CONTINUE_RESEARCH_ONLY", "replay_sessions": 10, "orders": 1, "fills": 2, "net_return": -0.01, "decision_reason": "gates open", "paper_allowed": False, "promotion_allowed": False}],
         "summary": {"models": 1}, "next_gates": ["forward"],
     })
-    return candidate, factor, shortline
+    retained_joint = _write_receipt(tmp_path / "retained_joint.json", {
+        "schema": "quantification_retained_joint_candidate_comparison_v1",
+        "execution_admitted": False,
+        "promotion_allowed": False,
+        "incremental_decision": {
+            "decision": "CONTINUE_RESEARCH_ONLY",
+            "return_incremental_status": "NOT_COMPARABLE_PROJECTION_ONLY",
+        },
+        "joint_target": {
+            "strategy_ids": ["trend", "ridge"],
+            "decision_day": "2026-10-13",
+            "target_count": 2,
+            "paper_order_count": 2,
+            "route_available_count": 2,
+            "route_blocked_count": 0,
+        },
+    })
+    return candidate, factor, shortline, retained_joint
 
 
 def test_rollup_binds_all_three_research_routes(tmp_path):
-    candidate, factor, shortline = _fixtures(tmp_path)
-    result = build_rollup(candidate, factor, shortline)
+    candidate, factor, shortline, retained_joint = _fixtures(tmp_path)
+    result = build_rollup(candidate, factor, shortline, retained_joint)
     assert result["status"] == "COMPLETED_RESEARCH_ONLY_ADOPTION_ROLLUP"
     assert result["execution_admitted"] is False
     assert result["separate_gates"]["mature_factor_horizon"]["variant_minus_baseline"]["net_return"] == -0.02
     assert result["separate_gates"]["shortline_native_lr_lgbm"]["models"][0]["orders"] == 1
+    assert result["separate_gates"]["retained_joint_portfolio"]["target_count"] == 2
+    assert result["separate_gates"]["retained_joint_portfolio"]["return_incremental_status"] == "NOT_COMPARABLE_PROJECTION_ONLY"
 
 
 def test_rollup_rejects_execution_boundary(tmp_path):
-    candidate, factor, shortline = _fixtures(tmp_path)
+    candidate, factor, shortline, _retained_joint = _fixtures(tmp_path)
     payload = json.loads(shortline.read_text(encoding="utf-8"))
     payload["execution_admitted"] = True
     shortline.write_text(json.dumps(payload), encoding="utf-8")
@@ -54,7 +73,7 @@ def test_rollup_rejects_execution_boundary(tmp_path):
 
 
 def test_rollup_rejects_factor_adoption(tmp_path):
-    candidate, factor, shortline = _fixtures(tmp_path)
+    candidate, factor, shortline, _retained_joint = _fixtures(tmp_path)
     payload = json.loads(factor.read_text(encoding="utf-8"))
     payload["machine_status"]["decision"] = "ADOPT"
     factor.write_text(json.dumps(payload), encoding="utf-8")
