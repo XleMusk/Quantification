@@ -317,6 +317,9 @@
         "D:/QuantificationData/trading/research/stockdb_snapshots/stockdb_20261024_alpha158_forward_complete_v1/snapshot.json",
         "outputs/stockdb_untouched_forward_holdouts/20261024_alpha158_cap500_v2_complete/result.json",
         "outputs/stockdb_untouched_forward_holdouts/20261024_alpha158_cap500_v2_complete/audit.json",
+        "outputs/stockdb_untouched_forward_holdouts/20261026_alpha158_cap500_snapshot_bound_v1/result.json",
+        "outputs/stockdb_untouched_forward_holdouts/20261026_alpha158_cap500_snapshot_bound_v1/audit.json",
+        "outputs/pipeline_receipts/20261024_untouched_forward_holdout_20261026_alpha158_cap500_snapshot_bound_v1.json",
         "outputs/pipeline_receipts/20261024_common_untouched_forward_comparison_v2.json",
         "outputs/research_reports/20261024_common_untouched_forward_comparison_v2.md",
         "outputs/pipeline_receipts/20261024_candidate_action_publication_coverage_v1.json",
@@ -353,7 +356,7 @@
         "outputs/pipeline_receipts/20261024_action_publication_sidecar_v5.json",
         "outputs/research_reports/20261024_action_publication_sidecar_v5.md"
       ],
-      "gap": "Full-market native Alpha158 diagnostics are complete and remain research-only; PIT/as-of, membership, company actions, fresh holdout and strategy validation remain unverified.",
+      "gap": "Full-market native Alpha158 diagnostics and a snapshot-bound mark-only forward receipt are complete and remain research-only; PIT/as-of, membership, company actions and strategy validation remain unverified.",
       "next_acceptance": "bind revision-safe PIT/as-of and corporate-action evidence to the same candidate before paper promotion; do not rerun the completed batch without changed inputs"
     },
     {
