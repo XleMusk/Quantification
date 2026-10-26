@@ -32,6 +32,18 @@ def _hash_bytes(payload: bytes) -> str:
     return sha256(payload).hexdigest()
 
 
+def _capture_timestamp_iso(timestamp: str | None) -> str | None:
+    """Convert a Wayback 14-digit UTC capture time without losing precision."""
+
+    if not isinstance(timestamp, str) or len(timestamp) < 14 or not timestamp[:14].isdigit():
+        return None
+    try:
+        captured = datetime.strptime(timestamp[:14], "%Y%m%d%H%M%S").replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
+    return captured.isoformat()
+
+
 def cdx_url(source_url: str) -> str:
     query = (
         f"{CDX_ENDPOINT}?url={quote(source_url, safe='')}"
@@ -157,6 +169,7 @@ def probe_wayback(
     before, selected_row = _select_capture(captures, decision)
     archive_timestamp = selected_row.get("timestamp") if selected_row else None
     archive_date = f"{archive_timestamp[:4]}-{archive_timestamp[4:6]}-{archive_timestamp[6:8]}" if archive_timestamp and len(archive_timestamp) >= 8 else None
+    archive_timestamp_iso = _capture_timestamp_iso(archive_timestamp)
     archive_response: dict[str, Any] | None = None
     archive_source_file: str | None = None
     archive_source_sha256: str | None = None
@@ -177,8 +190,10 @@ def probe_wayback(
         "symbol": symbol,
         "period": period,
         "publication_date": publication_date,
-        "retrieved_at": f"{archive_date}T00:00:00+00:00" if archive_date else None,
-        "asof_at": f"{archive_date}T00:00:00+00:00" if archive_date else None,
+        # Wayback CDX timestamps are UTC.  Preserve the exact capture time;
+        # reducing it to a date and midnight can erase a valid boundary.
+        "retrieved_at": archive_timestamp_iso,
+        "asof_at": archive_timestamp_iso,
         # A single CDX digest is content identity, not issuer revision history.
         # Keep it in ``selected_capture`` but do not promote it to revision_id.
         "revision_id": None,
@@ -219,6 +234,7 @@ def probe_wayback(
             "policy": "latest_on_or_before_decision_day_v1",
             "eligible_count": len(before),
             "observed_count": len(captures),
+            "selected_capture_at": archive_timestamp_iso,
         },
         "historical_evidence": {**gate, "reason_codes": reasons, "status": BLOCKED if reasons else gate["status"]},
         "factor_computed": False,

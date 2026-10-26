@@ -56,6 +56,8 @@ def test_pre_decision_capture_fetches_archived_bytes_and_proves_source_provenanc
     )
     row = result["historical_evidence"]
     assert result["archive_payload_path"].endswith("archive.pdf")
+    assert row["publication_contract"]["retrieved_asof_proven"] is True
+    assert row["publication_contract"]["publication_evidence_reasons"] == ["revision_id_missing"]
     assert row["source_provenance_verified"] is True
     assert row["historical_retrieval_asof_verified"] is True
     assert row["revision_history_verified"] is False
@@ -89,6 +91,7 @@ def test_latest_eligible_capture_is_selected_independent_of_cdx_order(tmp_path):
         "policy": "latest_on_or_before_decision_day_v1",
         "eligible_count": 2,
         "observed_count": 3,
+        "selected_capture_at": "2024-04-30T12:00:00+00:00",
     }
 
 

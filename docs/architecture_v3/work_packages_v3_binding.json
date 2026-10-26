@@ -428,7 +428,9 @@
         "outputs/pipeline_receipts/20261026_f01_event_master_provenance_v1.json",
         "outputs/research_reports/20261026_f01_event_master_provenance_v1.md",
         "outputs/pipeline_receipts/20261026_f2_bridge_source_snapshot_provenance_v1.json",
-        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md"
+        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md",
+        "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v4.json",
+        "outputs/research_reports/20261026_f2_wayback_2023q1_v4.md"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -448,7 +450,11 @@
         "trading/research/f2_fact_bridge.py",
         "trading/research/tests/test_f2_fact_bridge.py",
         "outputs/pipeline_receipts/20261026_f2_bridge_source_snapshot_provenance_v1.json",
-        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md"
+        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md",
+        "trading/research/f2_wayback_probe.py",
+        "trading/research/tests/test_f2_wayback_probe.py",
+        "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v4.json",
+        "outputs/research_reports/20261026_f2_wayback_2023q1_v4.md"
       ]
     },
     {
@@ -487,9 +493,19 @@
         "trading/research/publication_event_contract.py",
         "trading/research/tests/test_publication_event_contract.py",
         "outputs/pipeline_receipts/20261026_publication_boundary_unknown_v1.json",
-        "outputs/research_reports/20261026_publication_boundary_unknown_v1.md"
+        "outputs/research_reports/20261026_publication_boundary_unknown_v1.md",
+        "trading/research/f2_wayback_probe.py",
+        "trading/research/tests/test_f2_wayback_probe.py",
+        "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v4.json",
+        "outputs/research_reports/20261026_f2_wayback_2023q1_v4.md"
       ],
-      "evidence_updated_on": "2026-10-26"
+      "evidence_updated_on": "2026-10-26",
+      "evidence": [
+        "trading/research/f2_wayback_probe.py",
+        "trading/research/tests/test_f2_wayback_probe.py",
+        "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v4.json",
+        "outputs/research_reports/20261026_f2_wayback_2023q1_v4.md"
+      ]
     },
     {
       "id": "D05",

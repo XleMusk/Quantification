@@ -584,3 +584,10 @@ F2 的 publication contract 现在要求：日期型披露按 `[D 00:00, D+1 00:
 ## 2026-10-26 Google engineering refactor: explicit unknown publication boundary
 
 修正了 `publication_event_contract.evaluate_publication_evidence` 在 publication 元数据缺失或格式错误时引用未初始化窗口的错误路径。现在该路径返回 `publication_boundary_unknown`，并保持 `pit_asof_safe=false`；新增缺失 `publication_date` 与错误 `publication_time` 反例。F2 聚焦测试共 23 passed。证据：`outputs/pipeline_receipts/20261026_publication_boundary_unknown_v1.json`、`outputs/research_reports/20261026_publication_boundary_unknown_v1.md`。
+
+
+## 2026-10-26 F2 Wayback capture precision
+
+`f2_wayback_probe.py` 现在保留 Wayback CDX 14 位 UTC 捕获时间，写入 `retrieved_at`、`asof_at` 和 `capture_selection.selected_capture_at`，不再把捕获时点截成日期午夜。真实 `000002.SZSE/2023Q1` 探针重新运行后仍为 `BLOCKED_DATA`：唯一捕获为 `2025-09-05T23:50:23+00:00`，决策日 `2024-05-01` 前没有捕获，因此没有 PIT、因子或账户准入。17 个 F2 聚焦测试通过。
+
+证据：`outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v4.json`、`outputs/research_reports/20261026_f2_wayback_2023q1_v4.md`。
