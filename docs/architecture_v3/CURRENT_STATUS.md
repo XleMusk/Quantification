@@ -467,3 +467,7 @@ StockDB 短线长路径回放和 adoption gate v3 已绑定到内部研究发布
 ## 2026-10-26 P31 coverage diagnostics
 
 P31 已绑定：StockDB 覆盖诊断现在按批次一次读取 parquet 并建立标的索引；固定纸面账户 20 个标的的 2026-10-26 覆盖结果为 20/20 缺失，未填充价格、未改写快照、未生成 D0/D1。验收测试 2 passed。
+
+## 2026-10-26 internal release v26
+
+P31 覆盖诊断工作包已绑定内部研究发布 v26：`D:/QuantificationData/trading/research/releases/20261026_v26/release_manifest.json`，提交 `520f606`，`missing_required_code=[]`、`execution_admitted=false`、`live_execution_ready=false`。绑定回执 `outputs/pipeline_receipts/20261026_release_v26_binding_v1.json`。
