@@ -1,0 +1,31 @@
+{
+  "schema": "quantification_runtime_recipe_v1",
+  "status": "VERIFIED_LOCAL",
+  "captured_at": "2026-10-26T13:14:32.443679+00:00",
+  "package_id": "F02-runtime-recipe",
+  "workspace": "D:\\Quantification",
+  "interpreter": {
+    "path": "D:\\Quantification\\env\\python.exe",
+    "python_version": "3.10.20",
+    "implementation": "CPython"
+  },
+  "imported_modules": {
+    "trading": "D:\\Quantification\\trading\\__init__.py"
+  },
+  "environment": {
+    "QUANT_TRADING_HOME": null,
+    "QUANT_WEB_STORAGE": null
+  },
+  "git": {
+    "branch": "main",
+    "commit": "09aa6e6209a768aa9d1716985d2851e82bf1807d",
+    "worktree_clean": false,
+    "status_lines": [
+      "M trading/research/tests/test_system_daily_command_recovery.py"
+    ]
+  },
+  "execution_admitted": false,
+  "external_interaction": false,
+  "ledger_mutated": false,
+  "failure": null
+}
