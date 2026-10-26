@@ -1,0 +1,96 @@
+{
+  "schema": "f01_decision_cutoff_contract_v1",
+  "status": "VERIFIED_LOCAL_SEMANTICS_BLOCKED_EXTERNAL_DATA",
+  "execution_admitted": false,
+  "event_window": {
+    "kind": "INTERVAL",
+    "start": "2026-10-20T00:00:00+08:00",
+    "end": "2026-10-21T00:00:00+08:00"
+  },
+  "decision_cutoff": {
+    "kind": "EXACT",
+    "start": "2026-10-20T15:05:00+08:00",
+    "end": null
+  },
+  "scenarios": {
+    "current_within_window": {
+      "status": "READY",
+      "value": "0.01",
+      "available_at": {
+        "kind": "EXACT",
+        "start": "2026-10-20T10:00:00+08:00",
+        "end": null
+      },
+      "fact_ids": [
+        "cur",
+        "prior",
+        "assets"
+      ],
+      "definition_version": "f01_asset_normalized_surprise_v1",
+      "reason": "all_facts_comparable_and_decision_cutoff_proven",
+      "event_window": {
+        "kind": "INTERVAL",
+        "start": "2026-10-20T00:00:00+08:00",
+        "end": "2026-10-21T00:00:00+08:00"
+      },
+      "decision_cutoff": {
+        "kind": "EXACT",
+        "start": "2026-10-20T15:05:00+08:00",
+        "end": null
+      }
+    },
+    "current_after_cutoff": {
+      "status": "PRE_EVENT_UNPROVEN",
+      "value": null,
+      "available_at": null,
+      "fact_ids": [
+        "late",
+        "prior",
+        "assets"
+      ],
+      "definition_version": "f01_asset_normalized_surprise_v1",
+      "reason": "current_fact_not_available_by_decision_cutoff",
+      "event_window": {
+        "kind": "INTERVAL",
+        "start": "2026-10-20T00:00:00+08:00",
+        "end": "2026-10-21T00:00:00+08:00"
+      },
+      "decision_cutoff": {
+        "kind": "EXACT",
+        "start": "2026-10-20T15:05:00+08:00",
+        "end": null
+      }
+    },
+    "reference_not_before_event": {
+      "status": "PRE_EVENT_UNPROVEN",
+      "value": null,
+      "available_at": null,
+      "fact_ids": [
+        "cur2",
+        "prior",
+        "assets2"
+      ],
+      "definition_version": "f01_asset_normalized_surprise_v1",
+      "reason": "reference_fact_not_proven_before_event",
+      "event_window": {
+        "kind": "INTERVAL",
+        "start": "2026-10-20T00:00:00+08:00",
+        "end": "2026-10-21T00:00:00+08:00"
+      },
+      "decision_cutoff": {
+        "kind": "EXACT",
+        "start": "2026-10-20T15:05:00+08:00",
+        "end": null
+      }
+    }
+  },
+  "tests": {
+    "command": "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_f01_financial_factor.py",
+    "passed": 10
+  },
+  "limitations": [
+    "No external issuer retrieval/as-of/revision payload was admitted",
+    "This contract does not promote F01 to a signal, target, order or account",
+    "Existing downstream fixtures with assets marked single_quarter remain outside this package"
+  ]
+}

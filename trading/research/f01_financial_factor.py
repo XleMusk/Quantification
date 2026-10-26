@@ -76,6 +76,8 @@ class F01Result:
     fact_ids: tuple[str, ...]
     definition_version: str
     reason: str
+    event_window: TimeWindow | None = None
+    decision_cutoff: TimeWindow | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -85,6 +87,8 @@ class F01Result:
             "fact_ids": list(self.fact_ids),
             "definition_version": self.definition_version,
             "reason": self.reason,
+            "event_window": self.event_window.to_dict() if self.event_window is not None else None,
+            "decision_cutoff": self.decision_cutoff.to_dict() if self.decision_cutoff is not None else None,
         }
 
 
@@ -112,33 +116,67 @@ def _validate_facts(current: FinancialFact, prior: FinancialFact, assets: Financ
 
 
 def compute_f01(current: FinancialFact, prior: FinancialFact, assets: FinancialFact,
-                event: TimeWindow, *, definition_version: str = F01.definition_version) -> F01Result:
-    """Compute ``(current - prior) / assets`` only from proven PIT facts."""
+                event: TimeWindow, *, decision_cutoff: TimeWindow | None = None,
+                definition_version: str = F01.definition_version) -> F01Result:
+    """Compute ``(current - prior) / assets`` only from proven PIT facts.
+
+    ``event`` is the disclosure window used to prove the prior fact and the
+    denominator were already available.  When supplied, ``decision_cutoff``
+    is a separate exact decision clock: the current disclosure may be inside
+    ``event`` but must be available no later than that clock.  Keeping these
+    clocks separate prevents a same-day current report from being rejected
+    merely because the date-only publication window starts at midnight while
+    still rejecting a report received after the decision.
+    """
 
     if not isinstance(event, TimeWindow):
         raise TypeError("event must be a TimeWindow")
+    if decision_cutoff is not None:
+        if not isinstance(decision_cutoff, TimeWindow):
+            raise TypeError("decision_cutoff must be a TimeWindow")
+        if decision_cutoff.end is not None:
+            raise ValueError("decision_cutoff must be an exact TimeWindow")
     if not isinstance(definition_version, str) or not definition_version:
         raise ValueError("definition_version is required")
     facts = (current, prior, assets)
     ids = tuple(value.fact_id for value in facts)
+
+    def result(status: str, value: Decimal | None, available_at: TimeWindow | None,
+               reason: str) -> F01Result:
+        return F01Result(status, value, available_at, ids, definition_version, reason,
+                         event, decision_cutoff)
+
     if any(not isinstance(value, FinancialFact) for value in facts):
         raise TypeError("F01 inputs must be FinancialFact values")
     if any(value.status == CONFLICT for value in facts):
-        return F01Result(CONFLICT, None, None, ids, definition_version, "unresolved_fact_conflict")
+        return result(CONFLICT, None, None, "unresolved_fact_conflict")
     if any(value.status != OBSERVED or value.value is None for value in facts):
-        return F01Result(MISSING_INPUT, None, None, ids, definition_version, "required_fact_missing_or_not_observed")
-    if any(not strictly_before(value.available, event) for value in facts):
-        return F01Result(PRE_EVENT_UNPROVEN, None, None, ids, definition_version, "fact_not_proven_before_event")
+        return result(MISSING_INPUT, None, None, "required_fact_missing_or_not_observed")
+    if decision_cutoff is None:
+        if any(not strictly_before(value.available, event) for value in facts):
+            return result(PRE_EVENT_UNPROVEN, None, None, "fact_not_proven_before_event")
+    else:
+        # The prior comparable profit and event-pre assets are historical
+        # references and must finish before the disclosure window begins.
+        if not strictly_before(prior.available, event) or not strictly_before(assets.available, event):
+            return result(PRE_EVENT_UNPROVEN, None, None, "reference_fact_not_proven_before_event")
+        # The current fact is disclosed in the event window and is eligible at
+        # the decision clock, including an exact timestamp equal to cutoff.
+        current_end = current.available.end or current.available.start
+        if current_end > decision_cutoff.start:
+            return result(PRE_EVENT_UNPROVEN, None, None, "current_fact_not_available_by_decision_cutoff")
     status, reason = _validate_facts(current, prior, assets)
     if status != READY:
-        return F01Result(status, None, None, ids, definition_version, reason)
+        return result(status, None, None, reason)
     denominator = _decimal(assets.value, "assets.value")
     if denominator <= 0:
-        return F01Result(NONPOSITIVE_DENOMINATOR, None, None, ids, definition_version, "event_pre_assets_not_positive")
+        return result(NONPOSITIVE_DENOMINATOR, None, None, "event_pre_assets_not_positive")
     # Availability of a derived value is bounded by the latest dependency.
     available = max(facts, key=lambda value: value.available.end or value.available.start).available
     value = (_decimal(current.value, "current.value") - _decimal(prior.value, "prior.value")) / denominator
-    return F01Result(READY, value, available, ids, definition_version, "all_facts_comparable_and_pre_event")
+    return result(READY, value, available,
+                  "all_facts_comparable_and_decision_cutoff_proven" if decision_cutoff is not None
+                  else "all_facts_comparable_and_pre_event")
 
 
 def cumulative_to_single_quarter(current_ytd: FinancialFact, prior_ytd: FinancialFact,
