@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from hashlib import sha256
 
 from trading.research.f2_historical_evidence import (
     BLOCKED,
@@ -102,4 +103,58 @@ def test_cli_loads_source_snapshot_and_preserves_missing_pit_fields(tmp_path):
     assert receipt["status"] == BLOCKED
     assert receipt["summary"] == {"rows": 1, "ready_rows": 0, "blocked_rows": 1}
     assert "historical_retrieval_asof_unproven" in receipt["rows"][0]["reason_codes"]
+    assert receipt["rows"][0]["source_artifact_check"] == "missing_file"
+    assert "source_artifact_integrity_unproven" in receipt["rows"][0]["reason_codes"]
     assert receipt["execution_admitted"] is False
+
+
+def test_cli_binds_source_file_hash_without_relaxing_pit_gate(tmp_path):
+    source_file = tmp_path / "issuer.pdf"
+    source_file.write_bytes(b"issuer bytes")
+    source = tmp_path / "source_snapshot.json"
+    source.write_text(json.dumps({
+        "schema": "f2_source_snapshot_v1",
+        "snapshot_id": "hash-bound-source-v1",
+        "capture_mode": "current_fetch",
+        "rows": [{
+            "symbol": "000002.SZSE", "period": "2023Q1",
+            "publication_date": "2023-04-29",
+            "retrieved_at": "2026-10-26T02:22:03+08:00",
+            "asof_at": None, "revision_id": None,
+            "source_file": source_file.name,
+            "source_sha256": sha256(source_file.read_bytes()).hexdigest(),
+            "capture_mode": "current_fetch",
+        }],
+    }), encoding="utf-8")
+    output = tmp_path / "gate.json"
+    assert main(["--input", str(source), "--decision-day", "2024-05-01", "--output", str(output)]) == 0
+    row = json.loads(output.read_text(encoding="utf-8"))["rows"][0]
+    assert row["source_artifact_check"] == "verified"
+    assert row["source_artifact_verified"] is True
+    assert row["status"] == BLOCKED
+    assert "historical_retrieval_asof_unproven" in row["reason_codes"]
+    assert "source_artifact_integrity_unproven" not in row["reason_codes"]
+
+
+def test_cli_preserves_source_hash_mismatch_as_blocked_evidence(tmp_path):
+    source_file = tmp_path / "issuer.pdf"
+    source_file.write_bytes(b"actual issuer bytes")
+    source = tmp_path / "source_snapshot.json"
+    source.write_text(json.dumps({
+        "schema": "f2_source_snapshot_v1", "snapshot_id": "hash-mismatch-v1",
+        "capture_mode": "historical_archive",
+        "rows": [{
+            "symbol": "000002.SZSE", "period": "2023Q1",
+            "publication_date": "2023-04-29",
+            "retrieved_at": "2024-04-30T14:00:00+08:00",
+            "asof_at": "2024-04-30T14:01:00+08:00",
+            "revision_id": "rev-1", "source_file": source_file.name,
+            "source_sha256": "a" * 64, "capture_mode": "historical_archive",
+        }],
+    }), encoding="utf-8")
+    output = tmp_path / "gate.json"
+    assert main(["--input", str(source), "--decision-day", "2024-05-01", "--output", str(output)]) == 0
+    row = json.loads(output.read_text(encoding="utf-8"))["rows"][0]
+    assert row["source_artifact_check"] == "hash_mismatch"
+    assert row["status"] == BLOCKED
+    assert "source_artifact_integrity_unproven" in row["reason_codes"]

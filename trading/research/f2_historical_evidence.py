@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 import argparse
+from hashlib import sha256
 import json
 from pathlib import Path
 from typing import Any
@@ -25,6 +26,52 @@ HISTORICAL_EVIDENCE_KINDS = frozenset({
     "provider_revision",
     "source_snapshot",
 })
+
+
+def annotate_source_artifacts(
+    rows: Sequence[Mapping[str, Any]],
+    *,
+    base_dir: str | Path | None = None,
+) -> list[dict[str, Any]]:
+    """Bind an optional source file hash without inferring PIT fields.
+
+    Source rows may come from a provider adapter with no local artifact.  Such
+    rows remain eligible for the existing publication contract, but a saved
+    file claim is only marked verified when the file exists and its bytes match
+    ``source_sha256``.  Missing or changed files are explicit evidence gaps.
+    """
+
+    root = Path(base_dir).expanduser().resolve() if base_dir is not None else None
+    annotated: list[dict[str, Any]] = []
+    for index, row in enumerate(rows):
+        if not isinstance(row, Mapping):
+            raise ValueError(f"input row {index} must be an object")
+        item = dict(row)
+        source_file = item.get("source_file")
+        expected = item.get("source_sha256")
+        if not isinstance(source_file, str) or not source_file.strip():
+            item["source_artifact_check"] = "not_checked"
+            annotated.append(item)
+            continue
+        path = Path(source_file).expanduser()
+        if not path.is_absolute() and root is not None:
+            path = root / path
+        path = path.resolve()
+        item["source_artifact_path"] = str(path)
+        if not path.is_file():
+            item["source_artifact_check"] = "missing_file"
+            item["source_artifact_error"] = f"source_file_missing:{path}"
+        elif (not isinstance(expected, str) or len(expected.strip()) != 64
+              or any(char not in "0123456789abcdefABCDEF" for char in expected.strip())):
+            item["source_artifact_check"] = "invalid_sha256"
+            item["source_artifact_error"] = "source_sha256_invalid"
+        else:
+            actual = sha256(path.read_bytes()).hexdigest()
+            item["source_artifact_check"] = "verified" if actual.lower() == expected.strip().lower() else "hash_mismatch"
+            if actual.lower() != expected.strip().lower():
+                item["source_artifact_error"] = "source_sha256_mismatch"
+        annotated.append(item)
+    return annotated
 
 
 def evaluate_historical_evidence(row: Mapping[str, Any], decision_day: str) -> dict[str, Any]:
@@ -46,6 +93,9 @@ def evaluate_historical_evidence(row: Mapping[str, Any], decision_day: str) -> d
         reasons.append("revision_history_unproven")
     if not publication["source_provenance_proven"]:
         reasons.append("historical_source_provenance_unproven")
+    artifact_check = row.get("source_artifact_check")
+    if artifact_check in {"missing_file", "invalid_sha256", "hash_mismatch"}:
+        reasons.append("source_artifact_integrity_unproven")
 
     detail_reasons = list(publication["publication_evidence_reasons"])
     reasons.extend(f"contract:{value}" for value in detail_reasons)
@@ -65,6 +115,13 @@ def evaluate_historical_evidence(row: Mapping[str, Any], decision_day: str) -> d
         "publication_contract": publication,
         "execution_admitted": False,
     }
+    if artifact_check is not None:
+        result["source_artifact_check"] = artifact_check
+        result["source_artifact_verified"] = artifact_check == "verified"
+        if "source_artifact_path" in row:
+            result["source_artifact_path"] = row["source_artifact_path"]
+        if "source_artifact_error" in row:
+            result["source_artifact_error"] = row["source_artifact_error"]
     # Preserve source identity for downstream fact bridges.  The gate still
     # decides PIT eligibility from the contract above; these fields are only
     # provenance and are never used to relax a blocked row.
@@ -178,6 +235,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--source-description", default=None)
     args = parser.parse_args(argv)
     rows, input_description = load_input_rows(args.input)
+    rows = annotate_source_artifacts(rows, base_dir=args.input.expanduser().resolve().parent)
     receipt = write_receipt(
         args.output,
         rows,
@@ -202,6 +260,7 @@ __all__ = [
     "READY",
     "SCHEMA",
     "build_historical_gate_receipt",
+    "annotate_source_artifacts",
     "evaluate_historical_evidence",
     "load_input_rows",
     "main",

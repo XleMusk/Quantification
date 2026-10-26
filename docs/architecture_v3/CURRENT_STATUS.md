@@ -678,3 +678,7 @@ Evidence: `outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v2.json`,
 
 工作台恢复回执现在绑定保存的 job observation 路径与 SHA-256，并记录只读内部 release 的版本和 commit。中断任务仍分类为 `MANUAL_RESUBMIT_REQUIRED`，不会自动重试，也不触碰券商、同花顺或真实账户；最新回执 [`20261027_workbench_recovery_release_bound_v2.json`](../../outputs/pipeline_receipts/20261027_workbench_recovery_release_bound_v2.json) 绑定 `20261027_v50`，`execution_admitted=false`、`live_execution_ready=false`。workbench/recovery 与 WebApp 聚焦测试 `42 passed`。
 
+## 2026-10-27 F2 source artifact integrity binding
+
+F2 historical gate CLI 现在对输入行声明的 `source_file/source_sha256` 做本地字节校验，并把 `verified`、`missing_file`、`hash_mismatch` 明确写入回执；该校验只增强来源可追查性，不补齐 `asof_at` 或 `revision_id`。对现有 CNINFO 000002.SZSE 2023Q1 来源快照重跑后，来源 PDF hash 校验为 `verified`，但历史 retrieval/as-of 与 revision 仍缺失，结果继续为 `BLOCKED_DATA`、0 行 ready。回执为 `outputs/pipeline_receipts/20261027_f2_historical_gate_cli_real_source_v2.json`，F2 测试 `7 passed`。
+
