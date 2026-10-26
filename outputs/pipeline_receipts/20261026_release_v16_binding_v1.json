@@ -1,0 +1,21 @@
+{
+  "schema": "quantification_internal_release_binding_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "version": "20261026_v16",
+  "manifest": "D:\\QuantificationData\\trading\\research\\releases\\20261026_v16\\release_manifest.json",
+  "manifest_sha256": "4274f7985bdb9b1e6ba0a92358e821045661b5457d5ff0145d3a7c4c6ac79a6e",
+  "git_commit": "7a18087",
+  "execution_admitted": false,
+  "live_execution_ready": false,
+  "missing_required_code": [],
+  "shortline_candidate_handoff": "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json",
+  "shortline_score_gates": [
+    "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lr_score_gate.json",
+    "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lgbm_score_gate.json"
+  ],
+  "limitations": [
+    "Shortline handoff is candidate-panel research input only; full return, PIT/company-action and forward gates remain open.",
+    "F2 historical asof/revision evidence and THS observed read-only evidence remain unavailable.",
+    "No broker/THS login or account mutation."
+  ]
+}
