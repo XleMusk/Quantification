@@ -303,12 +303,44 @@ def _public_seat_summary(receipt: Mapping[str, Any], path: Path) -> dict[str, An
     }
 
 
+def _same_day_gate_summary(receipt: Mapping[str, Any], path: Path) -> dict[str, Any]:
+    """Bind candidate freshness without allowing stale targets into adoption."""
+    if receipt.get("schema") != "candidate_same_day_gate_v1":
+        raise ValueError(f"candidate same-day gate schema mismatch: {path}")
+    if receipt.get("execution_admitted") is not False:
+        raise ValueError(f"candidate same-day gate crossed execution boundary: {path}")
+    if receipt.get("paper_allowed") is True or receipt.get("promotion_allowed") is True:
+        raise ValueError(f"candidate same-day gate permits paper or promotion: {path}")
+    rows = receipt.get("candidates")
+    if not isinstance(rows, list):
+        raise ValueError(f"candidate same-day gate rows are missing: {path}")
+    return {
+        "status": receipt.get("status"),
+        "requested_decision_day": receipt.get("requested_decision_day"),
+        "candidate_count": receipt.get("candidate_count", len(rows)),
+        "candidates": [
+            {
+                "candidate_id": row.get("candidate_id"),
+                "decision_day": row.get("decision_day"),
+                "status": row.get("status"),
+                "reason": row.get("reason"),
+            }
+            for row in rows if isinstance(row, Mapping)
+        ],
+        "source": {"path": str(path.resolve()), "sha256": _sha256(path)},
+        "paper_allowed": False,
+        "promotion_allowed": False,
+        "next_gate": "produce a fresh same-day candidate target before D0/D1 projection",
+    }
+
+
 def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
                  factor_path: Path = DEFAULT_FACTOR,
                  shortline_path: Path = DEFAULT_SHORTLINE,
                  retained_joint_path: Path | None = None,
                  d0_d1_path: Path | None = None,
-                 current_window_path: Path | None = None) -> dict[str, Any]:
+                 current_window_path: Path | None = None,
+                 same_day_gate_path: Path | None = None) -> dict[str, Any]:
     candidate = _read(candidate_path)
     factor = _read(factor_path)
     shortline = _read(shortline_path)
@@ -338,6 +370,10 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
     if current_window_path is not None:
         current_window = _current_window_summary(_read(current_window_path), current_window_path)
         separate_gates["latest_current_window"] = current_window
+    same_day_gate = None
+    if same_day_gate_path is not None:
+        same_day_gate = _same_day_gate_summary(_read(same_day_gate_path), same_day_gate_path)
+        separate_gates["latest_candidate_same_day_gate"] = same_day_gate
     next_actions = [
         "Run a PIT-complete untouched holdout before selecting a mature-factor horizon.",
         "Replace the shortline independent raw path with StockDB-equivalent history and untouched-forward validation.",
@@ -370,6 +406,8 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
                if d0_d1_path is not None else {}),
             **({"current_window_comparison": {"path": str(current_window_path.resolve()), "sha256": _sha256(current_window_path)}}
                if current_window_path is not None else {}),
+            **({"candidate_same_day_gate": {"path": str(same_day_gate_path.resolve()), "sha256": _sha256(same_day_gate_path)}}
+               if same_day_gate_path is not None else {}),
         },
         "candidate_summary": candidate.get("summary"),
         "candidate_decisions": [
@@ -440,6 +478,13 @@ def render_markdown(receipt: Mapping[str, Any]) -> str:
                 f"- `{row['strategy_id']}`: {row['research_decision']}, "
                 f"return {float(row['net_return']):.4%}, orders {row['orders']}, fills {row['fills']}."
             )
+    same_day_gate = receipt["separate_gates"].get("latest_candidate_same_day_gate")
+    if same_day_gate is not None:
+        lines += [
+            "",
+            f"Candidate same-day gate: `{same_day_gate['status']}` for `{same_day_gate['requested_decision_day']}`; "
+            f"{same_day_gate['candidate_count']} candidates checked; stale inputs remain outside D0/D1.",
+        ]
     public_seat = receipt["separate_gates"].get("public_seat_trend_hypotheses")
     if public_seat is not None:
         lines += [
@@ -460,9 +505,11 @@ def write_outputs(*, candidate_path: Path = DEFAULT_CANDIDATE,
                   retained_joint_path: Path | None = None,
                   d0_d1_path: Path | None = None,
                   current_window_path: Path | None = None,
+                  same_day_gate_path: Path | None = None,
                   output: Path = DEFAULT_OUTPUT,
                   report: Path = DEFAULT_REPORT) -> tuple[Path, Path]:
-    receipt = build_rollup(candidate_path, factor_path, shortline_path, retained_joint_path, d0_d1_path, current_window_path)
+    receipt = build_rollup(candidate_path, factor_path, shortline_path, retained_joint_path,
+                           d0_d1_path, current_window_path, same_day_gate_path)
     output.parent.mkdir(parents=True, exist_ok=True)
     report.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -481,6 +528,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="optional completed same-day D0/D1 paper receipt to bind as a separate gate")
     parser.add_argument("--current-window-comparison", type=Path,
                         help="optional completed explicit current-window comparison to bind as a separate gate")
+    parser.add_argument("--candidate-same-day-gate", type=Path,
+                        help="optional candidate freshness gate to bind before D0/D1 projection")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
     args = parser.parse_args(argv)
@@ -490,6 +539,7 @@ def main(argv: list[str] | None = None) -> int:
                                    retained_joint_path=args.retained_joint_comparison,
                                    d0_d1_path=args.d0_d1_receipt,
                                    current_window_path=args.current_window_comparison,
+                                   same_day_gate_path=args.candidate_same_day_gate,
                                    output=args.output, report=args.report)
     print(json.dumps({"status": "COMPLETED_RESEARCH_ONLY_ADOPTION_ROLLUP",
                       "output": str(output), "report": str(report)}, ensure_ascii=False))

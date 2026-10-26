@@ -188,3 +188,32 @@ def test_rollup_rejects_current_window_boundary_crossing(tmp_path):
     })
     with pytest.raises(ValueError, match="current-window execution boundary"):
         build_rollup(candidate, factor, shortline, current_window_path=current_window)
+
+
+def test_rollup_binds_candidate_same_day_gate(tmp_path):
+    candidate, factor, shortline, retained_joint = _fixtures(tmp_path)
+    same_day = _write_receipt(tmp_path / "same_day.json", {
+        "schema": "candidate_same_day_gate_v1",
+        "status": "BLOCKED_STALE_CANDIDATE_INPUT",
+        "execution_admitted": False, "paper_allowed": False, "promotion_allowed": False,
+        "requested_decision_day": "2026-10-26", "candidate_count": 1,
+        "candidates": [{"candidate_id": "candidate", "decision_day": "2026-10-23",
+                        "status": "BLOCKED_STALE_CANDIDATE_INPUT", "reason": "decision_day_mismatch"}],
+    })
+    result = build_rollup(candidate, factor, shortline, retained_joint,
+                          same_day_gate_path=same_day)
+    gate = result["separate_gates"]["latest_candidate_same_day_gate"]
+    assert gate["status"] == "BLOCKED_STALE_CANDIDATE_INPUT"
+    assert gate["candidates"][0]["reason"] == "decision_day_mismatch"
+    assert gate["paper_allowed"] is False
+
+
+def test_rollup_rejects_candidate_same_day_gate_boundary(tmp_path):
+    candidate, factor, shortline, _retained_joint = _fixtures(tmp_path)
+    same_day = _write_receipt(tmp_path / "same_day.json", {
+        "schema": "candidate_same_day_gate_v1", "status": "READY_SAME_DAY_CANDIDATE_INPUT",
+        "execution_admitted": True, "paper_allowed": False, "promotion_allowed": False,
+        "requested_decision_day": "2026-10-26", "candidate_count": 1, "candidates": [],
+    })
+    with pytest.raises(ValueError, match="candidate same-day gate crossed"):
+        build_rollup(candidate, factor, shortline, same_day_gate_path=same_day)
