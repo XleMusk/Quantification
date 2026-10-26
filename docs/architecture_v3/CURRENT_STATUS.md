@@ -463,3 +463,7 @@ StockDB 短线长路径回放和 adoption gate v3 已绑定到内部研究发布
 ## 2026-10-26 batched held-position coverage result
 
 优化后的 `stockdb-source-coverage` 已对固定纸面账户 20 个持仓标的完成一次批量诊断，回执目录 `outputs/stockdb_source_coverage/20261026_201700_39ada9fb`，状态 `coverage_gap_confirmed`，20/20 行在当前 StockDB snapshot 和 2026-10-23 raw supplement 中均缺少 2026-10-26 数据。诊断没有填充价格或改写快照；该结果直接解释了 post-close 为什么必须等待完整收市源。
+
+## 2026-10-26 P31 coverage diagnostics
+
+P31 已绑定：StockDB 覆盖诊断现在按批次一次读取 parquet 并建立标的索引；固定纸面账户 20 个标的的 2026-10-26 覆盖结果为 20/20 缺失，未填充价格、未改写快照、未生成 D0/D1。验收测试 2 passed。

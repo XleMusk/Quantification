@@ -2194,6 +2194,30 @@
         "outputs/research_reports/20261026_release_v23_binding_v1.md"
       ],
       "acceptance": "Both frozen models replay through shared Engine/Ledger from the local StockDB daily snapshot, produce target/order/fill/account artifacts, record 7,203 unavailable requested daily rows, remain research-only with no broker/THS interaction, and are bound in release v23 with missing_required_code=[] and live_execution_ready=false."
+    },
+    {
+      "id": "P31",
+      "domain": "development",
+      "result": "StockDB coverage diagnostics now batch-read each pinned parquet chunk once, preserve all missing rows, and produce a held-position coverage receipt without imputation.",
+      "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
+      "next": "When a complete close source is available, rerun the same batched diagnostic and attach the complete package to post-close D0/D1.",
+      "prohibition": "Do not impute missing prices, alter frozen snapshots, promote alternate sources or open execution permissions.",
+      "actual_paths": [
+        "trading/research/stockdb_source_coverage.py",
+        "trading/tests/test_stockdb_source_coverage.py",
+        "outputs/stockdb_source_coverage/20261026_201700_39ada9fb/run.json",
+        "outputs/stockdb_source_coverage/20261026_201700_39ada9fb/REPORT.md",
+        "outputs/pipeline_receipts/20261026_stockdb_close_coverage_v1.json"
+      ],
+      "evidence_updated_on": "2026-10-26",
+      "evidence": [
+        "trading/research/stockdb_source_coverage.py",
+        "trading/tests/test_stockdb_source_coverage.py",
+        "outputs/stockdb_source_coverage/20261026_201700_39ada9fb/run.json",
+        "outputs/stockdb_source_coverage/20261026_201700_39ada9fb/REPORT.md",
+        "outputs/pipeline_receipts/20261026_stockdb_close_coverage_v1.json"
+      ],
+      "acceptance": "A batch request for 20 current holdings completes from the pinned snapshot without repeated full scans, records 20 missing 2026-10-26 rows, passes 2 focused tests, and leaves execution_admitted=false with no imputation."
     }
   ],
   "updated_at": "2026-10-26"
