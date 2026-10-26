@@ -122,3 +122,44 @@ def test_rollup_rejects_incomplete_d0_d1_coverage(tmp_path):
     })
     with pytest.raises(ValueError, match="coverage"):
         build_rollup(candidate, factor, shortline, d0_d1_path=d0_d1)
+
+
+def test_rollup_binds_current_window_without_promotion(tmp_path):
+    candidate, factor, shortline, retained_joint = _fixtures(tmp_path)
+    current_window = _write_receipt(tmp_path / "current_window.json", {
+        "schema": "quantification_current_window_strategy_comparison_v1",
+        "status": "COMPLETED_RESEARCH_ONLY_CURRENT_WINDOW_COMPARISON",
+        "execution_admitted": False, "strategy_validated": False,
+        "ledger_mutated": False, "broker_or_ths_interacted": False,
+        "promotion_allowed": False, "stockdb_snapshot": "snapshot-v1",
+        "common_window": {"start": "2026-08-31", "end": "2026-10-26", "sessions": 35},
+        "strategies": [
+            {"id": "fixed", "label": "Fixed", "execution_admitted": False,
+             "strategy_validated": False, "research_decision": "CONTINUE_RESEARCH_ONLY",
+             "metrics": {"net_return": 0.01, "max_drawdown": -0.02, "sharpe_zero_rf_252": 0.8, "orders": 2, "fills": 3, "fees_rmb": 1.0}},
+            {"id": "candidate", "label": "Candidate", "execution_admitted": False,
+             "strategy_validated": False, "research_decision": "STOP_RESEARCH_ONLY",
+             "metrics": {"net_return": -0.02, "max_drawdown": -0.03, "sharpe_zero_rf_252": -0.5, "orders": 4, "fills": 5, "fees_rmb": 2.0}},
+        ],
+    })
+    result = build_rollup(candidate, factor, shortline, retained_joint,
+                          current_window_path=current_window)
+    latest = result["separate_gates"]["latest_current_window"]
+    assert latest["common_window"]["sessions"] == 35
+    assert latest["strategies"][1]["research_decision"] == "STOP_RESEARCH_ONLY"
+    assert result["promotion_allowed"] is False
+    assert result["next_actions"][1].startswith("Current-window 2026-08-31")
+
+
+def test_rollup_rejects_current_window_boundary_crossing(tmp_path):
+    candidate, factor, shortline, _retained_joint = _fixtures(tmp_path)
+    current_window = _write_receipt(tmp_path / "current_window.json", {
+        "schema": "quantification_current_window_strategy_comparison_v1",
+        "status": "COMPLETED_RESEARCH_ONLY_CURRENT_WINDOW_COMPARISON",
+        "execution_admitted": True, "strategy_validated": False,
+        "ledger_mutated": False, "broker_or_ths_interacted": False,
+        "promotion_allowed": False, "common_window": {"sessions": 35},
+        "stockdb_snapshot": "snapshot-v1", "strategies": [],
+    })
+    with pytest.raises(ValueError, match="current-window execution boundary"):
+        build_rollup(candidate, factor, shortline, current_window_path=current_window)

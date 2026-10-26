@@ -23,6 +23,8 @@ DEFAULT_REPORT = Path("outputs/research_reports/20261026_research_adoption_rollu
 RETAINED_JOINT_SCHEMA = "quantification_retained_joint_candidate_comparison_v1"
 D0_D1_SCHEMA = "stockdb_next_close_d0_d1_contract_v1"
 D0_D1_STATUS = "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1"
+CURRENT_WINDOW_SCHEMA = "quantification_current_window_strategy_comparison_v1"
+CURRENT_WINDOW_STATUS = "COMPLETED_RESEARCH_ONLY_CURRENT_WINDOW_COMPARISON"
 
 
 def _read(path: Path) -> dict[str, Any]:
@@ -197,11 +199,59 @@ def _d0_d1_summary(receipt: Mapping[str, Any], path: Path) -> dict[str, Any]:
     }
 
 
+def _current_window_summary(receipt: Mapping[str, Any], path: Path) -> dict[str, Any]:
+    """Bind the newest explicit terminal-window comparison without promotion."""
+    if receipt.get("schema") != CURRENT_WINDOW_SCHEMA:
+        raise ValueError(f"current-window schema mismatch: {path}")
+    if receipt.get("status") != CURRENT_WINDOW_STATUS:
+        raise ValueError(f"current-window is not complete: {path}")
+    if any(receipt.get(key) is not False for key in
+           ("execution_admitted", "strategy_validated", "ledger_mutated",
+            "broker_or_ths_interacted", "promotion_allowed")):
+        raise ValueError(f"current-window execution boundary crossed: {path}")
+    window = receipt.get("common_window")
+    strategies = receipt.get("strategies")
+    snapshot = receipt.get("stockdb_snapshot")
+    if not isinstance(window, Mapping) or not isinstance(strategies, list) or len(strategies) != 2 or not snapshot:
+        raise ValueError(f"current-window payload is incomplete: {path}")
+    if type(window.get("sessions")) is not int or window["sessions"] <= 0:
+        raise ValueError(f"current-window sessions are invalid: {path}")
+    rows = []
+    for row in strategies:
+        if not isinstance(row, Mapping) or not isinstance(row.get("metrics"), Mapping):
+            raise ValueError(f"current-window strategy row is malformed: {path}")
+        metrics = row["metrics"]
+        if row.get("strategy_validated") is not False or row.get("execution_admitted") is not False:
+            raise ValueError(f"current-window strategy boundary crossed: {path}")
+        rows.append({
+            "strategy_id": row.get("id"),
+            "label": row.get("label"),
+            "research_decision": row.get("research_decision"),
+            "net_return": metrics.get("net_return"),
+            "max_drawdown": metrics.get("max_drawdown"),
+            "sharpe_zero_rf_252": metrics.get("sharpe_zero_rf_252"),
+            "orders": metrics.get("orders"),
+            "fills": metrics.get("fills"),
+            "fees_rmb": metrics.get("fees_rmb"),
+        })
+    return {
+        "status": receipt.get("status"),
+        "common_window": dict(window),
+        "stockdb_snapshot": snapshot,
+        "strategies": rows,
+        "source": {"path": str(path.resolve()), "sha256": _sha256(path)},
+        "paper_allowed": False,
+        "promotion_allowed": False,
+        "next_gate": "keep the terminal comparison as a diagnostic until long-window, PIT and prospective evidence agree",
+    }
+
+
 def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
                  factor_path: Path = DEFAULT_FACTOR,
                  shortline_path: Path = DEFAULT_SHORTLINE,
                  retained_joint_path: Path | None = None,
-                 d0_d1_path: Path | None = None) -> dict[str, Any]:
+                 d0_d1_path: Path | None = None,
+                 current_window_path: Path | None = None) -> dict[str, Any]:
     candidate = _read(candidate_path)
     factor = _read(factor_path)
     shortline = _read(shortline_path)
@@ -224,6 +274,10 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
     if d0_d1_path is not None:
         d0_d1 = _d0_d1_summary(_read(d0_d1_path), d0_d1_path)
         separate_gates["latest_d0_d1_paper"] = d0_d1
+    current_window = None
+    if current_window_path is not None:
+        current_window = _current_window_summary(_read(current_window_path), current_window_path)
+        separate_gates["latest_current_window"] = current_window
     next_actions = [
         "Run a PIT-complete untouched holdout before selecting a mature-factor horizon.",
         "Replace the shortline independent raw path with StockDB-equivalent history and untouched-forward validation.",
@@ -237,6 +291,11 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
             f"D0/D1 close {d0_d1['close_date']} is complete for the target set; "
             "reuse the same contract on the next closed session and keep persistent fixed_daily rollover gated by a complete close package."
         ))
+    if current_window is not None:
+        next_actions.insert(1, (
+            f"Current-window {current_window['common_window']['start']}..{current_window['common_window']['end']} is bound as a terminal diagnostic; "
+            "do not promote from this short slice."
+        ))
     return {
         "schema": SCHEMA,
         "status": "COMPLETED_RESEARCH_ONLY_ADOPTION_ROLLUP",
@@ -249,6 +308,8 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
             "shortline_adoption": {"path": str(shortline_path.resolve()), "sha256": _sha256(shortline_path)},
             **({"d0_d1_paper": {"path": str(d0_d1_path.resolve()), "sha256": _sha256(d0_d1_path)}}
                if d0_d1_path is not None else {}),
+            **({"current_window_comparison": {"path": str(current_window_path.resolve()), "sha256": _sha256(current_window_path)}}
+               if current_window_path is not None else {}),
         },
         "candidate_summary": candidate.get("summary"),
         "candidate_decisions": [
@@ -307,6 +368,18 @@ def render_markdown(receipt: Mapping[str, Any]) -> str:
             f"joint {d0_d1['joint_paper_order_count']} orders; "
             f"source scope `{d0_d1['source_scope']}`.",
         ]
+    current_window = receipt["separate_gates"].get("latest_current_window")
+    if current_window is not None:
+        lines += [
+            "",
+            f"Latest current-window comparison: `{current_window['common_window']['start']}..{current_window['common_window']['end']}` "
+            f"({current_window['common_window']['sessions']} sessions), snapshot `{current_window['stockdb_snapshot']}`.",
+        ]
+        for row in current_window["strategies"]:
+            lines.append(
+                f"- `{row['strategy_id']}`: {row['research_decision']}, "
+                f"return {float(row['net_return']):.4%}, orders {row['orders']}, fills {row['fills']}."
+            )
     lines += ["", "All rows keep `paper_allowed=false`, `promotion_allowed=false`, and `execution_admitted=false`.", ""]
     return "\n".join(lines)
 
@@ -316,9 +389,10 @@ def write_outputs(*, candidate_path: Path = DEFAULT_CANDIDATE,
                   shortline_path: Path = DEFAULT_SHORTLINE,
                   retained_joint_path: Path | None = None,
                   d0_d1_path: Path | None = None,
+                  current_window_path: Path | None = None,
                   output: Path = DEFAULT_OUTPUT,
                   report: Path = DEFAULT_REPORT) -> tuple[Path, Path]:
-    receipt = build_rollup(candidate_path, factor_path, shortline_path, retained_joint_path, d0_d1_path)
+    receipt = build_rollup(candidate_path, factor_path, shortline_path, retained_joint_path, d0_d1_path, current_window_path)
     output.parent.mkdir(parents=True, exist_ok=True)
     report.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -335,6 +409,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="optional retained joint target comparison kept as a separate gate")
     parser.add_argument("--d0-d1-receipt", type=Path,
                         help="optional completed same-day D0/D1 paper receipt to bind as a separate gate")
+    parser.add_argument("--current-window-comparison", type=Path,
+                        help="optional completed explicit current-window comparison to bind as a separate gate")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
     args = parser.parse_args(argv)
@@ -343,6 +419,7 @@ def main(argv: list[str] | None = None) -> int:
                                    shortline_path=args.shortline_adoption,
                                    retained_joint_path=args.retained_joint_comparison,
                                    d0_d1_path=args.d0_d1_receipt,
+                                   current_window_path=args.current_window_comparison,
                                    output=args.output, report=args.report)
     print(json.dumps({"status": "COMPLETED_RESEARCH_ONLY_ADOPTION_ROLLUP",
                       "output": str(output), "report": str(report)}, ensure_ascii=False))

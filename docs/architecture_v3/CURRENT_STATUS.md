@@ -609,3 +609,7 @@ F2 的 publication contract 现在要求：日期型披露按 `[D 00:00, D+1 00:
 基于 2026-10-26 已完成的两个 StockDB rolling 账户产物，新增显式路径的同窗口比较入口 `run_committee.py current-window-strategy-comparison`，不改变既有长窗口回执，也不重跑策略。共同保存窗口为 2026-08-31..2026-10-26、35 个交易日：固定 `low_volatility_252_20` 净收益 0.8293%、最大回撤 -2.0255%、Sharpe 0.8366、25 笔订单；低波/半动量净收益 -9.4132%、最大回撤 -9.6664%、Sharpe -5.8082、40 笔订单。按固定研究规则，固定腿为 `CONTINUE_RESEARCH_ONLY`，半动量腿为 `STOP_RESEARCH_ONLY`；该结论只用于研究路由，不构成策略验证或采用。
 
 回执为 `outputs/pipeline_receipts/20261026_current_window_fixed_candidate_v1.json`，报告为 `outputs/research_reports/20261026_current_window_fixed_candidate_v1.md`，聚焦测试 `17 passed`。比较严格绑定共享 StockDB snapshot、Engine/Ledger 产物和执行边界，保持 `execution_admitted=false`、`strategy_validated=false`、`promotion_allowed=false`，没有 broker/THS 交互。
+
+## 2026-10-26 adoption rollup binds current-window comparison
+
+`research-adoption-rollup` 新增 `--current-window-comparison`，将显式 2026-08-31..2026-10-26 固定/半动量同窗口比较作为独立研究 gate 绑定到 v5 rollup。回执 `outputs/pipeline_receipts/20261026_research_adoption_rollup_v5.json` 同时保留 D0/D1 close 2026-10-26、成熟因子、短线和联合投影 gate；固定腿继续 `CONTINUE_RESEARCH_ONLY`，半动量在 35 日终端窗口为 `STOP_RESEARCH_ONLY`。该绑定不把短窗口结果提升为策略验证，仍保持 `paper_allowed=false`、`promotion_allowed=false`、`execution_admitted=false`。聚焦测试 `24 passed`。
