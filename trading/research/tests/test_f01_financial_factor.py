@@ -15,8 +15,10 @@ BEFORE = TimeWindow.exact("2026-10-19T15:00:00+08:00")
 EVENT = publication_interval("2026-10-20")
 
 
-def fact(fid, metric, value, *, period_end, available=BEFORE, period_kind="single_quarter", status=OBSERVED,
+def fact(fid, metric, value, *, period_end, available=BEFORE, period_kind=None, status=OBSERVED,
          scope="consolidated", currency="CNY", unit="yuan"):
+    if period_kind is None:
+        period_kind = "point_in_time" if metric == "total_assets" else "single_quarter"
     return FinancialFact(fid, "issuer-1", metric, date(2025, 1, 1), period_end, period_kind,
                          scope, currency, unit, value, available, status)
 
@@ -56,6 +58,18 @@ def test_f01_rejects_nonpositive_assets_and_scope_conflict():
                          fact("prior", "parent_net_profit", 40, period_end=date(2025, 9, 30), scope="separate"),
                          fact("assets", "total_assets", 1000, period_end=date(2026, 9, 30)), EVENT)
     assert result.status == INCOMPARABLE
+
+
+def test_f01_rejects_assets_marked_as_flow_period():
+    assets = fact("assets", "total_assets", 1000, period_end=date(2026, 9, 30), period_kind="single_quarter")
+    result = compute_f01(
+        fact("cur", "parent_net_profit", 50, period_end=date(2026, 9, 30)),
+        fact("prior", "parent_net_profit", 40, period_end=date(2025, 9, 30)),
+        assets,
+        EVENT,
+    )
+    assert result.status == INCOMPARABLE
+    assert result.reason == "asset_period_kind_mismatch"
 
 
 def test_cumulative_to_single_quarter_keeps_decimal_units_and_latest_availability():

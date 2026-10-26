@@ -98,6 +98,10 @@ def _validate_facts(current: FinancialFact, prior: FinancialFact, assets: Financ
         return (INCOMPARABLE, "issuer_identity_conflict")
     if current.metric_id != "parent_net_profit" or prior.metric_id != "parent_net_profit" or assets.metric_id != "total_assets":
         return (INCOMPARABLE, "metric_identity_mismatch")
+    if current.period_kind not in {"single_quarter", "cumulative"} or prior.period_kind not in {"single_quarter", "cumulative"}:
+        return (INCOMPARABLE, "profit_period_kind_mismatch")
+    if assets.period_kind != "point_in_time":
+        return (INCOMPARABLE, "asset_period_kind_mismatch")
     if (current.scope_group, current.currency, current.unit) != (prior.scope_group, prior.currency, prior.unit):
         return (INCOMPARABLE, "profit_scope_currency_or_unit_conflict")
     if (current.scope_group, current.currency, current.unit) != (assets.scope_group, assets.currency, assets.unit):

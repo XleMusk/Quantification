@@ -5,8 +5,9 @@ from trading.research.f2_vertical_slice import BLOCKED, COMPLETED, run_vertical_
 
 def fact(symbol, role, period_start, period_end, value, available='2024-04-30T12:00:00+08:00'):
     metric = 'total_assets' if role == 'assets' else 'parent_net_profit'
+    period_kind = 'point_in_time' if role == 'assets' else 'single_quarter'
     return {'fact_id': f'{symbol}:{role}', 'issuer_id': symbol, 'metric_id': metric,
-            'period_start': period_start, 'period_end': period_end, 'period_kind': 'single_quarter',
+            'period_start': period_start, 'period_end': period_end, 'period_kind': period_kind,
             'scope_group': 'consolidated_parent', 'currency': 'CNY', 'unit': 'yuan',
             'value': str(value), 'available_at': available, 'status': 'OBSERVED'}
 

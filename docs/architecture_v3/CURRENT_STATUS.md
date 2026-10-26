@@ -384,3 +384,8 @@ D1 输入汇入已自动化：`candidate-daily-input-bundle` 从两个已保存�
 新增 `trading/research/shortline_candidate_handoff.py` 与 `shortline-native-candidate-handoff` 命令：它读取已发布且通过 IPO qualified 资格投影的 native preopen plan，仅复制明确 `candidate_selected=true` 的事件到新 handoff，不修改 raw score 或原 plan。2026-10-15→2026-10-16 的 LR/LGBM 各生成 3 行候选，两个独立 score gate 均返回 `VERIFIED_SHORTLINE_SCORE_GATE_READY`；LR 另生成 SignalFrame/target preview。该结果仍是研究候选输入，不是完整回放、PIT 验证或纸面/实盘授权。
 
 证据：`outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json`、`outputs/research_reports/20261026_shortline_candidate_handoff_v1.md`。
+
+
+## 2026-10-26 F01 period semantics
+
+按 CTO 计划修正 F01 计算语义：`total_assets` 必须是 `point_in_time`，利润事实只能是 `single_quarter` 或 `cumulative`；不符合时在因子计算前返回 `INCOMPARABLE`，不把流量期间资产当分母。F01/F2 vertical focused suite `22 passed`。真实 000002.SZSE/2023Q1 仍因历史 retrieval/as-of/revision 缺失保持 `BLOCKED_DATA`。

@@ -2017,6 +2017,25 @@
         "outputs/research_reports/20261026_shortline_candidate_panel_replay_blocked_v1.md"
       ],
       "acceptance": "A hash-bound published qualified preopen plan is consumed without changing source bytes; the new LR and LightGBM candidate files contain exactly 3 selected rows each, paper_candidate_only=true, and both score gates return VERIFIED_SHORTLINE_SCORE_GATE_READY with execution_admitted=false."
+    },
+    {
+      "id": "P23",
+      "domain": "data",
+      "result": "F01 now rejects flow-period assets and non-comparable profit period kinds before factor calculation; the local F01/F2 vertical contract remains executable only with explicit point-in-time assets, while real historical source admission stays blocked.",
+      "state": "VERIFIED_LOCAL_SEMANTICS_BLOCKED_EXTERNAL_DATA",
+      "next": "Use a real pre-decision retrieval/as-of and revision payload for the locked 2023Q1 issuer artifact; then rerun the same bridge without weakening the semantic contract.",
+      "prohibition": "Do not relabel a flow-period asset as point-in-time or treat local file timestamps as historical issuer retrieval.",
+      "actual_paths": [
+        "trading/research/f01_financial_factor.py",
+        "trading/research/tests/test_f01_financial_factor.py",
+        "trading/research/tests/test_f2_vertical_slice.py"
+      ],
+      "evidence": [
+        "trading/research/f01_financial_factor.py",
+        "trading/research/tests/test_f01_financial_factor.py",
+        "trading/research/tests/test_f2_vertical_slice.py"
+      ],
+      "acceptance": "The F01 pure function returns INCOMPARABLE/asset_period_kind_mismatch for total_assets marked single_quarter, accepts point_in_time assets in the ready fixture, and the focused F01/F2 suite passes without changing execution permissions."
     }
   ],
   "updated_at": "2026-10-26T09:35:00+08:00"
