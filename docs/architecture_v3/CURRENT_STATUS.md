@@ -503,3 +503,10 @@ P18 THS 重复回读行门禁已绑定内部研究发布 v28：`D:/Quantificatio
 ## 2026-10-26 internal release v30
 
 P33 W4 实际 HTTP 工作台链已绑定内部研究发布 v30：`D:/QuantificationData/trading/research/releases/20261026_v30/release_manifest.json`，提交 `a36fcff`，`missing_required_code=[]`、`execution_admitted=false`、`live_execution_ready=false`。绑定回执 `outputs/pipeline_receipts/20261026_release_v30_binding_v1.json`。
+
+
+## 2026-10-26 Engineering Handbook R2 implementation wave
+
+R2 B1/B5 work packages completed: F01 separates disclosure window from decision cutoff while keeping real PIT external evidence blocked; F05 persists invalid-request, idempotency-conflict, and concurrency-limit decisions with read-only receipts; U04 exposes a recursive local recovery-chain query with monotonic attempt numbers. Commits: bc5141e, 6895bb0, 07dbd98.
+
+Validation: F01 10 passed; persistent-task additions 3 passed plus 1 existing test; workbench backend 28 passed. All receipts keep execution_admitted=false; no broker/THS connection and no real-account mutation.

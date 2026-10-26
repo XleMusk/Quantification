@@ -27,8 +27,8 @@
       "id": "F01",
       "domain": "development",
       "result": "Bind existing entries, successful commands, commits, artifacts and only the remaining differences.",
-      "state": "CODE_INTEGRATED",
-      "next": "The 2023Q1 CDX probe found only a 2025-09-05 capture; use a source with pre-decision retrieval/as-of and revision payload evidence before any PIT admission.",
+      "state": "VERIFIED_LOCAL_SEMANTICS_BLOCKED_EXTERNAL_DATA",
+      "next": "The local disclosure-window/decision-cutoff contract is verified; obtain pre-decision retrieval/as-of and revision payload evidence before any PIT admission.",
       "prohibition": "Do not repeat a full inventory or treat a plan checker as production evidence.",
       "actual_paths": [
         "trading/research/f01_scoped_field_coverage.py",
@@ -79,7 +79,11 @@
         "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/source_snapshot.json",
         "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/receipt.json",
         "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/fact_bridge_receipt.json",
-        "outputs/research_reports/20261026_f2_real_source_snapshot_v1.md"
+        "outputs/research_reports/20261026_f2_real_source_snapshot_v1.md",
+        "trading/research/f01_financial_factor.py",
+        "trading/research/tests/test_f01_financial_factor.py",
+        "outputs/pipeline_receipts/20261026_f01_decision_cutoff_contract_v1.json",
+        "outputs/research_reports/20261026_f01_decision_cutoff_contract_v1.md"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -94,7 +98,11 @@
         "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/source_snapshot.json",
         "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/receipt.json",
         "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/fact_bridge_receipt.json",
-        "outputs/research_reports/20261026_f2_real_source_snapshot_v1.md"
+        "outputs/research_reports/20261026_f2_real_source_snapshot_v1.md",
+        "trading/research/f01_financial_factor.py",
+        "trading/research/tests/test_f01_financial_factor.py",
+        "outputs/pipeline_receipts/20261026_f01_decision_cutoff_contract_v1.json",
+        "outputs/research_reports/20261026_f01_decision_cutoff_contract_v1.md"
       ]
     },
     {
@@ -150,8 +158,25 @@
       "domain": "development",
       "result": "Persistent tasks and global concurrency/expense decisions are recoverable.",
       "state": "PARTIAL",
-      "next": "Reuse the existing run store and record rejection reasons before adding scheduling code.",
-      "prohibition": "Do not fill task slots or expand budgets to make progress look larger."
+      "next": "Re-use the durable rejection receipts in one accepted bounded paper-task run and measure its task/expense outcome; do not add a scheduler or auto-retry.",
+      "prohibition": "Do not fill task slots or expand budgets to make progress look larger.",
+      "evidence_updated_on": "2026-10-26",
+      "actual_paths": [
+        "trading/store.py",
+        "trading/api.py",
+        "trading/research/persistent_task_decision_receipt.py",
+        "trading/tests/test_persistent_task_store.py",
+        "outputs/pipeline_receipts/20261026_persistent_task_decision_v1.json",
+        "outputs/research_reports/20261026_persistent_task_decision_v1.md"
+      ],
+      "evidence": [
+        "trading/store.py",
+        "trading/api.py",
+        "trading/research/persistent_task_decision_receipt.py",
+        "trading/tests/test_persistent_task_store.py",
+        "outputs/pipeline_receipts/20261026_persistent_task_decision_v1.json",
+        "outputs/research_reports/20261026_persistent_task_decision_v1.md"
+      ]
     },
     {
       "id": "F06",
@@ -1460,8 +1485,8 @@
       "id": "U04",
       "domain": "workbench",
       "result": "Exception and recovery workspace exposes real task state and feedback.",
-      "state": "PARTIAL",
-      "next": "Keep manual resubmit as the only recovery action for failed/interrupted paper jobs; automatic retry and external order state remain disabled.",
+      "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
+      "next": "Use the read-only recovery chain for a bounded isolated paper-job reconnect; external broker/THS state remains manual and unauthorized.",
       "prohibition": "UI cancel is not broker cancel.",
       "actual_paths": [
         "webapp/backend/app/main.py",
@@ -1481,7 +1506,10 @@
         "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
         "outputs/research_reports/20261026_workbench_release_binding_v1.md",
-        "webapp/backend/app/release.py"
+        "webapp/backend/app/release.py",
+        "webapp/backend/app/store.py",
+        "outputs/pipeline_receipts/20261026_workbench_recovery_chain_v1.json",
+        "outputs/research_reports/20261026_workbench_recovery_chain_v1.md"
       ],
       "evidence": [
         "webapp/backend/app/main.py",
@@ -1501,7 +1529,10 @@
         "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
         "outputs/research_reports/20261026_workbench_release_binding_v1.md",
-        "webapp/backend/app/release.py"
+        "webapp/backend/app/release.py",
+        "webapp/backend/app/store.py",
+        "outputs/pipeline_receipts/20261026_workbench_recovery_chain_v1.json",
+        "outputs/research_reports/20261026_workbench_recovery_chain_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
