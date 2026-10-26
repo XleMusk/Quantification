@@ -37,6 +37,8 @@ FLAGS = {"candidate_panel_only": True, "research_only": True,
          "strategy_validated": False, "source_verified": False,
          "pit_verified": False, "corporate_actions_verified": False,
          "broker_connected": False, "personal_account_claimed": False}
+NATIVE_EXECUTION_REFERENCE = "native_status_required"
+DERIVED_EXECUTION_REFERENCE = "derived_stockdb_research_only"
 
 
 def load_complete(folder):
@@ -236,7 +238,9 @@ def _raw_path(value):
     return path / "raw_daily.parquet" if path.is_dir() else path
 
 
-def register(source_run, signal, run_dir):
+def register(source_run, signal, run_dir, *, allow_derived_stockdb=False):
+    if type(allow_derived_stockdb) is not bool:
+        raise ValueError("Derived StockDB mode must be an explicit boolean")
     run_dir = _destination(run_dir)
     if run_dir.exists():
         raise FileExistsError("Use a new explicit daily research directory")
@@ -260,6 +264,8 @@ def register(source_run, signal, run_dir):
         "full_exit_lifecycle": FULL_EXIT_LIFECYCLE,
         "account_basis": "explicit_saved_research_checkpoint_not_personal_holdings",
         "seed_history_is_prospective": False,
+        "execution_reference_mode": (DERIVED_EXECUTION_REFERENCE
+                                      if allow_derived_stockdb else NATIVE_EXECUTION_REFERENCE),
         "signal_publication_basis": "historical_eod_assumption_not_verified_actual_publication",
         "cash_and_positions_reset": False, **FLAGS}
     if record["replay_end"] not in sessions:
@@ -271,7 +277,8 @@ def register(source_run, signal, run_dir):
             "registration": _reference(run_dir / "registration.json"), "generation": 0,
             "last_completed_day": record["replay_end"], "source": references,
             "supplement": raw_ref, "committed_at": registered_at,
-            "account_created_by_registration": False, **FLAGS}
+            "account_created_by_registration": False,
+            "execution_reference_mode": registration["execution_reference_mode"], **FLAGS}
         _atomic(run_dir / "head.json", head)
     return status(run_dir)
 
@@ -280,11 +287,15 @@ def _current(run_dir):
     run_dir = _destination(run_dir)
     head = _read(run_dir / "head.json")
     registration = _read(_checked(head["registration"]))
+    execution_reference_mode = registration.get("execution_reference_mode", NATIVE_EXECUTION_REFERENCE)
+    if execution_reference_mode not in {NATIVE_EXECUTION_REFERENCE, DERIVED_EXECUTION_REFERENCE}:
+        raise ValueError("Unknown saved execution reference mode")
     if (head.get("schema") != SCHEMA or registration.get("schema") != SCHEMA
             or head.get("method_id") != METHOD or registration.get("method_id") != METHOD
             or Path(head["registration"]["path"]).resolve() != run_dir / "registration.json"
             or any(value.get(key) != expected for value in (head, registration)
-                   for key, expected in FLAGS.items())):
+                   for key, expected in FLAGS.items())
+            or head.get("execution_reference_mode", NATIVE_EXECUTION_REFERENCE) != execution_reference_mode):
         raise ValueError("Saved daily research method or boundary changed")
     for ref in head["source"].values():
         _checked(ref)
@@ -318,7 +329,9 @@ def status(run_dir):
         "order_count": len(state["orders"]), "fill_count": len(state["fills"]),
         "metrics": record["results"][0],
         "account_basis": registration["account_basis"],
-        "signal_publication_basis": registration["signal_publication_basis"], **FLAGS}
+        "signal_publication_basis": registration["signal_publication_basis"],
+        "execution_reference_mode": registration.get("execution_reference_mode", NATIVE_EXECUTION_REFERENCE),
+        **FLAGS}
 
 
 def resolve_terminal_account(run_dir):
@@ -372,7 +385,7 @@ def _supplement_lineage(path, digest):
     return proofs, nodes
 
 
-def _fingerprint(head, through, packages, supplement):
+def _fingerprint(head, through, packages, supplement, execution_reference_mode):
     # Pin input bytes rather than modification times. This identity is also
     # written before invoking replay, so a crash cannot silently retry it.
     package_refs = []
@@ -382,7 +395,8 @@ def _fingerprint(head, through, packages, supplement):
             name: _reference(folder / name) if (folder / name).is_file() else None
             for name in ("plan.json", "receipt.json", "raw_daily.csv")}})
     body = {"through": through, "source": head["source"], "packages": package_refs,
-            "supplement": _reference(supplement) if supplement else None}
+            "supplement": _reference(supplement) if supplement else None,
+            "execution_reference_mode": execution_reference_mode}
     identity = sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
     return identity, body
 
@@ -400,6 +414,8 @@ def _commit_result(run_dir, head, registration, checkpoint, attempt, attempt_pat
             or new_record["replay_start"] != registration["replay_start"]
             or new_record["month_end_schedule"] != registration["month_end_schedule"]
             or Path(new_protocol["snapshot"]).resolve() != Path(registration["snapshot"])
+            or new_protocol.get("execution_reference_mode") != registration.get(
+                "execution_reference_mode", NATIVE_EXECUTION_REFERENCE)
             or new_record.get("resume_run") != head["source"]["run"]["path"]
             or len(new_checkpoint["daily"]) - len(checkpoint["daily"]) != len(expected)):
         raise ValueError("Replay output does not complete exactly the requested continuation")
@@ -457,13 +473,25 @@ def recover(run_dir, input_id):
         return {**result, "status": "recovered_completed_result", "replay_repeated": False}
 
 
-def run(run_dir, through, *, packages=(), supplemental_raw_view=None):
+def run(run_dir, through, *, packages=(), supplemental_raw_view=None,
+        allow_derived_stockdb=None):
     through = date.fromisoformat(through).isoformat()
     run_dir = _destination(run_dir)
     if not (run_dir / "head.json").is_file():
         raise ValueError("Register an explicit completed seed first")
     with lock(run_dir / "daily.lock"):
         run_dir, head, registration, previous, protocol, checkpoint = _current(run_dir)
+        registered_mode = registration.get("execution_reference_mode", NATIVE_EXECUTION_REFERENCE)
+        if registered_mode not in {NATIVE_EXECUTION_REFERENCE, DERIVED_EXECUTION_REFERENCE}:
+            raise ValueError("Unknown saved execution reference mode")
+        if allow_derived_stockdb is None:
+            allow_derived_stockdb = registered_mode == DERIVED_EXECUTION_REFERENCE
+        if type(allow_derived_stockdb) is not bool:
+            raise ValueError("Derived StockDB mode must be an explicit boolean")
+        requested_mode = (DERIVED_EXECUTION_REFERENCE
+                          if allow_derived_stockdb else NATIVE_EXECUTION_REFERENCE)
+        if requested_mode != registered_mode:
+            raise ValueError("Run execution reference mode must match registration")
         if through <= head["last_completed_day"]:
             return {**status(run_dir), "status": "no_new_session", "through": through,
                     "newly_completed_sessions": 0}
@@ -490,7 +518,7 @@ def run(run_dir, through, *, packages=(), supplemental_raw_view=None):
                     "through": through, "missing_days": missing, "newly_completed_sessions": 0}
         supplement = (_raw_path(supplemental_raw_view) if supplemental_raw_view is not None
                       else _raw_path((protocol.get("supplemental_raw_view") or {}).get("path")))
-        identity, inputs = _fingerprint(head, through, supplied, supplement)
+        identity, inputs = _fingerprint(head, through, supplied, supplement, requested_mode)
         attempt_path = run_dir / "attempts" / (identity + ".json")
         if attempt_path.exists():
             prior = _read(attempt_path)
@@ -498,7 +526,8 @@ def run(run_dir, through, *, packages=(), supplemental_raw_view=None):
                              + str(prior.get("status")))
         attempt = {"schema": SCHEMA, "method_id": METHOD, "input_id": identity,
             "started_at": _now().isoformat(), "status": "checking_inputs", "inputs": inputs,
-            "head_before": head, "execution_progress_unknown": False, **FLAGS}
+            "head_before": head, "execution_progress_unknown": False,
+            "execution_reference_mode": requested_mode, **FLAGS}
         attempt_path.parent.mkdir(exist_ok=True)
         _atomic(attempt_path, attempt)
         try:
@@ -550,7 +579,8 @@ def run(run_dir, through, *, packages=(), supplemental_raw_view=None):
                 initial_cash=registration["config"]["initial_cash"], variants=(registration["signal"],),
                 supplemental_raw_view=supplement, resume_run=head["source"]["run"]["path"],
                 calendars=[item["path"] for item in registration["month_end_schedule"]["calendar_files"]],
-                calendar_driven_month_ends=True, persistent_full_exits=True)
+                calendar_driven_month_ends=True, persistent_full_exits=True,
+                allow_derived_execution_reference=allow_derived_stockdb)
             attempt.update(output=str(out), result=result)
             _atomic(attempt_path, attempt)
             return _commit_result(run_dir, head, registration, checkpoint, attempt, attempt_path)
@@ -571,11 +601,15 @@ def main(argv=None):
     create.add_argument("--source-run", type=Path, required=True)
     create.add_argument("--signal", choices=rolling.VARIANTS, required=True)
     create.add_argument("--run-dir", type=Path, required=True)
+    create.add_argument("--allow-derived-stockdb", action="store_true",
+                        help="Research-only: permit StockDB rows without independent native status")
     daily = sub.add_parser("run")
     daily.add_argument("--run-dir", type=Path, required=True)
     daily.add_argument("--through", required=True)
     daily.add_argument("--package", action="append", type=Path, default=[])
     daily.add_argument("--supplemental-raw-view", type=Path)
+    daily.add_argument("--allow-derived-stockdb", action="store_true", default=None,
+                       help="Research-only: use the registered derived StockDB execution-reference mode")
     read = sub.add_parser("status")
     read.add_argument("--run-dir", type=Path, required=True)
     restore = sub.add_parser("recover")
@@ -583,14 +617,16 @@ def main(argv=None):
     restore.add_argument("--input-id", required=True)
     args = parser.parse_args(argv)
     if args.command == "register":
-        result = register(args.source_run, args.signal, args.run_dir)
+        result = register(args.source_run, args.signal, args.run_dir,
+                          allow_derived_stockdb=args.allow_derived_stockdb)
     elif args.command == "status":
         result = status(args.run_dir)
     elif args.command == "recover":
         result = recover(args.run_dir, args.input_id)
     else:
         result = run(args.run_dir, args.through, packages=args.package,
-                     supplemental_raw_view=args.supplemental_raw_view)
+                     supplemental_raw_view=args.supplemental_raw_view,
+                     allow_derived_stockdb=(args.allow_derived_stockdb if args.command == "run" else None))
     print(json.dumps(result, ensure_ascii=False, allow_nan=False), flush=True)
     return 0
 

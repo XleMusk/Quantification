@@ -78,6 +78,16 @@ def test_registered_saved_account_advances_once_and_duplicate_is_read_only(daily
     assert m.status(d["directory"])["last_completed_day"] == NEXT
 
 
+def test_derived_stockdb_mode_is_explicitly_persisted(daily):
+    d = daily
+    m.register(d["seed"], VARIANT, d["directory"], allow_derived_stockdb=True)
+    registration = read(d["directory"] / "registration.json")
+    head = read(d["directory"] / "head.json")
+    assert registration["execution_reference_mode"] == m.DERIVED_EXECUTION_REFERENCE
+    assert head["execution_reference_mode"] == m.DERIVED_EXECUTION_REFERENCE
+    assert m.status(d["directory"])["execution_reference_mode"] == m.DERIVED_EXECUTION_REFERENCE
+
+
 def test_missing_complete_day_waits_without_advancing_or_rebuilding(daily, monkeypatch):
     d = daily
     m.register(d["seed"], VARIANT, d["directory"])

@@ -43,6 +43,7 @@ SOURCE_COLUMNS = ("code", "date", "open", "high", "low", "close", "volume", "amo
                   "is_st", "pre_close")
 LEGACY_QUOTE_SEMANTICS = "volume_derived_v1"
 QUOTE_SEMANTICS = "native_supplement_status_v2"
+DERIVED_QUOTE_SEMANTICS = "stockdb_pre_close_derived_research_v1"
 CALENDAR_MONTH_END_METHOD = "fixed_exchange_calendar_month_end_and_next_session_v1"
 
 
@@ -53,7 +54,8 @@ def portfolio(initial_cash=140000.0):
                           min_amount=MIN_AMOUNT, min_listing_days=1).validate()
 
 
-def _read_snapshot(snapshot, supplemental_raw_view=None, end=None):
+def _read_snapshot(snapshot, supplemental_raw_view=None, end=None,
+                   *, allow_derived_execution_reference=False):
     snapshot = Path(snapshot).resolve()
     manifest_path = snapshot / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -70,7 +72,8 @@ def _read_snapshot(snapshot, supplemental_raw_view=None, end=None):
     frame["is_st"] = frame["is_st"].fillna(False).astype(bool)
     if frame.duplicated(["code", "date"]).any():
         raise ValueError("StockDB inventory contains duplicate code/date rows")
-    supplemental = {"path": None, "rows_added": 0, "basis": None}
+    supplemental = {"path": None, "rows_added": 0, "basis": None,
+                    "execution_reference_mode": "native_status_required"}
     if supplemental_raw_view:
         raw_path = Path(supplemental_raw_view).resolve()
         if raw_path.is_dir():
@@ -94,10 +97,33 @@ def _read_snapshot(snapshot, supplemental_raw_view=None, end=None):
         raw["is_st"] = raw["isST"].astype(str).str.strip().eq("1")
         if raw.duplicated(["code", "date"]).any():
             raise ValueError("Supplemental raw view contains duplicate code/date rows")
-        if not raw.tradestatus.astype("string").isin(["0", "1"]).all():
-            raise ValueError("Supplemental native quotes require explicit tradestatus 0 or 1")
-        if not raw.adjustflag.astype("string").eq("3").fillna(False).all():
-            raise ValueError("Supplemental native quotes require raw quote adjustflag 3")
+        derived_source = False
+        result_path = raw_path.parent / "result.json"
+        if allow_derived_execution_reference and result_path.is_file():
+            result = json.loads(result_path.read_text(encoding="utf-8"))
+            proofs = result.get("source_proofs") or []
+            derived_source = (
+                result.get("schema") == "lowvol_append_only_complete_source_supplement_v1"
+                and result.get("status") == "completed_append_only_research_supplement"
+                and result.get("missing_source_fields_policy") == "null_never_zero"
+                and bool(proofs)
+                and all(item.get("source_schema") == "stockdb_close_package_v1"
+                        for item in proofs if isinstance(item, dict))
+                and all(isinstance(item, dict) and item.get("source_schema") == "stockdb_close_package_v1"
+                        for item in proofs)
+            )
+        status = raw.tradestatus.astype("string")
+        adjustment = raw.adjustflag.astype("string")
+        if derived_source:
+            invalid = ((status.notna() & ~status.isin(["0", "1"]))
+                       | (adjustment.notna() & ~adjustment.eq("3")))
+            if (status.isna() ^ adjustment.isna()).any():
+                raise ValueError("Derived StockDB quotes must leave tradestatus and adjustflag together unknown")
+            if invalid.any():
+                raise ValueError("Derived StockDB quotes require valid explicit status values when present")
+        elif (not status.isin(["0", "1"]).all()
+              or not adjustment.eq("3").fillna(False).all()):
+            raise ValueError("Supplemental native quotes require explicit tradestatus 0 or 1 and adjustflag 3")
         keys = pd.MultiIndex.from_frame(frame[["code", "date"]])
         raw_keys = pd.MultiIndex.from_frame(raw[["code", "date"]])
         missing = ~raw_keys.isin(keys)
@@ -116,7 +142,9 @@ def _read_snapshot(snapshot, supplemental_raw_view=None, end=None):
         frame = pd.concat([frame, additions], ignore_index=True)
         supplemental = {"path": str(raw_path), "rows_added": int(len(additions)),
                         "rows_annotated": int(len(overlap)),
-                        "basis": "local raw_daily.parquet; fills missing StockDB keys and annotates overlapping execution status/adjustment only"}
+                        "basis": "local raw_daily.parquet; fills missing StockDB keys and annotates overlapping execution status/adjustment only",
+                        "execution_reference_mode": ("derived_stockdb_research_only"
+                                                       if derived_source else "native_status_required")}
 
     symbols = {}
     keep = []
@@ -138,7 +166,7 @@ def _read_snapshot(snapshot, supplemental_raw_view=None, end=None):
 
 def _effective_quote_metadata(frame, semantics=QUOTE_SEMANTICS):
     """Keep StockDB's old rule; native rows retain their explicit raw status."""
-    if semantics not in {LEGACY_QUOTE_SEMANTICS, QUOTE_SEMANTICS}:
+    if semantics not in {LEGACY_QUOTE_SEMANTICS, QUOTE_SEMANTICS, DERIVED_QUOTE_SEMANTICS}:
         raise ValueError(f"Unknown rolling quote semantics: {semantics}")
     metadata = pd.DataFrame({"tradestatus": frame.volume.gt(0).astype(int),
                              "adjustflag": "3"}, index=frame.index)
@@ -171,8 +199,18 @@ class _DayRows:
 class RollingStockDBFeed:
     """Engine feed backed by raw StockDB bars and precomputed fixed signals."""
 
-    def __init__(self, frame, end, *, variant, fixed_calendar=None):
+    def __init__(self, frame, end, *, variant, fixed_calendar=None,
+                 quote_semantics=QUOTE_SEMANTICS,
+                 allow_derived_execution_reference=False):
+        if quote_semantics not in {QUOTE_SEMANTICS, DERIVED_QUOTE_SEMANTICS}:
+            raise ValueError(f"Unsupported rolling quote semantics: {quote_semantics}")
+        if type(allow_derived_execution_reference) is not bool:
+            raise ValueError("Derived execution reference mode must be an explicit boolean")
+        if allow_derived_execution_reference != (quote_semantics == DERIVED_QUOTE_SEMANTICS):
+            raise ValueError("Derived execution reference mode and quote semantics disagree")
         self.variant = variant
+        self.quote_semantics = quote_semantics
+        self.allow_derived_execution_reference = allow_derived_execution_reference
         self.calendar = sorted(frame["date"].unique().tolist())
         if end not in self.calendar:
             raise ValueError(f"Replay end is not a StockDB session: {end}")
@@ -200,6 +238,10 @@ class RollingStockDBFeed:
             "execution_admitted": False,
             "corporate_actions_verified": False,
             "listing_master_verified": False,
+            "quote_semantics": quote_semantics,
+            "execution_reference_mode": ("derived_stockdb_research_only"
+                                           if allow_derived_execution_reference
+                                           else "native_status_required"),
         }
         indexed = frame.set_index(["date", "symbol"])
         engine_frame = frame.copy()
@@ -214,7 +256,7 @@ class RollingStockDBFeed:
                             & native_adjustment.astype("string").eq("3").fillna(False))
         engine_frame["execution_reference_basis"] = np.where(
             native_reference, "native_raw", "mixed_stockdb_pre_close")
-        quote_metadata = _effective_quote_metadata(engine_frame)
+        quote_metadata = _effective_quote_metadata(engine_frame, quote_semantics)
         engine_frame["tradestatus"] = quote_metadata.tradestatus
         engine_frame["adjustflag"] = quote_metadata.adjustflag
         self.rows = _DayRows({day: group.set_index("symbol") for day, group in engine_frame.groupby("date", sort=True)})
@@ -250,9 +292,14 @@ class RollingStockDBFeed:
                             if weight > 0)
             rows = self.rows.get(day, {})
             for symbol in sorted(required):
-                if rows.get(symbol, {}).get("execution_reference_basis") != "native_raw":
+                basis = rows.get(symbol, {}).get("execution_reference_basis")
+                allowed = (basis == "native_raw"
+                           or (self.allow_derived_execution_reference
+                               and basis == "mixed_stockdb_pre_close"))
+                if not allowed:
                     raise ValueError(f"Mixed StockDB execution reference basis: {symbol} {day}; "
-                                     "an independent native raw execution stream is required")
+                                     "an independent native raw execution stream is required unless "
+                                     "derived_stockdb_research_only is explicitly enabled")
 
     def _rank(self, rows):
         if self.variant == VARIANTS[1]:
@@ -341,7 +388,8 @@ def _validate_resume_prefix(before, after, previous_end, end, last_day, *,
                             previous_quote_semantics=LEGACY_QUOTE_SEMANTICS, engine_quote_start=None,
                             month_end_calendar=None):
     """Reject any revision that could change a processed rolling signal/account."""
-    if previous_quote_semantics not in {LEGACY_QUOTE_SEMANTICS, QUOTE_SEMANTICS}:
+    if previous_quote_semantics not in {LEGACY_QUOTE_SEMANTICS, QUOTE_SEMANTICS,
+                                        DERIVED_QUOTE_SEMANTICS}:
         raise ValueError(f"Unknown saved rolling quote semantics: {previous_quote_semantics}")
     if last_day is None:
         return
@@ -446,7 +494,7 @@ def _calendar_verification(calendars, source, start, end, *, include_fixed_sessi
 
 def _resume_inputs(resume_run, source, start, end, config, variants, dates, *, resume_selected_variants=False,
                    resume_source_snapshot=None, month_end_schedule=None, month_end_calendar=None,
-                   full_exit_lifecycle=None):
+                   full_exit_lifecycle=None, allow_derived_execution_reference=False):
     path = Path(resume_run).resolve()
     if path.is_dir():
         path = path / "run.json"
@@ -491,7 +539,15 @@ def _resume_inputs(resume_run, source, start, end, config, variants, dates, *, r
             "basis": "Explicit old-source reconstruction; full manifest equals the prior protocol snapshot_manifest; "
                      "original chunk hashes and completed raw/calendar/month-end prefixes remain required"}
     old_supplement = (protocol.get("supplemental_raw_view") or {}).get("path")
-    _, _, before, _ = _read_snapshot(old_snapshot, old_supplement, end=previous["replay_end"])
+    if allow_derived_execution_reference:
+        _, _, before, _ = _read_snapshot(
+            old_snapshot, old_supplement, end=previous["replay_end"],
+            allow_derived_execution_reference=True)
+    else:
+        # Keep the legacy seam callable by narrow test/source adapters that
+        # implement the original three-argument loader contract.
+        _, _, before, _ = _read_snapshot(
+            old_snapshot, old_supplement, end=previous["replay_end"])
     checkpoints = {}
     for variant in variants:
         results = [row for row in previous.get("results", []) if row.get("signal") == variant]
@@ -519,11 +575,14 @@ def _saved_rows(path, last_day):
 
 def run(snapshot, start, end, initial_cash=140000.0, variants=VARIANTS, supplemental_raw_view=None,
         *, resume_run=None, resume_selected_variants=False, calendars=None, resume_source_snapshot=None,
-        calendar_driven_month_ends=False, persistent_full_exits=False):
+        calendar_driven_month_ends=False, persistent_full_exits=False,
+        allow_derived_execution_reference=False):
     if type(calendar_driven_month_ends) is not bool:
         raise ValueError("Calendar-driven month ends must be an explicit boolean")
     if type(persistent_full_exits) is not bool:
         raise ValueError("Persistent full exits must be an explicit boolean")
+    if type(allow_derived_execution_reference) is not bool:
+        raise ValueError("Derived execution reference mode must be an explicit boolean")
     if persistent_full_exits and not calendar_driven_month_ends:
         raise ValueError("Persistent full exits require calendar-driven month ends")
     full_exit_lifecycle = FULL_EXIT_LIFECYCLE if persistent_full_exits else None
@@ -531,7 +590,11 @@ def run(snapshot, start, end, initial_cash=140000.0, variants=VARIANTS, suppleme
                         if full_exit_lifecycle is not None else {})
     if resume_source_snapshot is not None and resume_run is None:
         raise ValueError("--resume-source-snapshot requires --resume-run")
-    snapshot, manifest, source, supplemental = _read_snapshot(snapshot, supplemental_raw_view, end=end)
+    quote_semantics = (DERIVED_QUOTE_SEMANTICS if allow_derived_execution_reference
+                       else QUOTE_SEMANTICS)
+    snapshot, manifest, source, supplemental = _read_snapshot(
+        snapshot, supplemental_raw_view, end=end,
+        allow_derived_execution_reference=allow_derived_execution_reference)
     if calendar_driven_month_ends:
         source = source.loc[source.date.le(end)].copy()
     config = portfolio(initial_cash)
@@ -563,7 +626,9 @@ def run(snapshot, start, end, initial_cash=140000.0, variants=VARIANTS, suppleme
                               config, variants, replay_dates, resume_selected_variants=resume_selected_variants,
                               resume_source_snapshot=resume_source_snapshot,
                               month_end_schedule=schedule_fields.get("month_end_schedule"),
-                              month_end_calendar=fixed_calendar, **lifecycle_fields)
+                              month_end_calendar=fixed_calendar,
+                              allow_derived_execution_reference=allow_derived_execution_reference,
+                              **lifecycle_fields)
                if resume_run is not None else None)
     resume_source_proof = resumed[4] if resumed is not None else {}
     resume_selection = ({"original_variants": list(resumed[1]["variants"]),
@@ -602,7 +667,10 @@ def run(snapshot, start, end, initial_cash=140000.0, variants=VARIANTS, suppleme
         "source_start": all_dates[0], "source_end": all_dates[-1], "replay_start": start, "replay_end": end,
         "symbols": int(source.symbol.nunique()), "sessions": len(replay_dates),
         "supplemental_raw_view": supplemental,
-        "quote_semantics": QUOTE_SEMANTICS,
+        "quote_semantics": quote_semantics,
+        "execution_reference_mode": ("derived_stockdb_research_only"
+                                       if allow_derived_execution_reference
+                                       else "native_status_required"),
         "calendar_verification": calendar_verification, **resume_selection, **resume_source_proof,
         **schedule_fields,
         **lifecycle_fields,
@@ -626,7 +694,10 @@ def run(snapshot, start, end, initial_cash=140000.0, variants=VARIANTS, suppleme
               "source_start": all_dates[0], "source_end": all_dates[-1], "replay_start": start,
               "replay_end": end, "symbols": int(source.symbol.nunique()), "sessions": len(replay_dates),
               "supplemental_raw_view": supplemental,
-              "quote_semantics": QUOTE_SEMANTICS,
+              "quote_semantics": quote_semantics,
+              "execution_reference_mode": ("derived_stockdb_research_only"
+                                             if allow_derived_execution_reference
+                                             else "native_status_required"),
               "calendar_verification": calendar_verification, **resume_selection, **resume_source_proof,
               **schedule_fields,
               **lifecycle_fields,
@@ -642,8 +713,13 @@ def run(snapshot, start, end, initial_cash=140000.0, variants=VARIANTS, suppleme
         write_json(artifacts / "protocol.json", protocol)
     write_json(artifacts / "run.json", record)
     for variant in variants:
-        feed = (RollingStockDBFeed(source, end, variant=variant, fixed_calendar=fixed_calendar)
-                if calendar_driven_month_ends else RollingStockDBFeed(source, end, variant=variant))
+        feed = (RollingStockDBFeed(source, end, variant=variant, fixed_calendar=fixed_calendar,
+                                   quote_semantics=quote_semantics,
+                                   allow_derived_execution_reference=allow_derived_execution_reference)
+                if calendar_driven_month_ends
+                else RollingStockDBFeed(source, end, variant=variant,
+                                        quote_semantics=quote_semantics,
+                                        allow_derived_execution_reference=allow_derived_execution_reference))
         checkpoint = resumed[3][variant] if resumed is not None else None
         result = baseline_ledger_result(feed, config, replay_dates, artifacts / variant,
                                         checkpoint=checkpoint, **lifecycle_fields)
@@ -687,6 +763,8 @@ def main(argv=None):
                         help="Opt in to fixed-calendar month ends and exact next session; all replay years must be verified")
     parser.add_argument("--persistent-full-exits", action="store_true",
                         help="New research account only: continue blocked full exits until flat or replaced by a newer full target; requires --calendar-driven-month-ends")
+    parser.add_argument("--allow-derived-execution-reference", action="store_true",
+                        help="Research-only: allow StockDB rows without independent native execution status")
     args = parser.parse_args(argv)
     if args.resume_selected_variants and not args.variant:
         parser.error("--resume-selected-variants requires explicit --variant")
@@ -696,6 +774,7 @@ def main(argv=None):
                       resume_selected_variants=args.resume_selected_variants, calendars=args.calendar,
                       resume_source_snapshot=args.resume_source_snapshot,
                       calendar_driven_month_ends=args.calendar_driven_month_ends,
+                      allow_derived_execution_reference=args.allow_derived_execution_reference,
                       **({"persistent_full_exits": True} if args.persistent_full_exits else {}))
     print(out, flush=True)
     return 0 if record["status"] in {"completed_research_only", "no_new_session"} else 2

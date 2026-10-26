@@ -1,0 +1,35 @@
+{
+  "schema": "stockdb_fixed_daily_derived_research_v1",
+  "status": "COMPLETED_RESEARCH_ONLY_DAILY_CONTINUATION",
+  "created_at": "2026-10-27T00:54:48+08:00",
+  "through": "2026-10-23",
+  "scope": "bounded_20_symbol_research_only",
+  "execution_reference_mode": "derived_stockdb_research_only",
+  "quote_semantics": "stockdb_pre_close_derived_research_v1",
+  "source_packages": [
+    "D:/QuantificationData/trading/research/stockdb_close_packages/20261022_paper_target_reference_v1",
+    "D:/QuantificationData/trading/research/stockdb_close_packages/20261023_paper_target_reference_v1"
+  ],
+  "supplement": "D:/QuantificationData/trading/research/lowvol_supplements/20261027_append1023_stockdb_v2/raw_daily.parquet",
+  "fixed_daily_run_dir": "D:/QuantificationData/trading/research/fixed_daily/20261027_close_package_derived_consumer_v1",
+  "last_completed_day": "2026-10-23",
+  "newly_completed_sessions": 2,
+  "target_count": 20,
+  "orders": 25,
+  "fills": 44,
+  "fees_cny": 129.93,
+  "final_equity_cny": 139638.07,
+  "net_return": -0.0025852142857142324,
+  "max_drawdown": -0.02025487908141299,
+  "head_generation": 1,
+  "persistent_ledger_mutated": true,
+  "broker_or_ths_interaction": false,
+  "execution_admitted": false,
+  "strategy_validated": false,
+  "limitations": [
+    "StockDB derived status is volume-based research semantics, not an independent native execution reference.",
+    "The package is bounded 20-symbol coverage, not full-market current coverage, PIT evidence, or live execution.",
+    "The derived route is opt-in and remains research-only."
+  ],
+  "failure_evidence_preserved": "D:/QuantificationData/trading/research/fixed_daily/20261027_close_package_consumer_v1"
+}

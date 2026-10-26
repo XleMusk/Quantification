@@ -38,6 +38,23 @@ def test_mixed_positive_pending_stops_before_engine_writes_but_signal_warmup_is_
     assert saved == before
 
 
+def test_derived_stockdb_reference_requires_explicit_research_opt_in():
+    calendar = pd.bdate_range("2025-01-01", "2026-02-02").strftime("%Y-%m-%d").tolist()
+    day, previous = calendar[-2], calendar[-3]
+    source = rows(calendar[:-1])
+    feed = rolling.RollingStockDBFeed(
+        source, day, variant=rolling.VARIANTS[1], fixed_calendar=calendar,
+        quote_semantics=rolling.DERIVED_QUOTE_SEMANTICS,
+        allow_derived_execution_reference=True)
+    config, context = rolling.portfolio(), RunContext("synthetic-derived-research", TradingMode.REPLAY)
+    saved = new_state(config.initial_cash)
+    saved.update(day=previous, positions={A: [{"qty": 100, "available": previous}]}, prices={A: 1000})
+    result = advance(saved, feed, day, config, 0, context=context)
+    assert result["stale_symbols"] == []
+    assert saved["day"] == day
+    assert feed.rows.get(day)[A]["execution_reference_basis"] == "mixed_stockdb_pre_close"
+
+
 def test_explicit_native_halt_keeps_empty_volume_and_original_monthly_ranking_path():
     calendar = pd.bdate_range("2025-01-01", "2026-02-02").strftime("%Y-%m-%d").tolist()
     day, previous = "2026-01-30", "2026-01-29"
