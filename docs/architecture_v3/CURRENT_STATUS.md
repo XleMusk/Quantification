@@ -688,3 +688,7 @@ F2 historical gate CLI 现在对输入行声明的 `source_file/source_sha256` �
 
 研究采用汇总 v9 已绑定该 freshness gate：2026-10-23 的旧候选输入在 2026-10-26 请求下保持 `BLOCKED_STALE_CANDIDATE_INPUT`，没有进入 D0/D1；回执和报告为 `outputs/pipeline_receipts/20261027_research_adoption_rollup_v9.json` 与 `outputs/research_reports/20261027_research_adoption_rollup_v9.md`，paper/promotion 仍关闭。
 
+## 2026-10-27 F2 Wayback historical probe
+
+对 CNINFO `000002.SZSE/2023Q1` 原始 PDF URL 执行真实 Wayback CDX 探针：CDX 查询成功，但唯一捕获时间为 `2025-09-05T23:50:23+00:00`，晚于决策日 `2024-05-01`，因此没有历史 as-of 证据，结果为 `BLOCKED_DATA`。没有生成 FinancialFact、因子、目标或账户回放。回执为 `outputs/pipeline_receipts/20261027_f2_wayback_000002_2023q1_v2.json`，`execution_admitted=false` 保持不变。
+
