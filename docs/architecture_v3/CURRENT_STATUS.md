@@ -431,3 +431,7 @@ The internal research-only release binds the long shortline raw-path replay and 
 已把冻结的 native LR/LightGBM 候选接入本机 StockDB 日线快照，并沿用共享 Engine/Ledger 完成历史长路径回放。StockDB 捕获请求 20,370 行、可用 13,167 行、缺失 7,203 行、分钟数据 0 行；LR 覆盖 2,634 sessions，1 笔订单/2 笔成交，净收益 -0.6032%；LightGBM 覆盖 3,863 sessions，3 笔订单/6 笔成交，净收益 -1.2715%。新增回执 `outputs/pipeline_receipts/20261026_shortline_stockdb_long_path_replay_v1.json` 和报告 `outputs/research_reports/20261026_shortline_stockdb_long_path_replay_v1.md`，并由 adoption gate v3 汇总。StockDB `daily.csv` 的日期已适配，缺失 `pct_chg` 按每个标的前一条可用 raw close 重建，首条回退源 `pre_close`；ST 状态、PIT、公司行动和完整覆盖仍未解决，因此结果仍是研究证据，`execution_admitted=false`、`paper_allowed=false`、`promotion_allowed=false`。
 
 验收：`trading/tests/test_shortline_panel_replay.py` 与 `trading/research/tests/test_shortline_adoption_gate.py` 覆盖 StockDB CSV 日期/回放和 v3 状态，focused tests 通过。下一节点是补齐 StockDB 等价覆盖或绑定完整等价源，再做冻结候选的 untouched-forward、PIT/publication/company-action 证据。
+
+## 2026-10-26 internal release v23
+
+StockDB 短线长路径回放和 adoption gate v3 已绑定到内部研究发布 v23：`D:/QuantificationData/trading/research/releases/20261026_v23/release_manifest.json`，manifest SHA-256 为 `7d3b79230a9dcbbcd009b6c9ca9271b5d9cb3b438b94d7ea5a831b4ad15c46be`，提交 `cbefc75`，`missing_required_code=[]`、`execution_admitted=false`、`live_execution_ready=false`。绑定回执为 `outputs/pipeline_receipts/20261026_release_v23_binding_v1.json`。
