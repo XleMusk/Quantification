@@ -9,9 +9,12 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime
+from hashlib import sha256
 import json
 from pathlib import Path
 from typing import Any, Mapping
+
+from webapp.backend.app.release import latest_release
 
 
 SCHEMA = "quantification_workbench_recovery_evidence_v1"
@@ -20,7 +23,9 @@ ACTIVE = frozenset({"queued", "running"})
 TERMINAL_OK = "completed"
 
 
-def build_recovery_evidence(job: Mapping[str, Any]) -> dict[str, Any]:
+def build_recovery_evidence(job: Mapping[str, Any], *, release: Mapping[str, Any] | None = None,
+                            source_path: str | Path | None = None,
+                            source_sha256: str | None = None) -> dict[str, Any]:
     """Return an explicit manual-recovery decision for one local job."""
 
     if not isinstance(job, Mapping):
@@ -42,6 +47,12 @@ def build_recovery_evidence(job: Mapping[str, Any]) -> dict[str, Any]:
         decision = "MANUAL_REVIEW_REQUIRED"
         next_action = "先确认未知任务状态，再决定是否重新提交"
         recovery_status = "manual_review_required"
+    release_projection = dict(release) if isinstance(release, Mapping) else None
+    source = None
+    if source_path is not None:
+        source = {"job_observation_path": str(Path(source_path).expanduser().resolve())}
+        if source_sha256 is not None:
+            source["job_observation_sha256"] = source_sha256
     return {
         "schema": SCHEMA,
         "created_at": datetime.now().astimezone().isoformat(),
@@ -58,17 +69,26 @@ def build_recovery_evidence(job: Mapping[str, Any]) -> dict[str, Any]:
         "live_trading": False,
         "broker_or_ths_interacted": False,
         "external_order_state": "not_applicable_paper_job",
+        "source": source,
+        "release": release_projection,
         "limitations": [
             "This receipt describes a local research job only; it does not resubmit or mutate a job.",
             "A failed paper job has no broker order state to reconcile.",
+            "The release projection is read-only and does not authorize execution.",
         ],
     }
 
 
 def write_receipt(job_path: str | Path, output: str | Path) -> dict[str, Any]:
     source = Path(job_path).expanduser().resolve()
-    payload = json.loads(source.read_text(encoding="utf-8"))
-    receipt = build_recovery_evidence(payload)
+    raw = source.read_bytes()
+    payload = json.loads(raw.decode("utf-8"))
+    receipt = build_recovery_evidence(
+        payload,
+        release=latest_release(),
+        source_path=source,
+        source_sha256=sha256(raw).hexdigest(),
+    )
     target = Path(output).expanduser().resolve()
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -84,6 +104,7 @@ def render_report(receipt: Mapping[str, Any]) -> str:
         f"Next action: {receipt.get('next_action')}",
         "",
         "This is a local paper/research boundary. No broker, Tonghuashun, order, cancel, transfer, or account action occurred.",
+        f"Release: `{(receipt.get('release') or {}).get('version') or 'MISSING'}`; commit `{(receipt.get('release') or {}).get('git_commit') or 'MISSING'}`.",
         "",
     ])
 
