@@ -21,6 +21,8 @@ DEFAULT_SHORTLINE = Path("outputs/pipeline_receipts/20261026_shortline_adoption_
 DEFAULT_OUTPUT = Path("outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json")
 DEFAULT_REPORT = Path("outputs/research_reports/20261026_research_adoption_rollup_v1.md")
 RETAINED_JOINT_SCHEMA = "quantification_retained_joint_candidate_comparison_v1"
+D0_D1_SCHEMA = "stockdb_next_close_d0_d1_contract_v1"
+D0_D1_STATUS = "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1"
 
 
 def _read(path: Path) -> dict[str, Any]:
@@ -152,10 +154,54 @@ def _retained_joint_summary(receipt: Mapping[str, Any], path: Path) -> dict[str,
     }
 
 
+def _d0_d1_summary(receipt: Mapping[str, Any], path: Path) -> dict[str, Any]:
+    """Bind one completed close-day paper package without treating it as adoption."""
+    if receipt.get("schema") != D0_D1_SCHEMA:
+        raise ValueError(f"D0/D1 schema mismatch: {path}")
+    if receipt.get("status") != D0_D1_STATUS:
+        raise ValueError(f"D0/D1 is not complete: {path}")
+    if any(receipt.get(key) is not False for key in
+           ("execution_admitted", "broker_interacted", "ths_interacted",
+            "persistent_ledger_mutated")):
+        raise ValueError(f"D0/D1 execution boundary crossed: {path}")
+    coverage = receipt.get("snapshot_coverage")
+    fixed = receipt.get("fixed")
+    candidate = receipt.get("candidate_batch")
+    joint = receipt.get("joint_paper")
+    if not all(isinstance(value, Mapping) for value in
+               (coverage, fixed, candidate, joint)):
+        raise ValueError(f"D0/D1 completion payload is incomplete: {path}")
+    missing = coverage.get("missing_symbols")
+    if coverage.get("status") != "COMPLETE" or not isinstance(missing, list) or missing:
+        raise ValueError(f"D0/D1 target coverage is incomplete: {path}")
+    for payload, field in ((fixed, "target_count"), (fixed, "paper_order_count"),
+                           (candidate, "candidate_count"), (joint, "paper_order_count")):
+        if type(payload.get(field)) is not int or payload[field] < 0:
+            raise ValueError(f"D0/D1 {field} is missing or invalid: {path}")
+    return {
+        "status": receipt.get("status"),
+        "close_date": receipt.get("close_date"),
+        "requested_symbol_count": coverage.get("requested_symbol_count"),
+        "available_symbol_count": coverage.get("available_symbol_count"),
+        "missing_symbols": list(missing),
+        "fixed_strategy_id": fixed.get("strategy_id"),
+        "fixed_target_count": fixed.get("target_count"),
+        "fixed_paper_order_count": fixed.get("paper_order_count"),
+        "candidate_count": candidate.get("candidate_count"),
+        "joint_paper_order_count": joint.get("paper_order_count"),
+        "source_scope": receipt.get("persistent_fixed_daily_account_scope"),
+        "source": {"path": str(path.resolve()), "sha256": _sha256(path)},
+        "paper_allowed": False,
+        "promotion_allowed": False,
+        "next_gate": "reuse the same contract on the next closed session; persistent rollover still requires a complete fixed_daily close package",
+    }
+
+
 def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
                  factor_path: Path = DEFAULT_FACTOR,
                  shortline_path: Path = DEFAULT_SHORTLINE,
-                 retained_joint_path: Path | None = None) -> dict[str, Any]:
+                 retained_joint_path: Path | None = None,
+                 d0_d1_path: Path | None = None) -> dict[str, Any]:
     candidate = _read(candidate_path)
     factor = _read(factor_path)
     shortline = _read(shortline_path)
@@ -174,6 +220,23 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
     if retained_joint_path is not None:
         separate_gates["retained_joint_portfolio"] = _retained_joint_summary(
             _read(retained_joint_path), retained_joint_path)
+    d0_d1 = None
+    if d0_d1_path is not None:
+        d0_d1 = _d0_d1_summary(_read(d0_d1_path), d0_d1_path)
+        separate_gates["latest_d0_d1_paper"] = d0_d1
+    next_actions = [
+        "Run a PIT-complete untouched holdout before selecting a mature-factor horizon.",
+        "Replace the shortline independent raw path with StockDB-equivalent history and untouched-forward validation.",
+        "Replay the retained joint target over a matching forward account before any portfolio adoption decision.",
+        "Keep all candidates research-only until PIT, forward and channel evidence gates pass.",
+    ]
+    if d0_d1 is None:
+        next_actions.insert(0, "Run 2026-10-26 post-close StockDB D0/D1 with the existing shared paper route.")
+    else:
+        next_actions.insert(0, (
+            f"D0/D1 close {d0_d1['close_date']} is complete for the target set; "
+            "reuse the same contract on the next closed session and keep persistent fixed_daily rollover gated by a complete close package."
+        ))
     return {
         "schema": SCHEMA,
         "status": "COMPLETED_RESEARCH_ONLY_ADOPTION_ROLLUP",
@@ -184,6 +247,8 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
             "candidate_adoption": {"path": str(candidate_path.resolve()), "sha256": _sha256(candidate_path)},
             "mature_factor_comparison": {"path": str(factor_path.resolve()), "sha256": _sha256(factor_path)},
             "shortline_adoption": {"path": str(shortline_path.resolve()), "sha256": _sha256(shortline_path)},
+            **({"d0_d1_paper": {"path": str(d0_d1_path.resolve()), "sha256": _sha256(d0_d1_path)}}
+               if d0_d1_path is not None else {}),
         },
         "candidate_summary": candidate.get("summary"),
         "candidate_decisions": [
@@ -197,13 +262,7 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
             for row in strategies if isinstance(row, Mapping)
         ],
         "separate_gates": separate_gates,
-        "next_actions": [
-            "Run 2026-10-26 post-close StockDB D0/D1 with the existing shared paper route.",
-            "Run a PIT-complete untouched holdout before selecting a mature-factor horizon.",
-            "Replace the shortline independent raw path with StockDB-equivalent history and untouched-forward validation.",
-            "Replay the retained joint target over a matching forward account before any portfolio adoption decision.",
-            "Keep all candidates research-only until PIT, forward and channel evidence gates pass.",
-        ],
+        "next_actions": next_actions,
     }
 
 
@@ -238,6 +297,16 @@ def render_markdown(receipt: Mapping[str, Any]) -> str:
             f"{joint['target_count']} target rows, {joint['paper_order_count']} paper orders; "
             f"return status `{joint['return_incremental_status']}`.",
         ]
+    d0_d1 = receipt["separate_gates"].get("latest_d0_d1_paper")
+    if d0_d1 is not None:
+        lines += [
+            "",
+            f"Latest D0/D1 paper: close `{d0_d1['close_date']}`, "
+            f"{d0_d1['available_symbol_count']}/{d0_d1['requested_symbol_count']} target symbols, "
+            f"fixed {d0_d1['fixed_paper_order_count']} orders, "
+            f"joint {d0_d1['joint_paper_order_count']} orders; "
+            f"source scope `{d0_d1['source_scope']}`.",
+        ]
     lines += ["", "All rows keep `paper_allowed=false`, `promotion_allowed=false`, and `execution_admitted=false`.", ""]
     return "\n".join(lines)
 
@@ -246,9 +315,10 @@ def write_outputs(*, candidate_path: Path = DEFAULT_CANDIDATE,
                   factor_path: Path = DEFAULT_FACTOR,
                   shortline_path: Path = DEFAULT_SHORTLINE,
                   retained_joint_path: Path | None = None,
+                  d0_d1_path: Path | None = None,
                   output: Path = DEFAULT_OUTPUT,
                   report: Path = DEFAULT_REPORT) -> tuple[Path, Path]:
-    receipt = build_rollup(candidate_path, factor_path, shortline_path, retained_joint_path)
+    receipt = build_rollup(candidate_path, factor_path, shortline_path, retained_joint_path, d0_d1_path)
     output.parent.mkdir(parents=True, exist_ok=True)
     report.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -263,6 +333,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--shortline-adoption", type=Path, default=DEFAULT_SHORTLINE)
     parser.add_argument("--retained-joint-comparison", type=Path,
                         help="optional retained joint target comparison kept as a separate gate")
+    parser.add_argument("--d0-d1-receipt", type=Path,
+                        help="optional completed same-day D0/D1 paper receipt to bind as a separate gate")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
     args = parser.parse_args(argv)
@@ -270,6 +342,7 @@ def main(argv: list[str] | None = None) -> int:
                                    factor_path=args.mature_factor_comparison,
                                    shortline_path=args.shortline_adoption,
                                    retained_joint_path=args.retained_joint_comparison,
+                                   d0_d1_path=args.d0_d1_receipt,
                                    output=args.output, report=args.report)
     print(json.dumps({"status": "COMPLETED_RESEARCH_ONLY_ADOPTION_ROLLUP",
                       "output": str(output), "report": str(report)}, ensure_ascii=False))

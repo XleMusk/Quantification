@@ -581,6 +581,12 @@ F2 的 publication contract 现在要求：日期型披露按 `[D 00:00, D+1 00:
 
 证据：`outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v2/receipt.json`、`outputs/research_reports/20261026_f2_publication_boundary_contract_v1.md`。
 
+## 2026-10-26 strategy adoption rollup D0/D1 binding
+
+研究采用汇总现在可选地绑定最新完成的 D0/D1 回执，而不是继续把已完成收市任务列为待办。`research-adoption-rollup` 新增 `--d0-d1-receipt`，严格校验完成状态、40/40 目标覆盖、执行边界、固定腿、候选批次和联合投影字段；回执 `outputs/pipeline_receipts/20261026_research_adoption_rollup_v4.json` 已绑定 2026-10-26 D0/D1，报告为 `outputs/research_reports/20261026_research_adoption_rollup_v4.md`。
+
+该改动只更新研究证据汇总和下一步路由，不改变任何策略采用决定：候选仍是 `CONTINUE_RESEARCH_ONLY`，成熟因子、短线模型和联合组合仍保持各自研究门禁，`paper_allowed=false`、`promotion_allowed=false`、`execution_admitted=false`。聚焦测试 `17 passed`。
+
 ## 2026-10-26 Google engineering D0/D1 v4
 
 已把 2026-10-26 收市后的 StockDB 冻结快照、固定 `low_volatility_252_20` 和候选 `stockdb_low_vol_half_momentum_20` 接入同一 `next-close-d0-d1` 合同。目标集合覆盖 40/40；固定腿生成 20 个 TARGET_PREVIEW 目标和 20 个纸面订单；候选批次进入研究 follow-up 门禁；预算型联合投影生成 22 个纸面订单。输入清单为 `outputs/pipeline_receipts/20261026_candidate_source_manifest_v2.json`，回执为 `outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json`，报告为 `outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md`。

@@ -79,3 +79,46 @@ def test_rollup_rejects_factor_adoption(tmp_path):
     factor.write_text(json.dumps(payload), encoding="utf-8")
     with pytest.raises(ValueError, match="no-adoption"):
         build_rollup(candidate, factor, shortline)
+
+
+def test_rollup_binds_completed_d0_d1_without_promoting_it(tmp_path):
+    candidate, factor, shortline, retained_joint = _fixtures(tmp_path)
+    d0_d1 = _write_receipt(tmp_path / "d0_d1.json", {
+        "schema": "stockdb_next_close_d0_d1_contract_v1",
+        "status": "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1",
+        "execution_admitted": False,
+        "broker_interacted": False,
+        "ths_interacted": False,
+        "persistent_ledger_mutated": False,
+        "close_date": "2026-10-26",
+        "snapshot_coverage": {
+            "status": "COMPLETE", "requested_symbol_count": 40,
+            "available_symbol_count": 40, "missing_symbols": [],
+        },
+        "fixed": {"strategy_id": "low_volatility_252_20", "target_count": 20,
+                  "paper_order_count": 20},
+        "candidate_batch": {"candidate_count": 1},
+        "joint_paper": {"paper_order_count": 22},
+        "persistent_fixed_daily_account_scope": "direct_terminal_account_input",
+    })
+    result = build_rollup(candidate, factor, shortline, retained_joint, d0_d1)
+    latest = result["separate_gates"]["latest_d0_d1_paper"]
+    assert latest["close_date"] == "2026-10-26"
+    assert latest["available_symbol_count"] == 40
+    assert latest["joint_paper_order_count"] == 22
+    assert result["next_actions"][0].startswith("D0/D1 close 2026-10-26")
+    assert result["execution_admitted"] is False
+
+
+def test_rollup_rejects_incomplete_d0_d1_coverage(tmp_path):
+    candidate, factor, shortline, _retained_joint = _fixtures(tmp_path)
+    d0_d1 = _write_receipt(tmp_path / "d0_d1.json", {
+        "schema": "stockdb_next_close_d0_d1_contract_v1",
+        "status": "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1",
+        "execution_admitted": False, "broker_interacted": False,
+        "ths_interacted": False, "persistent_ledger_mutated": False,
+        "snapshot_coverage": {"status": "COMPLETE", "missing_symbols": ["000001.SZSE"]},
+        "fixed": {}, "candidate_batch": {}, "joint_paper": {},
+    })
+    with pytest.raises(ValueError, match="coverage"):
+        build_rollup(candidate, factor, shortline, d0_d1_path=d0_d1)

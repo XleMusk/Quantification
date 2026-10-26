@@ -2430,7 +2430,7 @@
       "domain": "research",
       "result": "The latest candidate adoption matrix, mature-factor horizon comparison, StockDB-backed shortline adoption gate and retained joint portfolio gate are joined into a research-only rollup with explicit continuation, stop and coverage decisions.",
       "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
-      "next": "Regenerate after a valid post-close D0/D1 or changed strategy/data evidence; keep PIT, forward and channel gates separate.",
+      "next": "在下一次变更收市后用同一 rollup 绑定新的 D0/D1；继续保持 PIT、前向、公司行动和渠道门禁分离。",
       "prohibition": "Do not treat the rollup as strategy validation, paper/live promotion or a substitute for PIT/forward/THS evidence.",
       "actual_paths": [
         "trading/research/research_adoption_rollup.py",
@@ -2438,7 +2438,10 @@
         "outputs/pipeline_receipts/20261026_research_adoption_rollup_v2.json",
         "outputs/research_reports/20261026_research_adoption_rollup_v2.md",
         "outputs/pipeline_receipts/20261026_research_adoption_rollup_v3.json",
-        "outputs/research_reports/20261026_research_adoption_rollup_v3.md"
+        "outputs/research_reports/20261026_research_adoption_rollup_v3.md",
+        "outputs/pipeline_receipts/20261026_research_adoption_rollup_v4.json",
+        "outputs/research_reports/20261026_research_adoption_rollup_v4.md",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -2446,7 +2449,11 @@
         "outputs/research_reports/20261026_research_adoption_rollup_v2.md",
         "trading/research/tests/test_research_adoption_rollup.py",
         "outputs/pipeline_receipts/20261026_research_adoption_rollup_v3.json",
-        "outputs/research_reports/20261026_research_adoption_rollup_v3.md"
+        "outputs/research_reports/20261026_research_adoption_rollup_v3.md",
+        "trading/research/research_adoption_rollup.py",
+        "outputs/pipeline_receipts/20261026_research_adoption_rollup_v4.json",
+        "outputs/research_reports/20261026_research_adoption_rollup_v4.md",
+        "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json"
       ],
       "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3 and the retained joint target gate; records the separate joint decision as CONTINUE_RESEARCH_ONLY with NOT_COMPARABLE_PROJECTION_ONLY, keeps strategy_validated=0 and execution_admitted=false, and passes the focused rollup tests."
     },
