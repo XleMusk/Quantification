@@ -2158,9 +2158,9 @@
     {
       "id": "P21",
       "domain": "operations",
-      "result": "Next-close D0/D1 uses a year-scoped pinned calendar and now returns an explicit coverage-exhausted result instead of inventing a next-year session. A strict stockdb_close_package_v1 loader now validates exact StockDB snapshot lineage and is dispatched by fixed_daily only for that schema; the existing BaoStock loader remains the fallback for its own schema.",
+      "result": "Next-close D0/D1 uses a year-scoped pinned calendar and now returns an explicit coverage-exhausted result instead of inventing a next-year session. A strict stockdb_close_package_v1 loader now validates exact StockDB snapshot lineage and is dispatched by fixed_daily only for that schema; the existing BaoStock loader remains the fallback for its own schema. A read-only producer now turns a complete local snapshot into a loader-compatible package and writes a blocked receipt instead of package files when coverage is incomplete.",
       "state": "VERIFIED_LOCAL",
-      "next": "When a complete StockDB close package is available, provide its pinned calendar hash and run the registered fixed_daily path; retain the package and failed evidence when coverage or lineage is incomplete.",
+      "next": "When a complete StockDB snapshot arrives, run stockdb-close-package-build with its pinned calendar, validate the produced package, then pass it to registered fixed_daily; retain blocked receipts for incomplete snapshots.",
       "prohibition": "Machine weekday inference and missing-calendar fallback cannot authorize a paper rollover or broker action.",
       "actual_paths": [
         "D:/Quantification/trading/research/next_close_d0_d1.py",
@@ -2178,7 +2178,11 @@
         "trading/research/stockdb_close_package.py",
         "trading/research/tests/test_stockdb_close_package.py",
         "trading/research/stockdb_fixed_daily.py",
-        "run_committee.py stockdb-close-package"
+        "run_committee.py stockdb-close-package",
+        "trading/research/stockdb_close_package_builder.py",
+        "trading/research/tests/test_stockdb_close_package_builder.py",
+        "run_committee.py stockdb-close-package-build",
+        "D:/QuantificationData/trading/research/stockdb_close_packages/20261026_native_full_universe_v2_blocked/receipt.json"
       ],
       "evidence": [
         "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
@@ -2195,9 +2199,13 @@
         "trading/research/stockdb_close_package.py",
         "trading/research/tests/test_stockdb_close_package.py",
         "trading/research/stockdb_fixed_daily.py",
-        "run_committee.py stockdb-close-package"
+        "run_committee.py stockdb-close-package",
+        "trading/research/stockdb_close_package_builder.py",
+        "trading/research/tests/test_stockdb_close_package_builder.py",
+        "run_committee.py stockdb-close-package-build",
+        "D:/QuantificationData/trading/research/stockdb_close_packages/20261026_native_full_universe_v2_blocked/receipt.json"
       ],
-      "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence. The loader rejects incomplete native snapshots, verifies plan/receipt/roster/raw hashes and exact date/roster rows, and fixed_daily schema dispatch passes focused tests without changing execution boundaries.",
+      "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence. The loader rejects incomplete native snapshots, verifies plan/receipt/roster/raw hashes and exact date/roster rows, and fixed_daily schema dispatch passes focused tests without changing execution boundaries. The producer publishes complete plan/receipt/roster/raw files only for exact coverage and emitted BLOCKED_INCOMPLETE_STOCKDB_SNAPSHOT with 25 missing symbols for the current native snapshot without imputation.",
       "evidence_updated_on": "2026-10-26"
     },
     {

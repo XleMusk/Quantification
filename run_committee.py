@@ -221,6 +221,9 @@ def main(argv=None):
     if argv[:1] == ["stockdb-close-package"]:
         from trading.research.stockdb_close_package import main as stockdb_close_package_main
         return stockdb_close_package_main(argv[1:])
+    if argv[:1] == ["stockdb-close-package-build"]:
+        from trading.research.stockdb_close_package_builder import main as stockdb_close_package_builder_main
+        return stockdb_close_package_builder_main(argv[1:])
     if argv[:1] == ["continuous-paper-acceptance"]:
         from trading.research.continuous_paper_acceptance import main as continuous_paper_acceptance_main
         return continuous_paper_acceptance_main(argv[1:])
