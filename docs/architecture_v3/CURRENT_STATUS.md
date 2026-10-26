@@ -674,3 +674,7 @@ Evidence: `outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v2.json`,
 
 同花顺只读回读比较器现在区分 `synthetic_fixture`、`offline_reference` 和带来源证明的 `authorized_read_only_export`。任何声称账户、行情或客户端已观察的回读，必须同时提供授权捕获模式、带时区的 `observed_at`、`source_file` 和 SHA-256；缺少这些字段会停止比较。现有 20 行合成回读仍为 `readback_verified`，但 `authorized_readonly_observation=false`；回执和报告为 `outputs/pipeline_receipts/20261027_ths_target_readback_current_synthetic_v1/comparison.json` 与 `report.md`，THS 真实观察仍未声称完成。
 
+## 2026-10-27 workbench recovery release binding
+
+工作台恢复回执现在绑定保存的 job observation 路径与 SHA-256，并记录只读内部 release 的版本和 commit。中断任务仍分类为 `MANUAL_RESUBMIT_REQUIRED`，不会自动重试，也不触碰券商、同花顺或真实账户；最新回执 [`20261027_workbench_recovery_release_bound_v2.json`](../../outputs/pipeline_receipts/20261027_workbench_recovery_release_bound_v2.json) 绑定 `20261027_v50`，`execution_admitted=false`、`live_execution_ready=false`。workbench/recovery 与 WebApp 聚焦测试 `42 passed`。
+

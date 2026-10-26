@@ -1,0 +1,50 @@
+{
+  "schema": "quantification_workbench_recovery_evidence_v1",
+  "created_at": "2026-10-27T01:53:38.060581+08:00",
+  "job_id": "paper-research-interrupted-fixture-v1",
+  "parent_job_id": null,
+  "recovery_attempt": 0,
+  "observed_status": "interrupted",
+  "observed_error": "计算进程中断；未标记完成，可重新提交",
+  "decision": "MANUAL_RESUBMIT_REQUIRED",
+  "recovery_status": "ready_for_resubmit",
+  "automatic_retry": false,
+  "next_action": "确认失败原因后重新提交一个新任务",
+  "execution_admitted": false,
+  "live_trading": false,
+  "broker_or_ths_interacted": false,
+  "external_order_state": "not_applicable_paper_job",
+  "source": {
+    "job_observation_path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_workbench_interrupted_job_fixture_v1.json",
+    "job_observation_sha256": "6d5295eb38f6c00784f7863faddb384f53707e09deaede639055a2f3e8580497"
+  },
+  "release": {
+    "schema": "quantification_workbench_release_status_v1",
+    "status": "AVAILABLE",
+    "reason": null,
+    "version": "20261027_v50",
+    "created_at": "2026-10-26T17:53:27.575177+00:00",
+    "manifest_path": "D:\\QuantificationData\\trading\\research\\releases\\20261027_v50\\release_manifest.json",
+    "git_commit": "0e9ef4046724bfc7e949bfc1f095066a3a27e806",
+    "execution_admitted": false,
+    "live_execution_ready": false,
+    "missing_required_code": [],
+    "missing_evidence": [],
+    "missing_paper_evidence": [],
+    "account_readiness": {
+      "research_paper_account": "BOUND_RESEARCH_ONLY",
+      "current_broker_quote": "MISSING",
+      "four_table_account_export": "MISSING",
+      "t_plus_1_sellable_export": "MISSING",
+      "ths_readonly_observation": "REFERENCE_ONLY_NOT_OBSERVED",
+      "execution_admitted": false,
+      "live_execution_ready": false
+    },
+    "read_only": true
+  },
+  "limitations": [
+    "This receipt describes a local research job only; it does not resubmit or mutate a job.",
+    "A failed paper job has no broker order state to reconcile.",
+    "The release projection is read-only and does not authorize execution."
+  ]
+}

@@ -2635,7 +2635,9 @@
         "trading/research/tests/test_workbench_recovery_evidence.py",
         "run_committee.py workbench-recovery-evidence",
         "outputs/pipeline_receipts/20261027_workbench_recovery_release_bound_v1.json",
-        "outputs/research_reports/20261027_workbench_recovery_release_bound_v1.md"
+        "outputs/research_reports/20261027_workbench_recovery_release_bound_v1.md",
+        "outputs/pipeline_receipts/20261027_workbench_recovery_release_bound_v2.json",
+        "outputs/research_reports/20261027_workbench_recovery_release_bound_v2.md"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -2643,7 +2645,9 @@
         "webapp/backend/tests/test_webapp.py",
         "outputs/pipeline_receipts/20261027_workbench_recovery_release_bound_v1.json",
         "outputs/research_reports/20261027_workbench_recovery_release_bound_v1.md",
-        "trading/research/tests/test_workbench_recovery_evidence.py"
+        "trading/research/tests/test_workbench_recovery_evidence.py",
+        "outputs/pipeline_receipts/20261027_workbench_recovery_release_bound_v2.json",
+        "outputs/research_reports/20261027_workbench_recovery_release_bound_v2.md"
       ],
       "acceptance": "A real local HTTP submission returns one stable job id on same-key repeat; worker reaches completed, lifecycle exposes result/download stages, result JSON is readable, three files download with nonzero bytes, and execution_admitted=false. A local interrupted-job recovery receipt additionally binds the observation file hash/path to a read-only release version and commit, keeps MANUAL_RESUBMIT_REQUIRED without automatic retry, and records live_execution_ready=false; workbench/recovery tests pass without external channel interaction."
     }
