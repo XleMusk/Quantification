@@ -1,0 +1,18 @@
+{
+  "schema": "quantification_internal_release_binding_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "version": "20261026_v17",
+  "manifest": "D:\\QuantificationData\\trading\\research\\releases\\20261026_v17\\release_manifest.json",
+  "manifest_sha256": "66d8166cff4a88a59837f26c5d5823dd1d5e831881a93e815f1972d610524104",
+  "git_commit": "8d7d7c2",
+  "execution_admitted": false,
+  "live_execution_ready": false,
+  "missing_required_code": [],
+  "shortline_candidate_handoff": "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json",
+  "shortline_replay_stop": "outputs/pipeline_receipts/20261026_shortline_candidate_panel_replay_blocked_v1.json",
+  "limitations": [
+    "Shortline handoff is candidate-panel research input only; bounded replay is blocked by incomplete listing-history source and full return/PIT/company-action/forward gates remain open.",
+    "F2 historical asof/revision evidence and THS observed read-only evidence remain unavailable.",
+    "No broker/THS login or account mutation."
+  ]
+}
