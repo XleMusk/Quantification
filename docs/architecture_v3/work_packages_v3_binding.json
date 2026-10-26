@@ -2237,8 +2237,11 @@
         "trading/research/tests/test_stockdb_close_package_builder.py",
         "run_committee.py stockdb-close-package-build",
         "D:/QuantificationData/trading/research/stockdb_close_packages/20261026_native_full_universe_v2_blocked/receipt.json",
+        "D:/QuantificationData/trading/research/stockdb_close_packages/20261026_fixed_target_v1/receipt.json",
         "trading/research/lowvol_supplement_append.py",
         "trading/research/tests/test_lowvol_supplement_append.py",
+        "D:/QuantificationData/trading/research/lowvol_supplements/20261027_append1026_stockdb_v1/result.json",
+        "D:/QuantificationData/trading/research/fixed_daily/20261027_close_package_derived_consumer_v1/head.json",
         "outputs/pipeline_receipts/20261027_stockdb_close_package_fixed_daily_consumer_v1.json",
         "outputs/research_reports/20261027_stockdb_close_package_fixed_daily_consumer_v1.md",
         "trading/research/stockdb_rolling_low_volatility.py",
@@ -2249,7 +2252,9 @@
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
         "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2_summary.json",
-        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md"
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md",
+        "outputs/pipeline_receipts/20261026_fixed_only_source_manifest_v1.json",
+        "outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/post_close_receipt.json"
       ],
       "evidence": [
         "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
@@ -2271,6 +2276,7 @@
         "trading/research/tests/test_stockdb_close_package_builder.py",
         "run_committee.py stockdb-close-package-build",
         "D:/QuantificationData/trading/research/stockdb_close_packages/20261026_native_full_universe_v2_blocked/receipt.json",
+        "D:/QuantificationData/trading/research/stockdb_close_packages/20261026_fixed_target_v1/receipt.json",
         "outputs/pipeline_receipts/20261027_stockdb_close_package_fixed_daily_consumer_v1.json",
         "outputs/research_reports/20261027_stockdb_close_package_fixed_daily_consumer_v1.md",
         "outputs/pipeline_receipts/20261027_stockdb_fixed_daily_derived_research_v1.json",
@@ -2278,9 +2284,13 @@
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
         "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2_summary.json",
-        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md"
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md",
+        "D:/QuantificationData/trading/research/lowvol_supplements/20261027_append1026_stockdb_v1/result.json",
+        "D:/QuantificationData/trading/research/fixed_daily/20261027_close_package_derived_consumer_v1/head.json",
+        "outputs/pipeline_receipts/20261026_fixed_only_source_manifest_v1.json",
+        "outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/post_close_receipt.json"
       ],
-      "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence. The loader rejects incomplete native snapshots, verifies plan/receipt/roster/raw hashes and exact date/roster rows, and fixed_daily schema dispatch passes focused tests without changing execution boundaries. The producer publishes complete plan/receipt/roster/raw files only for exact coverage and emitted BLOCKED_INCOMPLETE_STOCKDB_SNAPSHOT with 25 missing symbols for the current native snapshot without imputation.",
+      "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence. The loader rejects incomplete native snapshots, verifies plan/receipt/roster/raw hashes and exact date/roster rows, and fixed_daily schema dispatch passes focused tests without changing execution boundaries. The producer publishes complete plan/receipt/roster/raw files only for exact coverage and emitted BLOCKED_INCOMPLETE_STOCKDB_SNAPSHOT with 25 missing symbols for the current native snapshot without imputation. An explicit target-roster mode now packages a declared 20-symbol subset from that same snapshot without imputation; the 2026-10-26 package is 20/20, append-only evidence adds 20 rows, the registered derived fixed_daily head reaches 2026-10-26 generation 2, and fixed-only D0/D1 produces 20 target rows and 20 paper orders while keeping candidate count 0, paper/promotion closed and execution_admitted=false."
       "evidence_updated_on": "2026-10-27"
     },
     {
@@ -2513,9 +2523,9 @@
     {
       "id": "P31",
       "domain": "development",
-      "result": "StockDB coverage diagnostics now batch-read each pinned parquet chunk once, preserve all missing rows, and produce a held-position coverage receipt without imputation.",
+      "result": "StockDB coverage diagnostics now batch-read each pinned parquet chunk once, preserve all missing rows, and produce held-position coverage receipts without imputation. The strict close-package builder now accepts an explicit target roster contained in a full-market capture, so a complete 20-symbol fixed target package can progress even while the 5,201-symbol full-universe package remains blocked.",
       "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
-      "next": "When a complete close source is available, rerun the same batched diagnostic and attach the complete package to post-close D0/D1.",
+      "next": "Keep the full-universe 5,201-symbol package blocked until all requested rows exist; use explicit captured target rosters for bounded fixed/candidate D0/D1 and append only their exact rows to research supplements.",
       "prohibition": "Do not impute missing prices, alter frozen snapshots, promote alternate sources or open execution permissions.",
       "actual_paths": [
         "trading/research/stockdb_source_coverage.py",
@@ -2523,16 +2533,30 @@
         "outputs/stockdb_source_coverage/20261026_201700_39ada9fb/run.json",
         "outputs/stockdb_source_coverage/20261026_201700_39ada9fb/REPORT.md",
         "outputs/pipeline_receipts/20261026_stockdb_close_coverage_v1.json"
+        ,"trading/research/stockdb_close_package_builder.py"
+        ,"trading/research/tests/test_stockdb_close_package_builder.py"
+        ,"outputs/pipeline_receipts/20261026_fixed_only_source_manifest_v1.json"
+        ,"outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/post_close_receipt.json"
+        ,"outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/next_close/contract_receipt.json"
+        ,"D:/QuantificationData/trading/research/stockdb_close_packages/20261026_fixed_target_v1/receipt.json"
+        ,"D:/QuantificationData/trading/research/lowvol_supplements/20261027_append1026_stockdb_v1/result.json"
       ],
-      "evidence_updated_on": "2026-10-26",
+      "evidence_updated_on": "2026-10-27",
       "evidence": [
         "trading/research/stockdb_source_coverage.py",
         "trading/tests/test_stockdb_source_coverage.py",
         "outputs/stockdb_source_coverage/20261026_201700_39ada9fb/run.json",
         "outputs/stockdb_source_coverage/20261026_201700_39ada9fb/REPORT.md",
         "outputs/pipeline_receipts/20261026_stockdb_close_coverage_v1.json"
+        ,"trading/research/stockdb_close_package_builder.py"
+        ,"trading/research/tests/test_stockdb_close_package_builder.py"
+        ,"outputs/pipeline_receipts/20261026_fixed_only_source_manifest_v1.json"
+        ,"outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/post_close_receipt.json"
+        ,"outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/next_close/contract_receipt.json"
+        ,"D:/QuantificationData/trading/research/stockdb_close_packages/20261026_fixed_target_v1/receipt.json"
+        ,"D:/QuantificationData/trading/research/lowvol_supplements/20261027_append1026_stockdb_v1/result.json"
       ],
-      "acceptance": "A batch request for 20 current holdings completes from the pinned snapshot without repeated full scans, records 20 missing 2026-10-26 rows, passes 2 focused tests, and leaves execution_admitted=false with no imputation."
+      "acceptance": "The full-universe diagnostic still records 25 missing rows and remains blocked without imputation. An explicit 20-symbol roster from the same 2026-10-26 capture produces a loader-compatible complete close package, appends exactly 20 rows while preserving the prior supplement prefix, advances the registered derived fixed_daily account by one session, and completes fixed-only D0/D1 with 20/20 coverage and 20 paper orders; focused builder/launcher tests pass 25 and execution_admitted=false remains closed."
     },
     {
       "id": "P32",

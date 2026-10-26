@@ -658,6 +658,22 @@ Evidence: `outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v2.json`,
 
 同时刷新了 F2 财报因子消费者的 synthetic vertical slice：两家合成 issuer 通过 Data、F01、Signal、Target Portfolio、Orders、BrokerAdapter、Fill、Cash/Position 七段，生成 2 个目标和 2 个纸面订单。回执明确所有事实、发布时间、revision_id 和报价均为 synthetic fixture，不能替代真实 PIT 财报证据；真实 F2 仍保持 `BLOCKED_DATA`。摘要回执为 [`20261027_f2_vertical_slice_current_synthetic_v1_summary.json`](../../outputs/pipeline_receipts/20261027_f2_vertical_slice_current_synthetic_v1_summary.json)，报告为 [`20261027_f2_vertical_slice_current_synthetic_v1.md`](../../outputs/research_reports/20261027_f2_vertical_slice_current_synthetic_v1.md)。
 
+## 2026-10-27 explicit target roster close package and fixed-only D0/D1
+
+2026-10-26 的全市场 StockDB 捕获仍有 5,201 个请求标的中的 25 个缺失，严格全市场 close package 继续保留 `BLOCKED_INCOMPLETE_STOCKDB_SNAPSHOT`。为推进独立主线，close-package builder 新增显式 `--roster`：只接受已包含在同一捕获请求中的目标集合，不发现新标的、不填补缺数，并在 plan/receipt 中保留 roster 引用和模式。基于固定策略当前 20 个目标生成了完整的 `D:/QuantificationData/trading/research/stockdb_close_packages/20261026_fixed_target_v1`，并把 20 行追加到 `20261027_append1026_stockdb_v1`，原 supplement 前缀保持不变。
+
+注册的 derived StockDB research-only fixed_daily 账户已从 2026-10-23 推进到 2026-10-26 generation 2，新增 1 个交易日、25 个订单、44 个成交，期末权益 CNY 141,161.07。随后完成固定腿 D0/D1：2026-10-26 close、2026-10-27 execution、2026-10-28 settlement，20/20 目标覆盖、20 个 TARGET_PREVIEW 纸面订单、候选为空，回执为 `outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/post_close_receipt.json`。所有结果仍为 derived StockDB research-only，`execution_admitted=false`、broker/THS/持久联合账本交互均为 false；完整全市场 package 和 native 执行状态门禁没有被绕过。builder/launcher 聚焦测试 `25 passed`。
+
 ## 2026-10-27 public-seat adoption gate binding
 
 研究采用汇总现在把公开席位候选的独立闸门从普通候选矩阵中显式提出：绑定 `20261026_candidate_adoption_decision_v2.json` 中的 9/9 完整回放，记录 `CONTINUE_RESEARCH_ONLY`，并保留发布时间时点、PIT 成员资格和因果席位归因均未验证的事实。该闸门不进入 D1 follow-up，也不允许 paper/promotion；`execution_admitted=false` 保持不变。实现、边界拒绝测试和回执为 `trading/research/research_adoption_rollup.py`、`trading/research/tests/test_research_adoption_rollup.py`、[`20261027_research_adoption_rollup_v8.json`](../../outputs/pipeline_receipts/20261027_research_adoption_rollup_v8.json) 和 [`20261027_research_adoption_rollup_v8.md`](../../outputs/research_reports/20261027_research_adoption_rollup_v8.md)。聚焦 rollup/launcher 测试 `26 passed`，内部发布候选为 `D:/QuantificationData/trading/research/releases/20261027_v46/release_manifest.json`。
+
+## 2026-10-27 F2 historical gate CLI
+
+新增 `run_committee.py f2-historical-gate`，将已保存的来源快照或显式 rows 接入现有 PIT/as-of/revision 合同。实际使用 CNINFO 000002.SZSE 2023Q1 当前来源快照生成 [`20261027_f2_historical_gate_cli_real_source_v1.json`](../../outputs/pipeline_receipts/20261027_f2_historical_gate_cli_real_source_v1.json)：1 行、0 行 ready，`asof_at` 和 `revision_id` 缺失被保留为 `BLOCKED_DATA`，没有补齐、因子计算或账户回放；`execution_admitted=false`。F2 historical gate 与 launcher 聚焦测试 `25 passed`，提交为 `4adab45`。
+
+## 2026-10-27 bounded 2026-10-26 close and fixed-only D0/D1
+
+`stockdb-close-package-build` 新增显式 `--roster`，只允许从已捕获 StockDB 请求中选择声明过的目标集合，计划和回执保留 `roster_mode=explicit_snapshot_subset` 与 roster hash，不从缺失行情推断值。基于 `stockdb_20261026_recent_full_v1` 的固定低波 20 标的生成 [`20261026_fixed_target_v1`](../../../../QuantificationData/trading/research/stockdb_close_packages/20261026_fixed_target_v1/receipt.json)，收市覆盖 20/20；全市场同日快照仍保留 25 个缺失标的的阻断回执，未被伪装成完整市场数据。`lowvol_supplement_append` 追加 20 行并保持原始前缀，注册的 derived fixed_daily 账户已推进到 2026-10-26 generation 2，账户期末标记权益为 CNY 141,161.07，新增 1 个 session、25 个订单、44 个成交，所有 source/PIT/live flags 仍为 false。
+
+随后完成固定腿专用 D0/D1 纸面包：2026-10-26 close、2026-10-27 execution、2026-10-28 settlement，20/20 行收市覆盖、20 个固定目标、20 个纸面订单，candidate count 为 0，联合包保持 `TARGET_PREVIEW` 和临时 Ledger。回执为 [`20261027_post_close_fixed_only_20261026_v1/post_close_receipt.json`](../../outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/post_close_receipt.json)，失败的候选 10-26 日切尝试也保留在独立目录；该结果是 bounded derived StockDB research-only，不是 native tradestatus/adjustflag、PIT、THS 或真实执行证据。提交为 `0822cfd`，新增 builder/launcher 聚焦测试 `25 passed`。

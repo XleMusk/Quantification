@@ -1,0 +1,1177 @@
+{
+  "schema": "stockdb_post_close_d0_d1_orchestration_v1",
+  "status": "COMPLETED_RESEARCH_ONLY_POST_CLOSE_D0_D1",
+  "created_at": "2026-10-26T17:42:25.180838+00:00",
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "input_fingerprint": "786a4a3ff56d16d9e065f2bed8aee285c4d2eb4b9e4bbe840424375fd09c39d5",
+  "fingerprint_inputs": {
+    "close_date": "2026-10-26",
+    "execution_day": "2026-10-27",
+    "settlement_day": "2026-10-28",
+    "initial_cash": 140000.0,
+    "minute_time": "",
+    "gate_mode": "separate_gate",
+    "joint_capacity_policy": "strict",
+    "joint_max_target_rows": 22,
+    "inputs": {
+      "source_manifest": {
+        "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_only_source_manifest_v1.json",
+        "sha256": "0b44c8938db57dd48ba30413f07f85e0b1ceb5149a6e2e091bfe014891e147c7"
+      },
+      "candidate_replay_manifest": null,
+      "fixed_run_dir": "D:\\QuantificationData\\trading\\research\\fixed_daily\\20261027_close_package_derived_consumer_v1",
+      "packages": [
+        {
+          "path": "D:\\QuantificationData\\trading\\research\\stockdb_close_packages\\20261026_fixed_target_v1",
+          "plan": {
+            "path": "D:\\QuantificationData\\trading\\research\\stockdb_close_packages\\20261026_fixed_target_v1\\plan.json",
+            "sha256": "bb1bdd1973c0d786ca0805bcdfb66d9c369f098f9516199f648b09a3db658d63"
+          },
+          "receipt": {
+            "path": "D:\\QuantificationData\\trading\\research\\stockdb_close_packages\\20261026_fixed_target_v1\\receipt.json",
+            "sha256": "99a34e3ad0e17645a9e39aa058f3c70228762abfa186fc08c8d0ebd4f0b66c3b"
+          }
+        }
+      ],
+      "stockdb_root": "C:\\Users\\13944\\Desktop\\free-stockdb-windows-v0.3.5-more-power\\stockdb",
+      "catalog": {
+        "path": "D:\\Quantification\\docs\\architecture_v3\\candidate_strategy_catalog_20261024.json",
+        "sha256": "eb5c7144bac782431842e791dd9292e0592a8a431759205dbb4baaad441d55f8"
+      },
+      "calendar": null,
+      "research_decision_receipt": null,
+      "supplemental_raw_view": {
+        "path": "D:\\QuantificationData\\trading\\research\\lowvol_supplements\\20261027_append1026_stockdb_v1\\raw_daily.parquet",
+        "sha256": "9fa039e8e1acdfb7051c8e9160a4843f993b7180382b233cc151b1b3865b3a1b"
+      },
+      "stockdb_snapshot": {
+        "path": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261026_recent_full_v1\\snapshot.json",
+        "sha256": "1edc4b58f16341da5d9119a9a6769dbf71d82302a20802cd7f60b4657c48b368"
+      }
+    }
+  },
+  "fixed_run_dir": "D:\\QuantificationData\\trading\\research\\fixed_daily\\20261027_close_package_derived_consumer_v1",
+  "close_date": "2026-10-26",
+  "execution_day": "2026-10-27",
+  "settlement_day": "2026-10-28",
+  "session_resolution": {
+    "mode": "explicit_arguments",
+    "calendar": null
+  },
+  "persistent_fixed_daily_account_scope": "persistent_registered_account",
+  "target_preview_projection_scope": {
+    "fixed": "TARGET_PREVIEW",
+    "candidate": "TARGET_PREVIEW",
+    "ledger_scope": "ephemeral_projection",
+    "continuous_account_consumer": false
+  },
+  "fixed_daily": {
+    "schema": "stockdb_fixed_persistent_daily_research_v1",
+    "method_id": "explicit_rolling_checkpoint_calendar_full_exit_daily_v1",
+    "status": "no_new_session",
+    "run_dir": "D:\\QuantificationData\\trading\\research\\fixed_daily\\20261027_close_package_derived_consumer_v1",
+    "signal": "low_volatility_252_20",
+    "registered_at": "2026-10-27T00:53:28.337439+08:00",
+    "mode": "replay",
+    "last_completed_day": "2026-10-26",
+    "generation": 2,
+    "source_run": "D:\\Quantification\\outputs\\stockdb_rolling_low_volatility\\20261027_013956_bda1e300\\run.json",
+    "terminal_account": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261027_013956_bda1e300\\low_volatility_252_20\\account.json",
+    "committed_at": "2026-10-27T01:40:03.368333+08:00",
+    "cash": 43413.07,
+    "equity": 141161.07,
+    "money_unit": "CNY",
+    "positions": {
+      "000001.SZSE": 400,
+      "000088.SZSE": 1100,
+      "000538.SZSE": 100,
+      "001227.SZSE": 2600,
+      "002507.SZSE": 400,
+      "002936.SZSE": 3200,
+      "600018.SSE": 1000,
+      "600035.SSE": 1500,
+      "600177.SSE": 600,
+      "600511.SSE": 200,
+      "600900.SSE": 100,
+      "600905.SSE": 1500,
+      "601006.SSE": 1100,
+      "601158.SSE": 1300,
+      "601186.SSE": 900,
+      "601607.SSE": 300,
+      "601816.SSE": 1100,
+      "601818.SSE": 1800,
+      "601668.SSE": 1200
+    },
+    "targets": {
+      "601158.SSE": 0.04,
+      "600900.SSE": 0.04,
+      "000538.SZSE": 0.04,
+      "001227.SZSE": 0.04,
+      "601607.SSE": 0.04,
+      "601006.SSE": 0.04,
+      "002936.SZSE": 0.04,
+      "601818.SSE": 0.04,
+      "600511.SSE": 0.04,
+      "601186.SSE": 0.04,
+      "000001.SZSE": 0.04,
+      "601816.SSE": 0.04,
+      "600905.SSE": 0.04,
+      "600018.SSE": 0.04,
+      "002507.SZSE": 0.04,
+      "000088.SZSE": 0.04,
+      "600035.SSE": 0.04,
+      "600177.SSE": 0.04,
+      "600941.SSE": 0.04,
+      "601668.SSE": 0.04
+    },
+    "pending_targets": null,
+    "full_exit_lifecycle": {
+      "schema_version": 1,
+      "method_id": "full_exit_residual_latest_full_target_v1",
+      "target_version": 2,
+      "latest_target": {
+        "version": 2,
+        "decided_on": "2026-09-30",
+        "decided_at": "2026-09-30T15:05:00+08:00",
+        "execution_not_before": "2026-10-08",
+        "source": "research:low_volatility_252_20",
+        "weights": {
+          "601158.SSE": 0.04,
+          "600900.SSE": 0.04,
+          "000538.SZSE": 0.04,
+          "001227.SZSE": 0.04,
+          "601607.SSE": 0.04,
+          "601006.SSE": 0.04,
+          "002936.SZSE": 0.04,
+          "601818.SSE": 0.04,
+          "600511.SSE": 0.04,
+          "601186.SSE": 0.04,
+          "000001.SZSE": 0.04,
+          "601816.SSE": 0.04,
+          "600905.SSE": 0.04,
+          "600018.SSE": 0.04,
+          "002507.SZSE": 0.04,
+          "000088.SZSE": 0.04,
+          "600035.SSE": 0.04,
+          "600177.SSE": 0.04,
+          "600941.SSE": 0.04,
+          "601668.SSE": 0.04
+        }
+      },
+      "remaining_full_exits": {}
+    },
+    "orders": {
+      "2026-09-01:000001.SZSE:buy": {
+        "id": "2026-09-01:000001.SZSE:buy",
+        "day": "2026-09-01",
+        "symbol": "000001.SZSE",
+        "side": "buy",
+        "qty": 400,
+        "limit_price": 1169,
+        "filled": 400,
+        "notional": 467600,
+        "fees": 505,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:000088.SZSE:buy": {
+        "id": "2026-09-01:000088.SZSE:buy",
+        "day": "2026-09-01",
+        "symbol": "000088.SZSE",
+        "side": "buy",
+        "qty": 1200,
+        "limit_price": 454,
+        "filled": 1200,
+        "notional": 544800,
+        "fees": 505,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:000538.SZSE:buy": {
+        "id": "2026-09-01:000538.SZSE:buy",
+        "day": "2026-09-01",
+        "symbol": "000538.SZSE",
+        "side": "buy",
+        "qty": 100,
+        "limit_price": 5034,
+        "filled": 100,
+        "notional": 503400,
+        "fees": 505,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:001213.SZSE:buy": {
+        "id": "2026-09-01:001213.SZSE:buy",
+        "day": "2026-09-01",
+        "symbol": "001213.SZSE",
+        "side": "buy",
+        "qty": 1500,
+        "limit_price": 354,
+        "filled": 1500,
+        "notional": 531000,
+        "fees": 505,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:001227.SZSE:buy": {
+        "id": "2026-09-01:001227.SZSE:buy",
+        "day": "2026-09-01",
+        "symbol": "001227.SZSE",
+        "side": "buy",
+        "qty": 2600,
+        "limit_price": 214,
+        "filled": 2600,
+        "notional": 556400,
+        "fees": 506,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:002507.SZSE:buy": {
+        "id": "2026-09-01:002507.SZSE:buy",
+        "day": "2026-09-01",
+        "symbol": "002507.SZSE",
+        "side": "buy",
+        "qty": 500,
+        "limit_price": 1119,
+        "filled": 500,
+        "notional": 559500,
+        "fees": 506,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:002936.SZSE:buy": {
+        "id": "2026-09-01:002936.SZSE:buy",
+        "day": "2026-09-01",
+        "symbol": "002936.SZSE",
+        "side": "buy",
+        "qty": 3100,
+        "limit_price": 177,
+        "filled": 3100,
+        "notional": 548700,
+        "fees": 505,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:600018.SSE:buy": {
+        "id": "2026-09-01:600018.SSE:buy",
+        "day": "2026-09-01",
+        "symbol": "600018.SSE",
+        "side": "buy",
+        "qty": 1000,
+        "limit_price": 527,
+        "filled": 1000,
+        "notional": 527000,
+        "fees": 505,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:600035.SSE:buy": {
+        "id": "2026-09-01:600035.SSE:buy",
+        "day": "2026-09-01",
+        "symbol": "600035.SSE",
+        "side": "buy",
+        "qty": 1500,
+        "limit_price": 366,
+        "filled": 1500,
+        "notional": 549000,
+        "fees": 505,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:600177.SSE:buy": {
+        "id": "2026-09-01:600177.SSE:buy",
+        "day": "2026-09-01",
+        "symbol": "600177.SSE",
+        "side": "buy",
+        "qty": 700,
+        "limit_price": 801,
+        "filled": 700,
+        "notional": 560700,
+        "fees": 506,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:600511.SSE:buy": {
+        "id": "2026-09-01:600511.SSE:buy",
+        "day": "2026-09-01",
+        "symbol": "600511.SSE",
+        "side": "buy",
+        "qty": 200,
+        "limit_price": 2666,
+        "filled": 200,
+        "notional": 533200,
+        "fees": 505,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:600900.SSE:buy": {
+        "id": "2026-09-01:600900.SSE:buy",
+        "day": "2026-09-01",
+        "symbol": "600900.SSE",
+        "side": "buy",
+        "qty": 100,
+        "limit_price": 2805,
+        "filled": 100,
+        "notional": 280500,
+        "fees": 503,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:600905.SSE:buy": {
+        "id": "2026-09-01:600905.SSE:buy",
+        "day": "2026-09-01",
+        "symbol": "600905.SSE",
+        "side": "buy",
+        "qty": 1500,
+        "limit_price": 369,
+        "filled": 1500,
+        "notional": 553500,
+        "fees": 506,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:601006.SSE:buy": {
+        "id": "2026-09-01:601006.SSE:buy",
+        "day": "2026-09-01",
+        "symbol": "601006.SSE",
+        "side": "buy",
+        "qty": 1100,
+        "limit_price": 475,
+        "filled": 1100,
+        "notional": 522500,
+        "fees": 505,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:601158.SSE:buy": {
+        "id": "2026-09-01:601158.SSE:buy",
+        "day": "2026-09-01",
+        "symbol": "601158.SSE",
+        "side": "buy",
+        "qty": 1300,
+        "limit_price": 411,
+        "filled": 1300,
+        "notional": 534300,
+        "fees": 505,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:601186.SSE:buy": {
+        "id": "2026-09-01:601186.SSE:buy",
+        "day": "2026-09-01",
+        "symbol": "601186.SSE",
+        "side": "buy",
+        "qty": 900,
+        "limit_price": 608,
+        "filled": 900,
+        "notional": 547200,
+        "fees": 505,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:601607.SSE:buy": {
+        "id": "2026-09-01:601607.SSE:buy",
+        "day": "2026-09-01",
+        "symbol": "601607.SSE",
+        "side": "buy",
+        "qty": 300,
+        "limit_price": 1622,
+        "filled": 300,
+        "notional": 486600,
+        "fees": 505,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:601816.SSE:buy": {
+        "id": "2026-09-01:601816.SSE:buy",
+        "day": "2026-09-01",
+        "symbol": "601816.SSE",
+        "side": "buy",
+        "qty": 1100,
+        "limit_price": 489,
+        "filled": 1100,
+        "notional": 537900,
+        "fees": 505,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-09-01:601818.SSE:buy": {
+        "id": "2026-09-01:601818.SSE:buy",
+        "day": "2026-09-01",
+        "symbol": "601818.SSE",
+        "side": "buy",
+        "qty": 1800,
+        "limit_price": 296,
+        "filled": 1800,
+        "notional": 532800,
+        "fees": 505,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-10-08:000088.SZSE:sell": {
+        "id": "2026-10-08:000088.SZSE:sell",
+        "day": "2026-10-08",
+        "symbol": "000088.SZSE",
+        "side": "sell",
+        "qty": 100,
+        "limit_price": 467,
+        "filled": 100,
+        "notional": 46700,
+        "fees": 523,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-10-08:002507.SZSE:sell": {
+        "id": "2026-10-08:002507.SZSE:sell",
+        "day": "2026-10-08",
+        "symbol": "002507.SZSE",
+        "side": "sell",
+        "qty": 100,
+        "limit_price": 1120,
+        "filled": 100,
+        "notional": 112000,
+        "fees": 557,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-10-08:600177.SSE:sell": {
+        "id": "2026-10-08:600177.SSE:sell",
+        "day": "2026-10-08",
+        "symbol": "600177.SSE",
+        "side": "sell",
+        "qty": 100,
+        "limit_price": 838,
+        "filled": 100,
+        "notional": 83800,
+        "fees": 543,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-10-08:001213.SZSE:sell": {
+        "id": "2026-10-08:001213.SZSE:sell",
+        "day": "2026-10-08",
+        "symbol": "001213.SZSE",
+        "side": "sell",
+        "qty": 1500,
+        "limit_price": 351,
+        "filled": 1500,
+        "notional": 526500,
+        "fees": 768,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-10-08:002936.SZSE:buy": {
+        "id": "2026-10-08:002936.SZSE:buy",
+        "day": "2026-10-08",
+        "symbol": "002936.SZSE",
+        "side": "buy",
+        "qty": 100,
+        "limit_price": 173,
+        "filled": 100,
+        "notional": 17300,
+        "fees": 500,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      },
+      "2026-10-08:601668.SSE:buy": {
+        "id": "2026-10-08:601668.SSE:buy",
+        "day": "2026-10-08",
+        "symbol": "601668.SSE",
+        "side": "buy",
+        "qty": 1200,
+        "limit_price": 434,
+        "filled": 1200,
+        "notional": 520800,
+        "fees": 505,
+        "reserve": 0,
+        "status": "filled",
+        "reason": null
+      }
+    },
+    "fills": {
+      "2026-09-01:000001.SZSE:buy:0": {
+        "order_id": "2026-09-01:000001.SZSE:buy",
+        "qty": 200,
+        "price": 1169,
+        "day": "2026-09-01",
+        "fees": 502,
+        "symbol": "000001.SZSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:000001.SZSE:buy:1": {
+        "order_id": "2026-09-01:000001.SZSE:buy",
+        "qty": 200,
+        "price": 1169,
+        "day": "2026-09-01",
+        "fees": 3,
+        "symbol": "000001.SZSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:000088.SZSE:buy:0": {
+        "order_id": "2026-09-01:000088.SZSE:buy",
+        "qty": 600,
+        "price": 454,
+        "day": "2026-09-01",
+        "fees": 503,
+        "symbol": "000088.SZSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:000088.SZSE:buy:1": {
+        "order_id": "2026-09-01:000088.SZSE:buy",
+        "qty": 600,
+        "price": 454,
+        "day": "2026-09-01",
+        "fees": 2,
+        "symbol": "000088.SZSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:000538.SZSE:buy:1": {
+        "order_id": "2026-09-01:000538.SZSE:buy",
+        "qty": 100,
+        "price": 5034,
+        "day": "2026-09-01",
+        "fees": 505,
+        "symbol": "000538.SZSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:001213.SZSE:buy:0": {
+        "order_id": "2026-09-01:001213.SZSE:buy",
+        "qty": 700,
+        "price": 354,
+        "day": "2026-09-01",
+        "fees": 502,
+        "symbol": "001213.SZSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:001213.SZSE:buy:1": {
+        "order_id": "2026-09-01:001213.SZSE:buy",
+        "qty": 800,
+        "price": 354,
+        "day": "2026-09-01",
+        "fees": 3,
+        "symbol": "001213.SZSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:001227.SZSE:buy:0": {
+        "order_id": "2026-09-01:001227.SZSE:buy",
+        "qty": 1300,
+        "price": 214,
+        "day": "2026-09-01",
+        "fees": 503,
+        "symbol": "001227.SZSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:001227.SZSE:buy:1": {
+        "order_id": "2026-09-01:001227.SZSE:buy",
+        "qty": 1300,
+        "price": 214,
+        "day": "2026-09-01",
+        "fees": 3,
+        "symbol": "001227.SZSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:002507.SZSE:buy:0": {
+        "order_id": "2026-09-01:002507.SZSE:buy",
+        "qty": 200,
+        "price": 1119,
+        "day": "2026-09-01",
+        "fees": 502,
+        "symbol": "002507.SZSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:002507.SZSE:buy:1": {
+        "order_id": "2026-09-01:002507.SZSE:buy",
+        "qty": 300,
+        "price": 1119,
+        "day": "2026-09-01",
+        "fees": 4,
+        "symbol": "002507.SZSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:002936.SZSE:buy:0": {
+        "order_id": "2026-09-01:002936.SZSE:buy",
+        "qty": 1500,
+        "price": 177,
+        "day": "2026-09-01",
+        "fees": 503,
+        "symbol": "002936.SZSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:002936.SZSE:buy:1": {
+        "order_id": "2026-09-01:002936.SZSE:buy",
+        "qty": 1600,
+        "price": 177,
+        "day": "2026-09-01",
+        "fees": 2,
+        "symbol": "002936.SZSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:600018.SSE:buy:0": {
+        "order_id": "2026-09-01:600018.SSE:buy",
+        "qty": 500,
+        "price": 527,
+        "day": "2026-09-01",
+        "fees": 503,
+        "symbol": "600018.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:600018.SSE:buy:1": {
+        "order_id": "2026-09-01:600018.SSE:buy",
+        "qty": 500,
+        "price": 527,
+        "day": "2026-09-01",
+        "fees": 2,
+        "symbol": "600018.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:600035.SSE:buy:0": {
+        "order_id": "2026-09-01:600035.SSE:buy",
+        "qty": 700,
+        "price": 366,
+        "day": "2026-09-01",
+        "fees": 503,
+        "symbol": "600035.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:600035.SSE:buy:1": {
+        "order_id": "2026-09-01:600035.SSE:buy",
+        "qty": 800,
+        "price": 366,
+        "day": "2026-09-01",
+        "fees": 2,
+        "symbol": "600035.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:600177.SSE:buy:0": {
+        "order_id": "2026-09-01:600177.SSE:buy",
+        "qty": 300,
+        "price": 801,
+        "day": "2026-09-01",
+        "fees": 502,
+        "symbol": "600177.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:600177.SSE:buy:1": {
+        "order_id": "2026-09-01:600177.SSE:buy",
+        "qty": 400,
+        "price": 801,
+        "day": "2026-09-01",
+        "fees": 4,
+        "symbol": "600177.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:600511.SSE:buy:0": {
+        "order_id": "2026-09-01:600511.SSE:buy",
+        "qty": 100,
+        "price": 2666,
+        "day": "2026-09-01",
+        "fees": 503,
+        "symbol": "600511.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:600511.SSE:buy:1": {
+        "order_id": "2026-09-01:600511.SSE:buy",
+        "qty": 100,
+        "price": 2666,
+        "day": "2026-09-01",
+        "fees": 2,
+        "symbol": "600511.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:600900.SSE:buy:1": {
+        "order_id": "2026-09-01:600900.SSE:buy",
+        "qty": 100,
+        "price": 2805,
+        "day": "2026-09-01",
+        "fees": 503,
+        "symbol": "600900.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:600905.SSE:buy:0": {
+        "order_id": "2026-09-01:600905.SSE:buy",
+        "qty": 700,
+        "price": 369,
+        "day": "2026-09-01",
+        "fees": 503,
+        "symbol": "600905.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:600905.SSE:buy:1": {
+        "order_id": "2026-09-01:600905.SSE:buy",
+        "qty": 800,
+        "price": 369,
+        "day": "2026-09-01",
+        "fees": 3,
+        "symbol": "600905.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:601006.SSE:buy:0": {
+        "order_id": "2026-09-01:601006.SSE:buy",
+        "qty": 500,
+        "price": 475,
+        "day": "2026-09-01",
+        "fees": 502,
+        "symbol": "601006.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:601006.SSE:buy:1": {
+        "order_id": "2026-09-01:601006.SSE:buy",
+        "qty": 600,
+        "price": 475,
+        "day": "2026-09-01",
+        "fees": 3,
+        "symbol": "601006.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:601158.SSE:buy:0": {
+        "order_id": "2026-09-01:601158.SSE:buy",
+        "qty": 600,
+        "price": 411,
+        "day": "2026-09-01",
+        "fees": 502,
+        "symbol": "601158.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:601158.SSE:buy:1": {
+        "order_id": "2026-09-01:601158.SSE:buy",
+        "qty": 700,
+        "price": 411,
+        "day": "2026-09-01",
+        "fees": 3,
+        "symbol": "601158.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:601186.SSE:buy:0": {
+        "order_id": "2026-09-01:601186.SSE:buy",
+        "qty": 400,
+        "price": 608,
+        "day": "2026-09-01",
+        "fees": 502,
+        "symbol": "601186.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:601186.SSE:buy:1": {
+        "order_id": "2026-09-01:601186.SSE:buy",
+        "qty": 500,
+        "price": 608,
+        "day": "2026-09-01",
+        "fees": 3,
+        "symbol": "601186.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:601607.SSE:buy:0": {
+        "order_id": "2026-09-01:601607.SSE:buy",
+        "qty": 100,
+        "price": 1622,
+        "day": "2026-09-01",
+        "fees": 502,
+        "symbol": "601607.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:601607.SSE:buy:1": {
+        "order_id": "2026-09-01:601607.SSE:buy",
+        "qty": 200,
+        "price": 1622,
+        "day": "2026-09-01",
+        "fees": 3,
+        "symbol": "601607.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:601816.SSE:buy:0": {
+        "order_id": "2026-09-01:601816.SSE:buy",
+        "qty": 500,
+        "price": 489,
+        "day": "2026-09-01",
+        "fees": 502,
+        "symbol": "601816.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:601816.SSE:buy:1": {
+        "order_id": "2026-09-01:601816.SSE:buy",
+        "qty": 600,
+        "price": 489,
+        "day": "2026-09-01",
+        "fees": 3,
+        "symbol": "601816.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:601818.SSE:buy:0": {
+        "order_id": "2026-09-01:601818.SSE:buy",
+        "qty": 900,
+        "price": 296,
+        "day": "2026-09-01",
+        "fees": 503,
+        "symbol": "601818.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-09-01:601818.SSE:buy:1": {
+        "order_id": "2026-09-01:601818.SSE:buy",
+        "qty": 900,
+        "price": 296,
+        "day": "2026-09-01",
+        "fees": 2,
+        "symbol": "601818.SSE",
+        "side": "buy",
+        "available_day": "2026-09-02"
+      },
+      "2026-10-08:000088.SZSE:sell:1": {
+        "order_id": "2026-10-08:000088.SZSE:sell",
+        "qty": 100,
+        "price": 467,
+        "day": "2026-10-08",
+        "fees": 523,
+        "symbol": "000088.SZSE",
+        "side": "sell",
+        "available_day": "2026-10-09"
+      },
+      "2026-10-08:002507.SZSE:sell:1": {
+        "order_id": "2026-10-08:002507.SZSE:sell",
+        "qty": 100,
+        "price": 1120,
+        "day": "2026-10-08",
+        "fees": 557,
+        "symbol": "002507.SZSE",
+        "side": "sell",
+        "available_day": "2026-10-09"
+      },
+      "2026-10-08:600177.SSE:sell:1": {
+        "order_id": "2026-10-08:600177.SSE:sell",
+        "qty": 100,
+        "price": 838,
+        "day": "2026-10-08",
+        "fees": 543,
+        "symbol": "600177.SSE",
+        "side": "sell",
+        "available_day": "2026-10-09"
+      },
+      "2026-10-08:001213.SZSE:sell:0": {
+        "order_id": "2026-10-08:001213.SZSE:sell",
+        "qty": 700,
+        "price": 351,
+        "day": "2026-10-08",
+        "fees": 625,
+        "symbol": "001213.SZSE",
+        "side": "sell",
+        "available_day": "2026-10-09"
+      },
+      "2026-10-08:001213.SZSE:sell:1": {
+        "order_id": "2026-10-08:001213.SZSE:sell",
+        "qty": 800,
+        "price": 351,
+        "day": "2026-10-08",
+        "fees": 143,
+        "symbol": "001213.SZSE",
+        "side": "sell",
+        "available_day": "2026-10-09"
+      },
+      "2026-10-08:002936.SZSE:buy:1": {
+        "order_id": "2026-10-08:002936.SZSE:buy",
+        "qty": 100,
+        "price": 173,
+        "day": "2026-10-08",
+        "fees": 500,
+        "symbol": "002936.SZSE",
+        "side": "buy",
+        "available_day": "2026-10-09"
+      },
+      "2026-10-08:601668.SSE:buy:0": {
+        "order_id": "2026-10-08:601668.SSE:buy",
+        "qty": 600,
+        "price": 434,
+        "day": "2026-10-08",
+        "fees": 503,
+        "symbol": "601668.SSE",
+        "side": "buy",
+        "available_day": "2026-10-09"
+      },
+      "2026-10-08:601668.SSE:buy:1": {
+        "order_id": "2026-10-08:601668.SSE:buy",
+        "qty": 600,
+        "price": 434,
+        "day": "2026-10-08",
+        "fees": 2,
+        "symbol": "601668.SSE",
+        "side": "buy",
+        "available_day": "2026-10-09"
+      }
+    },
+    "order_count": 25,
+    "fill_count": 44,
+    "metrics": {
+      "status": "completed",
+      "completed_sessions": 35,
+      "sessions": 35,
+      "net_return": 0.008293357142857172,
+      "max_drawdown": -0.02025487908141299,
+      "fees": 129.93,
+      "turnover_value": 111837.0,
+      "final_equity": 141161.07,
+      "stale_valuation_days": 0,
+      "sharpe_zero_rf_252": 0.8248597846691905,
+      "annualized_volatility": 0.07544837407727999,
+      "worst_day": -0.007972373480152228,
+      "orders": 25,
+      "fills": 44,
+      "reused_sessions": 34,
+      "newly_completed_sessions": 1,
+      "turnover_over_initial": 0.7988357142857143,
+      "signal": "low_volatility_252_20",
+      "label": "low_volatility_252_20"
+    },
+    "account_basis": "explicit_saved_research_checkpoint_not_personal_holdings",
+    "signal_publication_basis": "historical_eod_assumption_not_verified_actual_publication",
+    "execution_reference_mode": "derived_stockdb_research_only",
+    "candidate_panel_only": true,
+    "research_only": true,
+    "execution_admitted": false,
+    "selection_enabled": false,
+    "strategy_validated": false,
+    "source_verified": false,
+    "pit_verified": false,
+    "corporate_actions_verified": false,
+    "broker_connected": false,
+    "personal_account_claimed": false,
+    "through": "2026-10-26",
+    "newly_completed_sessions": 0
+  },
+  "d0_d1": {
+    "schema": "stockdb_next_close_d0_d1_contract_v1",
+    "status": "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1",
+    "created_at": "2026-10-26T17:42:25.315374+00:00",
+    "execution_admitted": false,
+    "broker_interacted": false,
+    "ths_interacted": false,
+    "persistent_ledger_mutated": false,
+    "input_fingerprint": "9af59db6cbf773e0e3e745ceb2185d15d147668f7d4085c4d5204cf9aa434025",
+    "fingerprint_inputs": {
+      "close_date": "2026-10-26",
+      "execution_day": "2026-10-27",
+      "settlement_day": "2026-10-28",
+      "stockdb_root": "C:\\Users\\13944\\Desktop\\free-stockdb-windows-v0.3.5-more-power\\stockdb",
+      "sources": {
+        "source_manifest": {
+          "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_only_source_manifest_v1.json",
+          "sha256": "0b44c8938db57dd48ba30413f07f85e0b1ceb5149a6e2e091bfe014891e147c7"
+        },
+        "fixed_source": {
+          "path": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261027_013956_bda1e300\\low_volatility_252_20\\account.json",
+          "sha256": "9ba684af83b16079ff4301744be3cbc308e6c3159a979004b8e3673463aa0c0e",
+          "strategy_id": "low_volatility_252_20"
+        },
+        "catalog": {
+          "path": "D:\\Quantification\\docs\\architecture_v3\\candidate_strategy_catalog_20261024.json",
+          "sha256": "eb5c7144bac782431842e791dd9292e0592a8a431759205dbb4baaad441d55f8"
+        },
+        "stockdb_snapshot": {
+          "path": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261026_recent_full_v1\\snapshot.json",
+          "sha256": "1edc4b58f16341da5d9119a9a6769dbf71d82302a20802cd7f60b4657c48b368"
+        }
+      },
+      "initial_cash": 140000.0,
+      "minute_time": "",
+      "gate_mode": "separate_gate",
+      "joint_capacity_policy": "strict",
+      "joint_max_target_rows": 22,
+      "calendar_path": null,
+      "stockdb_snapshot": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261026_recent_full_v1"
+    },
+    "reused_existing_run": false,
+    "persistent_fixed_daily_account_scope": "persistent_registered_account",
+    "target_preview_projection_scope": {
+      "fixed": "TARGET_PREVIEW",
+      "candidate": "TARGET_PREVIEW",
+      "ledger_scope": "ephemeral_projection",
+      "continuous_account_consumer": false
+    },
+    "calendar": {
+      "status": "resolved_authoritative_static_calendar",
+      "calendar_id": "cn_a_share_2026_sse_v1",
+      "path": null,
+      "execution": {
+        "status": "resolved_authoritative_static_calendar",
+        "calendar_id": "cn_a_share_2026_sse_v1",
+        "calendar_source_url": "https://www.sse.com.cn/disclosure/dealinstruc/closed/",
+        "calendar_source_published": "2025-12-22"
+      },
+      "settlement": {
+        "status": "resolved_authoritative_static_calendar",
+        "calendar_id": "cn_a_share_2026_sse_v1",
+        "calendar_source_url": "https://www.sse.com.cn/disclosure/dealinstruc/closed/",
+        "calendar_source_published": "2025-12-22"
+      }
+    },
+    "close_date": "2026-10-26",
+    "snapshot": {
+      "path": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261026_recent_full_v1\\snapshot.json",
+      "sha256": "1edc4b58f16341da5d9119a9a6769dbf71d82302a20802cd7f60b4657c48b368"
+    },
+    "stockdb_snapshot_source": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261026_recent_full_v1",
+    "requested_symbol_count": 20,
+    "missing_symbols": [],
+    "snapshot_coverage": {
+      "status": "COMPLETE",
+      "reason": null,
+      "requested_close_date": "2026-10-26",
+      "effective_session_dates": [
+        "2026-10-26"
+      ],
+      "requested_symbol_count": 20,
+      "available_symbol_count": 20,
+      "missing_symbols": []
+    },
+    "fixed_source": {
+      "path": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261027_013956_bda1e300\\low_volatility_252_20\\account.json",
+      "sha256": "9ba684af83b16079ff4301744be3cbc308e6c3159a979004b8e3673463aa0c0e",
+      "source_kind": "legacy_terminal_account"
+    },
+    "fixed_account": {
+      "binding": "registered_fixed_daily",
+      "account_version": "generation-2:2026-10-26",
+      "generation": 2,
+      "last_completed_day": "2026-10-26",
+      "execution_reference_mode": "derived_stockdb_research_only",
+      "run_dir": "D:\\QuantificationData\\trading\\research\\fixed_daily\\20261027_close_package_derived_consumer_v1",
+      "head": {
+        "path": "D:\\QuantificationData\\trading\\research\\fixed_daily\\20261027_close_package_derived_consumer_v1\\head.json",
+        "sha256": "4ac2bc2ebb93843c1a482502e152070d042e9e064379a3fc39ad32da75ef0735"
+      },
+      "terminal_account": "D:\\QuantificationData\\trading\\research\\stockdb_rolling_low_volatility\\20261027_013956_bda1e300\\low_volatility_252_20\\account.json"
+    },
+    "candidate_source_manifest": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_fixed_only_source_manifest_v1.json",
+      "sha256": "0b44c8938db57dd48ba30413f07f85e0b1ceb5149a6e2e091bfe014891e147c7"
+    },
+    "time_semantics": {
+      "source_day": "2026-10-26",
+      "decision_cutoff_at": "2026-10-26T22:35:38.898149+08:00",
+      "quote_observed_at": "2026-10-26T22:35:38.898149+08:00",
+      "artifact_created_at": "2026-10-26T17:42:25.315374+00:00",
+      "plan_published_at": "2026-10-26T17:42:25.356548+00:00",
+      "interpretation": "plan_published_at is the local frozen-artifact publication time; it is not a broker or Tonghuashun submission timestamp."
+    },
+    "fixed": {
+      "strategy_id": "low_volatility_252_20",
+      "target_count": 20,
+      "paper_order_count": 20,
+      "result": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_fixed_only_20261026_v1\\next_close\\fixed\\result.json"
+    },
+    "candidate_batch": {
+      "receipt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_fixed_only_20261026_v1\\next_close\\candidate_batch\\batch_receipt.json",
+      "candidate_count": 0,
+      "projection_mode": "TARGET_PREVIEW",
+      "ledger_scope": "ephemeral_projection",
+      "continuous_account_consumer": false
+    },
+    "fixed_projection": {
+      "projection_mode": "TARGET_PREVIEW",
+      "ledger_scope": "ephemeral_projection",
+      "continuous_account_consumer": false
+    },
+    "joint_paper": {
+      "status": "COMPLETED_RESEARCH_ONLY_JOINT_PAPER_PACKAGE",
+      "receipt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_fixed_only_20261026_v1\\next_close\\joint_paper\\joint_paper_receipt.json",
+      "paper_order_count": 20,
+      "capacity_policy": "strict"
+    },
+    "cost_benchmark_binding": {
+      "cost_model_id": "cn_a_share_standard_ledger_costs_v1",
+      "benchmark_binding_id": "paper_target_projection_no_market_benchmark_v1"
+    },
+    "artifacts": {
+      "snapshot": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261026_recent_full_v1",
+      "target_quote_manifest": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_fixed_only_20261026_v1\\next_close\\inputs\\candidate_manifest.json"
+    },
+    "limitations": [
+      "Targets are strategy-adapter inputs and must already be same-day outputs.",
+      "StockDB rows are local read-only observations; no PIT or corporate-action promotion occurs.",
+      "Paper fills are shared Ledger projections, not broker fills or THS instructions."
+    ],
+    "task_measurement": {
+      "schema": "local_task_measurement_v1",
+      "started_at": "2026-10-26T17:42:25.315374+00:00",
+      "finished_at": "2026-10-26T17:42:25.371191+00:00",
+      "wall_seconds": 0.055416,
+      "clock_basis": "local_monotonic_wall_clock",
+      "external_provider_cost_cny": null,
+      "execution_admitted": false
+    },
+    "receipt_path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_fixed_only_20261026_v1\\next_close\\contract_receipt.json"
+  },
+  "receipt_path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_fixed_only_20261026_v1\\post_close_receipt.json",
+  "snapshot_coverage": {
+    "status": "COMPLETE",
+    "reason": null,
+    "requested_close_date": "2026-10-26",
+    "effective_session_dates": [
+      "2026-10-26"
+    ],
+    "requested_symbol_count": 20,
+    "available_symbol_count": 20,
+    "missing_symbols": []
+  },
+  "artifacts": {
+    "d0_d1": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_fixed_only_20261026_v1\\next_close"
+  }
+}
