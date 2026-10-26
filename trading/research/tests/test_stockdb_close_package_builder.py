@@ -55,6 +55,26 @@ def test_builder_publishes_a_loader_compatible_complete_package(tmp_path: Path) 
     assert receipt["execution_admitted"] is False
 
 
+def test_builder_publishes_explicit_snapshot_subset(tmp_path: Path) -> None:
+    roster = tmp_path / "target_roster.json"
+    roster.write_text(json.dumps({"symbols": ["600001.SSE"]}), encoding="utf-8")
+    output = tmp_path / "subset_package"
+    receipt = build_package(_snapshot(tmp_path), output, roster=roster)
+    assert receipt["status"] == "complete_stockdb_close_package_research_only"
+    assert receipt["roster_mode"] == "explicit_snapshot_subset"
+    assert receipt["requested_symbol_count"] == 1
+    raw, metadata = load_complete(output)
+    assert raw["symbol"].tolist() == ["600001.SSE"]
+    assert metadata["plan"]["requested_roster"]["path"] == str(roster.resolve())
+
+
+def test_builder_rejects_roster_outside_snapshot_request(tmp_path: Path) -> None:
+    roster = tmp_path / "target_roster.json"
+    roster.write_text(json.dumps({"symbols": ["688001.SSE"]}), encoding="utf-8")
+    with pytest.raises(ValueError, match="outside captured request"):
+        build_package(_snapshot(tmp_path), tmp_path / "invalid_subset", roster=roster)
+
+
 def test_builder_publishes_blocked_receipt_without_a_complete_package(tmp_path: Path) -> None:
     output = tmp_path / "blocked"
     receipt = build_package(_snapshot(tmp_path, complete=False), output)

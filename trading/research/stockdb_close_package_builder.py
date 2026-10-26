@@ -88,6 +88,52 @@ def _calendar(value: str | Path | None, snapshot: dict[str, Any]) -> tuple[Path,
     return chosen.resolve(), _digest(chosen)
 
 
+def _requested_roster(value: str | Path | None,
+                      snapshot: dict[str, Any]) -> tuple[list[str], dict[str, str] | None]:
+    """Resolve the exact roster to package without mutating the snapshot.
+
+    A full-market capture can feed a smaller fixed or candidate target set.  The
+    subset must be explicit and must already exist in the captured request; the
+    builder never discovers symbols from market rows or fills missing symbols.
+    """
+
+    source_symbols = snapshot.get("requested_symbols")
+    if not isinstance(source_symbols, list) or not source_symbols:
+        raise ValueError("StockDB snapshot requested_symbols is missing")
+    source_set = {str(symbol) for symbol in source_symbols}
+    if value is None:
+        expected = sorted(source_set)
+        return expected, None
+
+    roster_path = Path(value).expanduser().resolve()
+    if not roster_path.is_file():
+        raise FileNotFoundError(f"Missing explicit StockDB package roster: {roster_path}")
+    if roster_path.suffix.lower() == ".csv":
+        frame = pd.read_csv(roster_path, dtype=str, keep_default_na=False)
+        if "symbol" not in frame.columns:
+            raise ValueError("explicit roster CSV must contain a symbol column")
+        values = frame["symbol"].tolist()
+    else:
+        payload = _read_json(roster_path)
+        if isinstance(payload.get("symbols"), list):
+            values = payload["symbols"]
+        elif isinstance(payload.get("roster_symbols"), list):
+            values = payload["roster_symbols"]
+        elif isinstance(payload.get("weights"), dict):
+            values = list(payload["weights"])
+        else:
+            raise ValueError("explicit roster JSON must contain symbols, roster_symbols or weights")
+    expected = sorted(str(symbol).strip() for symbol in values if str(symbol).strip())
+    if not expected:
+        raise ValueError("explicit roster is empty")
+    if len(expected) != len(set(expected)):
+        raise ValueError("explicit roster contains duplicate symbols")
+    unknown = sorted(set(expected) - source_set)
+    if unknown:
+        raise ValueError(f"explicit roster is outside captured request: {unknown[:5]}")
+    return expected, _ref(roster_path)
+
+
 def _prepare_output(output: Path) -> None:
     if output.exists() and any(output.iterdir()):
         raise FileExistsError(f"Refusing to overwrite existing close-package evidence: {output}")
@@ -104,14 +150,16 @@ def build_package(
     *,
     day: str | None = None,
     calendar: str | Path | None = None,
+    roster: str | Path | None = None,
 ) -> dict[str, Any]:
     snapshot_path, metadata = _resolve_snapshot(snapshot)
     requested_day = date.fromisoformat(day or str(metadata.get("effective_session_dates", [""])[-1])).isoformat()
     if requested_day not in {str(value)[:10] for value in metadata.get("effective_session_dates", [])}:
         raise ValueError(f"Snapshot does not contain requested close day: {requested_day}")
-    expected = metadata.get("requested_symbols")
-    if not isinstance(expected, list) or not expected or expected != sorted(set(str(value) for value in expected)):
+    source_symbols = metadata.get("requested_symbols")
+    if not isinstance(source_symbols, list) or not source_symbols or source_symbols != sorted(set(str(value) for value in source_symbols)):
         raise ValueError("StockDB snapshot requested_symbols must be sorted and unique")
+    expected, roster_ref = _requested_roster(roster, metadata)
     calendar_path, calendar_sha = _calendar(calendar, metadata)
     daily_path = _source_file(snapshot_path, metadata, "daily")
     availability_path = _source_file(snapshot_path, metadata, "availability")
@@ -128,11 +176,11 @@ def build_package(
         availability["date"].eq(requested_day) & availability["status"].eq("available"), "symbol"
     ].tolist()
     available_set = set(available)
-    day_rows = daily.loc[daily["date"].eq(requested_day)].copy()
+    day_rows = daily.loc[daily["date"].eq(requested_day) & daily["symbol"].isin(expected)].copy()
     duplicate = day_rows.duplicated(["date", "symbol"]).any()
     actual_set = set(day_rows["symbol"])
     missing = sorted(set(expected) - available_set | set(expected) - actual_set)
-    extra = sorted(actual_set - set(expected))
+    extra = [] if roster_ref else sorted(actual_set - set(expected))
     output_path = Path(output).expanduser().resolve()
     _prepare_output(output_path)
     base = {
@@ -142,6 +190,7 @@ def build_package(
         "snapshot_daily_sha256": _digest(daily_path),
         "snapshot_availability_sha256": _digest(availability_path),
         "calendar_sha256": calendar_sha,
+        "roster_mode": "explicit_snapshot_subset" if roster_ref else "snapshot_requested_symbols",
         "requested_symbol_count": len(expected),
         "available_symbol_count": len(expected) - len(missing),
         "missing_symbols": missing,
@@ -172,6 +221,7 @@ def build_package(
     plan = {
         **base,
         "roster_symbols": expected,
+        **({"requested_roster": roster_ref} if roster_ref else {}),
         "roster_sha256": roster_sha,
         "raw_daily_sha256": raw_sha,
         "full_dated_roster_inventory_complete": True,
@@ -185,6 +235,7 @@ def build_package(
         "roster_sha256": roster_sha,
         "raw_daily_sha256": raw_sha,
         "read_only_verified": True,
+        **({"requested_roster": roster_ref} if roster_ref else {}),
     }
     _write_json(output_path / "plan.json", plan)
     _write_json(output_path / "receipt.json", receipt)
@@ -197,8 +248,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--day")
     parser.add_argument("--calendar", type=Path)
+    parser.add_argument("--roster", type=Path,
+                        help="optional JSON/CSV exact target roster contained in the snapshot request")
     args = parser.parse_args(argv)
-    receipt = build_package(args.snapshot, args.output, day=args.day, calendar=args.calendar)
+    receipt = build_package(args.snapshot, args.output, day=args.day, calendar=args.calendar, roster=args.roster)
     print(json.dumps({"status": receipt["status"], "output": str(Path(args.output).resolve()),
                       "day": receipt["day"], "missing_symbols": len(receipt.get("missing_symbols", [])),
                       "execution_admitted": False}, ensure_ascii=False))
