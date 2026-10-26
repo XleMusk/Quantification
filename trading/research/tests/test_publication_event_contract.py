@@ -32,6 +32,7 @@ def test_missing_sidecar_is_explicit_unknown():
     ({"source_sha256": "bad"}, "source_file_or_sha256_missing"),
     ({"revision_id": ""}, "revision_id_missing"),
     ({"publication_date": "2026-01-30"}, "publication_not_proven_before_decision"),
+    ({"retrieved_at": "2026-01-29T12:00:00+08:00", "asof_at": "2026-01-29T12:01:00+08:00"}, "retrieval_or_asof_before_publication"),
 ])
 def test_incomplete_receipt_never_becomes_pit_safe(changes, reason):
     result = evaluate_publication_evidence(_complete(**changes), "2026-01-30")

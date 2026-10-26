@@ -574,3 +574,9 @@ The research adoption rollup now accepts the retained half-momentum/Ridge joint 
 ## 2026-10-26 internal release v35 refresh
 
 研究发布 v35 已纳入 fixed+candidate D0/D1 v3 本地任务测量和工作台生命周期 job_id 绑定证据：`D:/QuantificationData/trading/research/releases/20261026_v35/release_manifest.json`。发布范围仍是 research-only；`execution_admitted=false`、`live_execution_ready=false`，没有真实登录、预填提交或账户变更。
+
+## 2026-10-26 F2 publication boundary contract
+
+F2 的 publication contract 现在要求：日期型披露按 `[D 00:00, D+1 00:00)` 解释，`retrieved_at` 与 `asof_at` 必须晚于保守结束边界，同时不晚于 decision cutoff，并满足 `asof_at >= retrieved_at`。新增聚焦测试 21 passed；现有 000002.SZSE 真实来源快照重跑为 `BLOCKED_DATA`，哈希验证通过但仍缺 `asof_at` 与 `revision_id`，因此没有财报事实、因子或账户回放准入。
+
+证据：`outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v2/receipt.json`、`outputs/research_reports/20261026_f2_publication_boundary_contract_v1.md`。

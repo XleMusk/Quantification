@@ -65,7 +65,14 @@ def evaluate_publication_evidence(row: Mapping[str, Any], decision_day: str) -> 
         retrieved = _timestamp(row.get("retrieved_at"), "retrieved_at")
         asof = _timestamp(row.get("asof_at"), "asof_at")
         cutoff = _timestamp(decision_time(decision_day), "decision_time")
-        if asof < retrieved:
+        # A date-only disclosure is an interval, not midnight.  Retrieval
+        # before its conservative end cannot prove that the disclosed
+        # contents were available to the consumer.  Exact publication times
+        # use the same boundary through ``publication.start``.
+        publication_boundary = publication.end or publication.start
+        if retrieved < publication_boundary or asof < publication_boundary:
+            reasons.append("retrieval_or_asof_before_publication")
+        elif asof < retrieved:
             reasons.append("asof_before_retrieval")
         elif retrieved <= cutoff and asof <= cutoff:
             retrieval_asof_proven = True
