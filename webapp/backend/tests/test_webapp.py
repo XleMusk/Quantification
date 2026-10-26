@@ -164,6 +164,41 @@ def test_manual_resubmit_requires_recoverable_parent(client, dataset):
     assert len(store.jobs()) == 1
 
 
+def test_recovery_chain_is_monotonic_and_read_only(client, dataset):
+    parent = submit(client, dataset).json()
+    store.claim_job()
+    store.recover_interrupted()
+    first = client.post(
+        f"/api/jobs/{parent['id']}/resubmit",
+        headers={**HEADERS, "Idempotency-Key": "recovery-chain-1"},
+    ).json()
+
+    # The first child is independently interrupted before the next explicit
+    # manual resubmit.  No worker or external channel is involved.
+    store.claim_job()
+    store.recover_interrupted()
+    second = client.post(
+        f"/api/jobs/{first['id']}/resubmit",
+        headers={**HEADERS, "Idempotency-Key": "recovery-chain-2"},
+    ).json()
+    before = store.jobs()
+
+    response = client.get(f"/api/jobs/{second['id']}/recovery-chain")
+
+    assert response.status_code == 200
+    value = response.json()
+    assert value["schema"] == "quantification_workbench_recovery_chain_v1"
+    assert value["root_job_id"] == parent["id"]
+    assert value["latest_job_id"] == second["id"]
+    assert value["recovery_attempts"] == [0, 1, 2]
+    assert value["attempt_count"] == 3
+    assert value["execution_admitted"] is False
+    assert value["automatic_retry"] is False
+    assert value["broker_or_ths_interacted"] is False
+    assert value["read_only"] is True
+    assert store.jobs() == before
+
+
 def test_release_endpoint_binds_latest_research_manifest(tmp_path, monkeypatch, client):
     root = tmp_path / "releases"
     manifest = root / "20261026_v13" / "release_manifest.json"

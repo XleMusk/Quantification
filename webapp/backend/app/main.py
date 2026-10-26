@@ -216,6 +216,31 @@ def recovery(identifier: str):
     return build_recovery_evidence(require_job(identifier))
 
 
+@app.get("/api/jobs/{identifier}/recovery-chain")
+def recovery_chain(identifier: str):
+    """Expose the linked manual recovery attempts without mutating a job."""
+    item = require_job(identifier)
+    chain = store.recovery_chain(identifier)
+    if not chain:
+        raise HTTPException(404, "任务恢复链不存在")
+    return {
+        "schema": "quantification_workbench_recovery_chain_v1",
+        "status": "paper_recovery_chain",
+        "job_id": identifier,
+        "root_job_id": chain[0]["id"],
+        "latest_job_id": chain[-1]["id"],
+        "attempt_count": len(chain),
+        "recovery_attempts": [int(row.get("recovery_attempt") or 0) for row in chain],
+        "jobs": chain,
+        "execution_admitted": False,
+        "automatic_retry": False,
+        "broker_or_ths_interacted": False,
+        "external_order_state": "not_applicable_paper_job",
+        "read_only": True,
+        "source_status": item["status"],
+    }
+
+
 @app.post("/api/jobs/{identifier}/cancel")
 def cancel_job(identifier: str):
     require_job(identifier)

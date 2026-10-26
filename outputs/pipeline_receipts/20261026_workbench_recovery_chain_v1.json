@@ -1,0 +1,30 @@
+{
+  "schema": "quantification_workbench_recovery_chain_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "captured_at": "2026-10-26T12:55:00+00:00",
+  "source": "webapp/backend/tests/test_webapp.py::test_recovery_chain_is_monotonic_and_read_only",
+  "root_job_id": "fixture-recovery-parent",
+  "latest_job_id": "fixture-recovery-child-2",
+  "attempt_count": 3,
+  "recovery_attempts": [0, 1, 2],
+  "jobs": [
+    {"id": "fixture-recovery-parent", "status": "interrupted", "parent_job_id": null, "recovery_attempt": 0},
+    {"id": "fixture-recovery-child-1", "status": "interrupted", "parent_job_id": "fixture-recovery-parent", "recovery_attempt": 1},
+    {"id": "fixture-recovery-child-2", "status": "queued", "parent_job_id": "fixture-recovery-child-1", "recovery_attempt": 2}
+  ],
+  "read_only": true,
+  "automatic_retry": false,
+  "execution_admitted": false,
+  "broker_or_ths_interacted": false,
+  "external_order_state": "not_applicable_paper_job",
+  "acceptance": {
+    "lineage_is_monotonic": true,
+    "parent_is_immutable": true,
+    "state_unchanged_by_get": true,
+    "no_external_side_effect": true
+  },
+  "limitations": [
+    "This proves the local paper/research recovery view and does not prove a broker, account, or Tonghuashun state.",
+    "Resubmission remains an explicit operator action; no automatic worker retry is enabled."
+  ]
+}

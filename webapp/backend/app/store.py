@@ -129,12 +129,57 @@ def resubmit_job(identifier, request_key):
             raise ValueError("待处理任务已达 8 个，请等待或取消任务")
         child_id = uuid.uuid4().hex
         stamp = now()
-        attempt = int(source["recovery_attempt"] or 0) + 1
+        # Count the whole linked lineage, rather than only the parent row.
+        # This keeps a manual recovery chain monotonic when an operator
+        # resubmits a previously resubmitted child.
+        latest_child = db.execute(
+            "SELECT COALESCE(MAX(recovery_attempt), 0) FROM jobs WHERE parent_job_id=?",
+            (identifier,),
+        ).fetchone()[0]
+        attempt = max(int(source["recovery_attempt"] or 0), int(latest_child or 0)) + 1
         db.execute(
             "INSERT INTO jobs(id,dataset_id,status,config,request_key,parent_job_id,recovery_attempt,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?)",
             (child_id, source["dataset_id"], "queued", source["config"], request_key, identifier, attempt, stamp, stamp),
         )
     return job(child_id)
+
+
+def recovery_chain(identifier):
+    """Return the immutable local paper-job lineage for ``identifier``.
+
+    The result is a read-only projection used by the workbench recovery view;
+    it never changes queue state and omits request keys from every job.
+    """
+    with connection() as db:
+        current = db.execute("SELECT * FROM jobs WHERE id=?", (identifier,)).fetchone()
+        if current is None:
+            return None
+        root_id = current["id"]
+        seen = set()
+        while current["parent_job_id"] and current["parent_job_id"] not in seen:
+            seen.add(current["id"])
+            parent = db.execute("SELECT * FROM jobs WHERE id=?", (current["parent_job_id"],)).fetchone()
+            if parent is None:
+                break
+            current = parent
+            root_id = current["id"]
+        rows = db.execute(
+            "SELECT * FROM jobs ORDER BY recovery_attempt, created_at, id"
+        ).fetchall()
+        children = {}
+        for row in rows:
+            children.setdefault(row["parent_job_id"], []).append(row)
+        lineage = []
+        pending = [root_id]
+        while pending:
+            current_id = pending.pop(0)
+            current_row = next((row for row in rows if row["id"] == current_id), None)
+            if current_row is None:
+                continue
+            lineage.append(current_row)
+            pending.extend(child["id"] for child in children.get(current_id, []))
+        lineage.sort(key=lambda row: (int(row["recovery_attempt"] or 0), row["created_at"], row["id"]))
+        return [decode_job(row) for row in lineage]
 
 
 def claim_job():
