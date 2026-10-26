@@ -435,3 +435,11 @@ The internal research-only release binds the long shortline raw-path replay and 
 ## 2026-10-26 internal release v23
 
 StockDB 短线长路径回放和 adoption gate v3 已绑定到内部研究发布 v23：`D:/QuantificationData/trading/research/releases/20261026_v23/release_manifest.json`，manifest SHA-256 为 `7d3b79230a9dcbbcd009b6c9ca9271b5d9cb3b438b94d7ea5a831b4ad15c46be`，提交 `cbefc75`，`missing_required_code=[]`、`execution_admitted=false`、`live_execution_ready=false`。绑定回执为 `outputs/pipeline_receipts/20261026_release_v23_binding_v1.json`。
+
+## 2026-10-26 Engineering Handbook R2 alignment
+
+已阅读并按《Quantification Engineering Handbook R2》绑定当前实施方式：按 B0-B6 业务结果分批；W0 总控、W1 财报/PIT、W2 模型、W3 组合与连续账户、W4 产品、W5 环境/渠道、W6 独立验收、W7 只清理已证明冗余。手册明确两条主线：资金生产路径（环境/基线→日历与模式→冻结计划→连续账户→真实日程与恢复→发布）和财报研究路径（原件/覆盖→时间期间修复→F01→合格输入→原账户→固定比较/研究决定）；外部数据或 THS 授权只能暂停依赖路线。已提交 `a7a248a`，修复两个 PowerShell 工作台探测脚本的 `Invoke-WebRequest` 兼容参数，解析检查通过。
+
+## 2026-10-26 post-close D0/D1 attempt
+
+收市后实际调用现有 `post-close-d0-d1`，输入为当前 Alpha158 candidate shadow manifest、固定纸面账户、2026-10-26 close 和固定交易日历。回执 `outputs/pipeline_receipts/20261026_post_close_d0_d1_v1/post_close_receipt.json` 返回 `WAITING_FIXED_DAILY_SOURCES`，缺少精确的 2026-10-26 complete close package；因此没有生成目标、订单、成交或账本变更，也没有访问外部渠道，`execution_admitted=false`。下一步是补齐真实 StockDB/可靠来源的完整日线 close package，再用同一 coordinator 重跑。

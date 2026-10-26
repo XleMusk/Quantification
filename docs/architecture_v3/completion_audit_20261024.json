@@ -119,9 +119,11 @@
         "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
         "webapp/backend/app/release.py",
         "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
-        "outputs/research_reports/20261026_workbench_release_binding_v1.md"
+        "outputs/research_reports/20261026_workbench_release_binding_v1.md",
+        "outputs/pipeline_receipts/20261026_post_close_d0_d1_v1/post_close_receipt.json",
+        "docs/architecture_v3/CURRENT_STATUS.md"
       ],
-      "gap": "Local scope boundary is explicit; real close input and external channel evidence remain separate.",
+      "gap": "The shared local path and post-close coordinator are executable, but the 2026-10-26 run is waiting for an exact complete close package; no D0/D1 target or account result is claimed until the source package is attached.",
       "next_acceptance": "keep the local engineering acceptance receipt current; BrokerAdapter/THS and account scope remain closed until external read-only evidence exists",
       "evidence_updated_on": "2026-10-26"
     },
