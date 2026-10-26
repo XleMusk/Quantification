@@ -13,15 +13,63 @@ import pyarrow.parquet as pq
 
 from ..market_dataset import write_json
 from .baostock_daily_slice import digest
-from .baostock_full_close import load_complete
+from .baostock_full_close import load_complete as load_baostock_complete
 from .index_observation import CN
 from .leader_recent_source_history import source_proof
+from .stockdb_close_package import SCHEMA as STOCKDB_CLOSE_PACKAGE_SCHEMA
+from .stockdb_close_package import load_complete as load_stockdb_complete
 
 SCHEMA = "lowvol_append_only_complete_source_supplement_v1"
 FLAGS = {"research_only": True, "execution_admitted": False, "selection_enabled": False,
          "strategy_validated": False, "stockdb_modified": False, "ledger_mutated": False,
          "source_verified": False, "pit_verified": False, "corporate_actions_verified": False,
          "provider_contacted": False}
+
+
+def _load_complete_package(path):
+    """Load either the legacy BaoStock package or a strict StockDB close package."""
+
+    plan_path = Path(path).resolve() / "plan.json"
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    if plan.get("schema") == STOCKDB_CLOSE_PACKAGE_SCHEMA:
+        raw, source = load_stockdb_complete(path)
+        if "code" in raw.columns:
+            raw = raw.drop(columns=["symbol"], errors="ignore")
+        else:
+            raw = raw.rename(columns={"symbol": "code"})
+        raw = raw.rename(columns={"pre_close": "preclose"})
+        return raw, source
+    return load_baostock_complete(path)
+
+
+# Kept as a narrow seam for existing tests and callers that inject a package
+# loader; the default implementation still dispatches by the explicit schema.
+load_complete = _load_complete_package
+
+
+def _stockdb_source_proof(raw, source, calendar_hash):
+    plan, receipt = source["plan"], source["receipt"]
+    day = plan["day"]
+    if (source.get("read_only_verified") is not True or raw.empty
+            or not raw.date.eq(day).all()
+            or receipt.get("day") != day
+            or plan.get("calendar_sha256") != calendar_hash):
+        raise ValueError("Each complete StockDB source must retain its exact day and pinned calendar")
+    return {
+        "day": day,
+        "source_folder": source["source_folder"],
+        "raw_daily_sha256": receipt["raw_daily_sha256"],
+        "roster_raw_sha256": plan["roster_sha256"],
+        "calendar_sha256": calendar_hash,
+        "ordinary_inventory_rows": len(raw),
+        "read_only_verified": True,
+        "source_inventory_complete": True,
+        "receipt_status": receipt["status"],
+        "full_dated_roster_inventory_complete": receipt["full_dated_roster_inventory_complete"],
+        "source_schema": STOCKDB_CLOSE_PACKAGE_SCHEMA,
+        "source_updated_at": receipt.get("updated_at") or receipt.get("completed_at"),
+        "source_completed_at": receipt.get("completed_at") or receipt.get("updated_at"),
+    }
 
 
 def _key(day, code):
@@ -44,7 +92,10 @@ def append_sources(base, packages, out):
     for path in packages:
         raw, source = load_complete(path)
         day = source["plan"]["day"]
-        proof = source_proof(raw, source, source["plan"]["calendar_sha256"])
+        if source.get("source_schema") == STOCKDB_CLOSE_PACKAGE_SCHEMA:
+            proof = _stockdb_source_proof(raw, source, source["plan"]["calendar_sha256"])
+        else:
+            proof = source_proof(raw, source, source["plan"]["calendar_sha256"])
         available = source["receipt"].get("completed_at") or source["receipt"]["updated_at"]
         if datetime.fromisoformat(available) > recorded or not set(raw.columns) <= set(schema.names):
             raise ValueError("Source availability or raw field contract is incompatible")

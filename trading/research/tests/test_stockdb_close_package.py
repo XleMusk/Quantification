@@ -103,3 +103,11 @@ def test_fixed_daily_normalizes_stockdb_source_proof(tmp_path: Path) -> None:
     assert proof["source_schema"] == "stockdb_close_package_v1"
     assert proof["source_inventory_complete"] is True
     assert proof["roster_raw_sha256"] == metadata["plan"]["roster_sha256"]
+
+
+def test_fixed_daily_uses_completion_clock_when_package_has_no_updated_at(tmp_path: Path) -> None:
+    package = _package(tmp_path)
+    raw, metadata = load_complete(package)
+    proof = stockdb_fixed_daily._source_proof_for_package(raw, metadata, "calendar-v1")
+    assert proof["source_updated_at"] == metadata["receipt"]["completed_at"]
+    assert proof["source_completed_at"] == metadata["receipt"]["completed_at"]

@@ -76,8 +76,12 @@ def _source_proof_for_package(raw, source, calendar_hash):
         "receipt_status": receipt["status"],
         "full_dated_roster_inventory_complete": True,
         "source_schema": receipt["schema"],
-        "source_updated_at": receipt.get("updated_at"),
-        "source_completed_at": receipt.get("completed_at"),
+        # Strict close packages publish a completion clock rather than an
+        # update clock.  Use the same deterministic fallback as the
+        # append-only supplement adapter so both consumers bind identical
+        # source knowledge instead of rejecting an otherwise valid package.
+        "source_updated_at": receipt.get("updated_at") or receipt.get("completed_at"),
+        "source_completed_at": receipt.get("completed_at") or receipt.get("updated_at"),
     }
 
 

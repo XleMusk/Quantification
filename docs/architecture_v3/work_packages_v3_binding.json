@@ -2182,7 +2182,7 @@
       "domain": "operations",
       "result": "Next-close D0/D1 uses a year-scoped pinned calendar and now returns an explicit coverage-exhausted result instead of inventing a next-year session. A strict stockdb_close_package_v1 loader now validates exact StockDB snapshot lineage and is dispatched by fixed_daily only for that schema; the existing BaoStock loader remains the fallback for its own schema. A read-only producer now turns a complete local snapshot into a loader-compatible package and writes a blocked receipt instead of package files when coverage is incomplete.",
       "state": "VERIFIED_LOCAL",
-      "next": "When a complete StockDB snapshot arrives, run stockdb-close-package-build with its pinned calendar, validate the produced package, then pass it to registered fixed_daily; retain blocked receipts for incomplete snapshots.",
+      "next": "When a complete package arrives, pass it through the schema-dispatched append-only adapter and registered fixed_daily; the bounded 2026-10-22/23 consumer attempt is retained as an explicit execution-reference gate until an independent native tradestatus/adjustflag stream is attached.",
       "prohibition": "Machine weekday inference and missing-calendar fallback cannot authorize a paper rollover or broker action.",
       "actual_paths": [
         "D:/Quantification/trading/research/next_close_d0_d1.py",
@@ -2204,7 +2204,11 @@
         "trading/research/stockdb_close_package_builder.py",
         "trading/research/tests/test_stockdb_close_package_builder.py",
         "run_committee.py stockdb-close-package-build",
-        "D:/QuantificationData/trading/research/stockdb_close_packages/20261026_native_full_universe_v2_blocked/receipt.json"
+        "D:/QuantificationData/trading/research/stockdb_close_packages/20261026_native_full_universe_v2_blocked/receipt.json",
+        "trading/research/lowvol_supplement_append.py",
+        "trading/research/tests/test_lowvol_supplement_append.py",
+        "outputs/pipeline_receipts/20261027_stockdb_close_package_fixed_daily_consumer_v1.json",
+        "outputs/research_reports/20261027_stockdb_close_package_fixed_daily_consumer_v1.md"
       ],
       "evidence": [
         "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
@@ -2225,10 +2229,12 @@
         "trading/research/stockdb_close_package_builder.py",
         "trading/research/tests/test_stockdb_close_package_builder.py",
         "run_committee.py stockdb-close-package-build",
-        "D:/QuantificationData/trading/research/stockdb_close_packages/20261026_native_full_universe_v2_blocked/receipt.json"
+        "D:/QuantificationData/trading/research/stockdb_close_packages/20261026_native_full_universe_v2_blocked/receipt.json",
+        "outputs/pipeline_receipts/20261027_stockdb_close_package_fixed_daily_consumer_v1.json",
+        "outputs/research_reports/20261027_stockdb_close_package_fixed_daily_consumer_v1.md"
       ],
       "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence. The loader rejects incomplete native snapshots, verifies plan/receipt/roster/raw hashes and exact date/roster rows, and fixed_daily schema dispatch passes focused tests without changing execution boundaries. The producer publishes complete plan/receipt/roster/raw files only for exact coverage and emitted BLOCKED_INCOMPLETE_STOCKDB_SNAPSHOT with 25 missing symbols for the current native snapshot without imputation.",
-      "evidence_updated_on": "2026-10-26"
+      "evidence_updated_on": "2026-10-27"
     },
     {
       "id": "P22",
@@ -2529,5 +2535,5 @@
       "acceptance": "A real local HTTP submission returns one stable job id on same-key repeat; worker reaches completed, lifecycle exposes result/download stages, result JSON is readable, three files download with nonzero bytes, and execution_admitted=false."
     }
   ],
-  "updated_at": "2026-10-26"
+  "updated_at": "2026-10-27"
 }

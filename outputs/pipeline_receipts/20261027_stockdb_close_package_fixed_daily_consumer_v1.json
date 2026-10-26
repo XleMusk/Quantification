@@ -1,0 +1,51 @@
+{
+  "schema": "stockdb_close_package_fixed_daily_consumer_v1",
+  "status": "BLOCKED_MIXED_EXECUTION_REFERENCE",
+  "created_at": "2026-10-27T00:30:00+08:00",
+  "through": "2026-10-23",
+  "scope": "bounded_20_symbol_research_only",
+  "source_packages": [
+    "D:/QuantificationData/trading/research/stockdb_close_packages/20261022_paper_target_reference_v1",
+    "D:/QuantificationData/trading/research/stockdb_close_packages/20261023_paper_target_reference_v1"
+  ],
+  "package_validation": {
+    "2026-10-22": "complete_stockdb_close_package_research_only",
+    "2026-10-23": "complete_stockdb_close_package_research_only",
+    "rows_per_day": 20,
+    "missing_rows": 0
+  },
+  "append_only_adapter": {
+    "path": "D:/QuantificationData/trading/research/lowvol_supplements/20261027_append1023_stockdb_v2",
+    "appended_rows": 40,
+    "prefix_preserved": true,
+    "execution_admitted": false
+  },
+  "fixed_daily_consumer": {
+    "run_dir": "D:/QuantificationData/trading/research/fixed_daily/20261027_close_package_consumer_v1",
+    "last_committed_day": "2026-10-21",
+    "attempts": [
+      {
+        "input_id": "fff32160029e9b9fbf480274ccecbd3059a44d360d9751dd7a9618125b2e00ff",
+        "status": "failed_uncommitted",
+        "error": "Complete coverage package is not attached to the actual raw source"
+      },
+      {
+        "input_id": "e44f8c83fc5560b51158f0777993656c5266a79bd3f9a66e4bdcb9df67fade49",
+        "status": "failed_uncommitted",
+        "error": "Package does not match the raw supplement actually used"
+      },
+      {
+        "input_id": "9595f39d4391e18cab7901c1202586df64bee48c0d3d348cbde850e7109c41f4",
+        "status": "failed_uncommitted",
+        "error": "Supplemental native quotes require explicit tradestatus 0 or 1"
+      }
+    ],
+    "head_mutated": false,
+    "paper_orders_created": false,
+    "broker_or_ths_interaction": false
+  },
+  "engineering_result": "The strict StockDB package loader and append-only adapter now share deterministic completion-clock proofs. The consumer correctly stops before replay because the bounded StockDB package does not carry an independent native tradestatus/adjustflag execution reference; no derived status was fabricated.",
+  "execution_admitted": false,
+  "research_only": true,
+  "candidate_panel_only": true
+}

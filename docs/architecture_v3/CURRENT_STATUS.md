@@ -639,3 +639,9 @@ Evidence: `outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v2.json`,
 ## 2026-10-27 workbench recovery unified entrypoint
 
 新增 `run_committee.py workbench-recovery-evidence` 统一入口，消费保存的本地 job observation，生成纸面恢复回执和报告。CLI 实际回执 `outputs/pipeline_receipts/20261027_workbench_recovery_cli_v1.json` 将 interrupted job 分类为 `MANUAL_RESUBMIT_REQUIRED`，自动重试、券商/同花顺交互和真实执行均为 false；5 个聚焦测试通过。该包不修改任务、不创建账户、不连接外部渠道。
+
+## 2026-10-27 StockDB close package consumer integration
+
+完成了严格 `stockdb_close_package_v1` 到 append-only supplement 的真实隔离链路：2026-10-22 与 2026-10-23 两个 20 标的包均为 20/20 完整覆盖，生成的 `20261027_append1023_stockdb_v2` 保留原始前缀并追加 40 行，source proof 与 fixed_daily 使用同一 completion-clock fallback。固定纸面账户的三次尝试全部保留为 `failed_uncommitted`：首次是原始 source lineage 不匹配，修复 proof 后进入明确的 `tradestatus/adjustflag` 执行引用门禁。由于这两个 bounded StockDB 包只有 OHLCV/`pre_close`，没有独立 native 执行状态流，fixed_daily 在 replay 前停止；没有填充状态、没有推进 head、没有生成订单，也没有券商或同花顺交互。
+
+代码与回归测试已绑定到 `trading/research/lowvol_supplement_append.py`、`trading/research/stockdb_fixed_daily.py`；聚焦测试 `16 passed`。证据回执为 [`20261027_stockdb_close_package_fixed_daily_consumer_v1.json`](../../outputs/pipeline_receipts/20261027_stockdb_close_package_fixed_daily_consumer_v1.json)，报告为 [`20261027_stockdb_close_package_fixed_daily_consumer_v1.md`](../../outputs/research_reports/20261027_stockdb_close_package_fixed_daily_consumer_v1.md)。该结果是 bounded research integration，不是全市场、PIT 或 live execution 证据；`execution_admitted=false` 保持不变。
