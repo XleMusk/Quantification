@@ -660,7 +660,9 @@
         "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/lr_target_preview.json",
         "outputs/research_reports/20261026_shortline_candidate_handoff_v1.md",
         "trading/research/shortline_candidate_handoff.py",
-        "trading/research/tests/test_shortline_candidate_handoff.py"
+        "trading/research/tests/test_shortline_candidate_handoff.py",
+        "outputs/pipeline_receipts/20261026_shortline_candidate_panel_replay_blocked_v1.json",
+        "outputs/research_reports/20261026_shortline_candidate_panel_replay_blocked_v1.md"
       ],
       "limits": [
         "full strategy return unknown",
@@ -668,7 +670,8 @@
         "machine audit preserves both stop points and null complete-window returns; no strategy adoption claim",
         "saved LR target reaches the shared research-only paper route; full strategy window remains incomplete",
         "saved LGBM target reaches the shared research-only paper route; LR and LGBM terminal days remain separate",
-        "the new qualified preopen handoff has 3 explicitly selected rows per model and passes the read-only score gate; it is a new candidate input, not a complete-window return"
+        "the new qualified preopen handoff has 3 explicitly selected rows per model and passes the read-only score gate; it is a new candidate input, not a complete-window return",
+        "the bounded handoff replay reached shared Engine target generation but was blocked for all buys by unsupported_first_five_listing_sessions; no orders/fills or return were claimed"
       ],
       "research_selection": {
         "decision": "UNASSESSED_SEPARATE_GATE",

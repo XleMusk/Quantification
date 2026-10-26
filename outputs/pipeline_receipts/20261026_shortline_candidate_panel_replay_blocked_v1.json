@@ -1,0 +1,43 @@
+{
+  "schema": "native_shortline_candidate_panel_replay_receipt_v1",
+  "status": "BLOCKED_RESEARCH_ONLY_EXECUTION_REFERENCE",
+  "source_handoff": "outputs/shortline_native_candidate_handoff/20261026_source1015_ipoqualified_v1/receipt.json",
+  "raw_snapshot_manifest": "D:\\QuantificationData\\trading\\research\\shortline_native_candidate_handoff\\20261026_source1015_ipoqualified_v1\\raw_snapshot\\snapshot_manifest.json",
+  "raw_snapshot_manifest_sha256": "3fa825c80fc8467447a608f03514f26d47a25ed2bbcf8ac8194a6df0ff491738",
+  "models": [
+    {
+      "model_kind": "lr",
+      "result": "D:\\QuantificationData\\trading\\research\\shortline_native_candidate_handoff\\20261026_source1015_ipoqualified_v1\\panel_replay_lr_v2\\result.json",
+      "status": "completed_research_only_candidate_panel_replay",
+      "sessions": 2,
+      "selected_event_rows": 3,
+      "orders": 0,
+      "fills": 0,
+      "blocked_order_event_count": 3,
+      "block_reasons": [
+        "unsupported_first_five_listing_sessions"
+      ]
+    },
+    {
+      "model_kind": "lgbm",
+      "result": "D:\\QuantificationData\\trading\\research\\shortline_native_candidate_handoff\\20261026_source1015_ipoqualified_v1\\panel_replay_lgbm_v2\\result.json",
+      "status": "completed_research_only_candidate_panel_replay",
+      "sessions": 2,
+      "selected_event_rows": 3,
+      "orders": 0,
+      "fills": 0,
+      "blocked_order_event_count": 3,
+      "block_reasons": [
+        "unsupported_first_five_listing_sessions"
+      ]
+    }
+  ],
+  "execution_admitted": false,
+  "strategy_validated": false,
+  "target_generation_allowed": false,
+  "paper_orders_generated": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "reason": "Both model handoffs reach Engine target generation on the next session but all three buys per model are blocked by unsupported_first_five_listing_sessions because the bounded raw snapshot begins on 2026-10-15; no orders or fills are claimed.",
+  "next_step": "Use a complete historical raw-bar path for the selected symbols before replay; do not impute listing history or disable the engine guard."
+}
