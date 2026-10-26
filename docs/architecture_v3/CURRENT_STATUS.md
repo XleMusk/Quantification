@@ -451,3 +451,7 @@ StockDB 短线长路径回放和 adoption gate v3 已绑定到内部研究发布
 ## 2026-10-26 internal release v24
 
 最新的收市覆盖失败证据和 post-close waiting 回执已绑定到内部研究发布 v24：`D:/QuantificationData/trading/research/releases/20261026_v24/release_manifest.json`，manifest SHA-256 为 `a1c20f4d74a37d717fb20557cb993c7676ff51fb263ab1ba71bf039b0525c1ad`，提交 `a81c9af`，`missing_required_code=[]`、`execution_admitted=false`、`live_execution_ready=false`。绑定回执为 `outputs/pipeline_receipts/20261026_release_v24_binding_v1.json`。
+
+## 2026-10-26 source coverage throughput
+
+`stockdb_source_coverage.py` 已改为一次读取每个 parquet chunk、按请求标的建立索引，再批量输出缺失覆盖；原实现会对每个标的重复扫描整套 StockDB snapshot。新增 `trading/tests/test_stockdb_source_coverage.py`，覆盖索引读取和缺失行保留，测试 2 passed。该改动只改善可靠来源恢复诊断吞吐，不填充价格、不修改快照、不放开执行权限。

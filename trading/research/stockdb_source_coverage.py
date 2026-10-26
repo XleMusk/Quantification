@@ -39,27 +39,34 @@ def _normal_code(value: object) -> str:
     return digits[-6:].zfill(6) if digits else ""
 
 
-def _stockdb_rows(snapshot: Path, code: str, day: str) -> dict:
+def _load_stockdb_index(snapshot: Path, codes: list[str]) -> dict:
+    """Read each pinned parquet chunk once for a batch coverage request."""
+    snapshot = Path(snapshot).resolve()
     manifest = _read_json(snapshot / "manifest.json")
-    matches = []
-    latest = None
-    earliest = None
+    wanted = set(codes)
+    rows_by_code: dict[str, list[dict]] = {code: [] for code in wanted}
     for item in manifest.get("chunks", []):
-        path = snapshot / item["parquet_file"]
-        frame = pd.read_parquet(path, columns=["code", "date", "close"])
+        frame = pd.read_parquet(snapshot / item["parquet_file"], columns=["code", "date", "close"])
         frame["code"] = frame["code"].map(_normal_code)
+        frame = frame.loc[frame["code"].isin(wanted)].copy()
+        if frame.empty:
+            continue
         frame["date"] = frame["date"].astype(str).str.replace("-", "", regex=False)
-        scoped = frame.loc[frame["code"].eq(code)]
-        if not scoped.empty:
-            dates = scoped["date"]
-            earliest = min(earliest, dates.min()) if earliest else dates.min()
-            latest = max(latest, dates.max()) if latest else dates.max()
-            matches.extend(scoped.loc[scoped["date"].eq(day)].to_dict("records"))
-    return {"source": "stockdb_inventory", "path": str(snapshot),
-            "path_sha256": _sha256(snapshot / "manifest.json"),
-            "observed": bool(matches), "rows": matches,
-            "symbol_first_date": earliest, "symbol_last_date": latest,
-            "execution_admitted": bool(manifest.get("execution_admitted")),
+        for code, scoped in frame.groupby("code", sort=False):
+            rows_by_code[code].extend(scoped.to_dict("records"))
+    return {"snapshot": snapshot, "manifest": manifest, "rows_by_code": rows_by_code,
+            "path_sha256": _sha256(snapshot / "manifest.json")}
+
+
+def _stockdb_rows(index: dict, code: str, day: str) -> dict:
+    rows = index["rows_by_code"].get(code, [])
+    dates = [str(row["date"]) for row in rows]
+    matches = [row for row in rows if str(row["date"]) == day]
+    return {"source": "stockdb_inventory", "path": str(index["snapshot"]),
+            "path_sha256": index["path_sha256"], "observed": bool(matches),
+            "rows": matches, "symbol_first_date": min(dates) if dates else None,
+            "symbol_last_date": max(dates) if dates else None,
+            "execution_admitted": bool(index["manifest"].get("execution_admitted")),
             "research_only": True}
 
 
@@ -112,9 +119,10 @@ def diagnose(snapshot: Path, symbols: list[str], days: list[str], *, supplementa
     artifacts.mkdir(parents=True, exist_ok=False)
     output.mkdir(parents=True, exist_ok=False)
     observations = []
+    stockdb_index = _load_stockdb_index(snapshot, symbols)
     for code in symbols:
         for day in days:
-            sources = [_stockdb_rows(snapshot, code, day)]
+            sources = [_stockdb_rows(stockdb_index, code, day)]
             if supplemental_raw_view:
                 sources.append(_raw_rows(supplemental_raw_view, code, day))
             symbol = code + (".SSE" if code.startswith("6") else ".SZSE")
