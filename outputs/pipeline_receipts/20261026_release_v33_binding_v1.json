@@ -1,0 +1,17 @@
+{
+  "schema": "quantification_internal_release_binding_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "version": "20261026_v33",
+  "manifest": "D:\\QuantificationData\\trading\\research\\releases\\20261026_v33\\release_manifest.json",
+  "manifest_sha256": "f03d98c1b04140d6481086702ccd0fea1ce27f18936cfcb0acb54b7545e4ab3b",
+  "git_commit": "be4c5c674a02ddc1df68bdcc68efb9efad583a9c",
+  "execution_admitted": false,
+  "live_execution_ready": false,
+  "missing_required_code": [],
+  "work_package": "F04 CLI dispatch cleanup v2 and D03 provenance evidence",
+  "limitations": [
+    "The static launcher route cleanup and F01 event-master provenance are local code/evidence checks.",
+    "Current event source hashes are verified but source_snapshot_id/PIT-safe historical timing remain incomplete.",
+    "No broker/THS login, prefill, order, cancellation, transfer or account mutation."
+  ]
+}
