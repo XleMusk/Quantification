@@ -182,6 +182,22 @@ def test_candidate_adoption_decision_help_is_available():
     assert "--selection" in result.stdout
 
 
+def test_candidate_same_day_gate_route_is_registered_once():
+    source = (ROOT / "run_committee.py").read_text(encoding="utf-8")
+    assert source.count('if argv[:1] == ["candidate-same-day-gate"]:') == 1
+
+
+def test_candidate_same_day_gate_help_is_available():
+    result = subprocess.run(
+        [sys.executable, "-Xutf8", str(ROOT / "run_committee.py"),
+         "candidate-same-day-gate", "--help"],
+        cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
+    )
+    assert result.returncode == 0
+    assert "--manifest" in result.stdout
+    assert "--decision-day" in result.stdout
+
+
 def test_current_window_strategy_comparison_route_is_registered_once():
     source = (ROOT / "run_committee.py").read_text(encoding="utf-8")
     assert source.count('if argv[:1] == ["current-window-strategy-comparison"]:') == 1

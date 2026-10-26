@@ -682,3 +682,7 @@ Evidence: `outputs/pipeline_receipts/20261026_f2_issuer_source_capture_v2.json`,
 
 F2 historical gate CLI 现在对输入行声明的 `source_file/source_sha256` 做本地字节校验，并把 `verified`、`missing_file`、`hash_mismatch` 明确写入回执；该校验只增强来源可追查性，不补齐 `asof_at` 或 `revision_id`。对现有 CNINFO 000002.SZSE 2023Q1 来源快照重跑后，来源 PDF hash 校验为 `verified`，但历史 retrieval/as-of 与 revision 仍缺失，结果继续为 `BLOCKED_DATA`、0 行 ready。回执为 `outputs/pipeline_receipts/20261027_f2_historical_gate_cli_real_source_v2.json`，F2 测试 `7 passed`。
 
+## 2026-10-27 candidate same-day freshness gate
+
+新增 `candidate-same-day-gate`，在候选进入 D0/D1 target projection 前校验每个 target 的 `decision_day`。对保存的 `stockdb_low_vol_half_momentum_20` 2026-10-23 manifest 请求 2026-10-26 close，回执明确为 `BLOCKED_STALE_CANDIDATE_INPUT`，没有生成 target、订单或账户状态；回执为 `outputs/pipeline_receipts/20261027_candidate_same_day_gate_20261026.json`。该闸门已接入 `run_committee.py`，候选 gate/F2/launcher 测试共 `33 passed`，`execution_admitted=false` 保持不变。
+

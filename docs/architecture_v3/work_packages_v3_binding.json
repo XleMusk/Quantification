@@ -2260,7 +2260,12 @@
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2_summary.json",
         "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md",
         "outputs/pipeline_receipts/20261026_fixed_only_source_manifest_v1.json",
-        "outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/post_close_receipt.json"
+        "outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/post_close_receipt.json",
+        "trading/research/candidate_same_day_gate.py",
+        "trading/research/tests/test_candidate_same_day_gate.py",
+        "run_committee.py candidate-same-day-gate",
+        "outputs/pipeline_receipts/20261027_candidate_same_day_gate_20261026.json",
+        "outputs/pipeline_receipts/20261027_candidate_same_day_gate_20261026.md"
       ],
       "evidence": [
         "D:/Quantification/trading/research/tests/test_next_close_d0_d1.py",
@@ -2296,7 +2301,7 @@
         "outputs/pipeline_receipts/20261026_fixed_only_source_manifest_v1.json",
         "outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/post_close_receipt.json"
       ],
-      "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence. The loader rejects incomplete native snapshots, verifies plan/receipt/roster/raw hashes and exact date/roster rows, and fixed_daily schema dispatch passes focused tests without changing execution boundaries. The producer publishes complete plan/receipt/roster/raw files only for exact coverage and emitted BLOCKED_INCOMPLETE_STOCKDB_SNAPSHOT with 25 missing symbols for the current native snapshot without imputation. An explicit target-roster mode now packages a declared 20-symbol subset from that same snapshot without imputation; the 2026-10-26 package is 20/20, append-only evidence adds 20 rows, the registered derived fixed_daily head reaches 2026-10-26 generation 2, and fixed-only D0/D1 produces 20 target rows and 20 paper orders while keeping candidate count 0, paper/promotion closed and execution_admitted=false.",
+      "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence. The loader rejects incomplete native snapshots, verifies plan/receipt/roster/raw hashes and exact date/roster rows, and fixed_daily schema dispatch passes focused tests without changing execution boundaries. The producer publishes complete plan/receipt/roster/raw files only for exact coverage and emitted BLOCKED_INCOMPLETE_STOCKDB_SNAPSHOT with 25 missing symbols for the current native snapshot without imputation. An explicit target-roster mode now packages a declared 20-symbol subset from that same snapshot without imputation; the 2026-10-26 package is 20/20, append-only evidence adds 20 rows, the registered derived fixed_daily head reaches 2026-10-26 generation 2, and fixed-only D0/D1 produces 20 target rows and 20 paper orders while keeping candidate count 0, paper/promotion closed and execution_admitted=false. The candidate-same-day gate blocks the saved 2026-10-23 candidate manifest for a requested 2026-10-26 close before any target/account projection, and launcher/help tests pass.",
       "evidence_updated_on": "2026-10-27"
     },
     {
