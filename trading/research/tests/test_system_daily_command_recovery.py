@@ -175,6 +175,28 @@ def test_missing_terminal_is_unknown_and_changed_or_cross_bound_evidence_is_reje
     assert attempt.read_bytes() == original_bytes
 
 
+def test_tampered_saved_recovery_is_rejected_without_producer_or_state_mutation(tmp_path, monkeypatch):
+    """A changed recovery record must fail closed and never launch a producer."""
+    saved = saved_system(tmp_path, monkeypatch)
+    operation, step, output = _core_operation(saved)
+    marker = _small_real_child(monkeypatch, output)
+    assert m._run_command(step, operation / "commands", E)["status"] == "completed"
+    attempt, original_bytes = _unclaimed_parent(operation, step)
+    before = {path: path.read_bytes() for path in
+              (saved.directory / "head.json", saved.directory / "registration.json", operation / "plan.json")}
+    assert m.recover_step(saved.directory, E, step["id"])["status"] == "recovered_saved_command"
+    recovery = child.paths(operation / "commands", step["id"])["recovery"]
+    recovery_value = m._read(recovery)
+    recovery_value["producer_repeated"] = True
+    write(recovery, recovery_value)
+    monkeypatch.setattr(m.subprocess, "Popen", lambda *a, **k: pytest.fail("Tampered recovery cannot launch a producer"))
+    with pytest.raises(ValueError, match="changed or belongs"):
+        m.recover_step(saved.directory, E, step["id"])
+    assert attempt.read_bytes() == original_bytes
+    assert all(path.read_bytes() == content for path, content in before.items())
+    assert marker.read_text(encoding="utf-8").splitlines() == ["called"]
+
+
 def test_successful_child_exit_cannot_recover_native_old_head(tmp_path, monkeypatch):
     saved = saved_system(tmp_path, monkeypatch)
     operation, _, _ = _core_operation(saved)

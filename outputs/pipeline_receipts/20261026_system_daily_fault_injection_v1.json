@@ -1,0 +1,21 @@
+{
+  "schema": "system_daily_fault_injection_receipt_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "scenario": "tampered_saved_recovery_record",
+  "source_test": "trading/research/tests/test_system_daily_command_recovery.py::test_tampered_saved_recovery_is_rejected_without_producer_or_state_mutation",
+  "command": "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_system_daily_command_recovery.py",
+  "execution_admitted": false,
+  "ledger_mutated": false,
+  "automatic_retry": false,
+  "external_interaction": false,
+  "acceptance": {
+    "tamper_rejected": true,
+    "producer_not_repeated": true,
+    "original_receipt_unchanged": true,
+    "system_head_registration_plan_unchanged": true,
+    "paper_only": true
+  },
+  "limitations": [
+    "This is an isolated saved-command paper/research fault injection; it does not prove broker or Tonghuashun recovery."
+  ]
+}

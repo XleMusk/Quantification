@@ -391,7 +391,9 @@ def _recovered_command(step, directory, day, receipt):
             or recovery.get("request_ref") != request_ref or recovery.get("terminal_ref") != terminal_ref
             or recovery.get("step") != _step_spec(step) or recovery.get("day") != day
             or recovery.get("binding") != step.get("binding") or recovery.get("output_refs") != outputs
-            or any(recovery.get(key) is not value for key, value in FLAGS.items())):
+            or any(recovery.get(key) is not value for key, value in FLAGS.items())
+            or any(recovery.get(key) is not False for key in
+                   ("producer_repeated", "system_head_mutated", "ledger_mutated"))):
         raise ValueError("The separate recovery record changed or belongs to another step")
     return {**receipt, "status": "completed", "execution_progress_unknown": False,
         "exit_code": terminal["exit_code"], "output_refs": outputs,
