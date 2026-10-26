@@ -19,6 +19,7 @@ REPLAY_SCHEMA = "shortline_baostock_candidate_replay_binding_v1"
 REPLAY_STATUSES = {
     "COMPLETED_RESEARCH_ONLY_BOUNDED_REPLAY",
     "COMPLETED_RESEARCH_ONLY_LONG_PATH_REPLAY",
+    "COMPLETED_RESEARCH_ONLY_STOCKDB_LONG_PATH_REPLAY",
 }
 HANDOFF_SCHEMA = "native_shortline_candidate_handoff_v1"
 DEFAULT_REPLAY = Path("outputs/pipeline_receipts/20261026_shortline_baostock_candidate_replay_v1.json")
@@ -129,7 +130,7 @@ def render_markdown(receipt: Mapping[str, Any]) -> str:
     lines = [
         "# Shortline adoption gate (research only)",
         "",
-        "The native LR/LightGBM handoff and bounded BaoStock replay are joined here; this receipt does not authorize paper or live execution.",
+        "The native LR/LightGBM handoff and frozen raw-bar replay are joined here; this receipt does not authorize paper or live execution.",
         "",
         "| Model | Selected | Sessions | Orders | Fills | Net return | Decision |",
         "|---|---:|---:|---:|---:|---:|---|",

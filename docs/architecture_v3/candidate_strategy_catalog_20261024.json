@@ -642,7 +642,17 @@
         "bounded_adoption_gate_continue_research_only": 2,
         "long_path_replay_lr_sessions": 2634,
         "long_path_replay_lgbm_sessions": 4074,
-        "long_path_replay_dropped_incomplete_path_rows": 0
+        "long_path_replay_dropped_incomplete_path_rows": 0,
+        "stockdb_long_path_replay_lr_sessions": 2634,
+        "stockdb_long_path_replay_lgbm_sessions": 3863,
+        "stockdb_long_path_replay_lr_orders": 1,
+        "stockdb_long_path_replay_lr_fills": 2,
+        "stockdb_long_path_replay_lgbm_orders": 3,
+        "stockdb_long_path_replay_lgbm_fills": 6,
+        "stockdb_requested_daily_rows": 20370,
+        "stockdb_available_daily_rows": 13167,
+        "stockdb_missing_daily_rows": 7203,
+        "stockdb_available_minute_rows": 0
       },
       "evidence": [
         "outputs/shortline_native_selection_replay/20261018_v1/REPORT.md",
@@ -683,7 +693,13 @@
         "outputs/pipeline_receipts/20261026_shortline_baostock_long_path_replay_v1.json",
         "outputs/research_reports/20261026_shortline_baostock_long_path_replay_v1.md",
         "outputs/pipeline_receipts/20261026_shortline_adoption_gate_v2.json",
-        "outputs/research_reports/20261026_shortline_adoption_gate_v2.md"
+        "outputs/research_reports/20261026_shortline_adoption_gate_v2.md",
+        "outputs/pipeline_receipts/20261026_shortline_stockdb_long_path_replay_v1.json",
+        "outputs/research_reports/20261026_shortline_stockdb_long_path_replay_v1.md",
+        "outputs/pipeline_receipts/20261026_shortline_adoption_gate_v3.json",
+        "outputs/research_reports/20261026_shortline_adoption_gate_v3.md",
+        "trading/research/shortline_panel_replay.py",
+        "trading/tests/test_shortline_panel_replay.py"
       ],
       "limits": [
         "full strategy return unknown",
@@ -695,7 +711,8 @@
         "the bounded handoff replay reached shared Engine target generation but was blocked for all buys by unsupported_first_five_listing_sessions; no orders/fills or return were claimed",
         "a bounded BaoStock raw-bar replay completes the selected 2026-10-15 next-session route, but it is independent of StockDB and cannot establish full strategy return or PIT safety",
         "the model-level adoption gate records CONTINUE_RESEARCH_ONLY for both bounded replays; it does not permit paper, promotion or live execution",
-        "the long independent BaoStock path reaches each selected event day with zero dropped incomplete rows, but it is not StockDB-equivalent or PIT-safe"
+        "the long independent BaoStock path reaches each selected event day with zero dropped incomplete rows, but it is not StockDB-equivalent or PIT-safe",
+        "the local StockDB daily snapshot has 13,167/20,370 requested rows and no minute rows; its adjusted pre_close and missing ST status are explicit research limitations"
       ],
       "research_selection": {
         "decision": "CONTINUE_RESEARCH_ONLY",
@@ -704,7 +721,7 @@
         "paper_allowed": false,
         "promotion_allowed": false,
         "source_receipt": "outputs/pipeline_receipts/20261026_candidate_research_selection_v2.json",
-        "next_step": "Use complete StockDB-equivalent history and an untouched forward window; retain frozen scores and the research-only adoption gate."
+        "next_step": "Complete StockDB-equivalent coverage or bind a complete equivalent source, then run an untouched forward window with PIT/publication/company-action evidence; retain the frozen scores and research-only gate."
       }
     },
     {

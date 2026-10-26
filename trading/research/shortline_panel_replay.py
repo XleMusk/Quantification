@@ -126,9 +126,18 @@ def load_predictions(path: Path, *, start: str = DEFAULT_START, end: str = DEFAU
 
 
 def load_raw_bars(snapshot: Path, symbols: set[str], *, start: str, end: str) -> pd.DataFrame:
-    """Read raw SH/SZ daily bars for candidate symbols from monthly parquet chunks."""
+    """Read raw SH/SZ bars from parquet chunks or a StockDB daily snapshot.
+
+    StockDB research snapshots publish ``daily.csv`` rather than the monthly
+    parquet chunks used by the BaoStock adapter.  The CSV path is accepted
+    here so both sources use the same Engine/Ledger replay without copying or
+    rewriting the source snapshot.
+    """
     snapshot = Path(snapshot)
     paths = sorted(snapshot.glob("*.parquet"))
+    csv_path = snapshot / "daily.csv"
+    if not paths and csv_path.is_file():
+        paths = [csv_path]
     if not paths:
         raise ValueError(f"No parquet chunks found: {snapshot}")
     pieces: list[pd.DataFrame] = []
@@ -136,7 +145,30 @@ def load_raw_bars(snapshot: Path, symbols: set[str], *, start: str, end: str) ->
     codes = {symbol.split(".", 1)[0] for symbol in symbols}
     for path in paths:
         try:
-            piece = pd.read_parquet(path, columns=RAW_COLUMNS)
+            if path.suffix.lower() == ".csv":
+                piece = pd.read_csv(path, dtype={"code": str, "date": str})
+                # StockDB publishes ISO dates while the parquet adapter uses
+                # compact YYYYMMDD values.  Normalize at the adapter boundary
+                # so the shared replay path remains source-agnostic.
+                date_text = piece["date"].astype(str).str.strip()
+                parsed_dates = pd.to_datetime(date_text, errors="coerce")
+                piece["date"] = parsed_dates.dt.strftime("%Y%m%d")
+                missing = sorted(set(RAW_COLUMNS) - set(piece.columns))
+                if missing == ["is_st", "pct_chg"]:
+                    # StockDB ``pre_close`` may be adjusted.  Leave pct_chg
+                    # unresolved until all rows are concatenated, then derive
+                    # it from the previous available raw close so limit rules
+                    # use a physical-close basis rather than adjusted data.
+                    piece["pct_chg"] = pd.NA
+                    # StockDB daily snapshots do not expose ST status. Keep it
+                    # unknown; the replay's flag reader treats unknown as false
+                    # while the report records that PIT/status evidence is open.
+                    piece["is_st"] = pd.NA
+                elif missing:
+                    raise ValueError(f"StockDB daily snapshot missing columns: {missing}")
+                piece = piece[RAW_COLUMNS]
+            else:
+                piece = pd.read_parquet(path, columns=RAW_COLUMNS)
         except (OSError, ValueError):
             continue
         if piece.empty:
@@ -159,6 +191,15 @@ def load_raw_bars(snapshot: Path, symbols: set[str], *, start: str, end: str) ->
     numeric = ["open", "high", "low", "close", "volume", "amount", "pct_chg", "pre_close"]
     for col in numeric:
         bars[col] = pd.to_numeric(bars[col], errors="coerce")
+    missing_pct = bars["pct_chg"].isna()
+    if missing_pct.any():
+        bars = bars.sort_values(["symbol", "date"], kind="stable").copy()
+        previous_close = bars.groupby("symbol", sort=False)["close"].shift(1)
+        fallback_close = previous_close.where(previous_close.gt(0), bars["pre_close"])
+        bars.loc[missing_pct, "pre_close"] = fallback_close.loc[missing_pct]
+        bars.loc[missing_pct, "pct_chg"] = (
+            bars.loc[missing_pct, "close"] / fallback_close.loc[missing_pct] - 1.0
+        ) * 100.0
     if bars.duplicated(["symbol", "date"]).any():
         raise ValueError("Raw candidate bars contain duplicate symbol/date rows")
     bars = bars.loc[bars["open"].gt(0) & bars["close"].gt(0) & bars["pre_close"].gt(0)].copy()

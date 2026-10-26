@@ -2161,6 +2161,33 @@
       "actual_paths": "trading/research/research_adoption_rollup.py trading/research/tests/test_research_adoption_rollup.py run_committee.py research-adoption-rollup outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json outputs/research_reports/20261026_research_adoption_rollup_v1.md",
       "evidence_updated_on": "2026-10-26",
       "evidence": "outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json outputs/research_reports/20261026_research_adoption_rollup_v1.md"
+    },
+    {
+      "id": "P30",
+      "domain": "research",
+      "result": "The frozen native shortline LR/LightGBM handoff now replays through a local StockDB daily snapshot on the shared Engine/Ledger path, with explicit availability and adjusted-preclose caveats.",
+      "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
+      "next": "Complete the missing StockDB rows or establish a complete equivalent source, then run an untouched forward window with PIT membership, publication timing and company-action evidence.",
+      "prohibition": "Do not treat this five-symbol StockDB snapshot as full-market, PIT-safe, paper/live or strategy-validation evidence; keep execution_admitted=false.",
+      "actual_paths": [
+        "trading/research/shortline_panel_replay.py",
+        "trading/tests/test_shortline_panel_replay.py",
+        "trading/research/shortline_adoption_gate.py",
+        "trading/research/tests/test_shortline_adoption_gate.py",
+        "outputs/pipeline_receipts/20261026_shortline_stockdb_long_path_replay_v1.json",
+        "outputs/research_reports/20261026_shortline_stockdb_long_path_replay_v1.md",
+        "outputs/pipeline_receipts/20261026_shortline_adoption_gate_v3.json",
+        "outputs/research_reports/20261026_shortline_adoption_gate_v3.md"
+      ],
+      "evidence_updated_on": "2026-10-26",
+      "evidence": [
+        "outputs/pipeline_receipts/20261026_shortline_stockdb_long_path_replay_v1.json",
+        "outputs/research_reports/20261026_shortline_stockdb_long_path_replay_v1.md",
+        "outputs/pipeline_receipts/20261026_shortline_adoption_gate_v3.json",
+        "outputs/research_reports/20261026_shortline_adoption_gate_v3.md",
+        "trading/tests/test_shortline_panel_replay.py"
+      ],
+      "acceptance": "Both frozen models replay through shared Engine/Ledger from the local StockDB daily snapshot, produce target/order/fill/account artifacts, record 7,203 unavailable requested daily rows, and remain research-only with no broker/THS interaction."
     }
   ],
   "updated_at": "2026-10-26"
