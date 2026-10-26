@@ -71,3 +71,17 @@ def test_existing_resolution_loader_still_binds_source_pdf_bytes(tmp_path, monke
     source.write_bytes(raw + b"changed")
     with pytest.raises(ValueError, match="source hash/PDF changed"):
         snapshot.load_action_resolutions(tmp_path, ["601988.SSE"])
+
+
+def test_reviewed_mirror_notice_catalog_binds_300642_cash_only_replay_source(tmp_path):
+    url = "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-8/2026-08-27/12560657.PDF"
+    row = {
+        "kind": "issuer_confirmed_reserve_zero_term",
+        "symbol": "300642.SZSE",
+        "source_url": url,
+        "source_date": "2026-08-27",
+        "source_channel": "issuer_mirrored_exchange_notice",
+    }
+    assert snapshot.reviewed_cash_notice_source(row, tmp_path) is True
+    row["source_date"] = "2026-08-28"
+    assert snapshot.reviewed_cash_notice_source(row, tmp_path) is False

@@ -442,7 +442,7 @@
       "domain": "research",
       "result": "Post-event opportunity, enterability and continue/stop decision are measured.",
       "state": "VERIFIED_LOCAL",
-      "next": "Use the decision matrix only to select the next research experiment; continue means research-only and does not enable paper or live execution.",
+      "next": "Use the completed nine-case diagnostics for fixed research decisions only; obtain dated publication/PIT evidence before any paper or live promotion.",
       "prohibition": "A signal relation without executable entry is not a strategy result.",
       "actual_paths": [
         "trading/research/research_decision_matrix.py",
@@ -464,7 +464,10 @@
         "run_committee.py candidate-adoption-decision",
         "trading/tests/test_run_committee_dispatch.py",
         "outputs/pipeline_receipts/20261026_candidate_adoption_decision_v1.json",
-        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md"
+        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md",
+        "outputs/seat_bulk_replay/20261026_090555_37d5f73f/REPORT.md",
+        "outputs/pipeline_receipts/20261026_public_seat_replay_audit_v2.json",
+        "outputs/research_reports/20261026_public_seat_replay_audit_v2.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261024_research_decision_matrix_v1.json",
@@ -486,7 +489,10 @@
         "run_committee.py candidate-adoption-decision",
         "trading/tests/test_run_committee_dispatch.py",
         "outputs/pipeline_receipts/20261026_candidate_adoption_decision_v1.json",
-        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md"
+        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md",
+        "outputs/seat_bulk_replay/20261026_090555_37d5f73f/REPORT.md",
+        "outputs/pipeline_receipts/20261026_public_seat_replay_audit_v2.json",
+        "outputs/research_reports/20261026_public_seat_replay_audit_v2.md"
       ],
       "acceptance": "Completed public-seat cases expose post-event return/opportunity, order/fill enterability, and fixed continue/stop research decisions; incomplete cases remain blocked with their error; all promotion and execution gates remain closed.",
       "evidence_updated_on": "2026-10-26"
@@ -590,7 +596,10 @@
         "run_committee.py candidate-adoption-decision",
         "trading/tests/test_run_committee_dispatch.py",
         "outputs/pipeline_receipts/20261026_candidate_adoption_decision_v1.json",
-        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md"
+        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md",
+        "outputs/seat_bulk_replay/20261026_090555_37d5f73f/REPORT.md",
+        "outputs/pipeline_receipts/20261026_public_seat_replay_audit_v2.json",
+        "outputs/research_reports/20261026_public_seat_replay_audit_v2.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261024_strategy_robustness_matrix_v1.json",
@@ -617,7 +626,10 @@
         "run_committee.py candidate-adoption-decision",
         "trading/tests/test_run_committee_dispatch.py",
         "outputs/pipeline_receipts/20261026_candidate_adoption_decision_v1.json",
-        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md"
+        "outputs/research_reports/20261026_candidate_adoption_decision_v1.md",
+        "outputs/seat_bulk_replay/20261026_090555_37d5f73f/REPORT.md",
+        "outputs/pipeline_receipts/20261026_public_seat_replay_audit_v2.json",
+        "outputs/research_reports/20261026_public_seat_replay_audit_v2.md"
       ],
       "acceptance": "Saved long-window, untouched-forward and capacity/cost artifacts produce explicit continue, mixed, stop or coverage-blocked research decisions; those decisions are bound into the candidate library with a research-only follow-up queue and closed paper/promotion gates.",
       "evidence_updated_on": "2026-10-26"
@@ -1016,7 +1028,10 @@
         "webapp/frontend/src/pages/Tasks.tsx",
         "webapp/frontend/src/types.ts",
         "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
-        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
+        "outputs/research_reports/20261026_workbench_release_binding_v1.md",
+        "webapp/backend/app/release.py"
       ],
       "evidence": [
         "webapp/backend/app/main.py",
@@ -1024,7 +1039,10 @@
         "webapp/frontend/src/pages/Tasks.tsx",
         "webapp/frontend/src/types.ts",
         "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
-        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
+        "outputs/research_reports/20261026_workbench_release_binding_v1.md",
+        "webapp/backend/app/release.py"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -1049,7 +1067,7 @@
       "domain": "operations",
       "result": "Calendar and business schedule calculate windows and classify missing inputs.",
       "state": "PARTIAL",
-      "next": "After the actual 2026-10-26 close, run the registered fixed_daily D0/D1 path and preserve persistent_fixed_daily_account_scope separately from TARGET_PREVIEW projections.",
+      "next": "After the actual 2026-10-26 close, run the registered fixed_daily D0/D1 path; pinned calendar can now derive adjacent sessions when explicit days are omitted, while persistent_fixed_daily_account_scope stays separate from TARGET_PREVIEW projections.",
       "prohibition": "Do not use machine timezone or weekday inference.",
       "evidence_updated_on": "2026-10-26",
       "actual_paths": [
@@ -1072,7 +1090,11 @@
         "outputs/pipeline_receipts/20261026_next_close_snapshot_coverage_v1.json",
         "outputs/research_reports/20261026_next_close_snapshot_coverage_v1.md",
         "outputs/pipeline_receipts/20261026_post_close_block_propagation_v1.json",
-        "outputs/research_reports/20261026_post_close_block_propagation_v1.md"
+        "outputs/research_reports/20261026_post_close_block_propagation_v1.md",
+        "trading/research/exchange_calendar.py",
+        "trading/research/tests/test_exchange_calendar.py",
+        "outputs/pipeline_receipts/20261026_d0_d1_calendar_resolution_v1.json",
+        "outputs/research_reports/20261026_d0_d1_calendar_resolution_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1087,7 +1109,11 @@
         "outputs/pipeline_receipts/20261026_next_close_snapshot_coverage_v1.json",
         "outputs/research_reports/20261026_next_close_snapshot_coverage_v1.md",
         "outputs/pipeline_receipts/20261026_post_close_block_propagation_v1.json",
-        "outputs/research_reports/20261026_post_close_block_propagation_v1.md"
+        "outputs/research_reports/20261026_post_close_block_propagation_v1.md",
+        "trading/research/exchange_calendar.py",
+        "trading/research/tests/test_exchange_calendar.py",
+        "outputs/pipeline_receipts/20261026_d0_d1_calendar_resolution_v1.json",
+        "outputs/research_reports/20261026_d0_d1_calendar_resolution_v1.md"
       ]
     },
     {
@@ -1131,7 +1157,7 @@
       "domain": "operations",
       "result": "Business observability and capacity measurements expose bottlenecks.",
       "state": "PARTIAL",
-      "next": "Run the bound next-close D0/D1 contract after 2026-10-26 close with same-day strategy sources; keep persistent fixed_daily scope distinct from ephemeral TARGET_PREVIEW projections.",
+      "next": "Run the bound next-close D0/D1 contract after 2026-10-26 close with same-day strategy sources; use pinned-calendar date resolution when desired and keep persistent fixed_daily scope distinct from ephemeral TARGET_PREVIEW projections.",
       "prohibition": "Do not turn monitoring uncertainty into a false offline status.",
       "actual_paths": [
         "trading/research/daily_candidate_paper_batch.py",
@@ -1183,7 +1209,11 @@
         "outputs/pipeline_receipts/20261026_next_close_snapshot_coverage_v1.json",
         "outputs/research_reports/20261026_next_close_snapshot_coverage_v1.md",
         "outputs/pipeline_receipts/20261026_post_close_block_propagation_v1.json",
-        "outputs/research_reports/20261026_post_close_block_propagation_v1.md"
+        "outputs/research_reports/20261026_post_close_block_propagation_v1.md",
+        "trading/research/exchange_calendar.py",
+        "trading/research/tests/test_exchange_calendar.py",
+        "outputs/pipeline_receipts/20261026_d0_d1_calendar_resolution_v1.json",
+        "outputs/research_reports/20261026_d0_d1_calendar_resolution_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1198,7 +1228,11 @@
         "outputs/pipeline_receipts/20261026_next_close_snapshot_coverage_v1.json",
         "outputs/research_reports/20261026_next_close_snapshot_coverage_v1.md",
         "outputs/pipeline_receipts/20261026_post_close_block_propagation_v1.json",
-        "outputs/research_reports/20261026_post_close_block_propagation_v1.md"
+        "outputs/research_reports/20261026_post_close_block_propagation_v1.md",
+        "trading/research/exchange_calendar.py",
+        "trading/research/tests/test_exchange_calendar.py",
+        "outputs/pipeline_receipts/20261026_d0_d1_calendar_resolution_v1.json",
+        "outputs/research_reports/20261026_d0_d1_calendar_resolution_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -1235,13 +1269,20 @@
         "D:/Quantification/trading/research/tests/test_internal_release_candidate.py",
         "D:/Quantification/docs/architecture_v3/OPERATIONS_RUNBOOK.md",
         "D:/Quantification/run_committee.py internal-release-candidate",
-        "D:/QuantificationData/trading/research/releases/20261025_v1/release_manifest.json"
+        "D:/QuantificationData/trading/research/releases/20261025_v1/release_manifest.json",
+        "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
+        "outputs/research_reports/20261026_workbench_release_binding_v1.md",
+        "webapp/backend/app/release.py"
       ],
       "evidence": [
         "D:/Quantification/trading/research/tests/test_internal_release_candidate.py",
-        "D:/QuantificationData/trading/research/releases/20261025_v1/release_manifest.json"
+        "D:/QuantificationData/trading/research/releases/20261025_v1/release_manifest.json",
+        "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
+        "outputs/research_reports/20261026_workbench_release_binding_v1.md",
+        "webapp/backend/app/release.py"
       ],
-      "acceptance": "A hash-bound research-only release manifest lists the required pipeline/code inputs and a runnable operations guide, with execution_admitted=false and live_execution_ready=false."
+      "acceptance": "A hash-bound research-only release manifest lists the required pipeline/code inputs and a runnable operations guide, with execution_admitted=false and live_execution_ready=false.",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "U01",
@@ -1403,7 +1444,10 @@
         "outputs/pipeline_receipts/20261026_workbench_recovery_evidence_v1.json",
         "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
-        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
+        "outputs/research_reports/20261026_workbench_release_binding_v1.md",
+        "webapp/backend/app/release.py"
       ],
       "evidence": [
         "webapp/backend/app/main.py",
@@ -1420,7 +1464,10 @@
         "outputs/pipeline_receipts/20261026_workbench_recovery_evidence_v1.json",
         "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
-        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
+        "outputs/research_reports/20261026_workbench_release_binding_v1.md",
+        "webapp/backend/app/release.py"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -1446,7 +1493,10 @@
         "outputs/pipeline_receipts/20261026_workbench_recovery_evidence_v1.json",
         "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
-        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
+        "outputs/research_reports/20261026_workbench_release_binding_v1.md",
+        "webapp/backend/app/release.py"
       ],
       "evidence": [
         "webapp/backend/app/main.py",
@@ -1463,7 +1513,10 @@
         "outputs/pipeline_receipts/20261026_workbench_recovery_evidence_v1.json",
         "outputs/research_reports/20261026_workbench_recovery_evidence_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
-        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
+        "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
+        "outputs/research_reports/20261026_workbench_release_binding_v1.md",
+        "webapp/backend/app/release.py"
       ],
       "evidence_updated_on": "2026-10-26"
     },
@@ -1899,5 +1952,6 @@
       "acceptance": "The post-close coordinator advances the registered fixed_daily head first, can convert a candidate replay manifest into Target inputs, defaults to the budgeted joint paper/THS-readonly-reference path, waits on incomplete source packages, then runs same-day D0/D1 with explicit time_semantics; all outcomes preserve execution_admitted=false and failed evidence.",
       "evidence_updated_on": "2026-10-26"
     }
-  ]
+  ],
+  "updated_at": "2026-10-26"
 }

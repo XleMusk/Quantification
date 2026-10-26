@@ -1,6 +1,6 @@
 {
   "schema": "quantification_goal_completion_audit_v1",
-  "audited_at": "2026-10-26T03:58:00+08:00",
+  "audited_at": "2026-10-26T09:09:20+08:00",
   "execution_admitted": false,
   "overall_status": "INCOMPLETE_ACTIVE",
   "items": [
@@ -18,7 +18,10 @@
         "webapp/backend/app/main.py",
         "webapp/backend/tests/test_webapp.py",
         "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
-        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
+        "webapp/backend/app/release.py",
+        "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
+        "outputs/research_reports/20261026_workbench_release_binding_v1.md"
       ],
       "gap": "Local two-session continuity now covers partial fill, restart and idempotency; next real close still must prove the same behavior on StockDB/fixed_daily inputs.",
       "next_acceptance": "repeat after the next closed-session paper advance and keep live-channel evidence blocked",
@@ -107,7 +110,10 @@
         "webapp/backend/app/main.py",
         "webapp/backend/tests/test_webapp.py",
         "outputs/pipeline_receipts/20261026_workbench_recovery_api_v1.json",
-        "outputs/research_reports/20261026_workbench_recovery_api_v1.md"
+        "outputs/research_reports/20261026_workbench_recovery_api_v1.md",
+        "webapp/backend/app/release.py",
+        "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
+        "outputs/research_reports/20261026_workbench_release_binding_v1.md"
       ],
       "gap": "Local scope boundary is explicit; real close input and external channel evidence remain separate.",
       "next_acceptance": "keep the local engineering acceptance receipt current; BrokerAdapter/THS and account scope remain closed until external read-only evidence exists",
@@ -437,16 +443,22 @@
     {
       "id": "seat_style",
       "requirement": "Public seat/游资 style",
-      "status": "PARTIAL_NO_TRADE",
+      "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
       "evidence": [
         "outputs/seat_bulk_replay/20261007_004704_2a161258/REPORT.md",
         "outputs/pipeline_receipts/20261024_public_seat_replay_audit_v1.json",
         "outputs/research_reports/20261024_public_seat_replay_audit_v1.md",
         "trading/research/public_seat_replay_audit.py",
-        "trading/research/tests/test_public_seat_replay_audit.py"
+        "trading/research/tests/test_public_seat_replay_audit.py",
+        "outputs/seat_bulk_replay/20261026_090555_37d5f73f/REPORT.md",
+        "outputs/pipeline_receipts/20261026_public_seat_replay_audit_v2.json",
+        "outputs/research_reports/20261026_public_seat_replay_audit_v2.md",
+        "trading/market_snapshot.py",
+        "trading/tests/test_reviewed_boc_notice_source.py"
       ],
-      "gap": "five of nine cases complete historical diagnostics; four stop on unresolved held/execution price references; publication timing, PIT membership and causal attribution remain unresolved",
-      "next_acceptance": "resolve the four saved reference stop points and obtain dated publication/PIT evidence before any fresh seat replay or promotion"
+      "gap": "All nine saved public-seat/trend cases now complete through the shared Engine/Ledger (2,169 sessions, 6,133 orders, 9,173 fills); publication timing, PIT membership, untouched holdout and causal seat attribution remain unresolved.",
+      "next_acceptance": "Obtain dated publication/PIT membership evidence and an untouched forward window before any candidate adoption; keep the nine-case result research-only.",
+      "evidence_updated_on": "2026-10-26"
     },
     {
       "id": "f01",

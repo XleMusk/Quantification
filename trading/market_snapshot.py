@@ -46,6 +46,18 @@ REVIEWED_ISSUER_DOCUMENTS = {
 # A single issuer notice mirrored by a market-document host. Keep this source
 # channel explicit so a mirror never becomes a general-purpose evidence feed.
 REVIEWED_MIRROR_NOTICES = {
+    "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-5/2026-05-21/12339333.PDF": {
+        "symbol": "301003.SZSE", "source_date": "2026-05-21",
+        "source_channel": "issuer_mirrored_exchange_notice",
+    },
+    "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-9/2026-09-01/12578977.PDF": {
+        "symbol": "301591.SZSE", "source_date": "2026-09-01",
+        "source_channel": "issuer_mirrored_exchange_notice",
+    },
+    "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-8/2026-08-27/12560657.PDF": {
+        "symbol": "300642.SZSE", "source_date": "2026-08-27",
+        "source_channel": "issuer_mirrored_exchange_notice",
+    },
     "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-9/2026-09-17/12606766.PDF": {
         "symbol": "000538.SZSE",
         "source_date": "2026-09-17",
