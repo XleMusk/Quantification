@@ -22,7 +22,7 @@ function Get-ApiHealth {
 
 function Test-Ui {
     try {
-        $response = Invoke-WebRequest -Uri "http://127.0.0.1:$UiPort" -TimeoutSec 3
+        $response = Invoke-WebRequest -Uri "http://127.0.0.1:$UiPort" -TimeoutSec 3 -UseBasicParsing
         return ($response.StatusCode -eq 200)
     } catch {
         return $false

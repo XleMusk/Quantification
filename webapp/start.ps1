@@ -64,7 +64,7 @@ try {
     for ($i=0; $i -lt 80; $i++) {
         try {
             $Health = Invoke-RestMethod -Uri "http://127.0.0.1:$ApiPort/api/health" -TimeoutSec 2
-            $Page = Invoke-WebRequest -Uri $env:QUANT_UI_ORIGIN -TimeoutSec 2
+            $Page = Invoke-WebRequest -Uri $env:QUANT_UI_ORIGIN -TimeoutSec 2 -UseBasicParsing
             $TradingHealth = Invoke-RestMethod -Uri "http://127.0.0.1:$ApiPort/api/trading/overview" -TimeoutSec 2
             $WorkersReady = $NoWorkers -or ($Health.worker.online -and $TradingHealth.worker.online)
             if ($Health.status -eq 'ok' -and $WorkersReady -and $Page.StatusCode -eq 200 -and
