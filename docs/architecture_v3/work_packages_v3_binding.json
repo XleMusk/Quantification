@@ -272,7 +272,11 @@
         "trading/research/tests/test_f2_historical_evidence.py",
         "trading/research/tests/test_f2_fact_bridge.py",
         "outputs/pipeline_receipts/20261026_f2_bridge_source_snapshot_provenance_v1.json",
-        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md"
+        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md",
+        "trading/research/publication_event_contract.py",
+        "trading/research/tests/test_publication_event_contract.py",
+        "outputs/pipeline_receipts/20261026_publication_boundary_unknown_v1.json",
+        "outputs/research_reports/20261026_publication_boundary_unknown_v1.md"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -285,7 +289,11 @@
         "trading/research/tests/test_f2_historical_evidence.py",
         "trading/research/tests/test_f2_fact_bridge.py",
         "outputs/pipeline_receipts/20261026_f2_bridge_source_snapshot_provenance_v1.json",
-        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md"
+        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md",
+        "trading/research/publication_event_contract.py",
+        "trading/research/tests/test_publication_event_contract.py",
+        "outputs/pipeline_receipts/20261026_publication_boundary_unknown_v1.json",
+        "outputs/research_reports/20261026_publication_boundary_unknown_v1.md"
       ]
     },
     {
@@ -475,7 +483,11 @@
         "trading/research/action_context_target_binding.py",
         "trading/research/tests/test_action_context_target_binding.py",
         "outputs/pipeline_receipts/20261026_action_context_target_binding_v1.json",
-        "outputs/research_reports/20261026_action_context_target_binding_v1.md"
+        "outputs/research_reports/20261026_action_context_target_binding_v1.md",
+        "trading/research/publication_event_contract.py",
+        "trading/research/tests/test_publication_event_contract.py",
+        "outputs/pipeline_receipts/20261026_publication_boundary_unknown_v1.json",
+        "outputs/research_reports/20261026_publication_boundary_unknown_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },

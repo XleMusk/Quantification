@@ -28,6 +28,17 @@ def test_missing_sidecar_is_explicit_unknown():
     assert result["publication_evidence_reasons"] == ["publication_evidence_missing"]
 
 
+@pytest.mark.parametrize("changes", [
+    {"publication_date": None},
+    {"publication_time": "2026-01-29"},
+])
+def test_invalid_publication_boundary_remains_explicit_unknown(changes):
+    result = evaluate_publication_evidence(_complete(**changes), "2026-01-30")
+    assert result["pit_asof_safe"] is False
+    assert any(reason.startswith("publication_evidence_invalid:") for reason in result["publication_evidence_reasons"])
+    assert "publication_boundary_unknown" in result["publication_evidence_reasons"]
+
+
 @pytest.mark.parametrize("changes, reason", [
     ({"source_sha256": "bad"}, "source_file_or_sha256_missing"),
     ({"revision_id": ""}, "revision_id_missing"),

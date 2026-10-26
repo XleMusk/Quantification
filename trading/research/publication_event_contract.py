@@ -53,6 +53,7 @@ def evaluate_publication_evidence(row: Mapping[str, Any], decision_day: str) -> 
     retrieval_asof_proven = False
     revision_identity_proven = False
     source_provenance_proven = False
+    publication: TimeWindow | None = None
     try:
         publication = _publication_window(row)
         publication_proven = strictly_before(publication, TimeWindow.exact(decision_time(decision_day)))
@@ -69,15 +70,18 @@ def evaluate_publication_evidence(row: Mapping[str, Any], decision_day: str) -> 
         # before its conservative end cannot prove that the disclosed
         # contents were available to the consumer.  Exact publication times
         # use the same boundary through ``publication.start``.
-        publication_boundary = publication.end or publication.start
-        if retrieved < publication_boundary or asof < publication_boundary:
-            reasons.append("retrieval_or_asof_before_publication")
-        elif asof < retrieved:
-            reasons.append("asof_before_retrieval")
-        elif retrieved <= cutoff and asof <= cutoff:
-            retrieval_asof_proven = True
+        if publication is None:
+            reasons.append("publication_boundary_unknown")
         else:
-            reasons.append("retrieval_or_asof_after_decision")
+            publication_boundary = publication.end or publication.start
+            if retrieved < publication_boundary or asof < publication_boundary:
+                reasons.append("retrieval_or_asof_before_publication")
+            elif asof < retrieved:
+                reasons.append("asof_before_retrieval")
+            elif retrieved <= cutoff and asof <= cutoff:
+                retrieval_asof_proven = True
+            else:
+                reasons.append("retrieval_or_asof_after_decision")
     except (TypeError, ValueError) as exc:
         reasons.append(f"retrieval_asof_invalid:{exc}")
 

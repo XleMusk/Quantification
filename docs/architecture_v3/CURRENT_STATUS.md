@@ -580,3 +580,7 @@ The research adoption rollup now accepts the retained half-momentum/Ridge joint 
 F2 的 publication contract 现在要求：日期型披露按 `[D 00:00, D+1 00:00)` 解释，`retrieved_at` 与 `asof_at` 必须晚于保守结束边界，同时不晚于 decision cutoff，并满足 `asof_at >= retrieved_at`。新增聚焦测试 21 passed；现有 000002.SZSE 真实来源快照重跑为 `BLOCKED_DATA`，哈希验证通过但仍缺 `asof_at` 与 `revision_id`，因此没有财报事实、因子或账户回放准入。
 
 证据：`outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v2/receipt.json`、`outputs/research_reports/20261026_f2_publication_boundary_contract_v1.md`。
+
+## 2026-10-26 Google engineering refactor: explicit unknown publication boundary
+
+修正了 `publication_event_contract.evaluate_publication_evidence` 在 publication 元数据缺失或格式错误时引用未初始化窗口的错误路径。现在该路径返回 `publication_boundary_unknown`，并保持 `pit_asof_safe=false`；新增缺失 `publication_date` 与错误 `publication_time` 反例。F2 聚焦测试共 23 passed。证据：`outputs/pipeline_receipts/20261026_publication_boundary_unknown_v1.json`、`outputs/research_reports/20261026_publication_boundary_unknown_v1.md`。
