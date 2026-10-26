@@ -94,7 +94,9 @@
         "trading/research/f2_vertical_slice.py",
         "trading/research/tests/test_f2_vertical_slice.py",
         "outputs/pipeline_receipts/20261027_f2_vertical_slice_current_synthetic_v1_summary.json",
-        "outputs/research_reports/20261027_f2_vertical_slice_current_synthetic_v1.md"
+        "outputs/research_reports/20261027_f2_vertical_slice_current_synthetic_v1.md",
+        "run_committee.py f2-historical-gate",
+        "outputs/pipeline_receipts/20261027_f2_historical_gate_cli_real_source_v1.json"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -122,7 +124,9 @@
         "outputs/research_reports/20261026_f2_issuer_source_capture_v2.md",
         "run_committee.py f2-issuer-source-evidence",
         "outputs/pipeline_receipts/20261027_f2_vertical_slice_current_synthetic_v1_summary.json",
-        "outputs/research_reports/20261027_f2_vertical_slice_current_synthetic_v1.md"
+        "outputs/research_reports/20261027_f2_vertical_slice_current_synthetic_v1.md",
+        "run_committee.py f2-historical-gate",
+        "outputs/pipeline_receipts/20261027_f2_historical_gate_cli_real_source_v1.json"
       ]
     },
     {

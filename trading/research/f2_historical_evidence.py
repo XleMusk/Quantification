@@ -9,6 +9,7 @@ input shape and keeps the current-fetch case explicitly blocked.
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+import argparse
 import json
 from pathlib import Path
 from typing import Any
@@ -127,6 +128,74 @@ def write_receipt(
     return receipt
 
 
+def load_input_rows(path: str | Path) -> tuple[list[dict[str, Any]], str | None]:
+    """Load raw F2 evidence rows from a saved source snapshot or row list.
+
+    The loader accepts only explicit envelopes already written by a source
+    adapter: a JSON list, an object with ``rows``, or an object containing a
+    ``historical_gate.rows`` list.  A source snapshot's ``capture_mode`` is
+    mapped to the contract's evidence kind; no timing, revision or source
+    fields are filled in.
+    """
+
+    input_path = Path(path).expanduser().resolve()
+    payload = json.loads(input_path.read_text(encoding="utf-8"))
+    source_description: str | None = None
+    if isinstance(payload, list):
+        raw_rows = payload
+    elif isinstance(payload, Mapping):
+        historical_gate = payload.get("historical_gate")
+        if isinstance(historical_gate, Mapping) and isinstance(historical_gate.get("rows"), list):
+            raw_rows = historical_gate["rows"]
+            source_description = historical_gate.get("source_description")
+        elif isinstance(payload.get("rows"), list):
+            raw_rows = payload["rows"]
+            source_description = payload.get("source_description") or payload.get("snapshot_id")
+        else:
+            raise ValueError("input must contain an explicit rows list")
+    else:
+        raise ValueError("input must be a JSON list or object")
+    rows: list[dict[str, Any]] = []
+    for index, row in enumerate(raw_rows):
+        if not isinstance(row, Mapping):
+            raise ValueError(f"input row {index} must be an object")
+        normalized = dict(row)
+        if "evidence_kind" not in normalized:
+            capture_mode = normalized.get("capture_mode")
+            normalized["evidence_kind"] = (
+                "source_snapshot" if capture_mode == "current_fetch" else capture_mode
+            )
+        rows.append(normalized)
+    return rows, source_description
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--input", type=Path, required=True,
+                        help="saved source snapshot or JSON rows envelope")
+    parser.add_argument("--decision-day", required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--source-description", default=None)
+    args = parser.parse_args(argv)
+    rows, input_description = load_input_rows(args.input)
+    receipt = write_receipt(
+        args.output,
+        rows,
+        decision_day=args.decision_day,
+        source_description=args.source_description or input_description
+        or f"historical evidence input: {args.input.name}",
+    )
+    print(json.dumps({
+        "status": receipt["status"],
+        "rows": receipt["summary"]["rows"],
+        "ready_rows": receipt["summary"]["ready_rows"],
+        "blocked_rows": receipt["summary"]["blocked_rows"],
+        "execution_admitted": receipt["execution_admitted"],
+        "output": str(args.output.expanduser().resolve()),
+    }, ensure_ascii=False))
+    return 0
+
+
 __all__ = [
     "BLOCKED",
     "HISTORICAL_EVIDENCE_KINDS",
@@ -134,5 +203,11 @@ __all__ = [
     "SCHEMA",
     "build_historical_gate_receipt",
     "evaluate_historical_evidence",
+    "load_input_rows",
+    "main",
     "write_receipt",
 ]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

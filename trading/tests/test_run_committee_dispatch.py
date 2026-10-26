@@ -101,6 +101,23 @@ def test_f2_issuer_source_evidence_help_is_available():
     assert "--output" in result.stdout
 
 
+def test_f2_historical_gate_route_is_registered_once():
+    source = (ROOT / "run_committee.py").read_text(encoding="utf-8")
+    assert source.count('if argv[:1] == ["f2-historical-gate"]:') == 1
+
+
+def test_f2_historical_gate_help_is_available():
+    result = subprocess.run(
+        [sys.executable, "-Xutf8", str(ROOT / "run_committee.py"),
+         "f2-historical-gate", "--help"],
+        cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
+    )
+    assert result.returncode == 0
+    assert "--input" in result.stdout
+    assert "--decision-day" in result.stdout
+    assert "--output" in result.stdout
+
+
 def test_f2_fact_bridge_help_is_available():
     result = subprocess.run(
         [sys.executable, "-Xutf8", str(ROOT / "run_committee.py"),
@@ -204,3 +221,4 @@ def test_stockdb_close_package_builder_help_is_available():
     assert result.returncode == 0
     assert "--snapshot" in result.stdout
     assert "--output" in result.stdout
+    assert "--roster" in result.stdout
