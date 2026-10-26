@@ -443,3 +443,7 @@ StockDB 短线长路径回放和 adoption gate v3 已绑定到内部研究发布
 ## 2026-10-26 post-close D0/D1 attempt
 
 收市后实际调用现有 `post-close-d0-d1`，输入为当前 Alpha158 candidate shadow manifest、固定纸面账户、2026-10-26 close 和固定交易日历。回执 `outputs/pipeline_receipts/20261026_post_close_d0_d1_v1/post_close_receipt.json` 返回 `WAITING_FIXED_DAILY_SOURCES`，缺少精确的 2026-10-26 complete close package；因此没有生成目标、订单、成交或账本变更，也没有访问外部渠道，`execution_admitted=false`。下一步是补齐真实 StockDB/可靠来源的完整日线 close package，再用同一 coordinator 重跑。
+
+## 2026-10-26 native StockDB close coverage attempt
+
+已实际启动本地 StockDB 并按 2026-10-13 的完整普通 A 股代码清单请求 2026-10-26 日线快照：5,211 个请求标的仅返回 226 行，4,985 行缺失，分钟数据 0 行。机器回执 `outputs/pipeline_receipts/20261026_stockdb_close_coverage_v1.json`，外部快照 `D:\QuantificationData\trading\research\stockdb_close_packages\20261026_native_full_universe_v1\snapshot.json`。由于 `fixed_daily/post_close` 要求完整日期包，本次没有伪造或消费不完整输入，D0/D1 仍保持未生成，`execution_admitted=false`。该失败改变了下一动作：优先恢复完整可靠收市源或使用已完整的替代来源，再重跑同一固定入口。
