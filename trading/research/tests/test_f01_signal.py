@@ -19,8 +19,9 @@ CONTEXT = RunContext("f01-signal-test", TradingMode.REPLAY)
 
 
 def fact(fid, metric, value, end):
+    period_kind = "point_in_time" if metric == "total_assets" else "single_quarter"
     return FinancialFact(fid, "issuer", metric, date.fromisoformat(end), date.fromisoformat(end),
-                         "single_quarter", "consolidated", "CNY", "yuan", value, BEFORE)
+                         period_kind, "consolidated", "CNY", "yuan", value, BEFORE)
 
 
 def result(symbol, current, prior, assets):
