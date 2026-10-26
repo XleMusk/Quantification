@@ -507,10 +507,14 @@
         "trading/research/f2_fact_bridge.py",
         "trading/research/tests/test_f2_fact_bridge.py",
         "outputs/pipeline_receipts/20261026_f2_bridge_source_snapshot_provenance_v1.json",
-        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md"
+        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md",
+        "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/source_snapshot.json",
+        "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/receipt.json",
+        "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/fact_bridge_receipt.json",
+        "outputs/research_reports/20261026_f2_real_source_snapshot_v1.md"
       ],
-      "gap": "F2 bridge now preserves source snapshot identity and verified file hash provenance through materialized facts; real pre-decision retrieval/as-of/revision evidence remains missing, so PIT-safe and F01-eligible rows remain blocked.",
-      "next_acceptance": "Supply a real source snapshot with pre-decision retrieval/as-of and revision payload for the captured 2023Q1 artifact; the current 2024Q1 funnel remains diagnostic only.",
+      "gap": "Real locked 000002.SZSE/2023Q1 issuer PDF bytes are now hash-bound through a source snapshot and the fact bridge, but retrieval/as-of and revision identity are still absent; 0 PIT-safe rows and 0 F01 facts remain.",
+      "next_acceptance": "Supply a pre-decision retrieval/as-of receipt and revision payload for this exact 2023Q1 artifact; do not substitute 2024Q1 or current fetch metadata.",
       "evidence_updated_on": "2026-10-26"
     },
     {

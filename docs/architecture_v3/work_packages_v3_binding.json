@@ -54,8 +54,6 @@
         "run_committee.py f01-source-retrieval-receipt",
         "outputs/pipeline_receipts/20261024_f01_publication_sidecar_network_v2.json",
         "outputs/research_reports/20261024_f01_publication_sidecar_network_v2.md",
-        "trading/research/f01_publication_sidecar.py",
-        "trading/research/tests/test_f01_publication_sidecar.py",
         "run_committee.py f01-publication-sidecar --retrieval-receipt",
         "trading/research/f2_fact_bridge.py",
         "trading/research/tests/test_f2_fact_bridge.py",
@@ -77,7 +75,11 @@
         "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v1.json",
         "outputs/research_reports/20261026_f2_wayback_2023q1_v1.md",
         "outputs/pipeline_receipts/20261026_f2_bridge_source_snapshot_provenance_v1.json",
-        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md"
+        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md",
+        "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/source_snapshot.json",
+        "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/receipt.json",
+        "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/fact_bridge_receipt.json",
+        "outputs/research_reports/20261026_f2_real_source_snapshot_v1.md"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -88,7 +90,11 @@
         "trading/research/f2_fact_bridge.py",
         "trading/research/tests/test_f2_fact_bridge.py",
         "outputs/pipeline_receipts/20261026_f2_bridge_source_snapshot_provenance_v1.json",
-        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md"
+        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md",
+        "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/source_snapshot.json",
+        "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/receipt.json",
+        "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/fact_bridge_receipt.json",
+        "outputs/research_reports/20261026_f2_real_source_snapshot_v1.md"
       ]
     },
     {
@@ -205,7 +211,7 @@
       "domain": "data",
       "result": "A callable point-in-time versioned read returns only facts available at the requested cutoff.",
       "state": "PARTIAL",
-      "next": "Use the source_snapshot adapter for a real historical source; current CNINFO retrieval remains BLOCKED_DATA until retrieval/as-of and revision evidence pass.",
+      "next": "A real locked 2023Q1 source snapshot is now wired and correctly remains BLOCKED_DATA; supply pre-decision retrieval/as-of and revision evidence before PIT admission.",
       "prohibition": "Do not read the latest file implicitly.",
       "actual_paths": [
         "outputs/financials/f01_scoped_field_coverage_20261024.json",
@@ -242,7 +248,11 @@
         "outputs/pipeline_receipts/20261026_f2_source_snapshot_adapter_v1/boundary_receipt.json",
         "outputs/research_reports/20261026_f2_source_snapshot_adapter_v1.md",
         "outputs/pipeline_receipts/20261026_f2_bridge_source_snapshot_provenance_v1.json",
-        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md"
+        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md",
+        "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/source_snapshot.json",
+        "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/receipt.json",
+        "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/fact_bridge_receipt.json",
+        "outputs/research_reports/20261026_f2_real_source_snapshot_v1.md"
       ],
       "evidence_updated_on": "2026-10-26",
       "evidence": [
@@ -257,7 +267,11 @@
         "trading/research/f2_fact_bridge.py",
         "trading/research/tests/test_f2_fact_bridge.py",
         "outputs/pipeline_receipts/20261026_f2_bridge_source_snapshot_provenance_v1.json",
-        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md"
+        "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md",
+        "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/source_snapshot.json",
+        "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/receipt.json",
+        "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/fact_bridge_receipt.json",
+        "outputs/research_reports/20261026_f2_real_source_snapshot_v1.md"
       ]
     },
     {
