@@ -598,10 +598,14 @@
       "status": "VERIFIED_CLOSED",
       "evidence": [
         "docs/architecture_v3/goal_continuity.json",
-        "outputs/paper_plans/20261024_lowvol_current_ths_readonly_request/receipt.json"
+        "outputs/paper_plans/20261024_lowvol_current_ths_readonly_request/receipt.json",
+        "D:/QuantificationData/trading/research/releases/20261026_v13/release_manifest.json",
+        "outputs/pipeline_receipts/20261026_release_v13_binding_v1.json",
+        "outputs/research_reports/20261026_release_v13_binding_v1.md"
       ],
       "gap": "none for current policy",
-      "next_acceptance": "keep false until independent authorization and readiness audit"
+      "next_acceptance": "keep false until independent authorization and readiness audit",
+      "evidence_updated_on": "2026-10-26"
     }
   ],
   "completion_rule": "Do not mark complete while any required item is PARTIAL, BLOCKED, missing evidence or research-only when the objective requires current/real-channel proof."
