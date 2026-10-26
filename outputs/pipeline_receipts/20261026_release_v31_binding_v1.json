@@ -1,0 +1,22 @@
+{
+  "schema": "quantification_internal_release_binding_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY",
+  "version": "20261026_v31",
+  "manifest": "D:\\QuantificationData\\trading\\research\\releases\\20261026_v31\\release_manifest.json",
+  "manifest_sha256": "e1f6926dfe0ee7025c929e228af7d18a1d6374adbbcd1238b9daacb764f226bd",
+  "git_commit": "8b88a4b69456c62ca5fb78e95382136fdd2cade9",
+  "execution_admitted": false,
+  "live_execution_ready": false,
+  "missing_required_code": [],
+  "work_packages": [
+    "F01",
+    "F05",
+    "U04"
+  ],
+  "limitations": [
+    "F01 local disclosure-window/decision-cutoff semantics are verified; real pre-decision PIT retrieval/as-of and revision evidence remain unavailable.",
+    "F05 rejection receipts are local run-store evidence; no scheduler or external order retry is enabled.",
+    "U04 recovery chain is a seeded/local paper-job view; it does not prove broker, account or Tonghuashun state.",
+    "No broker/THS login, prefill, order, cancellation, transfer or account mutation."
+  ]
+}

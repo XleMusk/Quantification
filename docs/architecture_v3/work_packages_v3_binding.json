@@ -1321,7 +1321,7 @@
       "domain": "operations",
       "result": "Internal stable release has versioned inputs and an operations guide.",
       "state": "VERIFIED_LOCAL",
-      "next": "Keep the research-only release manifest and operations guide synchronized after each substantive pipeline change.",
+      "next": "Keep v31 and the operations guide synchronized after the next substantive pipeline change; retain all external readiness gates.",
       "prohibition": "Do not call the internal research release the full live system.",
       "actual_paths": [
         "D:/Quantification/trading/research/internal_release_candidate.py",
@@ -1331,14 +1331,20 @@
         "D:/QuantificationData/trading/research/releases/20261025_v1/release_manifest.json",
         "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
         "outputs/research_reports/20261026_workbench_release_binding_v1.md",
-        "webapp/backend/app/release.py"
+        "webapp/backend/app/release.py",
+        "D:/QuantificationData/trading/research/releases/20261026_v31/release_manifest.json",
+        "outputs/pipeline_receipts/20261026_release_v31_binding_v1.json",
+        "outputs/research_reports/20261026_release_v31_binding_v1.md"
       ],
       "evidence": [
         "D:/Quantification/trading/research/tests/test_internal_release_candidate.py",
         "D:/QuantificationData/trading/research/releases/20261025_v1/release_manifest.json",
         "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
         "outputs/research_reports/20261026_workbench_release_binding_v1.md",
-        "webapp/backend/app/release.py"
+        "webapp/backend/app/release.py",
+        "D:/QuantificationData/trading/research/releases/20261026_v31/release_manifest.json",
+        "outputs/pipeline_receipts/20261026_release_v31_binding_v1.json",
+        "outputs/research_reports/20261026_release_v31_binding_v1.md"
       ],
       "acceptance": "A hash-bound research-only release manifest lists the required pipeline/code inputs and a runnable operations guide, with execution_admitted=false and live_execution_ready=false.",
       "evidence_updated_on": "2026-10-26"

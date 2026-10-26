@@ -510,3 +510,8 @@ P33 W4 实际 HTTP 工作台链已绑定内部研究发布 v30：`D:/Quantificat
 R2 B1/B5 work packages completed: F01 separates disclosure window from decision cutoff while keeping real PIT external evidence blocked; F05 persists invalid-request, idempotency-conflict, and concurrency-limit decisions with read-only receipts; U04 exposes a recursive local recovery-chain query with monotonic attempt numbers. Commits: bc5141e, 6895bb0, 07dbd98.
 
 Validation: F01 10 passed; persistent-task additions 3 passed plus 1 existing test; workbench backend 28 passed. All receipts keep execution_admitted=false; no broker/THS connection and no real-account mutation.
+
+
+## 2026-10-26 internal release v31
+
+The handbook R2 implementation wave is bound to internal research release v31: D:/QuantificationData/trading/research/releases/20261026_v31/release_manifest.json; manifest SHA-256 e1f6926dfe0ee7025c929e228af7d18a1d6374adbbcd1238b9daacb764f226bd; binding receipt outputs/pipeline_receipts/20261026_release_v31_binding_v1.json. execution_admitted=false and live_execution_ready=false remain closed.
