@@ -25,6 +25,7 @@ D0_D1_SCHEMA = "stockdb_next_close_d0_d1_contract_v1"
 D0_D1_STATUS = "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1"
 CURRENT_WINDOW_SCHEMA = "quantification_current_window_strategy_comparison_v1"
 CURRENT_WINDOW_STATUS = "COMPLETED_RESEARCH_ONLY_CURRENT_WINDOW_COMPARISON"
+JOINT_PAPER_SCHEMA = "quantification_joint_portfolio_paper_package_v1"
 
 
 def _read(path: Path) -> dict[str, Any]:
@@ -303,6 +304,52 @@ def _public_seat_summary(receipt: Mapping[str, Any], path: Path) -> dict[str, An
     }
 
 
+def _separate_joint_summary(receipt: Mapping[str, Any], path: Path, *, candidate_id: str,
+                            replay_window_status: str, decision_reason: str) -> dict[str, Any]:
+    """Bind a saved historical joint paper projection as an explicit gate.
+
+    These candidates are deliberately outside the ordinary selection matrix:
+    their saved terminal projections are useful for pipeline coverage, while
+    timing, PIT membership and prospective validation remain open.
+    """
+    if receipt.get("schema") != JOINT_PAPER_SCHEMA:
+        raise ValueError(f"{candidate_id} joint-paper schema mismatch: {path}")
+    if receipt.get("execution_admitted") is not False:
+        raise ValueError(f"{candidate_id} joint paper crossed execution boundary: {path}")
+    for key in ("broker_interacted", "ths_interacted", "persistent_ledger_mutated"):
+        if receipt.get(key) is not False:
+            raise ValueError(f"{candidate_id} joint paper crossed {key}: {path}")
+    joint = receipt.get("joint")
+    paper = (receipt.get("paper_package") or {}).get("result")
+    if not isinstance(joint, Mapping) or not isinstance(paper, Mapping):
+        raise ValueError(f"{candidate_id} joint paper payload is incomplete: {path}")
+    strategy_ids = joint.get("strategy_ids")
+    if not isinstance(strategy_ids, list) or candidate_id not in strategy_ids:
+        raise ValueError(f"{candidate_id} is absent from joint paper: {path}")
+    if paper.get("execution_admitted") is not False:
+        raise ValueError(f"{candidate_id} paper projection crossed execution boundary: {path}")
+    return {
+        "status": receipt.get("status"),
+        "decision": "CONTINUE_RESEARCH_ONLY",
+        "decision_reason": decision_reason,
+        "candidate_id": candidate_id,
+        "strategy_ids": list(strategy_ids),
+        "decision_day": joint.get("common_terminal_day"),
+        "replay_window_status": replay_window_status,
+        "target_count": len(joint.get("target_rows") or []),
+        "paper_order_count": paper.get("paper_order_count"),
+        "route_available_count": paper.get("route_available_count"),
+        "route_blocked_count": paper.get("route_blocked_count"),
+        "projected_final_equity_rmb": paper.get("projected_final_equity_rmb"),
+        "research_only": True,
+        "paper_allowed": False,
+        "promotion_allowed": False,
+        "execution_admitted": False,
+        "source": {"path": str(path.resolve()), "sha256": _sha256(path)},
+        "next_gate": "dated PIT membership, publication timing and untouched forward validation before adoption",
+    }
+
+
 def _same_day_gate_summary(receipt: Mapping[str, Any], path: Path) -> dict[str, Any]:
     """Bind candidate freshness without allowing stale targets into adoption."""
     if receipt.get("schema") != "candidate_same_day_gate_v1":
@@ -340,7 +387,9 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
                  retained_joint_path: Path | None = None,
                  d0_d1_path: Path | None = None,
                  current_window_path: Path | None = None,
-                 same_day_gate_path: Path | None = None) -> dict[str, Any]:
+                 same_day_gate_path: Path | None = None,
+                 value_size_path: Path | None = None,
+                 leader_path: Path | None = None) -> dict[str, Any]:
     candidate = _read(candidate_path)
     factor = _read(factor_path)
     shortline = _read(shortline_path)
@@ -374,6 +423,18 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
     if same_day_gate_path is not None:
         same_day_gate = _same_day_gate_summary(_read(same_day_gate_path), same_day_gate_path)
         separate_gates["latest_candidate_same_day_gate"] = same_day_gate
+    if value_size_path is not None:
+        separate_gates["value_size_activity_2023"] = _separate_joint_summary(
+            _read(value_size_path), value_size_path,
+            candidate_id="stockdb_value_size_activity_2023",
+            replay_window_status="retrospective_terminal_projection",
+            decision_reason="historical terminal projection is complete but timing, PIT and forward gates remain open")
+    if leader_path is not None:
+        separate_gates["leader_eight_type_replay_engine"] = _separate_joint_summary(
+            _read(leader_path), leader_path,
+            candidate_id="leader_turnover_eight_type",
+            replay_window_status="partial_cross_year_resource_stop",
+            decision_reason="saved paper projection is complete, while cross-year replay/resource coverage remains partial")
     next_actions = [
         "Run a PIT-complete untouched holdout before selecting a mature-factor horizon.",
         "Replace the shortline independent raw path with StockDB-equivalent history and untouched-forward validation.",
@@ -408,6 +469,10 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
                if current_window_path is not None else {}),
             **({"candidate_same_day_gate": {"path": str(same_day_gate_path.resolve()), "sha256": _sha256(same_day_gate_path)}}
                if same_day_gate_path is not None else {}),
+            **({"value_size_joint_paper": {"path": str(value_size_path.resolve()), "sha256": _sha256(value_size_path)}}
+               if value_size_path is not None else {}),
+            **({"leader_joint_paper": {"path": str(leader_path.resolve()), "sha256": _sha256(leader_path)}}
+               if leader_path is not None else {}),
         },
         "candidate_summary": candidate.get("summary"),
         "candidate_decisions": [
@@ -495,6 +560,15 @@ def render_markdown(receipt: Mapping[str, Any]) -> str:
             f"PIT membership verified `{public_seat['pit_membership_verified']}`; "
             "paper and promotion remain disabled.",
         ]
+    for key in ("value_size_activity_2023", "leader_eight_type_replay_engine"):
+        gate = receipt["separate_gates"].get(key)
+        if gate is not None:
+            lines += [
+                "",
+                f"Separate gate `{key}`: `{gate['decision']}` on `{gate['decision_day']}`, "
+                f"{gate['target_count']} targets/{gate['paper_order_count']} paper orders, "
+                f"window `{gate['replay_window_status']}`; PIT/timing/forward gates remain open.",
+            ]
     lines += ["", "All rows keep `paper_allowed=false`, `promotion_allowed=false`, and `execution_admitted=false`.", ""]
     return "\n".join(lines)
 
@@ -506,10 +580,13 @@ def write_outputs(*, candidate_path: Path = DEFAULT_CANDIDATE,
                   d0_d1_path: Path | None = None,
                   current_window_path: Path | None = None,
                   same_day_gate_path: Path | None = None,
+                  value_size_path: Path | None = None,
+                  leader_path: Path | None = None,
                   output: Path = DEFAULT_OUTPUT,
                   report: Path = DEFAULT_REPORT) -> tuple[Path, Path]:
     receipt = build_rollup(candidate_path, factor_path, shortline_path, retained_joint_path,
-                           d0_d1_path, current_window_path, same_day_gate_path)
+                           d0_d1_path, current_window_path, same_day_gate_path,
+                           value_size_path, leader_path)
     output.parent.mkdir(parents=True, exist_ok=True)
     report.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -530,6 +607,10 @@ def main(argv: list[str] | None = None) -> int:
                         help="optional completed explicit current-window comparison to bind as a separate gate")
     parser.add_argument("--candidate-same-day-gate", type=Path,
                         help="optional candidate freshness gate to bind before D0/D1 projection")
+    parser.add_argument("--value-size-joint-paper", type=Path,
+                        help="optional historical value/size joint paper receipt kept as a separate gate")
+    parser.add_argument("--leader-joint-paper", type=Path,
+                        help="optional leader-style joint paper receipt kept as a separate gate")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
     args = parser.parse_args(argv)
@@ -540,6 +621,8 @@ def main(argv: list[str] | None = None) -> int:
                                    d0_d1_path=args.d0_d1_receipt,
                                    current_window_path=args.current_window_comparison,
                                    same_day_gate_path=args.candidate_same_day_gate,
+                                   value_size_path=args.value_size_joint_paper,
+                                   leader_path=args.leader_joint_paper,
                                    output=args.output, report=args.report)
     print(json.dumps({"status": "COMPLETED_RESEARCH_ONLY_ADOPTION_ROLLUP",
                       "output": str(output), "report": str(report)}, ensure_ascii=False))

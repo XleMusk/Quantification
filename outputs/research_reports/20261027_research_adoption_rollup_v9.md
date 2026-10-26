@@ -34,4 +34,8 @@ Candidate same-day gate: `BLOCKED_STALE_CANDIDATE_INPUT` for `2026-10-26`; 1 can
 
 Public-seat gate: `CONTINUE_RESEARCH_ONLY`; 9/9 cases complete; timing verified `False`, PIT membership verified `False`; paper and promotion remain disabled.
 
+Separate gate `value_size_activity_2023`: `CONTINUE_RESEARCH_ONLY` on `2023-12-29`, 20 targets/20 paper orders, window `retrospective_terminal_projection`; PIT/timing/forward gates remain open.
+
+Separate gate `leader_eight_type_replay_engine`: `CONTINUE_RESEARCH_ONLY` on `2026-10-15`, 5 targets/5 paper orders, window `partial_cross_year_resource_stop`; PIT/timing/forward gates remain open.
+
 All rows keep `paper_allowed=false`, `promotion_allowed=false`, and `execution_admitted=false`.

@@ -88,6 +88,41 @@ def test_rollup_rejects_public_seat_gate_boundary(tmp_path):
         build_rollup(candidate, factor, shortline)
 
 
+def test_rollup_binds_value_size_and_leader_separate_gates(tmp_path):
+    candidate, factor, shortline, retained_joint = _fixtures(tmp_path)
+    value_size = _write_receipt(tmp_path / "value_size.json", {
+        "schema": "quantification_joint_portfolio_paper_package_v1",
+        "status": "COMPLETED_RESEARCH_ONLY_JOINT_PAPER_PACKAGE",
+        "execution_admitted": False, "broker_interacted": False,
+        "ths_interacted": False, "persistent_ledger_mutated": False,
+        "joint": {"strategy_ids": ["stockdb_value_size_activity_2023"],
+                  "common_terminal_day": "2023-12-29", "target_rows": [{}, {}]},
+        "paper_package": {"result": {"execution_admitted": False,
+            "paper_order_count": 2, "route_available_count": 2,
+            "route_blocked_count": 0, "projected_final_equity_rmb": 100.0}},
+    })
+    leader = _write_receipt(tmp_path / "leader.json", {
+        "schema": "quantification_joint_portfolio_paper_package_v1",
+        "status": "COMPLETED_RESEARCH_ONLY_JOINT_PAPER_PACKAGE",
+        "execution_admitted": False, "broker_interacted": False,
+        "ths_interacted": False, "persistent_ledger_mutated": False,
+        "joint": {"strategy_ids": ["leader_turnover_eight_type"],
+                  "common_terminal_day": "2026-10-15", "target_rows": [{}, {}, {}]},
+        "paper_package": {"result": {"execution_admitted": False,
+            "paper_order_count": 3, "route_available_count": 3,
+            "route_blocked_count": 0, "projected_final_equity_rmb": 99.0}},
+    })
+    result = build_rollup(candidate, factor, shortline, retained_joint,
+                          value_size_path=value_size, leader_path=leader)
+    value_gate = result["separate_gates"]["value_size_activity_2023"]
+    leader_gate = result["separate_gates"]["leader_eight_type_replay_engine"]
+    assert value_gate["decision"] == "CONTINUE_RESEARCH_ONLY"
+    assert value_gate["replay_window_status"] == "retrospective_terminal_projection"
+    assert leader_gate["decision"] == "CONTINUE_RESEARCH_ONLY"
+    assert leader_gate["replay_window_status"] == "partial_cross_year_resource_stop"
+    assert result["promotion_allowed"] is False
+
+
 def test_rollup_rejects_execution_boundary(tmp_path):
     candidate, factor, shortline, _retained_joint = _fixtures(tmp_path)
     payload = json.loads(shortline.read_text(encoding="utf-8"))

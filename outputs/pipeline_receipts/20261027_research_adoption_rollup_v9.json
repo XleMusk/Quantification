@@ -28,6 +28,14 @@
     "candidate_same_day_gate": {
       "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_candidate_same_day_gate_20261026.json",
       "sha256": "c64f6a4be185e2439d0ef01fb2d8c5445623925f5495be15a07a4dc9309ed93a"
+    },
+    "value_size_joint_paper": {
+      "path": "D:\\QuantificationData\\trading\\research\\candidate_shadow\\value_size_activity_2023_20261025_v1\\paper_batch\\joint_paper_receipt.json",
+      "sha256": "3a7f374e558d603fd7aecf47ab8ab46acbf81daddd8acdb392ca9ea55b07d596"
+    },
+    "leader_joint_paper": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_leader_eight_type_turnover_joint_paper_v1\\joint_paper_receipt.json",
+      "sha256": "36a07752ff78f4dabb6919396f09c8c123e05cd3359a6d2c613b29515541d1f1"
     }
   },
   "candidate_summary": {
@@ -302,6 +310,56 @@
       "paper_allowed": false,
       "promotion_allowed": false,
       "next_gate": "produce a fresh same-day candidate target before D0/D1 projection"
+    },
+    "value_size_activity_2023": {
+      "status": "COMPLETED_RESEARCH_ONLY_JOINT_PAPER_PACKAGE",
+      "decision": "CONTINUE_RESEARCH_ONLY",
+      "decision_reason": "historical terminal projection is complete but timing, PIT and forward gates remain open",
+      "candidate_id": "stockdb_value_size_activity_2023",
+      "strategy_ids": [
+        "stockdb_value_size_activity_2023"
+      ],
+      "decision_day": "2023-12-29",
+      "replay_window_status": "retrospective_terminal_projection",
+      "target_count": 20,
+      "paper_order_count": 20,
+      "route_available_count": 19,
+      "route_blocked_count": 1,
+      "projected_final_equity_rmb": 139898.96,
+      "research_only": true,
+      "paper_allowed": false,
+      "promotion_allowed": false,
+      "execution_admitted": false,
+      "source": {
+        "path": "D:\\QuantificationData\\trading\\research\\candidate_shadow\\value_size_activity_2023_20261025_v1\\paper_batch\\joint_paper_receipt.json",
+        "sha256": "3a7f374e558d603fd7aecf47ab8ab46acbf81daddd8acdb392ca9ea55b07d596"
+      },
+      "next_gate": "dated PIT membership, publication timing and untouched forward validation before adoption"
+    },
+    "leader_eight_type_replay_engine": {
+      "status": "COMPLETED_RESEARCH_ONLY_JOINT_PAPER_PACKAGE",
+      "decision": "CONTINUE_RESEARCH_ONLY",
+      "decision_reason": "saved paper projection is complete, while cross-year replay/resource coverage remains partial",
+      "candidate_id": "leader_turnover_eight_type",
+      "strategy_ids": [
+        "leader_turnover_eight_type"
+      ],
+      "decision_day": "2026-10-15",
+      "replay_window_status": "partial_cross_year_resource_stop",
+      "target_count": 5,
+      "paper_order_count": 5,
+      "route_available_count": 5,
+      "route_blocked_count": 0,
+      "projected_final_equity_rmb": 999754.44,
+      "research_only": true,
+      "paper_allowed": false,
+      "promotion_allowed": false,
+      "execution_admitted": false,
+      "source": {
+        "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_leader_eight_type_turnover_joint_paper_v1\\joint_paper_receipt.json",
+        "sha256": "36a07752ff78f4dabb6919396f09c8c123e05cd3359a6d2c613b29515541d1f1"
+      },
+      "next_gate": "dated PIT membership, publication timing and untouched forward validation before adoption"
     }
   },
   "next_actions": [
