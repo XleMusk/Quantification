@@ -19,8 +19,8 @@
   "stop_conditions": ["没有新增输入、缺陷或业务决定时不重复生成审计报告", "缺数据或授权只阻塞依赖路线，不阻塞代码、历史回放和策略比较", "不得以测试数量、Agent数量、删除行数或收益强行宣称完成"]
   ,"current_execution": {
     "as_of": "2026-10-27",
-    "commit": "5daf0a0",
-    "release": "D:/QuantificationData/trading/research/releases/20261027_v78/release_manifest.json",
+    "commit": "b6de434",
+    "release": "D:/QuantificationData/trading/research/releases/20261027_v81/release_manifest.json",
     "verified_local_changes": ["P23 F01 rejects cumulative profit facts until explicit conversion", "P23 F01 requires same-quarter profit endpoints", "P23 cumulative-to-single-quarter uses half-open boundary", "F2 vertical and bridge fixtures consume same-quarter year-over-year periods", "U01 strategy comparison routes delegate to a read-only application view"],
     "validation": "35 F01/F2 tests and 20 strategy-comparison tests passed; internal release candidate live_execution_ready=false",
     "next_execution_order": ["W2 run the next real close package through fixed and candidate D0/D1 paper continuity when input exists", "W3 extract one current API research application use case with a real consumer and behavior tests", "W1 acquire a genuinely pre-decision F2 retrieval/as-of/revision payload; keep BLOCKED_DATA until then"],
