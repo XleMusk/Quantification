@@ -11,6 +11,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 import pandas as pd
 
 from . import data, research_jobs, store
+from . import job_lifecycle_view
 from .release import latest_release
 from .settings import MAX_UPLOAD, STORAGE, UI_ORIGIN
 from trading import store as trading_store
@@ -166,40 +167,13 @@ def job_lifecycle(identifier: str):
     """Expose the research workbench delivery stages without mutating a job."""
     item = require_job(identifier)
     result_dir = STORAGE / "results" / identifier
-    allowed = ("summary.csv", "daily_ic.csv", "groups.csv", "factors.parquet", "REPORT.md", "result.json")
-    available_files = [name for name in allowed if (result_dir / name).is_file()]
-    status = item["status"]
-    result_ready = status == "completed" and "result.json" in available_files
-    if status in ("queued", "running"):
-        compute_status = "active"
-    elif status == "completed":
-        compute_status = "completed"
-    else:
-        compute_status = status
-    recovery_ready = status in ("failed", "interrupted", "cancelled")
-    recovery_evidence = build_recovery_evidence(item)
-    return {
-        "schema": "quantification_workbench_job_lifecycle_v1",
-        "job_id": identifier,
-        "execution_mode": "research_only",
-        "execution_admitted": False,
-        "live_trading": False,
-        "stages": [
-            {"job_id": identifier, "id": "submitted", "status": "completed", "detail": "任务已登记并绑定数据集与参数"},
-            {"job_id": identifier, "id": "compute", "status": compute_status, "detail": f"{status} · {item['progress']}%"},
-            {"job_id": identifier, "id": "result", "status": "available" if result_ready else "waiting", "detail": "结果 JSON 已保存" if result_ready else "任务完成前不可读取"},
-            {"job_id": identifier, "id": "download", "status": "available" if available_files else "waiting", "detail": f"可下载 {len(available_files)} 个文件" if available_files else "暂无结果文件"},
-        ],
-        "available_files": available_files,
-        "recovery": {
-            "status": "ready_for_resubmit" if recovery_ready else "not_required",
-            "automatic": False,
-            "next_action": "确认失败原因后重新提交一个新任务" if recovery_ready else "保持当前任务状态并继续刷新",
-        },
-        "recovery_evidence": recovery_evidence,
-        "release": latest_release(),
-        "source": {"dataset_id": item["dataset_id"], "updated_at": item["updated_at"]},
-    }
+    return job_lifecycle_view.build_view(
+        identifier=identifier,
+        item=item,
+        available_files=job_lifecycle_view.available_result_files(result_dir),
+        recovery_evidence=build_recovery_evidence(item),
+        release=latest_release(),
+    )
 
 
 @app.get("/api/jobs/{identifier}/recovery")

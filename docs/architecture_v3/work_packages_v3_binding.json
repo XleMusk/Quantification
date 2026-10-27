@@ -1844,7 +1844,7 @@
     {
       "id": "U02",
       "domain": "workbench",
-      "result": "Browser task chain reaches a real result and survives reconnect.",
+      "result": "Browser task chain reaches a real result and survives reconnect; the lifecycle stage and recovery projection now have a pure read-only application view.",
       "state": "PARTIAL",
       "next": "Keep browser submit, refresh and result links bound to one job id; reuse the local HTTP probe and add browser observation only when it provides new evidence.",
       "prohibition": "A screenshot cannot prove backend persistence or broker acceptance.",
@@ -1869,7 +1869,11 @@
         "tools/workbench_http_probe.py",
         "tools/tests/test_workbench_http_probe.py",
         "outputs/pipeline_receipts/20261027_workbench_u02_http_observation_v1.json",
-        "outputs/research_reports/20261027_workbench_u02_http_observation_v1.md"
+        "outputs/research_reports/20261027_workbench_u02_http_observation_v1.md",
+        "webapp/backend/app/job_lifecycle_view.py",
+        "webapp/backend/tests/test_job_lifecycle_view.py",
+        "outputs/pipeline_receipts/20261027_job_lifecycle_view_usecase_v1.json",
+        "outputs/research_reports/20261027_job_lifecycle_view_usecase_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -1887,7 +1891,11 @@
         "tools/workbench_http_probe.py",
         "tools/tests/test_workbench_http_probe.py",
         "outputs/pipeline_receipts/20261027_workbench_u02_http_observation_v1.json",
-        "outputs/research_reports/20261027_workbench_u02_http_observation_v1.md"
+        "outputs/research_reports/20261027_workbench_u02_http_observation_v1.md",
+        "webapp/backend/app/job_lifecycle_view.py",
+        "webapp/backend/tests/test_job_lifecycle_view.py",
+        "outputs/pipeline_receipts/20261027_job_lifecycle_view_usecase_v1.json",
+        "outputs/research_reports/20261027_job_lifecycle_view_usecase_v1.md"
       ]
     },
     {
