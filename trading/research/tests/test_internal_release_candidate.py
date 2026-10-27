@@ -45,5 +45,5 @@ def test_internal_release_default_paper_evidence_includes_current_joint_d0_d1() 
 def test_internal_release_binds_current_runtime_recipe() -> None:
     from trading.research.internal_release_candidate import RUNTIME_RECIPE_FILES
 
-    assert "outputs/pipeline_receipts/20261027_runtime_recipe_v3.json" in RUNTIME_RECIPE_FILES
-    assert "outputs/research_reports/20261027_runtime_recipe_v3.md" in RUNTIME_RECIPE_FILES
+    assert "outputs/pipeline_receipts/20261027_runtime_recipe_v4.json" in RUNTIME_RECIPE_FILES
+    assert "outputs/research_reports/20261027_runtime_recipe_v4.md" in RUNTIME_RECIPE_FILES

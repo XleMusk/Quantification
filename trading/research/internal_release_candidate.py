@@ -104,8 +104,8 @@ EVIDENCE_FILES = (
     "outputs/pipeline_receipts/20261027_candidate_stage_trace_v1.json",
     "outputs/research_reports/20261027_candidate_stage_trace_v1.md",
     "trading/research/tests/test_runtime_recipe.py",
-    "outputs/pipeline_receipts/20261027_runtime_recipe_v3.json",
-    "outputs/research_reports/20261027_runtime_recipe_v3.md",
+    "outputs/pipeline_receipts/20261027_runtime_recipe_v4.json",
+    "outputs/research_reports/20261027_runtime_recipe_v4.md",
     "webapp/backend/tests/test_job_lifecycle_view.py",
     "outputs/pipeline_receipts/20261027_job_lifecycle_view_usecase_v1.json",
     "outputs/research_reports/20261027_job_lifecycle_view_usecase_v1.md",
@@ -133,8 +133,8 @@ PAPER_EVIDENCE_FILES = (
 )
 
 RUNTIME_RECIPE_FILES = (
-    "outputs/pipeline_receipts/20261027_runtime_recipe_v3.json",
-    "outputs/research_reports/20261027_runtime_recipe_v3.md",
+    "outputs/pipeline_receipts/20261027_runtime_recipe_v4.json",
+    "outputs/research_reports/20261027_runtime_recipe_v4.md",
 )
 
 
