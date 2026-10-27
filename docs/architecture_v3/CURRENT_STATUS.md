@@ -914,3 +914,7 @@ Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027
 ## System daily failure-to-success recovery (2026-10-27)
 
 补充了 O05 的失败到成功恢复证据：失败子进程保持失败且不自动重试，成功终态只记录一次，恢复只接收已保存终态而不重新启动生产者，重复恢复保持幂等。`test_system_daily_command_recovery.py` 为 `10 passed`，回执为 `outputs/pipeline_receipts/20261027_system_daily_failure_success_recovery_v1.json`。这是本地研究/纸面恢复证据，真实券商和同花顺恢复仍不在执行闸门内。
+
+## Accepted paper-task timing binding (2026-10-27)
+
+F05/F06 已把当前保存的 post-close D0/D1 任务重新绑定到 `paper-task-timing-binding` CLI。新回执 `outputs/pipeline_receipts/20261027_paper_task_timing_binding_v2.json` 记录本地单调时钟 `wall_seconds=0.079602`，外部 provider 成本保持 `null`，并保持 `execution_admitted=false`；相关测试 `60 passed`。F05/F06 工作包现为 `VERIFIED_LOCAL`，外部 provider 费用仍需独立授权凭据才能填写。

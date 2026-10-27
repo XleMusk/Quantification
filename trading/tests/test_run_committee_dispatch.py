@@ -37,6 +37,19 @@ def test_close_delivery_route_and_help_are_available():
     assert "--release-version" in result.stdout
 
 
+def test_paper_task_timing_binding_route_and_help_are_available():
+    source = (ROOT / "run_committee.py").read_text(encoding="utf-8")
+    assert source.count('if argv[:1] == ["paper-task-timing-binding"]:') == 1
+    result = subprocess.run(
+        [sys.executable, "-Xutf8", str(ROOT / "run_committee.py"),
+         "paper-task-timing-binding", "--help"],
+        cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
+    )
+    assert result.returncode == 0
+    assert "--timing-contract" in result.stdout
+    assert "--paper-task" in result.stdout
+
+
 def test_stockdb_baostock_extension_help_remains_compatible():
     result = subprocess.run(
         [sys.executable, "-Xutf8", str(ROOT / "run_committee.py"),

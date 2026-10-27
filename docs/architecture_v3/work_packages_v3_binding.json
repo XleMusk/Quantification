@@ -310,8 +310,8 @@
       "id": "F05",
       "domain": "development",
       "result": "Persistent tasks and global concurrency/expense decisions are recoverable.",
-      "state": "PARTIAL",
-      "next": "Keep the accepted-paper timing binding joined to persisted task receipts; do not expand budgets or infer provider expense from wall time.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Reuse the timing binding on each changed accepted paper task; keep provider expense unknown until an independent authorized receipt exists.",
       "prohibition": "Do not fill task slots or expand budgets to make progress look larger.",
       "evidence_updated_on": "2026-10-27",
       "actual_paths": [
@@ -334,8 +334,11 @@
         "outputs/research_reports/20261027_post_close_timing_contract_v1.md",
         "trading/research/paper_timing_binding.py",
         "trading/research/tests/test_paper_timing_binding.py",
+        "run_committee.py paper-task-timing-binding",
         "outputs/pipeline_receipts/20261027_paper_task_timing_binding_v1.json",
-        "outputs/research_reports/20261027_paper_task_timing_binding_v1.md"
+        "outputs/research_reports/20261027_paper_task_timing_binding_v1.md",
+        "outputs/pipeline_receipts/20261027_paper_task_timing_binding_v2.json",
+        "outputs/research_reports/20261027_paper_task_timing_binding_v2.md"
       ],
       "evidence": [
         "trading/store.py",
@@ -355,16 +358,19 @@
         "outputs/research_reports/20261027_post_close_timing_contract_v1.md",
         "trading/research/paper_timing_binding.py",
         "trading/research/tests/test_paper_timing_binding.py",
+        "run_committee.py paper-task-timing-binding",
         "outputs/pipeline_receipts/20261027_paper_task_timing_binding_v1.json",
-        "outputs/research_reports/20261027_paper_task_timing_binding_v1.md"
+        "outputs/research_reports/20261027_paper_task_timing_binding_v1.md",
+        "outputs/pipeline_receipts/20261027_paper_task_timing_binding_v2.json",
+        "outputs/research_reports/20261027_paper_task_timing_binding_v2.md"
       ]
     },
     {
       "id": "F06",
       "domain": "development",
       "result": "Agent throughput and expense are measured per accepted business capability.",
-      "state": "PARTIAL",
-      "next": "Bind the next accepted paper task to the same receipt contract; provider cost remains null until an independent authorized receipt exists.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Bind the next changed accepted paper task to the same receipt contract; provider cost remains null until an independent authorized receipt exists.",
       "prohibition": "Do not use token count or task count as delivery.",
       "evidence_updated_on": "2026-10-27",
       "actual_paths": [
@@ -379,8 +385,11 @@
         "outputs/research_reports/20261027_post_close_timing_contract_v1.md",
         "trading/research/paper_timing_binding.py",
         "trading/research/tests/test_paper_timing_binding.py",
+        "run_committee.py paper-task-timing-binding",
         "outputs/pipeline_receipts/20261027_paper_task_timing_binding_v1.json",
-        "outputs/research_reports/20261027_paper_task_timing_binding_v1.md"
+        "outputs/research_reports/20261027_paper_task_timing_binding_v1.md",
+        "outputs/pipeline_receipts/20261027_paper_task_timing_binding_v2.json",
+        "outputs/research_reports/20261027_paper_task_timing_binding_v2.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json",
@@ -392,8 +401,11 @@
         "outputs/research_reports/20261027_post_close_timing_contract_v1.md",
         "trading/research/paper_timing_binding.py",
         "trading/research/tests/test_paper_timing_binding.py",
+        "run_committee.py paper-task-timing-binding",
         "outputs/pipeline_receipts/20261027_paper_task_timing_binding_v1.json",
-        "outputs/research_reports/20261027_paper_task_timing_binding_v1.md"
+        "outputs/research_reports/20261027_paper_task_timing_binding_v1.md",
+        "outputs/pipeline_receipts/20261027_paper_task_timing_binding_v2.json",
+        "outputs/research_reports/20261027_paper_task_timing_binding_v2.md"
       ],
       "acceptance": "A bounded accepted D0/D1 slice records local monotonic wall time, retains external provider expense as unknown, and leaves execution_admitted=false."
     },

@@ -566,6 +566,9 @@ def main(argv=None):
     if argv[:1] == ["close-delivery"]:
         from trading.research.close_delivery import main as close_delivery_main
         return close_delivery_main(argv[1:])
+    if argv[:1] == ["paper-task-timing-binding"]:
+        from trading.research.paper_timing_binding import main as paper_task_timing_binding_main
+        return paper_task_timing_binding_main(argv[1:])
     if argv[:1] == ["internal-release-candidate"]:
         from trading.research.internal_release_candidate import main as internal_release_candidate_main
         return internal_release_candidate_main(argv[1:])
