@@ -63,6 +63,14 @@ def test_internal_release_binds_direct_candidate_manifest_binding() -> None:
     assert "outputs/research_reports/20261027_post_close_direct_manifest_binding_v1.md" in EVIDENCE_FILES
 
 
+def test_internal_release_binds_close_delivery_entrypoint() -> None:
+    from trading.research.internal_release_candidate import EVIDENCE_FILES, REQUIRED_FILES
+
+    assert "trading/research/close_delivery.py" in REQUIRED_FILES
+    assert "trading/research/tests/test_close_delivery.py" in EVIDENCE_FILES
+    assert "outputs/pipeline_receipts/20261027_close_delivery_v2/close_delivery_receipt.json" in EVIDENCE_FILES
+
+
 def test_internal_release_binds_account_risk_application_view() -> None:
     from trading.research.internal_release_candidate import EVIDENCE_FILES, REQUIRED_FILES
 

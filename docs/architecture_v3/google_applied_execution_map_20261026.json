@@ -139,6 +139,7 @@
       "U01 current research evidence routes delegate to read-only application views",
       "O04 post-close coordinator emits the canonical seven-stage pipeline trace",
       "O01/O04 direct candidate manifests now bind path/hash/count and mark Signal as bound in the post-close receipt",
+      "O06 close-delivery entrypoint rebuilds inner D0/D1 lineage, adoption rollup, candidate library and internal release from one fingerprinted saved-evidence run",
       "E04 operator release-controls route delegates to a read-only paper-control view",
       "F01 official CNINFO source snapshot is hash-bound while historical as-of remains blocked",
       "E02 THS prefill readback route delegates to a read-only comparison view",

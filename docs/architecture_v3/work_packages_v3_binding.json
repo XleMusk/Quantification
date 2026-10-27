@@ -1785,13 +1785,16 @@
       "domain": "operations",
       "result": "Internal stable release has versioned inputs and an operations guide.",
       "state": "VERIFIED_LOCAL",
-      "next": "Keep v31 and the operations guide synchronized after the next substantive pipeline change; retain all external readiness gates.",
+      "next": "Keep the close-delivery entrypoint and release manifest synchronized after each complete close; retain all external readiness gates.",
       "prohibition": "Do not call the internal research release the full live system.",
       "actual_paths": [
         "D:/Quantification/trading/research/internal_release_candidate.py",
+        "D:/Quantification/trading/research/close_delivery.py",
         "D:/Quantification/trading/research/tests/test_internal_release_candidate.py",
+        "D:/Quantification/trading/research/tests/test_close_delivery.py",
         "D:/Quantification/docs/architecture_v3/OPERATIONS_RUNBOOK.md",
         "D:/Quantification/run_committee.py internal-release-candidate",
+        "D:/Quantification/run_committee.py close-delivery",
         "D:/QuantificationData/trading/research/releases/20261025_v1/release_manifest.json",
         "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
         "outputs/research_reports/20261026_workbench_release_binding_v1.md",
@@ -1810,10 +1813,14 @@
         "outputs/research_reports/20261026_release_v34_binding_v1.md",
         "D:/QuantificationData/trading/research/releases/20261026_v35/release_manifest.json",
         "outputs/pipeline_receipts/20261026_release_v35_binding_v1.json",
-        "outputs/research_reports/20261026_release_v35_binding_v1.md"
+        "outputs/research_reports/20261026_release_v35_binding_v1.md",
+        "outputs/pipeline_receipts/20261027_close_delivery_v2/close_delivery_receipt.json",
+        "outputs/research_reports/20261027_close_delivery_v2.md",
+        "D:/QuantificationData/trading/research/releases/20261027_v133/release_manifest.json"
       ],
       "evidence": [
         "D:/Quantification/trading/research/tests/test_internal_release_candidate.py",
+        "D:/Quantification/trading/research/tests/test_close_delivery.py",
         "D:/QuantificationData/trading/research/releases/20261025_v1/release_manifest.json",
         "outputs/pipeline_receipts/20261026_workbench_release_binding_v1.json",
         "outputs/research_reports/20261026_workbench_release_binding_v1.md",
@@ -1832,10 +1839,13 @@
         "outputs/research_reports/20261026_release_v34_binding_v1.md",
         "D:/QuantificationData/trading/research/releases/20261026_v35/release_manifest.json",
         "outputs/pipeline_receipts/20261026_release_v35_binding_v1.json",
-        "outputs/research_reports/20261026_release_v35_binding_v1.md"
+        "outputs/research_reports/20261026_release_v35_binding_v1.md",
+        "outputs/pipeline_receipts/20261027_close_delivery_v2/close_delivery_receipt.json",
+        "outputs/research_reports/20261027_close_delivery_v2.md",
+        "D:/QuantificationData/trading/research/releases/20261027_v133/release_manifest.json"
       ],
       "acceptance": "A hash-bound research-only release manifest lists the required pipeline/code inputs and a runnable operations guide, with execution_admitted=false and live_execution_ready=false.",
-      "evidence_updated_on": "2026-10-26"
+      "evidence_updated_on": "2026-10-27"
     },
     {
       "id": "U01",

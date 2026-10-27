@@ -24,6 +24,19 @@ def test_all_launcher_route_guards_are_unique():
     assert len(routes) == len(set(routes))
 
 
+def test_close_delivery_route_and_help_are_available():
+    source = (ROOT / "run_committee.py").read_text(encoding="utf-8")
+    assert source.count('if argv[:1] == ["close-delivery"]:') == 1
+    result = subprocess.run(
+        [sys.executable, "-Xutf8", str(ROOT / "run_committee.py"),
+         "close-delivery", "--help"],
+        cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
+    )
+    assert result.returncode == 0
+    assert "--post-close" in result.stdout
+    assert "--release-version" in result.stdout
+
+
 def test_stockdb_baostock_extension_help_remains_compatible():
     result = subprocess.run(
         [sys.executable, "-Xutf8", str(ROOT / "run_committee.py"),

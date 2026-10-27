@@ -890,3 +890,7 @@ Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027
 ## Google applied design B: direct candidate manifest binding (2026-10-27)
 
 修正 `post_close_d0_d1.py` 的直连候选路径：此前直连 manifest 已被送入 D0/D1，但编排回执没有留下统一的候选来源绑定，`pipeline_stage_trace` 也可能把 Signal 写成等待输入。现在直连和 replay 生成的 manifest 都写入绝对路径、SHA-256、候选数量和来源类型，Signal 阶段统一显示为 `BOUND_CANDIDATE_INPUTS`。聚焦测试 `test_post_close_d0_d1.py` 为 `9 passed`，证据回执为 `outputs/pipeline_receipts/20261027_post_close_direct_manifest_binding_v1.json`。该修复只增强研究/纸面链路追踪，`execution_admitted=false`、`NO_TRADE` 和持久账本边界未改变。
+
+## Google workflow close delivery entrypoint (2026-10-27)
+
+新增 `run_committee.py close-delivery`，把已完成的外层 post-close 回执解析到内层 D0/D1 contract，再按固定顺序重建 `paper_pipeline_lineage`、`research_adoption_rollup`、`candidate_library` 和内部 release。入口对所有输入建立 SHA-256 指纹，重复同一输入直接复用回执，输入变化使用新输出目录；中途失败保留失败回执，不自动重试。用已保存的 2026-10-26 纸面产物完成端到端重建，四个阶段全部成功；回执为 `outputs/pipeline_receipts/20261027_close_delivery_v2/close_delivery_receipt.json`，发布包为 `D:/QuantificationData/trading/research/releases/20261027_v133/release_manifest.json`。这是本地研究/纸面证据，未访问券商或同花顺，`execution_admitted=false`、`live_execution_ready=false`。
