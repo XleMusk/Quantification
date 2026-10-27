@@ -152,6 +152,7 @@
       "E04 operator release-controls route delegates to a read-only paper-control view",
       "F01 official CNINFO source snapshot is hash-bound while historical as-of remains blocked",
       "D01/D02 Wayback-backed CNINFO snapshot proves one pre-decision PIT source and two typed F2 facts for 000002.SZSE",
+      "D01/D02 second Wayback-backed CNINFO snapshot adds 000002.SZSE 2024Q1 PIT facts without prior-quarter inference",
       "E02 THS prefill readback route delegates to a read-only comparison view",
       "C/U02 selected-plan route delegates to an independent read-only application view",
       "C/U02 lifecycle route delegates to an independent read-only application view",

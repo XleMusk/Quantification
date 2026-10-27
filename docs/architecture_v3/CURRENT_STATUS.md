@@ -938,3 +938,7 @@ F02 已更新到当前主分支 runtime recipe v5：解释器为 `D:\Quantificat
 ### F2 真实历史 PIT 事实切片（2026-10-27）
 
 通过 Internet Archive 找到并保存了官方 CNINFO `000002.SZSE` 2023Q1 PDF 的 2025-09-05 23:50:23 UTC 快照，快照时间早于决策日 `2025-10-01`。源文件 606,447 字节，SHA-256 为 `0be2f3d7585e85a33e4acaa62a99caa8667ef65ba2678ee23e393c4ff638fd72`，revision identity 为 `cninfo-finalpage-1216686497`。`f2-source-snapshot` 返回 `HISTORICAL_EVIDENCE_READY`；`f2-fact-bridge` 返回 `FACTS_READY_NO_FACTOR`，产出 parent net profit 与 consolidated total assets 两个 typed facts。没有推断 prior quarter，没有进入 Signal/Target/Order/Account。D01、D02 已更新为 `VERIFIED_LOCAL`，剩余覆盖扩展和 F01 因子计算仍保持独立门。
+
+### F2 第二条历史 PIT 事实切片（2026-10-27）
+
+扩展到 `000002.SZSE` 2024Q1：Internet Archive 快照 `20240814211147` 早于决策日 `2025-10-01`，文件 SHA-256 为 `9b6448abe7897ee462f905fb1273630d1c157fa4f5cd2d73c8ac8ef3cd551341`，revision `cninfo-finalpage-1219913619`。source snapshot 和 fact bridge 均通过，新增 2 个 typed facts；仍未推断 prior quarter 或计算 F01 因子。

@@ -463,6 +463,10 @@
         "outputs/pipeline_receipts/20261027_f2_wayback_historical_source_gate_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_pit_sidecar_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_pit_fact_bridge_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_2024q1_historical_source_gate_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_2024q1_pit_sidecar_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_2024q1_pit_fact_bridge_v1.json",
+        "outputs/research_reports/20261027_f2_wayback_2024q1_pit_v1.md",
         "outputs/research_reports/20261027_f2_wayback_historical_pit_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
@@ -489,6 +493,10 @@
         "outputs/pipeline_receipts/20261027_f2_wayback_historical_source_gate_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_pit_sidecar_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_pit_fact_bridge_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_2024q1_historical_source_gate_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_2024q1_pit_sidecar_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_2024q1_pit_fact_bridge_v1.json",
+        "outputs/research_reports/20261027_f2_wayback_2024q1_pit_v1.md",
         "outputs/research_reports/20261027_f2_wayback_historical_pit_v1.md"
       ]
     },
@@ -558,6 +566,10 @@
         "outputs/pipeline_receipts/20261027_f2_wayback_historical_source_gate_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_pit_sidecar_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_pit_fact_bridge_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_2024q1_historical_source_gate_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_2024q1_pit_sidecar_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_2024q1_pit_fact_bridge_v1.json",
+        "outputs/research_reports/20261027_f2_wayback_2024q1_pit_v1.md",
         "outputs/research_reports/20261027_f2_wayback_historical_pit_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
@@ -599,6 +611,10 @@
         "outputs/pipeline_receipts/20261027_f2_wayback_historical_source_gate_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_pit_sidecar_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_pit_fact_bridge_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_2024q1_historical_source_gate_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_2024q1_pit_sidecar_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_2024q1_pit_fact_bridge_v1.json",
+        "outputs/research_reports/20261027_f2_wayback_2024q1_pit_v1.md",
         "outputs/research_reports/20261027_f2_wayback_historical_pit_v1.md"
       ]
     },
