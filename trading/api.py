@@ -35,6 +35,7 @@ from .research import operator_manual_statements_view
 from .research import operator_basket_schedule_view
 from .research import operator_paper_selection_view
 from .research import ths_native_observation_view
+from .research import opening_window_status_view
 from .research import operator_portfolio_views
 
 router = APIRouter(prefix="/api/trading")
@@ -972,58 +973,7 @@ def broker_capabilities():
 @router.get("/opening-window-status")
 def opening_window_status():
     """Expose the idempotent opening coordinator state without client or ledger I/O."""
-    root = settings.DATA_ROOT / "research" / "opening_session_runs"
-    trading_date = date.today().isoformat()
-    path = root / trading_date / "opening_window_coordinator.json"
-    if not path.is_file():
-        return {
-            "schema": "opening_window_status_view_v1",
-            "status": "not_started",
-            "trading_date": trading_date,
-            "source_file": str(path),
-            "execution_admitted": False,
-            "client_interacted": False,
-            "network_probe_attempted": False,
-            "ledger_mutated": False,
-            "submission_attempted": False,
-            "next_action": "等待开盘协调器首次运行",
-        }
-    try:
-        payload = json.loads(path.read_text(encoding="utf-8-sig"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
-        return {
-            "schema": "opening_window_status_view_v1",
-            "status": "invalid_receipt",
-            "trading_date": trading_date,
-            "source_file": str(path),
-            "error": str(error),
-            "execution_admitted": False,
-            "client_interacted": False,
-            "network_probe_attempted": False,
-            "ledger_mutated": False,
-            "submission_attempted": False,
-        }
-    if payload.get("schema") != "opening_window_coordinator_v1":
-        return {
-            "schema": "opening_window_status_view_v1",
-            "status": "unsupported_receipt",
-            "trading_date": trading_date,
-            "source_file": str(path),
-            "receipt_schema": payload.get("schema"),
-            "execution_admitted": False,
-            "client_interacted": False,
-            "network_probe_attempted": False,
-            "ledger_mutated": False,
-            "submission_attempted": False,
-        }
-    return {
-        "schema": "opening_window_status_view_v1",
-        **payload,
-        "source_file": str(path),
-        "execution_admitted": False,
-        "ledger_mutated": False,
-        "submission_attempted": False,
-    }
+    return opening_window_status_view.build_view(settings.DATA_ROOT)
 
 
 @router.get("/ths-native-summary")
