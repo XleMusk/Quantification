@@ -311,6 +311,9 @@ def main(argv=None):
     if argv[:1] == ["candidate-library-binding"]:
         from trading.research.candidate_library_binding import main as candidate_library_binding_main
         return candidate_library_binding_main(argv[1:])
+    if argv[:1] == ["paper-pipeline-lineage"]:
+        from trading.research.paper_pipeline_lineage import main as paper_pipeline_lineage_main
+        return paper_pipeline_lineage_main(argv[1:])
     if argv[:1] == ["paper-account-provenance"]:
         from trading.research.paper_account_provenance import main as paper_account_provenance_main
         return paper_account_provenance_main(argv[1:])
