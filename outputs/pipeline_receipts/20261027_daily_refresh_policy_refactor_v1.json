@@ -1,0 +1,37 @@
+{
+  "schema": "daily_refresh_command_policy_refactor_receipt_v1",
+  "created_at": "2026-10-27T09:10:00+08:00",
+  "status": "VERIFIED_LOCAL",
+  "user_journey": "J2_end_of_day_paper_run",
+  "implementation": [
+    "trading/research/daily_refresh_policy.py",
+    "trading/research/system_daily_refresh.py",
+    "trading/research/tests/test_daily_refresh_policy.py"
+  ],
+  "behavior_preserved": {
+    "existing_command_argv": true,
+    "execution_admitted": false,
+    "candidate_panel_only": true,
+    "forbidden_live_submit_train_flags": true,
+    "seat_collect_three_page_same_day_bound": true,
+    "native_paper_closing_only": true
+  },
+  "tests": {
+    "command": "D:\\Quantification\\env\\python.exe -m pytest -q trading/research/tests/test_daily_refresh_policy.py trading/research/tests/test_system_daily_refresh.py trading/research/tests/test_system_daily_disclosures.py trading/research/tests/test_system_router_daily_adapter.py",
+    "result": "16 passed",
+    "py_compile": true
+  },
+  "out_of_scope_failure": {
+    "status": "KNOWN_EXISTING_FIXTURE_FAILURE",
+    "test": "trading/research/tests/test_system_daily_registered_routes.py::test_public_seat_shared_binding_keeps_saved_consumer_partial_without_creating_account",
+    "reason": "fixture plan omits the catalog field required by the unchanged _public_seat_refresh validation",
+    "changed_by_this_refactor": false
+  },
+  "boundary": {
+    "broker_interacted": false,
+    "ths_interacted": false,
+    "persistent_ledger_mutated": false,
+    "execution_admitted": false
+  },
+  "next": "Use the same staged post-close route on the next complete close; keep real F2 PIT and full-market StockDB work independent of this structural refactor."
+}

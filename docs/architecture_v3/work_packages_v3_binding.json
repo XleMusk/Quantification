@@ -170,7 +170,7 @@
       "domain": "development",
       "result": "Shared object, error and state meanings have one consumer-facing definition.",
       "state": "PARTIAL",
-      "next": "Keep shared read-only projections below the webapp boundary; migrate another consumer only when a real application journey needs it, without creating a second release registry.",
+      "next": "Keep the route-policy boundary while migrating another real application journey; do not add generic interfaces without a replacement consumer. Use the next complete close to verify the staged post-close path.",
       "prohibition": "Do not silently reinterpret an existing field or empty target.",
       "actual_paths": [
         "trading/corporate_action_binding.py",
@@ -185,7 +185,11 @@
         "webapp/backend/app/release.py",
         "trading/tests/test_architecture.py",
         "trading/research/tests/test_workbench_recovery_evidence.py",
-        "webapp/backend/tests/test_webapp.py"
+        "webapp/backend/tests/test_webapp.py",
+        "trading/research/daily_refresh_policy.py",
+        "trading/research/tests/test_daily_refresh_policy.py",
+        "outputs/pipeline_receipts/20261027_daily_refresh_policy_refactor_v1.json",
+        "outputs/research_reports/20261027_daily_refresh_policy_refactor_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -198,7 +202,11 @@
         "trading/research/workbench_recovery_evidence.py",
         "webapp/backend/app/release.py",
         "trading/research/tests/test_workbench_recovery_evidence.py",
-        "webapp/backend/tests/test_webapp.py"
+        "webapp/backend/tests/test_webapp.py",
+        "trading/research/daily_refresh_policy.py",
+        "trading/research/tests/test_daily_refresh_policy.py",
+        "outputs/pipeline_receipts/20261027_daily_refresh_policy_refactor_v1.json",
+        "outputs/research_reports/20261027_daily_refresh_policy_refactor_v1.md"
       ]
     },
     {
@@ -2638,14 +2646,14 @@
         "trading/tests/test_stockdb_source_coverage.py",
         "outputs/stockdb_source_coverage/20261026_201700_39ada9fb/run.json",
         "outputs/stockdb_source_coverage/20261026_201700_39ada9fb/REPORT.md",
-        "outputs/pipeline_receipts/20261026_stockdb_close_coverage_v1.json"
-        ,"trading/research/stockdb_close_package_builder.py"
-        ,"trading/research/tests/test_stockdb_close_package_builder.py"
-        ,"outputs/pipeline_receipts/20261026_fixed_only_source_manifest_v1.json"
-        ,"outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/post_close_receipt.json"
-        ,"outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/next_close/contract_receipt.json"
-        ,"D:/QuantificationData/trading/research/stockdb_close_packages/20261026_fixed_target_v1/receipt.json"
-        ,"D:/QuantificationData/trading/research/lowvol_supplements/20261027_append1026_stockdb_v1/result.json"
+        "outputs/pipeline_receipts/20261026_stockdb_close_coverage_v1.json",
+        "trading/research/stockdb_close_package_builder.py",
+        "trading/research/tests/test_stockdb_close_package_builder.py",
+        "outputs/pipeline_receipts/20261026_fixed_only_source_manifest_v1.json",
+        "outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/post_close_receipt.json",
+        "outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/next_close/contract_receipt.json",
+        "D:/QuantificationData/trading/research/stockdb_close_packages/20261026_fixed_target_v1/receipt.json",
+        "D:/QuantificationData/trading/research/lowvol_supplements/20261027_append1026_stockdb_v1/result.json"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -2653,14 +2661,14 @@
         "trading/tests/test_stockdb_source_coverage.py",
         "outputs/stockdb_source_coverage/20261026_201700_39ada9fb/run.json",
         "outputs/stockdb_source_coverage/20261026_201700_39ada9fb/REPORT.md",
-        "outputs/pipeline_receipts/20261026_stockdb_close_coverage_v1.json"
-        ,"trading/research/stockdb_close_package_builder.py"
-        ,"trading/research/tests/test_stockdb_close_package_builder.py"
-        ,"outputs/pipeline_receipts/20261026_fixed_only_source_manifest_v1.json"
-        ,"outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/post_close_receipt.json"
-        ,"outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/next_close/contract_receipt.json"
-        ,"D:/QuantificationData/trading/research/stockdb_close_packages/20261026_fixed_target_v1/receipt.json"
-        ,"D:/QuantificationData/trading/research/lowvol_supplements/20261027_append1026_stockdb_v1/result.json"
+        "outputs/pipeline_receipts/20261026_stockdb_close_coverage_v1.json",
+        "trading/research/stockdb_close_package_builder.py",
+        "trading/research/tests/test_stockdb_close_package_builder.py",
+        "outputs/pipeline_receipts/20261026_fixed_only_source_manifest_v1.json",
+        "outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/post_close_receipt.json",
+        "outputs/pipeline_receipts/20261027_post_close_fixed_only_20261026_v1/next_close/contract_receipt.json",
+        "D:/QuantificationData/trading/research/stockdb_close_packages/20261026_fixed_target_v1/receipt.json",
+        "D:/QuantificationData/trading/research/lowvol_supplements/20261027_append1026_stockdb_v1/result.json"
       ],
       "acceptance": "The full-universe diagnostic still records 25 missing rows and remains blocked without imputation. An explicit 20-symbol roster from the same 2026-10-26 capture produces a loader-compatible complete close package, appends exactly 20 rows while preserving the prior supplement prefix, advances the registered derived fixed_daily account by one session, and completes fixed-only D0/D1 with 20/20 coverage and 20 paper orders; focused builder/launcher tests pass 25 and execution_admitted=false remains closed."
     },
@@ -2770,5 +2778,5 @@
       "acceptance": "A real local HTTP submission returns one stable job id on same-key repeat; worker reaches completed, lifecycle exposes result/download stages, result JSON is readable, three files download with nonzero bytes, and execution_admitted=false. A local interrupted-job recovery receipt additionally binds the observation file hash/path to a read-only release version and commit, keeps MANUAL_RESUBMIT_REQUIRED without automatic retry, and records live_execution_ready=false; workbench/recovery tests pass without external channel interaction."
     }
   ],
-  "updated_at": "2026-10-27"
+  "updated_at": "2026-10-27T09:10:00+08:00"
 }

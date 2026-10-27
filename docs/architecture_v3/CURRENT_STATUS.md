@@ -742,3 +742,9 @@ U02 新增隔离本地 HTTP 观测探针，实际完成 CSV 上传、同幂等�
 ## Post-close timing contract (2026-10-27)
 
 post-close 终态回执现在记录 `finished_at` 和 `elapsed_seconds`，绑定现有输入指纹与执行边界。它只衡量本地编排耗时，不冒充供应商费用、成交质量或策略证据。回执 [`20261027_post_close_timing_contract_v1.json`](../../outputs/pipeline_receipts/20261027_post_close_timing_contract_v1.json)，测试 `8 passed`。
+
+## Google Applied Design command-policy refactor (2026-10-27)
+
+日终刷新入口已完成一个保持行为不变的结构重构：`trading/research/daily_refresh_policy.py` 以不可变 `RoutePolicy` 表集中保存允许的研究路由、子命令约束、固定三页采集边界和 native PAPER closing 参数；`system_daily_refresh.py` 只负责委托和编排，不再维护逐路由条件链。原有命令 argv、`execution_admitted=false`、`candidate_panel_only=true` 和禁止 `--live/--submit/--train` 的边界保持不变。新增策略表测试覆盖正常路由、runtime-repair、非法子命令、seat-collect 三页同日约束和危险 flag 拒绝；聚焦刷新/披露/路由适配测试共 `16 passed`。代码提交为 `6097e4a`。
+
+后续按 Google Applied Design 的迁移顺序推进：先补真实 F2 `retrieval/as-of/revision` 事实，再在新收市输入上复用 `fixed_daily → D0/D1`，随后从一个真实纸面旅程继续抽取薄应用用例；最后只在实际压力有证据时扩展发布、恢复和容量。暂不做全仓格式化、Bazel/微服务迁移或重复审计；完整全市场 StockDB、授权 THS 只读导出和真实 PIT 仍是独立未完成项。
