@@ -2758,7 +2758,7 @@
       "domain": "research",
       "result": "The latest candidate adoption matrix, mature-factor horizon comparison, StockDB-backed shortline adoption gate and retained joint portfolio gate are joined into a research-only rollup with explicit continuation, stop and coverage decisions. The latest rollup now binds a six-strategy same-snapshot common-window panel covering fixed low-volatility, half-momentum, 12-1 momentum, Ridge, Alpha158/LightGBM and Ridge h60, while preserving explicit research-only boundaries without promotion.",
       "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
-      "next": "After the next complete close, regenerate D0/D1, full-panel comparison and adoption rollup together; keep PIT, forward, corporate-action and channel gates separate.",
+      "next": "After the next complete close, regenerate the candidate library binding together with D0/D1, full-panel comparison and adoption rollup; keep PIT, forward, corporate-action and channel gates separate.",
       "prohibition": "Do not treat the rollup as strategy validation, paper/live promotion or a substitute for PIT/forward/THS evidence.",
       "actual_paths": [
         "trading/research/research_adoption_rollup.py",
@@ -2790,7 +2790,11 @@
         "outputs/pipeline_receipts/20261027_full_panel_common_window_strategy_comparison_v1.json",
         "outputs/research_reports/20261027_full_panel_common_window_strategy_comparison_v1.md",
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v10.json",
-        "outputs/research_reports/20261027_research_adoption_rollup_v10.md"
+        "outputs/research_reports/20261027_research_adoption_rollup_v10.md",
+        "trading/research/candidate_library_binding.py",
+        "trading/research/tests/test_candidate_library_binding.py",
+        "outputs/pipeline_receipts/20261027_candidate_library_binding_v1.json",
+        "outputs/research_reports/20261027_candidate_library_binding_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -2822,7 +2826,12 @@
         "outputs/pipeline_receipts/20261027_full_panel_common_window_strategy_comparison_v1.json",
         "outputs/research_reports/20261027_full_panel_common_window_strategy_comparison_v1.md",
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v10.json",
-        "outputs/research_reports/20261027_research_adoption_rollup_v10.md"
+        "outputs/research_reports/20261027_research_adoption_rollup_v10.md",
+        "trading/research/candidate_library_binding.py",
+        "trading/research/tests/test_candidate_library_binding.py",
+        "run_committee.py",
+        "outputs/pipeline_receipts/20261027_candidate_library_binding_v1.json",
+        "outputs/research_reports/20261027_candidate_library_binding_v1.md"
       ],
       "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3, the retained joint target gate, the complete public-seat replay gate, candidate same-day freshness, value-size retrospective projection, leader partial cross-year projection and a six-strategy full-panel common-window receipt on one StockDB snapshot. It records all rows as research-only, keeps strategy_validated=false, paper_allowed=false, promotion_allowed=false and execution_admitted=false, and passes the focused rollup and comparison tests. PIT, untouched-forward, corporate-action and channel evidence remain separate gates."
     },

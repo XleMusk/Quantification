@@ -768,3 +768,7 @@ E05/F06 已完成一个可复用的纸面任务绑定器：[`paper_timing_bindin
 F2 fact bridge 现在把 `source_snapshot_id`、`source_sha256`、`snapshot_source_check` 和 `snapshot_source_check_passed` 传入每个事实的 `source_provenance`；哈希不匹配仍然阻断，不放宽 PIT/revision 闸门。18 行真实桥接重跑仍为 `BLOCKED_DATA`、0 个 ready fact、0 个因子。回执为 [`20261027_f2_fact_bridge_provenance_v1.json`](../../outputs/pipeline_receipts/20261027_f2_fact_bridge_provenance_v1.json)，测试 `27 passed`，提交 `da312f5`。
 
 补充探测了已有 F01 样本中的 600004.SSE/2024Q1 与 688008.SSE/2024Q1 两个原始披露 URL。Wayback CDX 均返回 0 个捕获，故两条仍为 `BLOCKED_DATA`、`pit_asof_safe=false`；失败证据保留在 [`20261027_f2_wayback_two_issuer_probe_v1.json`](../../outputs/pipeline_receipts/20261027_f2_wayback_two_issuer_probe_v1.json)。这次探测没有把当前披露冒充历史 PIT，也没有阻塞代码、纸面或策略比较路线。
+
+## Candidate library binding (2026-10-27)
+
+新增 [`candidate_library_binding.py`](../../trading/research/candidate_library_binding.py) 将候选目录、六策略同口径面板和 adoption rollup v10 按 `candidate_spec_id` 绑定成一份机器读候选库。9 个目录项中，Ridge 两个 horizon 作为同一 spec 的显式 variant；shortline、公开席位、value-size 和 leader-style 保留为 `SEPARATE_GATE_BOUND`，没有被冒充成共同窗口比较。实际回执 [`20261027_candidate_library_binding_v1.json`](../../outputs/pipeline_receipts/20261027_candidate_library_binding_v1.json) 的汇总为 3 continue、2 stop、1 coverage blocked、4 separate gate、0 strategy validated；测试 `2 passed`，提交 `6ad3356`。
