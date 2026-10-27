@@ -38,6 +38,7 @@ from .research import ths_native_observation_view
 from .research import opening_window_status_view
 from .research import operator_portfolio_views
 from .research import operator_account_risk_view
+from .research import operator_broker_observation_view
 
 router = APIRouter(prefix="/api/trading")
 
@@ -3073,55 +3074,13 @@ def operator_package_broker_observation_alerts():
     same_ledger_bundle_reconciliation = _same_ledger_bundle_reconciliation_view()
     alerts = _broker_observation_alerts(same_ledger_bundle_reconciliation)
     persistent_readiness = ths_observation_bundle_readiness()
-    persistent_profile = persistent_readiness.get("profile") or {}
-    persistent_mapping = persistent_profile.get("mapping_validation") or {}
-    persistent_source_scope = same_ledger_bundle_reconciliation.get("source_scope")
-    persistent_manifest_status = persistent_readiness.get("source_manifest_status")
-    persistent_bundle_is_account_evidence = bool(
-        persistent_readiness.get("status") == "bundle_ready_for_reconciliation"
-        and persistent_manifest_status == "verified"
+    return operator_broker_observation_view.build_view(
+        alerts=alerts,
+        journal_reconciliation=journal_reconciliation,
+        same_ledger_bundle_reconciliation=same_ledger_bundle_reconciliation,
+        persistent_readiness=persistent_readiness,
+        same_ledger_compat_fields=_same_ledger_compat_fields,
     )
-    return {
-        **alerts,
-        "ths_journal_reconciliation": journal_reconciliation,
-        "same_ledger_bundle_reconciliation": same_ledger_bundle_reconciliation,
-        "persistent_bundle_readiness": {
-            "status": persistent_readiness.get("status"),
-            "preview_status": (persistent_readiness.get("preview") or {}).get("status"),
-            "source_manifest_status": persistent_manifest_status,
-            "source_manifest_issues": persistent_readiness.get("source_manifest_issues") or [],
-            "profile_mapping_status": persistent_mapping.get("status"),
-            "profile_mapping_issues": persistent_mapping.get("issues") or [],
-            "bundle_is_account_evidence": persistent_bundle_is_account_evidence,
-            "execution_admitted": False,
-            "ledger_mutated": False,
-        },
-        "alert_source_selection": {
-            "current_persistent_bundle_status": persistent_readiness.get("status"),
-            "reconciliation_source_scope": persistent_source_scope,
-            "reconciliation_source_manifest_status": same_ledger_bundle_reconciliation.get(
-                "source_manifest_status"
-            ),
-            "reconciliation_is_account_evidence": bool(
-                persistent_source_scope == "persistent_user_export"
-                and same_ledger_bundle_reconciliation.get("source_manifest_status") == "verified"
-            ),
-            "synthetic_source_is_not_account_evidence": persistent_source_scope != "persistent_user_export",
-            "basis": "current persistent bundle readiness is authoritative for account evidence; isolated rehearsal remains diagnostic only",
-        },
-        **_same_ledger_compat_fields(
-            same_ledger_bundle_reconciliation, journal_reconciliation
-        ),
-        "ledger_mutated": journal_reconciliation["ledger_mutated"],
-        "client_interacted": False,
-        "next_action": (
-            "treat the listed differences as synthetic rehearsal evidence; provide a verified persistent THS export before account-level recovery"
-            if alerts["alerts"] and not alerts["live_alerts"] else
-            "resolve the listed broker/Ledger differences before any recovery"
-            if alerts["alerts"] else
-            "retain the explicit wait state; provide a verified persistent THS export before treating alerts as broker evidence"
-        ),
-    }
 
 
 @router.get("/operator-package/portfolio-controls")

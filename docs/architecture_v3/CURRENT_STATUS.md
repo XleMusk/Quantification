@@ -866,3 +866,8 @@ Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027
 ## Google Applied Design account-risk application view (2026-10-27)
 
 账户风险和订单风险两个工作台入口已从 `trading/api.py` 提取到纯只读 `trading/research/operator_account_risk_view.py`，继续复用 `trading/ths/account_risk.py` 的算术，不新增账户写入者。69 个相关测试通过；回执为 `outputs/pipeline_receipts/20261027_operator_account_risk_view_usecase_v1.json`。
+
+
+## Google Applied Design broker-observation application view (2026-10-27)
+
+`/operator-package/broker-observation-alerts` 已提取到纯只读 `trading/research/operator_broker_observation_view.py`，保留 persistent verified bundle 与 isolated rehearsal 的证据边界；44 个相关测试通过，回执为 `outputs/pipeline_receipts/20261027_operator_broker_observation_view_usecase_v1.json`。
