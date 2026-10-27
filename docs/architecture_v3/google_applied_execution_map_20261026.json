@@ -21,8 +21,8 @@
     "as_of": "2026-10-27",
     "commit": "5daf0a0",
     "release": "D:/QuantificationData/trading/research/releases/20261027_v78/release_manifest.json",
-    "verified_local_changes": ["P23 F01 rejects cumulative profit facts until explicit conversion", "P23 F01 requires same-quarter profit endpoints", "P23 cumulative-to-single-quarter uses half-open boundary", "F2 vertical and bridge fixtures consume same-quarter year-over-year periods"],
-    "validation": "35 focused tests passed; internal release candidate live_execution_ready=false",
+    "verified_local_changes": ["P23 F01 rejects cumulative profit facts until explicit conversion", "P23 F01 requires same-quarter profit endpoints", "P23 cumulative-to-single-quarter uses half-open boundary", "F2 vertical and bridge fixtures consume same-quarter year-over-year periods", "U01 strategy comparison routes delegate to a read-only application view"],
+    "validation": "35 F01/F2 tests and 20 strategy-comparison tests passed; internal release candidate live_execution_ready=false",
     "next_execution_order": ["W2 run the next real close package through fixed and candidate D0/D1 paper continuity when input exists", "W3 extract one current API research application use case with a real consumer and behavior tests", "W1 acquire a genuinely pre-decision F2 retrieval/as-of/revision payload; keep BLOCKED_DATA until then"],
     "external_blockers": ["real pre-decision PIT retrieval/as-of/revision payload", "complete full-market StockDB close package", "authorized THS read-only export"],
     "non_blocking_rule": "An unavailable external route does not pause code refactoring, historical comparison, paper lineage or release packaging"
