@@ -2098,7 +2098,11 @@
         "outputs/pipeline_receipts/20261027_paper_preview_usecase_v1.json",
         "outputs/research_reports/20261027_paper_preview_usecase_v1.md",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5/contract_receipt.json",
-        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5_summary.json"
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5_summary.json",
+        "outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v4.json",
+        "outputs/research_reports/20261027_paper_pipeline_lineage_v4.md",
+        "outputs/pipeline_receipts/20261027_candidate_library_binding_v6.json",
+        "outputs/research_reports/20261027_candidate_library_binding_v6.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -2139,7 +2143,11 @@
         "outputs/pipeline_receipts/20261027_paper_preview_usecase_v1.json",
         "outputs/research_reports/20261027_paper_preview_usecase_v1.md",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5/contract_receipt.json",
-        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5_summary.json"
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5_summary.json",
+        "outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v4.json",
+        "outputs/research_reports/20261027_paper_pipeline_lineage_v4.md",
+        "outputs/pipeline_receipts/20261027_candidate_library_binding_v6.json",
+        "outputs/research_reports/20261027_candidate_library_binding_v6.md"
       ],
       "evidence_updated_on": "2026-10-27"
     },
@@ -2855,7 +2863,7 @@
     {
       "id": "P32",
       "domain": "research",
-      "result": "The latest candidate adoption matrix, six-strategy common-window panel, current-window diagnostic, 2026-10-26 fixed D0/D1 paper receipt and stale-candidate freshness gate are joined into a research-only rollup and candidate-library binding with explicit continuation, stop and coverage decisions.",
+      "result": "The candidate library and adoption rollup now bind the latest fixed D0/D1 receipt and a seven-stage paper lineage whose Signal list is derived from the actual candidate manifest; empty same-day candidates remain explicit.",
       "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
       "next": "On the next complete close, replace the stale candidate gate with a fresh same-day candidate manifest, rerun D0/D1 and regenerate the rollup/binding; keep PIT, forward, corporate-action and channel gates separate.",
       "prohibition": "Do not treat the rollup as strategy validation, paper/live promotion or a substitute for PIT/forward/THS evidence.",
@@ -2909,7 +2917,11 @@
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v11.json",
         "outputs/research_reports/20261027_research_adoption_rollup_v11.md",
         "outputs/pipeline_receipts/20261027_candidate_library_binding_v5.json",
-        "outputs/research_reports/20261027_candidate_library_binding_v5.md"
+        "outputs/research_reports/20261027_candidate_library_binding_v5.md",
+        "outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v4.json",
+        "outputs/research_reports/20261027_paper_pipeline_lineage_v4.md",
+        "outputs/pipeline_receipts/20261027_candidate_library_binding_v6.json",
+        "outputs/research_reports/20261027_candidate_library_binding_v6.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -2962,7 +2974,11 @@
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v11.json",
         "outputs/research_reports/20261027_research_adoption_rollup_v11.md",
         "outputs/pipeline_receipts/20261027_candidate_library_binding_v5.json",
-        "outputs/research_reports/20261027_candidate_library_binding_v5.md"
+        "outputs/research_reports/20261027_candidate_library_binding_v5.md",
+        "outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v4.json",
+        "outputs/research_reports/20261027_paper_pipeline_lineage_v4.md",
+        "outputs/pipeline_receipts/20261027_candidate_library_binding_v6.json",
+        "outputs/research_reports/20261027_candidate_library_binding_v6.md"
       ],
       "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3, the retained joint target gate, the complete public-seat replay gate, candidate same-day freshness, value-size retrospective projection, leader partial cross-year projection and a six-strategy full-panel common-window receipt on one StockDB snapshot. It records all rows as research-only, keeps strategy_validated=false, paper_allowed=false, promotion_allowed=false and execution_admitted=false, and passes the focused rollup and comparison tests. PIT, untouched-forward, corporate-action and channel evidence remain separate gates."
     },

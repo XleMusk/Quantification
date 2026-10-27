@@ -59,6 +59,21 @@ def build_lineage(post_close=DEFAULT_POST_CLOSE, fixed=DEFAULT_FIXED, joint=DEFA
     snapshot = Path(snapshot_path)
     if snapshot.is_dir():
         snapshot /= "snapshot.json"
+    candidates = _read(candidate_path).get("candidates")
+    if not isinstance(candidates, list):
+        raise ValueError("candidate source manifest must contain a candidates list")
+    fixed_strategy_id = fixed_payload.get("strategy_id")
+    if not isinstance(fixed_strategy_id, str) or not fixed_strategy_id:
+        raise ValueError("fixed paper package strategy_id is required")
+    candidate_strategy_ids = []
+    for item in candidates:
+        if not isinstance(item, Mapping):
+            raise ValueError("candidate source manifest entries must be objects")
+        strategy_id = item.get("strategy_id") or item.get("candidate_id")
+        if not isinstance(strategy_id, str) or not strategy_id:
+            raise ValueError("candidate source manifest entries require strategy_id or candidate_id")
+        if strategy_id not in candidate_strategy_ids:
+            candidate_strategy_ids.append(strategy_id)
     fa, ja = fixed_payload.get("artifacts", {}), paper_package.get("artifacts", {})
     result = {"schema": SCHEMA, "status": VERIFIED, "close_date": post.get("close_date"),
         "execution_day": post.get("execution_day") or post.get("fingerprint_inputs", {}).get("execution_day"),
@@ -67,7 +82,7 @@ def build_lineage(post_close=DEFAULT_POST_CLOSE, fixed=DEFAULT_FIXED, joint=DEFA
         "broker_interacted": False, "ths_interacted": False, "persistent_ledger_mutated": False,
         "stages": {
           "data": {"status": "STOCKDB_SNAPSHOT_BOUND", "coverage": post.get("snapshot_coverage"), "source": _ref(snapshot)},
-          "signal": {"status": "STRATEGY_SIGNAL_INPUT_BOUND", "strategies": ["low_volatility_252_20", "stockdb_low_vol_half_momentum_20"], "source": _ref(candidate_path)},
+          "signal": {"status": "STRATEGY_SIGNAL_INPUT_BOUND", "strategies": [fixed_strategy_id, *candidate_strategy_ids], "candidate_count": len(candidate_strategy_ids), "source": _ref(candidate_path)},
           "target_portfolio": {"status": "TARGET_PREVIEW_BOUND", "fixed_target_count": fixed_payload.get("target_count"), "joint_target_count": paper_package.get("target_count"), "sources": [_ref(fa["target_holdings"]), _ref(ja["target_holdings"])]},
           "orders": {"status": "PAPER_ORDER_PLAN_BOUND", "fixed_order_count": fixed_payload.get("paper_order_count"), "joint_order_count": paper_package.get("paper_order_count"), "sources": [_ref(fa["order_plan"]), _ref(ja["order_plan"])]},
           "broker_adapter": {"status": "REFERENCE_PAYLOAD_ONLY", "mode": "offline_ths_reference_payload", "client_interacted": False, "submitted": False, "source": _ref(paths[3])},
