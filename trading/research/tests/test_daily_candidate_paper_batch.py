@@ -54,6 +54,15 @@ def test_batch_projects_each_candidate_with_closed_execution_boundary(tmp_path: 
     assert result["projection_mode"] == "TARGET_PREVIEW"
     assert result["ledger_scope"] == "ephemeral_projection"
     assert result["continuous_account_consumer"] is False
+    assert result["stage_trace"]["stages"] == [
+        "Data", "Signal", "Target Portfolio", "Orders", "BrokerAdapter", "Fill", "Cash/Position"
+    ]
+    assert result["stage_trace"]["broker_adapter_attempted"] is False
+    assert result["stage_trace"]["broker_fills"] is False
+    assert result["stage_trace"]["persistent_ledger_mutated"] is False
+    assert [row["stage"] for row in result["candidates"][0]["stage_trace"]] == result["stage_trace"]["stages"]
+    assert result["candidates"][0]["stage_trace"][4]["status"] == "NOT_ATTEMPTED_RESEARCH_ONLY"
+    assert result["candidates"][0]["stage_trace"][5]["broker_fill"] is False
     assert all(row["projection_mode"] == "TARGET_PREVIEW" for row in result["candidates"])
     assert all(row["ledger_scope"] == "ephemeral_projection" for row in result["candidates"])
     assert all(row["continuous_account_consumer"] is False for row in result["candidates"])

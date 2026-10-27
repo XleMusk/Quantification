@@ -18,7 +18,7 @@ from typing import Any, Sequence
 
 from .candidate_shadow_paper import _target_payload
 from .candidate_daily_input_bundle import GATE_MODES, build_input_bundle
-from .daily_candidate_paper_batch import build_batch
+from .daily_candidate_paper_batch import build_batch, build_stage_trace
 from . import stockdb_fixed_daily
 from .stockdb_paper_target_package import build_paper_target_package
 
@@ -205,6 +205,19 @@ def run_pipeline(source_manifest: str | Path, output_dir: str | Path, *,
                         "candidate_count": batch["candidate_count"],
                         "execution_day": batch["execution_day"],
                         "settlement_day": batch["settlement_day"]},
+        "stage_trace": {
+            "stages": ["Data", "Signal", "Target Portfolio", "Orders", "BrokerAdapter", "Fill", "Cash/Position"],
+            "fixed": build_stage_trace(
+                candidate_id=fixed_result["strategy_id"],
+                target_count=int(fixed_result["target_count"]) if fixed_result is not None else 0,
+                paper_order_count=int(fixed_result["paper_order_count"]) if fixed_result is not None else 0,
+                route_available_count=0,
+            ) if fixed_result is not None else None,
+            "candidate_count": batch["candidate_count"],
+            "broker_adapter_attempted": False,
+            "broker_fills": False,
+            "persistent_ledger_mutated": False,
+        },
         "cost_benchmark_binding": {"cost_model_id": binding_ids[0],
                                     "benchmark_binding_id": benchmark_ids[0]},
         "gate_mode": gate_mode,

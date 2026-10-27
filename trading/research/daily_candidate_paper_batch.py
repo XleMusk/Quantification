@@ -25,6 +25,27 @@ DEFAULT_CATALOG = Path("docs/architecture_v3/candidate_strategy_catalog_20261024
 GATE_MODES = {"research_followup", "separate_gate", "historical_shadow"}
 
 
+def build_stage_trace(*, candidate_id: str, target_count: int, paper_order_count: int,
+                      route_available_count: int, fill_count: int | None = None) -> list[dict[str, Any]]:
+    """Describe one candidate's shared paper path without claiming live fills."""
+
+    return [
+        {"stage": "Data", "status": "BOUND_SAVED_INPUTS", "candidate_id": candidate_id},
+        {"stage": "Signal", "status": "BOUND_SAVED_RESEARCH_RESULT", "candidate_id": candidate_id},
+        {"stage": "Target Portfolio", "status": "PROJECTED", "candidate_id": candidate_id,
+         "target_count": target_count},
+        {"stage": "Orders", "status": "PROJECTED", "candidate_id": candidate_id,
+         "order_count": paper_order_count},
+        {"stage": "BrokerAdapter", "status": "NOT_ATTEMPTED_RESEARCH_ONLY", "candidate_id": candidate_id,
+         "route_available_count": route_available_count, "execution_admitted": False},
+        {"stage": "Fill", "status": "PROJECTED_PAPER_ONLY", "candidate_id": candidate_id,
+         "fill_count": fill_count if fill_count is not None else paper_order_count,
+         "broker_fill": False},
+        {"stage": "Cash/Position", "status": "PROJECTED_EPHEMERAL_LEDGER", "candidate_id": candidate_id,
+         "persistent_ledger_mutated": False},
+    ]
+
+
 def _read(path: Path) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
@@ -174,6 +195,12 @@ def build_batch(candidates: Sequence[Mapping[str, Any]], output_dir: str | Path,
             "projection_mode": result.get("projection_mode"),
             "ledger_scope": result.get("ledger_scope"),
             "continuous_account_consumer": result.get("continuous_account_consumer"),
+            "stage_trace": build_stage_trace(
+                candidate_id=candidate_id,
+                target_count=int(result.get("target_count") or 0),
+                paper_order_count=int(result.get("paper_order_count") or 0),
+                route_available_count=int(result.get("route_available_count") or 0),
+            ),
             "cost_model_id": (result.get("cost_model") or {}).get("id"),
             "benchmark_binding_id": (result.get("benchmark_binding") or {}).get("id"),
             "target": target_ref, "quotes": quote_ref,
@@ -195,6 +222,13 @@ def build_batch(candidates: Sequence[Mapping[str, Any]], output_dir: str | Path,
         "ledger_scope": "ephemeral_projection",
         "continuous_account_consumer": False,
         "candidate_count": len(records), "candidates": records,
+        "stage_trace": {
+            "stages": ["Data", "Signal", "Target Portfolio", "Orders", "BrokerAdapter", "Fill", "Cash/Position"],
+            "candidate_count": len(records),
+            "broker_adapter_attempted": False,
+            "broker_fills": False,
+            "persistent_ledger_mutated": False,
+        },
         "output_dir": str(output),
         "limitations": [
             "Targets and quotes are explicit strategy-adapter inputs; this batch does not create signals or fetch market data.",

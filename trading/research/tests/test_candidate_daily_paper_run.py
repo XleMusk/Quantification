@@ -31,6 +31,11 @@ def test_pipeline_binds_input_bundle_to_shared_paper_batch(tmp_path: Path) -> No
     assert batch["candidate_count"] == 1
     assert batch["candidates"][0]["target_count"] == 1
     assert batch["candidates"][0]["paper_order_count"] == 1
+    assert receipt["stage_trace"]["stages"] == [
+        "Data", "Signal", "Target Portfolio", "Orders", "BrokerAdapter", "Fill", "Cash/Position"
+    ]
+    assert receipt["stage_trace"]["fixed"] is None
+    assert receipt["stage_trace"]["broker_adapter_attempted"] is False
     package = json.loads(Path(batch["candidates"][0]["package_result"]["path"]).read_text(encoding="utf-8"))
     assert package["cost_model"]["id"] == "cn_a_share_standard_ledger_costs_v1"
     assert package["benchmark_binding"]["status"] == "NOT_APPLICABLE_TO_PAPER_TARGET_PROJECTION"
@@ -58,6 +63,10 @@ def test_pipeline_projects_fixed_leg_through_same_paper_package(tmp_path: Path) 
                            fixed_terminal_account=fixed, fixed_strategy_id="low_volatility_control")
     assert receipt["fixed_strategy"]["target_count"] == 1
     assert receipt["fixed_strategy"]["paper_order_count"] == 1
+    assert [row["stage"] for row in receipt["stage_trace"]["fixed"]] == [
+        "Data", "Signal", "Target Portfolio", "Orders", "BrokerAdapter", "Fill", "Cash/Position"
+    ]
+    assert receipt["stage_trace"]["fixed"][4]["status"] == "NOT_ATTEMPTED_RESEARCH_ONLY"
     assert receipt["execution_admitted"] is False
     assert Path(receipt["fixed_strategy"]["target"]["path"]).is_file()
     assert len(receipt["fixed_strategy"]["target"]["sha256"]) == 64
