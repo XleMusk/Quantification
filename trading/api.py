@@ -30,6 +30,7 @@ from .research import operator_lifecycle_view
 from .research import operator_session_handoff_view
 from .research import operator_blotter_view
 from .research import operator_execution_attribution_view
+from .research import operator_portfolio_views
 
 router = APIRouter(prefix="/api/trading")
 
@@ -3643,82 +3644,13 @@ def operator_package_broker_observation_alerts():
 @router.get("/operator-package/portfolio-controls")
 def operator_package_portfolio_controls():
     """Expose frozen paper what-if and allocation projections as read-only desk controls."""
-    package = operator_package()
-    journal_reconciliation = _ths_journal_reconciliation_view()
-    same_ledger_bundle_reconciliation = _same_ledger_bundle_reconciliation_view()
-    scenario_path = _package_artifact(package, "scenario_analysis")
-    allocation_path = _package_artifact(package, "allocation_settlement_projection")
-    if not scenario_path or not allocation_path:
-        raise HTTPException(404, "当前离线包缺少纸面情景或分配结算投影")
-
-    def read_csv(path):
-        try:
-            with path.open("r", encoding="utf-8-sig", newline="") as handle:
-                return list(csv.DictReader(handle))
-        except (OSError, UnicodeError, csv.Error) as error:
-            raise HTTPException(409, f"纸面组合控制尚不可读取：{error}") from error
-
-    scenario_rows = read_csv(scenario_path)
-    allocation_all_rows = read_csv(allocation_path)
-    allocation_order_rows = [row for row in allocation_all_rows if row.get("row_type", "order") == "order"]
-    allocation_total_rows = [row for row in allocation_all_rows if row.get("row_type") != "order"]
-    return {
-        "schema": "offline_portfolio_controls_view_v1",
-        "status": "paper_projection_only",
-        "execution_admitted": False,
-        "account_observed": False,
-        "quotes_observed": False,
-        "ths_journal_reconciliation": journal_reconciliation,
-        "same_ledger_bundle_reconciliation": same_ledger_bundle_reconciliation,
-        **_same_ledger_compat_fields(
-            same_ledger_bundle_reconciliation, journal_reconciliation
-        ),
-        "ledger_mutated": journal_reconciliation["ledger_mutated"],
-        "scenario": {
-            "row_count": len(scenario_rows),
-            "rows": scenario_rows,
-            "basis": "frozen research reference prices; paper what-if only; no quote or fill observed",
-        },
-        "allocation": {
-            "order_count": len(allocation_order_rows),
-            "total_rows": allocation_total_rows,
-            "state_counts": dict(Counter(row.get("settlement_state", "unknown") for row in allocation_order_rows)),
-            "t1_dependency_counts": dict(Counter(row.get("t1_dependency", "unknown") for row in allocation_order_rows)),
-            "rows": allocation_order_rows,
-            "basis": "frozen research reference price; no fill or account observation",
-        },
-        "source_files": {"scenario": str(scenario_path), "allocation": str(allocation_path)},
-    }
+    return operator_portfolio_views.build_controls_view(globals())
 
 
 @router.get("/operator-package/portfolio-risk")
 def operator_package_portfolio_risk():
     """Expose the saved, paper-only candidate portfolio risk book."""
-    package = operator_package()
-    risk_path = _package_artifact(package, "offline_portfolio_risk_summary")
-    if not risk_path:
-        raise HTTPException(404, "当前离线包缺少候选组合风险书")
-    try:
-        payload = json.loads(risk_path.read_text(encoding="utf-8-sig"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
-        raise HTTPException(409, f"候选组合风险书尚不可读取：{error}") from error
-    if payload.get("schema") != "offline_portfolio_risk_summary_v1":
-        raise HTTPException(409, "候选组合风险书版本不受支持")
-    return {
-        "schema": "offline_portfolio_risk_view_v1",
-        "status": payload.get("status", "offline_reference_risk_comparison"),
-        "execution_day": payload.get("execution_day"),
-        "candidate_count": payload.get("candidate_count", 0),
-        "sort_basis": payload.get("sort_basis"),
-        "shared_account_scenario": payload.get("shared_account_scenario") or {},
-        "rows": payload.get("rows") or [],
-        "account_observed": False,
-        "quotes_observed": False,
-        "execution_admitted": False,
-        "source_file": str(risk_path),
-        "basis": "冻结参考价格和配置现金的纸面风险比较；候选策略互斥，不合并到统一账户账本",
-        "not_attempted": payload.get("not_attempted") or [],
-    }
+    return operator_portfolio_views.build_risk_view(globals())
 
 
 @router.get("/operator-package/account-risk")
