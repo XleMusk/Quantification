@@ -16,6 +16,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from ..contracts import decision_time
+
 
 SCHEMA = "f2_historical_source_selection_v1"
 BLOCKED = "BLOCKED_DATA"
@@ -53,10 +55,14 @@ def select_latest_on_or_before(
     *,
     timestamp_key: str = "captured_at",
     timestamp_format: str | None = None,
+    cutoff_time: str | datetime | None = None,
 ) -> dict[str, Any]:
     """Select deterministically without promoting the selected row."""
 
     cutoff_date = _parse_cutoff(cutoff)
+    parsed_cutoff_time = _parse_timestamp(cutoff_time) if cutoff_time is not None else None
+    if cutoff_time is not None and parsed_cutoff_time is None:
+        raise ValueError("cutoff_time must be an offset-aware ISO timestamp")
     observed: list[dict[str, Any]] = []
     invalid_count = 0
     for index, raw in enumerate(candidates):
@@ -72,7 +78,12 @@ def select_latest_on_or_before(
         row["_selection_index"] = index
         observed.append(row)
     ordered = sorted(observed, key=lambda row: (row["_selection_timestamp"], row["_selection_index"]))
-    eligible = [row for row in ordered if row["_selection_timestamp"][:10] <= cutoff_date.isoformat()]
+    eligible = [
+        row for row in ordered
+        if (parsed_cutoff_time is not None
+            and _parse_timestamp(row["_selection_timestamp"]) <= parsed_cutoff_time)
+        or (parsed_cutoff_time is None and row["_selection_timestamp"][:10] <= cutoff_date.isoformat())
+    ]
     selected = eligible[-1] if eligible else (ordered[-1] if ordered else None)
 
     def clean(row: dict[str, Any] | None) -> dict[str, Any] | None:
@@ -84,6 +95,7 @@ def select_latest_on_or_before(
         "schema": SCHEMA,
         "policy": "latest_on_or_before_cutoff_v1",
         "cutoff": cutoff_date.isoformat(),
+        "cutoff_time": parsed_cutoff_time.isoformat() if parsed_cutoff_time else None,
         "timestamp_key": timestamp_key,
         "observed_count": len(observed),
         "invalid_count": invalid_count,
@@ -109,7 +121,8 @@ def build_receipt(input_path: str | Path, *, output: str | Path | None = None) -
     if not isinstance(decision_day, str):
         raise ValueError("selection input requires decision_day")
     selection = select_latest_on_or_before(
-        captures, decision_day, timestamp_key="timestamp", timestamp_format="%Y%m%d%H%M%S")
+        captures, decision_day, timestamp_key="timestamp", timestamp_format="%Y%m%d%H%M%S",
+        cutoff_time=decision_time(decision_day))
     receipt = {
         "schema": SCHEMA,
         "status": SELECTED if selection["eligible_count"] else BLOCKED,

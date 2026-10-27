@@ -19,6 +19,7 @@ from urllib.request import Request, urlopen
 
 from .f2_historical_evidence import BLOCKED, evaluate_historical_evidence
 from .f2_source_selection import select_latest_on_or_before
+from ..contracts import decision_time
 
 
 SCHEMA = "f2_wayback_probe_v1"
@@ -136,7 +137,8 @@ def _captures(payload: bytes) -> list[dict[str, str]]:
 def _select_capture(captures: list[dict[str, str]], decision_day: date) -> tuple[list[dict[str, str]], dict[str, str] | None]:
     """Select through the shared deterministic source-selection contract."""
     selection = select_latest_on_or_before(
-        captures, decision_day, timestamp_key="timestamp", timestamp_format="%Y%m%d%H%M%S")
+        captures, decision_day, timestamp_key="timestamp", timestamp_format="%Y%m%d%H%M%S",
+        cutoff_time=decision_time(decision_day.isoformat()))
     eligible = selection["eligible"]
     selected = selection["selected"]
     return eligible, selected

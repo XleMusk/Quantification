@@ -28,6 +28,16 @@ def test_after_cutoff_only_is_explicitly_blocked():
     assert result["observed_after_cutoff_only"] is True
 
 
+def test_same_day_capture_after_decision_time_is_not_eligible():
+    result = select_latest_on_or_before(
+        [{"timestamp": "20240501150600", "digest": "after"}],
+        "2024-05-01", timestamp_key="timestamp", timestamp_format="%Y%m%d%H%M%S",
+        cutoff_time="2024-05-01T15:05:00+08:00")
+    assert result["eligible_count"] == 0
+    assert result["selected"]["digest"] == "after"
+    assert result["observed_after_cutoff_only"] is True
+
+
 def test_selection_receipt_binds_existing_wayback_probe_without_network(tmp_path):
     source = tmp_path / "wayback.json"
     source.write_text(json.dumps({
