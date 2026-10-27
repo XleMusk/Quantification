@@ -714,3 +714,14 @@ F2 fact bridge 现在可以直接消费 `f2_source_snapshot_v1` 原始清单，�
 策略比较新增六策略同口径入口：固定低波动、低波/半动量、12-1 动量、成熟因子 Ridge、Alpha158/LightGBM、Ridge h60。共同 StockDB 快照覆盖 `2026-01-05..2026-10-13` 的 184 个会话，六个结果均保持 `STOP_RESEARCH_ONLY`；回执已绑定到 adoption rollup v10，仍不允许 paper/promotion。
 
 组合回归：研究任务/Web API 32 passed；F2、策略比较、adoption rollup 及相关边界测试在提交前复跑。当前发布继续保持 `execution_admitted=false`、`NO_TRADE`、`candidate_panel_only=true`。
+
+
+## Mainline delivery increments (2026-10-27, wave 2)
+
+日终主线的 `post_close_d0_d1.run_pipeline` 已按阶段拆分为 fixed_daily、candidate_inputs、D0/D1 和 terminal receipt；回执新增 `stage_trace`，保留输入指纹、幂等复用、fixed_daily 先于 D0/D1 和 `execution_admitted=false`。
+
+F2 新增共享 `latest_on_or_before_cutoff_v1` 来源选择器，Wayback 探针改用同一选择契约，并生成 000002.SZSE 选择回执。现有观察仍只有 2025-09-05 之后捕获，eligible=0，结果继续为 `BLOCKED_DATA`，没有放宽 PIT/revision 闸门。
+
+U02 新增隔离本地 HTTP 观测探针，实际完成 CSV 上传、同幂等键 POST、worker 完成、lifecycle/result 查询和三个结果文件下载；回执为 `COMPLETED_LOCAL_RESEARCH_HTTP_CHAIN`。这是本地合成研究链证据，不是浏览器、THS 或账户证据。
+
+本轮新增工作包测试：post-close focused 57 passed；F2 selection/Wayback/source snapshot/dispatch 33 passed；U02 真实进程链 1 passed。

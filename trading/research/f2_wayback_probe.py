@@ -18,6 +18,7 @@ from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 from .f2_historical_evidence import BLOCKED, evaluate_historical_evidence
+from .f2_source_selection import select_latest_on_or_before
 
 
 SCHEMA = "f2_wayback_probe_v1"
@@ -133,22 +134,12 @@ def _captures(payload: bytes) -> list[dict[str, str]]:
 
 
 def _select_capture(captures: list[dict[str, str]], decision_day: date) -> tuple[list[dict[str, str]], dict[str, str] | None]:
-    """Select the latest capture on or before the cutoff when available.
-
-    CDX can return several captures for the same source after digest
-    collapsing.  The latest eligible capture is the strongest historical
-    availability observation; choosing the first row would make the result
-    depend on archive ordering and could select an unnecessarily old copy.
-    When no eligible capture exists, retain the latest observed capture only
-    as failure evidence.
-    """
-    cutoff = decision_day.isoformat().replace("-", "")
-    ordered = sorted(
-        (row for row in captures if row.get("timestamp")),
-        key=lambda row: row.get("timestamp", ""),
-    )
-    before = [row for row in ordered if row.get("timestamp", "")[:8] <= cutoff]
-    return before, (before[-1] if before else (ordered[-1] if ordered else None))
+    """Select through the shared deterministic source-selection contract."""
+    selection = select_latest_on_or_before(
+        captures, decision_day, timestamp_key="timestamp", timestamp_format="%Y%m%d%H%M%S")
+    eligible = selection["eligible"]
+    selected = selection["selected"]
+    return eligible, selected
 
 
 def probe_wayback(

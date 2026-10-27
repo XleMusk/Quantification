@@ -57,6 +57,9 @@ def test_post_close_advances_fixed_daily_before_d0_d1(tmp_path: Path, monkeypatc
     assert receipt["target_preview_projection_scope"]["fixed"] == "TARGET_PREVIEW"
     assert receipt["target_preview_projection_scope"]["candidate"] == "TARGET_PREVIEW"
     assert receipt["target_preview_projection_scope"]["continuous_account_consumer"] is False
+    assert [stage["stage"] for stage in receipt["stage_trace"]] == [
+        "inputs", "fixed_daily", "candidate_inputs", "d0_d1"
+    ]
     assert (tmp_path / "run" / "post_close_receipt.json").is_file()
 
 
@@ -106,6 +109,7 @@ def test_post_close_waits_for_complete_fixed_source_without_d0_projection(tmp_pa
     assert receipt["status"] == orchestrator.WAITING_STATUS
     assert receipt["missing_days"] == [CLOSE]
     assert receipt["execution_admitted"] is False
+    assert receipt["stage_trace"][-1]["stage"] == "fixed_daily"
 
 
 def test_post_close_propagates_d0_block_and_snapshot_coverage(tmp_path: Path, monkeypatch) -> None:

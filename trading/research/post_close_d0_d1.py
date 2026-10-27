@@ -100,6 +100,117 @@ def _assert_unadmitted(payload: dict[str, Any], label: str) -> None:
         raise ValueError(f"{label} crossed execution boundary")
 
 
+def _write_receipt(receipt_path: Path, payload: dict[str, Any]) -> dict[str, Any]:
+    """Persist one terminal receipt at the orchestration boundary."""
+
+    receipt_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    return payload
+
+
+def _run_fixed_daily_stage(*, fixed_dir: Path, close_date: str,
+                           packages: Sequence[Path], supplement: Path | None,
+                           base: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any] | None]:
+    """Advance the persistent fixed account before any candidate projection."""
+
+    fixed_result = stockdb_fixed_daily.run(
+        fixed_dir, close_date, packages=packages, supplemental_raw_view=supplement
+    )
+    _assert_unadmitted(fixed_result, "fixed daily result")
+    base["fixed_daily"] = fixed_result
+    fixed_status = fixed_result.get("status")
+    if fixed_status == "waiting_for_complete_sources":
+        base["stage_trace"].append({
+            "stage": "fixed_daily",
+            "status": WAITING_STATUS,
+            "missing_days": fixed_result.get("missing_days", []),
+        })
+        return fixed_result, {
+            **base,
+            "status": WAITING_STATUS,
+            "reason": "Fixed daily has no complete source package for every requested session",
+            "missing_days": fixed_result.get("missing_days", []),
+        }
+    if fixed_result.get("last_completed_day") != close_date:
+        raise ValueError("Fixed daily did not reach the requested close date")
+    base["stage_trace"].append({
+        "stage": "fixed_daily",
+        "status": str(fixed_status or "COMPLETED"),
+        "last_completed_day": close_date,
+    })
+    return fixed_result, None
+
+
+def _resolve_candidate_stage(*, source: Path | None,
+                             replay_manifest: Path | None,
+                             decision: Path | None,
+                             catalog: Path | None,
+                             output: Path,
+                             gate_mode: str,
+                             base: dict[str, Any]) -> Path:
+    """Resolve a direct candidate manifest or build one from replay outputs."""
+
+    if replay_manifest is None:
+        if source is None:
+            raise ValueError("Candidate source manifest was not resolved")
+        base["stage_trace"].append({"stage": "candidate_inputs", "status": "DIRECT_SOURCE"})
+        return source
+    raw = json.loads(replay_manifest.read_text(encoding="utf-8"))
+    candidates = raw if isinstance(raw, list) else raw.get("candidates") if isinstance(raw, dict) else None
+    if not isinstance(candidates, list):
+        raise ValueError("Candidate replay manifest must contain a candidates list")
+    decision_selection = None
+    if decision is not None:
+        candidates, decision_selection = next_close_d0_d1._decision_bound_candidates(
+            candidates, decision
+        )
+        base["research_decision_selection"] = decision_selection
+    candidate_bundle = build_input_bundle(
+        candidates, output / "candidate_inputs", catalog_path=catalog, gate_mode=gate_mode
+    )
+    resolved = Path(candidate_bundle["manifest"]["path"]).resolve()
+    base["candidate_input_bundle"] = {
+        "receipt": candidate_bundle["receipt_path"],
+        "manifest": candidate_bundle["manifest"],
+    }
+    base["stage_trace"].append({
+        "stage": "candidate_inputs",
+        "status": "BUILT_FROM_REPLAY",
+        "candidate_count": candidate_bundle["manifest"].get("candidate_count"),
+    })
+    return resolved
+
+
+def _run_d0_d1_stage(*, source: Path, output: Path, fixed_dir: Path,
+                     stockdb: Path, catalog: Path | None, snapshot_dir: Path | None,
+                     close_date: str, execution_day: str, settlement_day: str,
+                     initial_cash: float, minute_time: str, gate_mode: str,
+                     decision: Path | None, calendar: Path | None,
+                     joint_capacity_policy: str | None,
+                     joint_max_target_rows: int, base: dict[str, Any]) -> dict[str, Any]:
+    """Run the candidate Target -> paper D0/D1 projection stage."""
+
+    d0_result = next_close_d0_d1.run_contract(
+        source, output / "next_close", fixed_run_dir=fixed_dir,
+        stockdb_root=stockdb, catalog_path=catalog,
+        stockdb_snapshot=snapshot_dir,
+        close_date=close_date, execution_day=execution_day,
+        settlement_day=settlement_day, initial_cash=initial_cash,
+        minute_time=minute_time, gate_mode=gate_mode,
+        research_decision_receipt=decision, calendar_path=calendar,
+        joint_capacity_policy=joint_capacity_policy,
+        joint_max_target_rows=joint_max_target_rows,
+    )
+    _assert_unadmitted(d0_result, "D0/D1 result")
+    base["stage_trace"].append({
+        "stage": "d0_d1",
+        "status": d0_result.get("status"),
+        "snapshot_coverage": d0_result.get("snapshot_coverage"),
+    })
+    return d0_result
+
+
 def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
                  fixed_run_dir: str | Path, packages: Sequence[str | Path],
                  close_date: str, execution_day: str | None = None,
@@ -201,55 +312,31 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
             "ledger_scope": "ephemeral_projection",
             "continuous_account_consumer": False,
         },
+        "stage_trace": [{"stage": "inputs", "status": "READY"}],
     }
     try:
-        fixed_result = stockdb_fixed_daily.run(
-            fixed_dir, close_date, packages=packages_resolved,
-            supplemental_raw_view=supplement)
-        _assert_unadmitted(fixed_result, "fixed daily result")
-        base["fixed_daily"] = fixed_result
-        fixed_status = fixed_result.get("status")
-        if fixed_status == "waiting_for_complete_sources":
-            receipt = {**base, "status": WAITING_STATUS,
-                       "reason": "Fixed daily has no complete source package for every requested session",
-                       "missing_days": fixed_result.get("missing_days", []),
-                       "receipt_path": str(receipt_path)}
-            receipt_path.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-            return receipt
-        if fixed_result.get("last_completed_day") != close_date:
-            raise ValueError("Fixed daily did not reach the requested close date")
-        candidate_bundle = None
-        if replay_manifest is not None:
-            raw = json.loads(replay_manifest.read_text(encoding="utf-8"))
-            candidates = raw if isinstance(raw, list) else raw.get("candidates") if isinstance(raw, dict) else None
-            if not isinstance(candidates, list):
-                raise ValueError("Candidate replay manifest must contain a candidates list")
-            decision_selection = None
-            if decision is not None:
-                candidates, decision_selection = next_close_d0_d1._decision_bound_candidates(
-                    candidates, decision)
-                base["research_decision_selection"] = decision_selection
-            candidate_bundle = build_input_bundle(
-                candidates, output / "candidate_inputs",
-                catalog_path=catalog, gate_mode=gate_mode)
-            source = Path(candidate_bundle["manifest"]["path"]).resolve()
-            base["candidate_input_bundle"] = {
-                "receipt": candidate_bundle["receipt_path"],
-                "manifest": candidate_bundle["manifest"],
-            }
-        if source is None:
-            raise ValueError("Candidate source manifest was not resolved")
-        d0_result = next_close_d0_d1.run_contract(
-            source, output / "next_close", fixed_run_dir=fixed_dir,
-            stockdb_root=stockdb, catalog_path=catalog,
-            stockdb_snapshot=snapshot_dir,
-            close_date=close_date, execution_day=execution_day,
-            settlement_day=settlement_day, initial_cash=initial_cash,
-            minute_time=minute_time, gate_mode=gate_mode,
-            research_decision_receipt=decision, calendar_path=calendar,
+        _fixed_result, waiting = _run_fixed_daily_stage(
+            fixed_dir=fixed_dir, close_date=close_date,
+            packages=packages_resolved, supplement=supplement, base=base,
+        )
+        if waiting is not None:
+            return _write_receipt(
+                receipt_path,
+                {**waiting, "receipt_path": str(receipt_path)},
+            )
+        source = _resolve_candidate_stage(
+            source=source, replay_manifest=replay_manifest, decision=decision,
+            catalog=catalog, output=output, gate_mode=gate_mode, base=base,
+        )
+        d0_result = _run_d0_d1_stage(
+            source=source, output=output, fixed_dir=fixed_dir, stockdb=stockdb,
+            catalog=catalog, snapshot_dir=snapshot_dir, close_date=close_date,
+            execution_day=execution_day, settlement_day=settlement_day,
+            initial_cash=initial_cash, minute_time=minute_time, gate_mode=gate_mode,
+            decision=decision, calendar=calendar,
             joint_capacity_policy=joint_capacity_policy,
-            joint_max_target_rows=joint_max_target_rows)
-        _assert_unadmitted(d0_result, "D0/D1 result")
+            joint_max_target_rows=joint_max_target_rows, base=base,
+        )
         d0_status = d0_result.get("status")
         if d0_status != next_close_d0_d1.STATUS:
             status = (BLOCKED_D0_STATUS
@@ -264,20 +351,18 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
                 "receipt_path": str(receipt_path),
                 "artifacts": {"d0_d1": str(output / "next_close")},
             }
-            receipt_path.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-            return receipt
-        receipt = {**base, "status": STATUS, "fixed_daily": fixed_result,
+            return _write_receipt(receipt_path, receipt)
+        receipt = {**base, "status": STATUS, "fixed_daily": _fixed_result,
                    "d0_d1": d0_result, "receipt_path": str(receipt_path),
                    "snapshot_coverage": d0_result.get("snapshot_coverage"),
                    "artifacts": {"d0_d1": str(output / "next_close")}}
-        receipt_path.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        return receipt
+        return _write_receipt(receipt_path, receipt)
     except Exception as error:
         failure = {**base, "status": FAILED_STATUS,
                    "error_type": type(error).__name__, "error": str(error),
                    "failure_evidence": {"output_dir": str(output),
                                         "receipt_path": str(receipt_path)}}
-        receipt_path.write_text(json.dumps(failure, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        _write_receipt(receipt_path, failure)
         raise
 
 

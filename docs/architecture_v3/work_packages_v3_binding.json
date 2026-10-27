@@ -345,7 +345,7 @@
       "domain": "data",
       "result": "A callable point-in-time versioned read returns only facts available at the requested cutoff.",
       "state": "PARTIAL",
-      "next": "Use the deterministic latest-on-or-before-cutoff archive selection; the bridge now accepts raw source snapshots and still requires pre-decision issuer retrieval/as-of capture plus revision identity before PIT admission.",
+      "next": "Reuse the shared latest-on-or-before-cutoff selector; supply a pre-decision issuer retrieval/as-of capture plus revision identity before PIT admission.",
       "prohibition": "Do not read the latest file implicitly.",
       "actual_paths": [
         "outputs/financials/f01_scoped_field_coverage_20261024.json",
@@ -390,7 +390,11 @@
         "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v3.json",
         "outputs/research_reports/20261026_f2_wayback_2023q1_v3.md",
         "outputs/pipeline_receipts/20261027_f2_raw_snapshot_bridge_v1.json",
-        "outputs/research_reports/20261027_f2_raw_snapshot_bridge_v1.md"
+        "outputs/research_reports/20261027_f2_raw_snapshot_bridge_v1.md",
+        "trading/research/f2_source_selection.py",
+        "trading/research/tests/test_f2_source_selection.py",
+        "outputs/pipeline_receipts/20261027_f2_source_selection_000002_v1.json",
+        "outputs/research_reports/20261027_f2_source_selection_000002_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -415,7 +419,11 @@
         "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v3.json",
         "outputs/research_reports/20261026_f2_wayback_2023q1_v3.md",
         "outputs/pipeline_receipts/20261027_f2_raw_snapshot_bridge_v1.json",
-        "outputs/research_reports/20261027_f2_raw_snapshot_bridge_v1.md"
+        "outputs/research_reports/20261027_f2_raw_snapshot_bridge_v1.md",
+        "trading/research/f2_source_selection.py",
+        "trading/research/tests/test_f2_source_selection.py",
+        "outputs/pipeline_receipts/20261027_f2_source_selection_000002_v1.json",
+        "outputs/research_reports/20261027_f2_source_selection_000002_v1.md"
       ]
     },
     {
@@ -1279,7 +1287,7 @@
       "domain": "operations",
       "result": "Calendar and business schedule calculate windows and classify missing inputs.",
       "state": "PARTIAL",
-      "next": "On the next complete close, reuse the same post-close coordinator with the latest registered fixed_daily head, strict close packages and same-day candidate manifest; keep TARGET_PREVIEW and persistent account scope distinct.",
+      "next": "On the next complete close, reuse the staged post-close coordinator with the latest registered fixed_daily head and same-day candidate manifest; keep TARGET_PREVIEW and persistent account scope distinct.",
       "prohibition": "Do not use machine timezone or weekday inference.",
       "evidence_updated_on": "2026-10-27",
       "actual_paths": [
@@ -1319,7 +1327,11 @@
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
         "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2_summary.json",
-        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md"
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261027_post_close_stage_refactor_v1.json",
+        "outputs/research_reports/20261027_post_close_stage_refactor_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1354,7 +1366,11 @@
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
         "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2_summary.json",
-        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md"
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261027_post_close_stage_refactor_v1.json",
+        "outputs/research_reports/20261027_post_close_stage_refactor_v1.md"
       ]
     },
     {
@@ -1398,7 +1414,7 @@
       "domain": "operations",
       "result": "Business observability and capacity measurements expose bottlenecks.",
       "state": "PARTIAL",
-      "next": "On each changed close, pass the registered fixed_daily head and same-day candidate manifest through post-close D0/D1; retain the 40/40 coverage, 20 fixed targets, one candidate and 22-order joint projection as the bounded reference.",
+      "next": "On each changed close, pass the registered fixed_daily head and same-day candidate manifest through the staged post-close D0/D1 coordinator; retain coverage, target counts and stage_trace as the bounded reference.",
       "prohibition": "Do not turn monitoring uncertainty into a false offline status.",
       "actual_paths": [
         "trading/research/daily_candidate_paper_batch.py",
@@ -1463,7 +1479,11 @@
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
         "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2_summary.json",
-        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md"
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261027_post_close_stage_refactor_v1.json",
+        "outputs/research_reports/20261027_post_close_stage_refactor_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1493,7 +1513,11 @@
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v1_summary.json",
         "outputs/research_reports/20261027_post_close_derived_d0_d1_v1.md",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2_summary.json",
-        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md"
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v2.md",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261027_post_close_stage_refactor_v1.json",
+        "outputs/research_reports/20261027_post_close_stage_refactor_v1.md"
       ],
       "evidence_updated_on": "2026-10-27"
     },
@@ -1634,7 +1658,7 @@
       "domain": "workbench",
       "result": "Browser task chain reaches a real result and survives reconnect.",
       "state": "PARTIAL",
-      "next": "Keep browser submit, refresh and result links bound to one job id and application use case; add real browser observation when available.",
+      "next": "Keep browser submit, refresh and result links bound to one job id; reuse the local HTTP probe and add browser observation only when it provides new evidence.",
       "prohibition": "A screenshot cannot prove backend persistence or broker acceptance.",
       "actual_paths": [
         "webapp/frontend/src/components/PaperAccountContinuity.tsx",
@@ -1653,7 +1677,11 @@
         "outputs/pipeline_receipts/20261026_workbench_lifecycle_job_id_v2.json",
         "outputs/research_reports/20261026_workbench_lifecycle_job_id_v2.md",
         "outputs/pipeline_receipts/20261027_research_job_usecase_v1.json",
-        "outputs/research_reports/20261027_research_job_usecase_v1.md"
+        "outputs/research_reports/20261027_research_job_usecase_v1.md",
+        "tools/workbench_http_probe.py",
+        "tools/tests/test_workbench_http_probe.py",
+        "outputs/pipeline_receipts/20261027_workbench_u02_http_observation_v1.json",
+        "outputs/research_reports/20261027_workbench_u02_http_observation_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -1667,7 +1695,11 @@
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
         "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_lifecycle_job_id_v2.json",
-        "outputs/research_reports/20261026_workbench_lifecycle_job_id_v2.md"
+        "outputs/research_reports/20261026_workbench_lifecycle_job_id_v2.md",
+        "tools/workbench_http_probe.py",
+        "tools/tests/test_workbench_http_probe.py",
+        "outputs/pipeline_receipts/20261027_workbench_u02_http_observation_v1.json",
+        "outputs/research_reports/20261027_workbench_u02_http_observation_v1.md"
       ]
     },
     {
@@ -1857,7 +1889,7 @@
       "domain": "workbench",
       "result": "Whole-flow local engineering acceptance is recorded separately from blocked market/account scope.",
       "state": "PARTIAL",
-      "next": "Keep persistent fixed_daily scope and local TARGET_PREVIEW receipts separate; after the next closed session upgrade only with real StockDB/account scope evidence.",
+      "next": "Keep persistent fixed_daily scope and local TARGET_PREVIEW receipts separate; use stage_trace for local recovery evidence and upgrade only with real StockDB/account scope evidence.",
       "prohibition": "Do not claim full UI acceptance while account/channel gates are blocked.",
       "actual_paths": [
         "trading/research/workbench_whole_flow_acceptance.py",
@@ -1882,7 +1914,11 @@
         "trading/research/tests/test_next_close_d0_d1.py",
         "trading/research/tests/test_post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
-        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261027_post_close_stage_refactor_v1.json",
+        "outputs/research_reports/20261027_post_close_stage_refactor_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1902,9 +1938,13 @@
         "trading/research/tests/test_next_close_d0_d1.py",
         "trading/research/tests/test_post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
-        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md",
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261027_post_close_stage_refactor_v1.json",
+        "outputs/research_reports/20261027_post_close_stage_refactor_v1.md"
       ],
-      "evidence_updated_on": "2026-10-26"
+      "evidence_updated_on": "2026-10-27"
     },
     {
       "id": "P07",
