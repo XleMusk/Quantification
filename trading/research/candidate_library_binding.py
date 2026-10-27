@@ -23,8 +23,8 @@ DEFAULT_CATALOG = Path("docs/architecture_v3/candidate_strategy_catalog_20261024
 DEFAULT_ROLLUP = Path("outputs/pipeline_receipts/20261027_research_adoption_rollup_v11.json")
 DEFAULT_PANEL = Path("outputs/pipeline_receipts/20261027_full_panel_common_window_strategy_comparison_v1.json")
 DEFAULT_THS_READBACK = Path("outputs/pipeline_receipts/20261027_ths_target_readback_current_synthetic_v1.json")
-DEFAULT_LINEAGE = Path("outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v4.json")
-DEFAULT_OUTPUT = Path("outputs/pipeline_receipts/20261027_candidate_library_binding_v7.json")
+DEFAULT_LINEAGE = Path("outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v5.json")
+DEFAULT_OUTPUT = Path("outputs/pipeline_receipts/20261027_candidate_library_binding_v8.json")
 
 
 def _read(path: Path) -> dict[str, Any]:

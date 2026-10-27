@@ -848,3 +848,6 @@ lineage 继续贯通 StockDB Data、Signal、Target Portfolio、Orders、offline
 ## Paper lineage CLI defaults follow current D0/D1 evidence (2026-10-27)
 
 `paper_pipeline_lineage.py` 的无参 CLI 默认输入已从旧 v2 回执更新到最新 2026-10-26 fixed D0/D1 v5；无参运行生成 [`20261027_paper_pipeline_lineage_v5.json`](../../outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v5.json)。这样后续候选库和流水线命令不会静默回到旧纸面输入。
+
+
+Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027_candidate_library_binding_v8.json`](../../outputs/pipeline_receipts/20261027_candidate_library_binding_v8.json)，继续绑定当前 fixed D0/D1 和空候选事实。
