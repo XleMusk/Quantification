@@ -692,3 +692,5 @@ F2 historical gate CLI 现在对输入行声明的 `source_file/source_sha256` �
 
 对 CNINFO `000002.SZSE/2023Q1` 原始 PDF URL 执行真实 Wayback CDX 探针：CDX 查询成功，但唯一捕获时间为 `2025-09-05T23:50:23+00:00`，晚于决策日 `2024-05-01`，因此没有历史 as-of 证据，结果为 `BLOCKED_DATA`。没有生成 FinancialFact、因子、目标或账户回放。回执为 `outputs/pipeline_receipts/20261027_f2_wayback_000002_2023q1_v2.json`，`execution_admitted=false` 保持不变。
 
+Wayback 回执现已接入 `f2_fact_bridge`：使用公开替代财务 sidecar 与该历史探针回执运行 18 行事实桥，结果为 `BLOCKED_DATA`、0 个事实、0 个可计算因子；其中 2023Q1 行保留 `archive_capture_after_decision_only` 原因，其余行保留历史证据缺失。回执为 `outputs/pipeline_receipts/20261027_f2_wayback_bridge_000002_v1.json`，Fact bridge/Wayback/launcher 测试 `35 passed`。
+

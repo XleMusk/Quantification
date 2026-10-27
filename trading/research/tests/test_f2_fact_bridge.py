@@ -107,6 +107,27 @@ def test_source_snapshot_without_pit_fields_stays_blocked_in_fact_bridge(tmp_pat
     assert result["summary"]["reason_counts"]["historical:historical_retrieval_asof_unproven"] == 1
 
 
+def test_wayback_probe_receipt_feeds_fact_bridge_and_stays_blocked(tmp_path):
+    wayback = tmp_path / "wayback.json"
+    wayback.write_text(json.dumps({
+        "schema": "f2_wayback_probe_v1",
+        "status": "BLOCKED_DATA",
+        "execution_admitted": False,
+        "historical_evidence": {
+            "schema": "f2_historical_evidence_contract_v1",
+            "status": "BLOCKED_DATA",
+            "symbol": "000001.SZSE",
+            "period": "2024Q1",
+            "pit_asof_safe": False,
+            "reason_codes": ["archive_capture_after_decision_only"],
+        },
+    }), encoding="utf-8")
+    result = build_fact_bridge(_sidecar(tmp_path), historical_evidence=wayback)
+    assert result["status"] == BLOCKED
+    assert result["historical_evidence_schema"] == "f2_wayback_probe_v1"
+    assert result["summary"]["fact_rows"] == 0
+
+
 def test_real_sidecar_remains_blocked_with_machine_readable_pit_reasons():
     result = build_fact_bridge(
         "outputs/pipeline_receipts/20261025_f01_publication_sidecar_contract_v3.json",

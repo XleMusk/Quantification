@@ -35,6 +35,7 @@ from .publication_event_contract import evaluate_publication_evidence
 
 SCHEMA = "f2_sidecar_fact_bridge_v1"
 SIDE_CAR_SCHEMA = "f01_publication_sidecar_v1"
+WAYBACK_SCHEMA = "f2_wayback_probe_v1"
 READY = "FACTS_READY_NO_FACTOR"
 BLOCKED = "BLOCKED_DATA"
 _REQUIRED_FIELDS = ("parent_net_profit", "total_assets")
@@ -305,8 +306,11 @@ def build_fact_bridge(sidecar: str | Path, *, scoped_receipt: str | Path | None 
             snapshot = historical.get("snapshot")
             if isinstance(snapshot, Mapping) and isinstance(snapshot.get("snapshot_id"), str):
                 source_snapshot_id = snapshot["snapshot_id"]
+        elif historical_schema == WAYBACK_SCHEMA:
+            evidence = historical.get("historical_evidence")
+            historical_rows_payload = [evidence] if isinstance(evidence, Mapping) else []
         else:
-            raise ValueError(f"expected {HISTORICAL_SCHEMA} or {SOURCE_SNAPSHOT_SCHEMA}")
+            raise ValueError(f"expected {HISTORICAL_SCHEMA}, {SOURCE_SNAPSHOT_SCHEMA} or {WAYBACK_SCHEMA}")
         for item in historical_rows_payload if isinstance(historical_rows_payload, list) else []:
             if isinstance(item, Mapping):
                 historical_rows[f"{item.get('symbol')}:{item.get('period')}"] = item
