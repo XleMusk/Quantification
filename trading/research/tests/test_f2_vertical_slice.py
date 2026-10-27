@@ -29,10 +29,10 @@ def spec(available='2024-04-30T12:00:00+08:00'):
       'initial_cash': 100000, 'quotes': {'000001.SZSE': 10.0, '600000.SSE': 12.0},
       'events': [
         {'symbol': '000001.SZSE', 'historical_evidence': historical('000001.SZSE'), 'current': fact('000001.SZSE','current','2024-01-01','2024-03-31',1200000,available),
-         'prior': fact('000001.SZSE','prior','2023-10-01','2023-12-31',900000,available),
+         'prior': fact('000001.SZSE','prior','2023-01-01','2023-03-31',900000,available),
          'assets': fact('000001.SZSE','assets','2024-01-01','2024-03-31',50000000,available)},
         {'symbol': '600000.SSE', 'historical_evidence': historical('600000.SSE'), 'current': fact('600000.SSE','current','2024-01-01','2024-03-31',900000,available),
-         'prior': fact('600000.SSE','prior','2023-10-01','2023-12-31',600000,available),
+         'prior': fact('600000.SSE','prior','2023-01-01','2023-03-31',600000,available),
          'assets': fact('600000.SSE','assets','2024-01-01','2024-03-31',30000000,available)},
       ]}
 

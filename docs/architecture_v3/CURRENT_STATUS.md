@@ -790,4 +790,7 @@ F2 fact bridge 现在把 `source_snapshot_id`、`source_sha256`、`snapshot_sour
 
 按 `Quantification_Google_Applied_Design_20261026.pdf` 的设计决定 A，F01 期间契约已完成一个局部、可交付的语义修复：`compute_f01` 现在只接受已经转换为 `single_quarter` 的归母利润事实；累计利润必须先经过 `cumulative_to_single_quarter`，且派生单季从前一累计期间结束日的次日开始。当前利润与上年利润还必须共享同一季度结束月日，否则返回 `INCOMPARABLE/profit_period_not_comparable`。
 
-聚焦验证命令 `D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_f01_financial_factor.py trading/research/tests/test_f01_signal.py trading/research/tests/test_f2_fact_bridge.py` 结果为 `28 passed`。证据回执为 [`20261027_f01_period_contract_v1.json`](../../outputs/pipeline_receipts/20261027_f01_period_contract_v1.json)；该结果只证明本地语义和桥接行为，真实 PIT 检索/as-of/revision 证据仍未补齐，F2 仍保持外部数据阻断。`execution_admitted=false`、`NO_TRADE` 未改变。
+聚焦验证命令覆盖 F01、F2 vertical slice、F2 bridge 和 Signal，结果为 `35 passed`。证据回执为 [`20261027_f01_period_contract_v1.json`](../../outputs/pipeline_receipts/20261027_f01_period_contract_v1.json)；该结果只证明本地语义和桥接行为，真实 PIT 检索/as-of/revision 证据仍未补齐，F2 仍保持外部数据阻断。`execution_admitted=false`、`NO_TRADE` 未改变。
+
+
+F2 的合成 vertical slice 与 bridge 测试夹具已同步改为同季度同比期间（2024Q1 对 2023Q1），避免旧夹具用上一季度数据掩盖 F01 的期间契约；2026-10-25 的旧合成回执保留为历史证据，不作为当前契约的重新验证。

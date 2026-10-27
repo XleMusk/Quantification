@@ -46,7 +46,7 @@ def _inputs():
         }],
     }
     prior = {symbol: _typed(symbol, "parent_net_profit", 900000,
-                            "2023-10-01", "2023-12-31")}
+                            "2023-01-01", "2023-03-31")}
     quotes = {symbol: 10.0}
     return bridge, prior, quotes
 

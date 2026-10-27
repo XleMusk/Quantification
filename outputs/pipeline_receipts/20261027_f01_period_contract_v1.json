@@ -22,9 +22,9 @@
     }
   ],
   "tests": {
-    "command": "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_f01_financial_factor.py trading/research/tests/test_f01_signal.py trading/research/tests/test_f2_fact_bridge.py",
-    "result": "28 passed",
-    "scope": "local semantic and bridge tests"
+    "command": "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_f01_local_vertical_slice.py trading/research/tests/test_f2_vertical_slice.py trading/research/tests/test_f2_bridge_vertical_slice.py trading/research/tests/test_f01_financial_factor.py trading/research/tests/test_f01_signal.py trading/research/tests/test_f2_fact_bridge.py",
+    "result": "35 passed",
+    "scope": "local F01 semantic, F2 vertical-slice and bridge tests"
   },
   "source_files": [
     {
@@ -34,10 +34,22 @@
     {
       "path": "trading/research/tests/test_f01_financial_factor.py",
       "sha256": "b5df13e17a95bf4704c07426793d1c143db4901de84f2abf603e088a1d978ead"
+    },
+    {
+      "path": "trading/research/tests/test_f2_vertical_slice.py",
+      "sha256": "5b50e6ce4ad3996ca824379ae8df774d7db2bf0fdcd1f5bffe298010e825134d"
+    },
+    {
+      "path": "trading/research/tests/test_f2_bridge_vertical_slice.py",
+      "sha256": "fbe7befb41c9ed03922d17d0ef76851ed83e1fc9b9dd665578005e66685d8f9a"
     }
   ],
   "limitations": [
     "No real historical PIT retrieval/as-of/revision payload was added",
     "This receipt proves local semantic behavior only; F2 remains blocked on external PIT evidence"
+  ],
+  "notes": [
+    "Existing 20261025 synthetic receipts remain historical artifacts; current tests use same-quarter year-over-year fixture periods under this contract.",
+    "No real historical PIT retrieval/as-of/revision payload was added."
   ]
 }
