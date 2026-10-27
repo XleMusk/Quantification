@@ -86,3 +86,4 @@ def test_internal_release_binds_workbench_boundary_view_consumer() -> None:
     assert "webapp/frontend/src/components/OfflineOperatorBoard.tsx" in REQUIRED_FILES
     assert "webapp/frontend/src/tradingTypes.ts" in REQUIRED_FILES
     assert "outputs/pipeline_receipts/20261027_workbench_boundary_views_consumer_v1.json" in EVIDENCE_FILES
+    assert "outputs/pipeline_receipts/20261027_workbench_boundary_views_browser_observation_v1.json" in EVIDENCE_FILES

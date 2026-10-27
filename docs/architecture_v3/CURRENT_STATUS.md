@@ -881,3 +881,8 @@ Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027
 ## Google Applied Design workbench boundary-view consumer (2026-10-27)
 
 `OfflineOperatorBoard.tsx` 已接入证券主表、账户风险和券商/同花顺观察三个只读应用视图，统一展示证据来源与执行边界；前端 `npm.cmd run build` 通过。回执为 `outputs/pipeline_receipts/20261027_workbench_boundary_views_consumer_v1.json`。
+
+
+## Workbench boundary-view browser observation (2026-10-27)
+
+本地浏览器在 `#comparison` 页面已实际显示“身份、账户风险与只读回读边界”区块；回执为 `outputs/pipeline_receipts/20261027_workbench_boundary_views_browser_observation_v1.json`。该证据仍是本地 UI 观察，不代表真实同花顺或券商证据。

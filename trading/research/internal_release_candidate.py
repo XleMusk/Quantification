@@ -203,6 +203,8 @@ EVIDENCE_FILES = (
     "outputs/research_reports/20261027_operator_instrument_master_view_usecase_v1.md",
     "outputs/pipeline_receipts/20261027_workbench_boundary_views_consumer_v1.json",
     "outputs/research_reports/20261027_workbench_boundary_views_consumer_v1.md",
+    "outputs/pipeline_receipts/20261027_workbench_boundary_views_browser_observation_v1.json",
+    "outputs/research_reports/20261027_workbench_boundary_views_browser_observation_v1.md",
 )
 
 PAPER_EVIDENCE_FILES = (
