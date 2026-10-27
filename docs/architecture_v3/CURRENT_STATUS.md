@@ -831,3 +831,10 @@ lineage 继续贯通 StockDB Data、Signal、Target Portfolio、Orders、offline
 工作台策略证据审查已从 [`trading/api.py`](../../trading/api.py) 提取为 [`trading/research/operator_evidence_view.py`](../../trading/research/operator_evidence_view.py)。`GET /operator-package/evidence` 现在只负责 HTTP 状态映射，应用视图读取已保存的证据卡、晋级审查、策略看板、稳健性诊断和解释性产物；不会重跑研究、修改账本或访问 broker/THS。
 
 聚焦验证命令结果为 `41 passed`，证据回执为 [`20261027_operator_evidence_usecase_v1.json`](../../outputs/pipeline_receipts/20261027_operator_evidence_usecase_v1.json)。`execution_admitted=false`、自动晋级关闭保持不变。
+
+
+## Google design C: operator decision queue application view (2026-10-27)
+
+工作台的策略级纸面决策队列已提取为 [`trading/research/operator_decision_queue_view.py`](../../trading/research/operator_decision_queue_view.py)。它读取保存的决策队列，附加当前同一账本对账和恢复交接视图，并明确 `retry_permitted=false`；API 只负责请求和错误映射。
+
+聚焦验证命令结果为 `42 passed`，证据回执为 [`20261027_operator_decision_queue_usecase_v1.json`](../../outputs/pipeline_receipts/20261027_operator_decision_queue_usecase_v1.json)。没有任务创建、订单重试、账本变更或 broker/THS 交互。

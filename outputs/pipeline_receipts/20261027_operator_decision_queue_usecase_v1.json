@@ -1,0 +1,39 @@
+{
+  "schema": "operator_decision_queue_usecase_receipt_v1",
+  "status": "VERIFIED_LOCAL_READONLY_USECASE",
+  "created_at": "2026-10-27T11:33:43.403356+08:00",
+  "journey": "operator_strategy_decision_queue",
+  "design_decision": "C_api_task_result_boundaries",
+  "execution_admitted": false,
+  "account_observed": false,
+  "ledger_mutated": false,
+  "retry_permitted": false,
+  "change": {
+    "application_module": "trading/research/operator_decision_queue_view.py",
+    "route": "GET /api/trading/operator-package/decision-queue",
+    "behavior": "HTTP route delegates saved queue read model and attaches current read-only reconciliation views"
+  },
+  "tests": {
+    "command": "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_operator_decision_queue_view.py trading/tests/test_api_operator_package.py",
+    "result": "42 passed",
+    "consumer_acceptance": "operator-package test suite passed with the delegated decision queue route"
+  },
+  "source_files": [
+    {
+      "path": "trading/research/operator_decision_queue_view.py",
+      "sha256": "80df58fdc0b49dd8d3a8923cb772e5584f54b279fa3548ae999bb52419432ea3"
+    },
+    {
+      "path": "trading/research/tests/test_operator_decision_queue_view.py",
+      "sha256": "269f0abdbb8eb8e5d34d2994b0fce336ee61887308ff737173e01a41f5590874"
+    },
+    {
+      "path": "trading/api.py",
+      "sha256": "c21ffedbc75e28e99fbfa7986a9c5875aadb01a797527c869302f21cfa4c490c"
+    }
+  ],
+  "limitations": [
+    "The queue is a saved paper decision view; it does not create tasks, retry orders, mutate the ledger or access broker/THS.",
+    "Recovery handoffs remain evidence for review only; retry_permitted stays false."
+  ]
+}

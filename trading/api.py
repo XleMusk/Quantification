@@ -4262,66 +4262,20 @@ def operator_package_evidence():
 @router.get("/operator-package/decision-queue")
 def operator_package_decision_queue():
     """Expose the saved strategy-level paper decision queue without broker I/O."""
-    package = operator_package()
-    queue_path = _package_artifact(package, "offline_operator_decision_queue_json")
-    if not queue_path:
-        raise HTTPException(404, "当前离线包缺少交易员决策队列")
+    from .research.operator_decision_queue_view import UnsupportedDecisionQueue, build_view
     try:
-        payload = json.loads(queue_path.read_text(encoding="utf-8-sig"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        return build_view(
+            operator_package(), _package_artifact,
+            _ths_journal_reconciliation_view(),
+            _same_ledger_bundle_reconciliation_view(),
+            _same_ledger_compat_fields,
+        )
+    except FileNotFoundError as error:
+        raise HTTPException(404, "当前离线包缺少交易员决策队列") from error
+    except UnsupportedDecisionQueue as error:
+        raise HTTPException(409, "交易员决策队列版本不受支持") from error
+    except (OSError, UnicodeError, ValueError, TypeError, KeyError) as error:
         raise HTTPException(409, f"交易员决策队列尚不可读取：{error}") from error
-    if payload.get("schema") != "offline_operator_decision_queue_v1":
-        raise HTTPException(409, "交易员决策队列版本不受支持")
-    journal_reconciliation = _ths_journal_reconciliation_view()
-    payload["account_observed"] = False
-    payload["quotes_observed"] = False
-    payload["execution_admitted"] = False
-    payload["ths_journal_reconciliation"] = journal_reconciliation
-    same_ledger_bundle_reconciliation = _same_ledger_bundle_reconciliation_view()
-    payload["same_ledger_bundle_reconciliation"] = same_ledger_bundle_reconciliation
-    payload.update(_same_ledger_compat_fields(
-        same_ledger_bundle_reconciliation, journal_reconciliation
-    ))
-    payload["ledger_mutated"] = journal_reconciliation["ledger_mutated"]
-    handoff_rows = []
-    handoff_index_path = Path(str(payload.get("recovery_handoff_index") or ""))
-    if handoff_index_path.is_file():
-        try:
-            handoff_index = json.loads(handoff_index_path.read_text(encoding="utf-8-sig"))
-        except (OSError, UnicodeError, json.JSONDecodeError) as error:
-            raise HTTPException(409, f"恢复交接索引尚不可读取：{error}") from error
-        for index_row in handoff_index.get("rows") or []:
-            handoff_path = Path(str(index_row.get("handoff_json") or ""))
-            if not handoff_path.is_file():
-                continue
-            try:
-                handoff = json.loads(handoff_path.read_text(encoding="utf-8-sig"))
-            except (OSError, UnicodeError, json.JSONDecodeError) as error:
-                raise HTTPException(409, f"恢复交接产物尚不可读取：{error}") from error
-            handoff_rows.append({
-                "strategy_id": handoff.get("strategy_id") or index_row.get("strategy_id"),
-                "scenario_count": handoff.get("scenario_count", 0),
-                "unresolved_scenario_count": handoff.get("unresolved_scenario_count", 0),
-                "retry_permitted": False,
-                "rows": handoff.get("rows") or [],
-                "pending_evidence_count": len({
-                    str(item)
-                    for check in ((handoff.get("reconciliation_template") or {}).get("checks") or [])
-                    for item in (check.get("pending_evidence") or [])
-                    if str(item)
-                }),
-                "pending_evidence": sorted({
-                    str(item)
-                    for check in ((handoff.get("reconciliation_template") or {}).get("checks") or [])
-                    for item in (check.get("pending_evidence") or [])
-                    if str(item)
-                }),
-                "not_attempted": handoff.get("not_attempted") or [],
-            })
-    payload["recovery_handoffs"] = handoff_rows
-    for row in payload.get("rows") or []:
-        row["execution_admitted"] = "false"
-    return payload
 
 
 @router.get("/operator-package/research-exceptions")
