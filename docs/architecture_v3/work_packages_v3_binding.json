@@ -1280,7 +1280,9 @@
         "outputs/pipeline_receipts/20261027_ths_target_readback_current_synthetic_v1.json",
         "outputs/research_reports/20261027_ths_target_readback_current_synthetic_v1.md",
         "outputs/pipeline_receipts/20261027_ths_readback_provenance_contract_v1.json",
-        "outputs/research_reports/20261027_ths_readback_provenance_contract_v1.md"
+        "outputs/research_reports/20261027_ths_readback_provenance_contract_v1.md",
+        "outputs/pipeline_receipts/20261027_candidate_library_binding_v3.json",
+        "outputs/research_reports/20261027_candidate_library_binding_v3.md"
       ],
       "evidence": [
         "trading/ths/adapter.py",
@@ -1291,7 +1293,9 @@
         "trading/ths/target_readback.py",
         "trading/tests/test_ths_target_readback.py",
         "outputs/pipeline_receipts/20261027_ths_readback_provenance_contract_v1.json",
-        "outputs/research_reports/20261027_ths_readback_provenance_contract_v1.md"
+        "outputs/research_reports/20261027_ths_readback_provenance_contract_v1.md",
+        "outputs/pipeline_receipts/20261027_candidate_library_binding_v3.json",
+        "outputs/research_reports/20261027_candidate_library_binding_v3.md"
       ],
       "evidence_updated_on": "2026-10-27"
     },
@@ -2029,7 +2033,9 @@
         "trading/research/post_close_d0_d1.py",
         "trading/research/tests/test_post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261027_post_close_stage_refactor_v1.json",
-        "outputs/research_reports/20261027_post_close_stage_refactor_v1.md"
+        "outputs/research_reports/20261027_post_close_stage_refactor_v1.md",
+        "outputs/pipeline_receipts/20261027_candidate_library_binding_v3.json",
+        "outputs/research_reports/20261027_candidate_library_binding_v3.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -2053,7 +2059,9 @@
         "trading/research/post_close_d0_d1.py",
         "trading/research/tests/test_post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261027_post_close_stage_refactor_v1.json",
-        "outputs/research_reports/20261027_post_close_stage_refactor_v1.md"
+        "outputs/research_reports/20261027_post_close_stage_refactor_v1.md",
+        "outputs/pipeline_receipts/20261027_candidate_library_binding_v3.json",
+        "outputs/research_reports/20261027_candidate_library_binding_v3.md"
       ],
       "evidence_updated_on": "2026-10-27"
     },
@@ -2796,7 +2804,9 @@
         "outputs/pipeline_receipts/20261027_candidate_library_binding_v1.json",
         "outputs/research_reports/20261027_candidate_library_binding_v1.md",
         "outputs/pipeline_receipts/20261027_candidate_library_binding_v2.json",
-        "outputs/research_reports/20261027_candidate_library_binding_v2.md"
+        "outputs/research_reports/20261027_candidate_library_binding_v2.md",
+        "outputs/pipeline_receipts/20261027_candidate_library_binding_v3.json",
+        "outputs/research_reports/20261027_candidate_library_binding_v3.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -2835,7 +2845,9 @@
         "outputs/pipeline_receipts/20261027_candidate_library_binding_v1.json",
         "outputs/research_reports/20261027_candidate_library_binding_v1.md",
         "outputs/pipeline_receipts/20261027_candidate_library_binding_v2.json",
-        "outputs/research_reports/20261027_candidate_library_binding_v2.md"
+        "outputs/research_reports/20261027_candidate_library_binding_v2.md",
+        "outputs/pipeline_receipts/20261027_candidate_library_binding_v3.json",
+        "outputs/research_reports/20261027_candidate_library_binding_v3.md"
       ],
       "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3, the retained joint target gate, the complete public-seat replay gate, candidate same-day freshness, value-size retrospective projection, leader partial cross-year projection and a six-strategy full-panel common-window receipt on one StockDB snapshot. It records all rows as research-only, keeps strategy_validated=false, paper_allowed=false, promotion_allowed=false and execution_admitted=false, and passes the focused rollup and comparison tests. PIT, untouched-forward, corporate-action and channel evidence remain separate gates."
     },

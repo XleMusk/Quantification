@@ -22,6 +22,7 @@ BLOCKED = "CANDIDATE_LIBRARY_BINDING_BLOCKED"
 DEFAULT_CATALOG = Path("docs/architecture_v3/candidate_strategy_catalog_20261024.json")
 DEFAULT_ROLLUP = Path("outputs/pipeline_receipts/20261027_research_adoption_rollup_v10.json")
 DEFAULT_PANEL = Path("outputs/pipeline_receipts/20261027_full_panel_common_window_strategy_comparison_v1.json")
+DEFAULT_THS_READBACK = Path("outputs/pipeline_receipts/20261027_ths_target_readback_current_synthetic_v1.json")
 DEFAULT_OUTPUT = Path("outputs/pipeline_receipts/20261027_candidate_library_binding_v1.json")
 
 
@@ -39,6 +40,27 @@ def _ref(path: Path) -> dict[str, Any]:
 def _require_boundary(name: str, value: Mapping[str, Any]) -> None:
     if value.get("execution_admitted") is not False:
         raise ValueError(f"{name}.execution_admitted must be false")
+
+
+def _ths_binding(readback: Mapping[str, Any]) -> dict[str, Any]:
+    for key in ("execution_admitted", "client_interacted", "submitted", "ledger_mutated"):
+        if readback.get(key) is not False:
+            raise ValueError(f"ths_readback.{key} must be false")
+    if not isinstance(readback.get("status"), str):
+        raise ValueError("ths_readback.status is required")
+    if readback.get("synthetic_fixture") is True:
+        observation_class = "synthetic_fixture"
+    elif readback.get("authorized_readonly_observation") is True:
+        observation_class = "authorized_read_only_export"
+    else:
+        observation_class = "offline_or_unknown"
+    return {
+        "source_status": readback["status"],
+        "comparison_status": readback.get("comparison_status"),
+        "row_count": readback.get("row_count"),
+        "observation_class": observation_class,
+        "authorized_readonly_observation": readback.get("authorized_readonly_observation") is True,
+    }
 
 
 def _panel_index(panel: Mapping[str, Any]) -> dict[str, list[dict[str, Any]]]:
@@ -88,12 +110,14 @@ def bind_library(
     catalog_path: str | Path = DEFAULT_CATALOG,
     rollup_path: str | Path = DEFAULT_ROLLUP,
     panel_path: str | Path = DEFAULT_PANEL,
+    ths_readback_path: str | Path = DEFAULT_THS_READBACK,
     output_path: str | Path = DEFAULT_OUTPUT,
 ) -> dict[str, Any]:
     """Join three saved receipts into one reproducible candidate library."""
 
     paths = {name: Path(value).expanduser().resolve() for name, value in {
         "catalog": catalog_path, "adoption_rollup": rollup_path, "full_panel": panel_path,
+        "ths_readback": ths_readback_path,
     }.items()}
     for name, path in paths.items():
         if not path.is_file():
@@ -101,9 +125,11 @@ def bind_library(
     catalog = _read(paths["catalog"])
     rollup = _read(paths["adoption_rollup"])
     panel = _read(paths["full_panel"])
+    ths_readback = _read(paths["ths_readback"])
     _require_boundary("catalog", catalog)
     _require_boundary("adoption_rollup", rollup)
     _require_boundary("full_panel", panel)
+    ths_binding = _ths_binding(ths_readback)
     if rollup.get("status") != "COMPLETED_RESEARCH_ONLY_ADOPTION_ROLLUP":
         raise ValueError("adoption rollup is not a completed research-only rollup")
     if panel.get("status") != "COMPLETED_RESEARCH_ONLY_FULL_PANEL_COMMON_WINDOW":
@@ -178,6 +204,10 @@ def bind_library(
                         "current_window_comparison")
             if isinstance((rollup.get("inputs") or {}).get(key), Mapping)
         },
+        "channel_binding": {
+            "source": _ref(paths["ths_readback"]),
+            **ths_binding,
+        },
         "candidate_count": len(bound),
         "bound_candidates": bound,
         "adoption_summary": deepcopy(rollup.get("candidate_summary")),
@@ -199,9 +229,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--catalog", type=Path, default=DEFAULT_CATALOG)
     parser.add_argument("--rollup", type=Path, default=DEFAULT_ROLLUP)
     parser.add_argument("--panel", type=Path, default=DEFAULT_PANEL)
+    parser.add_argument("--ths-readback", type=Path, default=DEFAULT_THS_READBACK)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     args = parser.parse_args(argv)
-    result = bind_library(args.catalog, args.rollup, args.panel, args.output)
+    result = bind_library(args.catalog, args.rollup, args.panel, args.ths_readback, args.output)
     print(json.dumps({
         "status": result["status"], "candidate_count": result["candidate_count"],
         "execution_admitted": False, "output": result["output"],

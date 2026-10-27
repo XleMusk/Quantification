@@ -42,12 +42,17 @@ def _inputs(tmp_path):
             {"id": "panel_a_h60", "candidate_spec_id": "spec_a", "metrics": {"net_return": -0.2}},
         ],
     })
-    return catalog, rollup, panel
+    ths = _write(tmp_path / "ths.json", {
+        "status": "READBACK_VERIFIED_SYNTHETIC_ONLY", "comparison_status": "readback_verified",
+        "row_count": 20, "synthetic_fixture": True, "execution_admitted": False,
+        "client_interacted": False, "submitted": False, "ledger_mutated": False,
+    })
+    return catalog, rollup, panel, ths
 
 
 def test_bind_library_keeps_panel_and_separate_gate_distinct(tmp_path):
-    catalog, rollup, panel = _inputs(tmp_path)
-    result = bind_library(catalog, rollup, panel, tmp_path / "bound.json")
+    catalog, rollup, panel, ths = _inputs(tmp_path)
+    result = bind_library(catalog, rollup, panel, ths, tmp_path / "bound.json")
     assert result["status"] == VERIFIED
     assert result["candidate_count"] == 2
     by_id = {row["id"]: row for row in result["bound_candidates"]}
@@ -59,12 +64,22 @@ def test_bind_library_keeps_panel_and_separate_gate_distinct(tmp_path):
     assert set(result["pipeline_bindings"]) == {"d0_d1_paper", "candidate_same_day_gate",
                                                  "full_panel_comparison", "current_window_comparison"}
     assert result["execution_admitted"] is False
+    assert result["channel_binding"]["observation_class"] == "synthetic_fixture"
 
 
 def test_bind_library_rejects_live_source_boundary(tmp_path):
-    catalog, rollup, panel = _inputs(tmp_path)
+    catalog, rollup, panel, ths = _inputs(tmp_path)
     rollup_data = json.loads(rollup.read_text())
     rollup_data["execution_admitted"] = True
     rollup.write_text(json.dumps(rollup_data), encoding="utf-8")
     with pytest.raises(ValueError, match="execution_admitted"):
-        bind_library(catalog, rollup, panel, tmp_path / "bound.json")
+        bind_library(catalog, rollup, panel, ths, tmp_path / "bound.json")
+
+
+def test_bind_library_rejects_ths_client_interaction(tmp_path):
+    catalog, rollup, panel, ths = _inputs(tmp_path)
+    ths_data = json.loads(ths.read_text())
+    ths_data["client_interacted"] = True
+    ths.write_text(json.dumps(ths_data), encoding="utf-8")
+    with pytest.raises(ValueError, match="client_interacted"):
+        bind_library(catalog, rollup, panel, ths, tmp_path / "bound.json")
