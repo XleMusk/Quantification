@@ -40,3 +40,10 @@ def test_internal_release_default_paper_evidence_includes_current_joint_d0_d1() 
         "D:/Quantification/outputs/research_reports/20261026_fixed_candidate_d0_d1_v2.md"
         in PAPER_EVIDENCE_FILES
     )
+
+
+def test_internal_release_binds_current_runtime_recipe() -> None:
+    from trading.research.internal_release_candidate import RUNTIME_RECIPE_FILES
+
+    assert "outputs/pipeline_receipts/20261027_runtime_recipe_v3.json" in RUNTIME_RECIPE_FILES
+    assert "outputs/research_reports/20261027_runtime_recipe_v3.md" in RUNTIME_RECIPE_FILES

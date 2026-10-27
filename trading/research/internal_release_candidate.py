@@ -39,6 +39,7 @@ REQUIRED_FILES = (
     "trading/research/candidate_evidence_view.py",
     "trading/research/daily_candidate_paper_batch.py",
     "trading/research/candidate_daily_paper_run.py",
+    "trading/research/runtime_recipe.py",
     "webapp/backend/app/job_lifecycle_view.py",
     "run_committee.py",
 )
@@ -102,6 +103,9 @@ EVIDENCE_FILES = (
     "trading/research/tests/test_candidate_daily_paper_run.py",
     "outputs/pipeline_receipts/20261027_candidate_stage_trace_v1.json",
     "outputs/research_reports/20261027_candidate_stage_trace_v1.md",
+    "trading/research/tests/test_runtime_recipe.py",
+    "outputs/pipeline_receipts/20261027_runtime_recipe_v3.json",
+    "outputs/research_reports/20261027_runtime_recipe_v3.md",
     "webapp/backend/tests/test_job_lifecycle_view.py",
     "outputs/pipeline_receipts/20261027_job_lifecycle_view_usecase_v1.json",
     "outputs/research_reports/20261027_job_lifecycle_view_usecase_v1.md",
@@ -126,6 +130,11 @@ PAPER_EVIDENCE_FILES = (
     "D:/Quantification/outputs/pipeline_receipts/20261027_research_adoption_rollup_v12.json",
     "D:/Quantification/outputs/pipeline_receipts/20261027_operator_evidence_usecase_v1.json",
     "D:/Quantification/outputs/pipeline_receipts/20261027_operator_decision_queue_usecase_v1.json",
+)
+
+RUNTIME_RECIPE_FILES = (
+    "outputs/pipeline_receipts/20261027_runtime_recipe_v3.json",
+    "outputs/research_reports/20261027_runtime_recipe_v3.md",
 )
 
 
@@ -170,6 +179,7 @@ def build_release(root: str | Path, output_dir: str | Path, *, version: str,
         raise ValueError("version must be a non-empty identifier without whitespace")
     required, missing_required = _refs(root, REQUIRED_FILES)
     evidence, missing_evidence = _refs(root, EVIDENCE_FILES)
+    runtime_recipe, missing_runtime_recipe = _refs(root, RUNTIME_RECIPE_FILES)
     paper_evidence, missing_paper_evidence = _refs(
         root, PAPER_EVIDENCE_FILES if paper_evidence_files is None else paper_evidence_files)
     output.mkdir(parents=True, exist_ok=True)
@@ -188,9 +198,11 @@ def build_release(root: str | Path, output_dir: str | Path, *, version: str,
         "required_code": required,
         "evidence": evidence,
         "paper_evidence": paper_evidence,
+        "runtime_recipe": runtime_recipe,
         "missing_required_code": missing_required,
         "missing_evidence": missing_evidence,
         "missing_paper_evidence": missing_paper_evidence,
+        "missing_runtime_recipe": missing_runtime_recipe,
         "account_readiness": {
             "research_paper_account": "BOUND_RESEARCH_ONLY",
             "current_broker_quote": "MISSING",
@@ -209,6 +221,7 @@ def build_release(root: str | Path, output_dir: str | Path, *, version: str,
             "D:/Quantification/env/python.exe -m pytest -q webapp/backend/tests/test_job_lifecycle_view.py webapp/backend/tests/test_webapp.py",
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_candidate_evidence_view.py trading/research/tests/test_research_evidence_catalog.py trading/research/tests/test_native_research_evidence_catalog.py",
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_daily_candidate_paper_batch.py trading/research/tests/test_candidate_daily_paper_run.py",
+            "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_runtime_recipe.py",
             "D:/Quantification/env/python.exe run_committee.py post-close-d0-d1 --help",
         ],
         "operating_entrypoints": {
