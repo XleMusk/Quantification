@@ -1,0 +1,35 @@
+{
+  "schema": "f2_historical_source_selection_v1",
+  "status": "BLOCKED_DATA",
+  "execution_admitted": false,
+  "factor_computed": false,
+  "account_replay": false,
+  "source": {
+    "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_f2_wayback_000002_2023q1_v2.json",
+    "sha256": "1f85d768522c528f63270a60081637d66b2ddc0abd84ee659d8c818a2396b2ce",
+    "schema": "f2_wayback_probe_v1"
+  },
+  "symbol": "000002.SZSE",
+  "period": "2023Q1",
+  "decision_day": "2024-05-01",
+  "selection": {
+    "schema": "f2_historical_source_selection_v1",
+    "policy": "latest_on_or_before_cutoff_v1",
+    "cutoff": "2024-05-01",
+    "cutoff_time": "2024-05-01T15:05:00+08:00",
+    "timestamp_key": "timestamp",
+    "observed_count": 1,
+    "invalid_count": 0,
+    "eligible_count": 0,
+    "selected_timestamp": "2025-09-05T23:50:23+00:00",
+    "selected": {
+      "timestamp": "20250905235023",
+      "original": "http://static.cninfo.com.cn/finalpage/2023-04-29/1216686497.PDF",
+      "statuscode": "200",
+      "digest": "JETC2ZGDKLIYORYGFKJ5X7DVJDHHPMNB"
+    },
+    "eligible": [],
+    "observed_after_cutoff_only": true
+  },
+  "next_gate": "pass selected candidate through publication/as-of/revision and source-byte gates before F2 admission"
+}

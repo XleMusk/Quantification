@@ -1,0 +1,27 @@
+{
+  "schema": "paper_account_continuity_use_case_receipt_v1",
+  "created_at": "2026-10-27T09:20:00+08:00",
+  "status": "VERIFIED_LOCAL",
+  "journey": "paper_account_continuity_read",
+  "implementation": [
+    "trading/research/paper_account_continuity.py",
+    "trading/api.py",
+    "trading/research/tests/test_paper_account_continuity_view.py"
+  ],
+  "behavior": {
+    "route_is_thin_delegate": true,
+    "explicit_root_input": true,
+    "read_only": true,
+    "execution_admitted": false,
+    "ledger_mutated": false,
+    "broker_interacted": false,
+    "ths_interacted": false
+  },
+  "tests": {
+    "command": "D:\\Quantification\\env\\python.exe -m pytest -q trading/tests/test_api_paper_continuity.py trading/tests/test_api_operator_package.py trading/tests/test_architecture.py",
+    "result": "continuity/API/operator/architecture slice passed (53 related tests; full combined run 89 passed)",
+    "direct_view_cases": ["saved receipt", "missing receipt", "invalid receipt"]
+  },
+  "commit": "e36a4b8",
+  "next": "Reuse the same application-use-case boundary for another real paper workflow only when it reduces caller knowledge."
+}

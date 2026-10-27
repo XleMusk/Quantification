@@ -1,0 +1,36 @@
+{
+  "schema": "f2_decision_cutoff_source_selection_receipt_v1",
+  "created_at": "2026-10-27T09:20:00+08:00",
+  "status": "BLOCKED_DATA",
+  "implementation": [
+    "trading/research/f2_source_selection.py",
+    "trading/research/f2_wayback_probe.py",
+    "trading/research/tests/test_f2_source_selection.py"
+  ],
+  "policy": {
+    "cutoff": "decision_time(decision_day)",
+    "decision_time": "15:05:00+08:00",
+    "same_day_after_cutoff_excluded": true,
+    "date_only_selection_removed_from_f2_receipts": true
+  },
+  "input": "outputs/pipeline_receipts/20261027_f2_wayback_000002_2023q1_v2.json",
+  "selection_output": "outputs/pipeline_receipts/20261027_f2_source_selection_decision_time_v1.json",
+  "result": {
+    "symbol": "000002.SZSE",
+    "period": "2023Q1",
+    "decision_day": "2024-05-01",
+    "observed_count": 1,
+    "eligible_count": 0,
+    "selected_capture_at": "2025-09-05T23:50:23+00:00",
+    "execution_admitted": false,
+    "pit_fact_admitted": false,
+    "factor_computed": false,
+    "account_replay": false
+  },
+  "tests": {
+    "command": "D:\\Quantification\\env\\python.exe -m pytest -q trading/research/tests/test_f2_source_selection.py trading/research/tests/test_f2_wayback_probe.py trading/tests/test_run_committee_dispatch.py",
+    "result": "34 passed"
+  },
+  "commit": "29ee086",
+  "next": "Obtain a pre-decision historical capture with revision identity and source bytes; the exact cutoff now prevents same-day late captures from entering the PIT candidate set."
+}

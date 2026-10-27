@@ -748,3 +748,11 @@ post-close 终态回执现在记录 `finished_at` 和 `elapsed_seconds`，绑定
 日终刷新入口已完成一个保持行为不变的结构重构：`trading/research/daily_refresh_policy.py` 以不可变 `RoutePolicy` 表集中保存允许的研究路由、子命令约束、固定三页采集边界和 native PAPER closing 参数；`system_daily_refresh.py` 只负责委托和编排，不再维护逐路由条件链。原有命令 argv、`execution_admitted=false`、`candidate_panel_only=true` 和禁止 `--live/--submit/--train` 的边界保持不变。新增策略表测试覆盖正常路由、runtime-repair、非法子命令、seat-collect 三页同日约束和危险 flag 拒绝；聚焦刷新/披露/路由适配测试共 `16 passed`。代码提交为 `6097e4a`。
 
 后续按 Google Applied Design 的迁移顺序推进：先补真实 F2 `retrieval/as-of/revision` 事实，再在新收市输入上复用 `fixed_daily → D0/D1`，随后从一个真实纸面旅程继续抽取薄应用用例；最后只在实际压力有证据时扩展发布、恢复和容量。暂不做全仓格式化、Bazel/微服务迁移或重复审计；完整全市场 StockDB、授权 THS 只读导出和真实 PIT 仍是独立未完成项。
+
+## Google Applied Design paper continuity and F2 cutoff (2026-10-27)
+
+纸面账户连续性查询已完成第二个薄应用用例切片：`/paper-account-continuity` 路由只做 HTTP 委托，连续性回执读取和只读投影移到 `trading/research/paper_account_continuity.py`，显式接收根目录，不推进账户或 Ledger。回执为 [`20261027_paper_account_continuity_use_case_v1.json`](../../outputs/pipeline_receipts/20261027_paper_account_continuity_use_case_v1.json)，提交 `e36a4b8`；连续性/API/operator/architecture 相关测试及本轮组合运行共 `89 passed`。
+
+F2 来源选择现在按 `decision_time(decision_day)=15:05:00+08:00` 比较时间戳，而不是只比较日期；同日决策后捕获会留在观察证据中但不会进入 `eligible`。真实 `000002.SZSE/2023Q1` Wayback 仍只有 `2025-09-05T23:50:23+00:00` 捕获，2024-05-01 决策日的选择回执为 `BLOCKED_DATA`、eligible=0；没有 PIT 事实、因子或账户回放准入。回执为 [`20261027_f2_decision_cutoff_selection_v1.json`](../../outputs/pipeline_receipts/20261027_f2_decision_cutoff_selection_v1.json)，提交 `29ee086`，相关测试 `34 passed`。
+
+下一步仍按主线推进：取得真实决策日前的 retrieval/as-of/revision/source bytes 证据；下一完整收市后复用 `fixed_daily → D0/D1`；只在有真实消费者时继续抽取应用用例。

@@ -189,7 +189,11 @@
         "trading/research/daily_refresh_policy.py",
         "trading/research/tests/test_daily_refresh_policy.py",
         "outputs/pipeline_receipts/20261027_daily_refresh_policy_refactor_v1.json",
-        "outputs/research_reports/20261027_daily_refresh_policy_refactor_v1.md"
+        "outputs/research_reports/20261027_daily_refresh_policy_refactor_v1.md",
+        "trading/research/paper_account_continuity.py",
+        "trading/research/tests/test_paper_account_continuity_view.py",
+        "outputs/pipeline_receipts/20261027_paper_account_continuity_use_case_v1.json",
+        "outputs/research_reports/20261027_paper_account_continuity_use_case_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -206,7 +210,11 @@
         "trading/research/daily_refresh_policy.py",
         "trading/research/tests/test_daily_refresh_policy.py",
         "outputs/pipeline_receipts/20261027_daily_refresh_policy_refactor_v1.json",
-        "outputs/research_reports/20261027_daily_refresh_policy_refactor_v1.md"
+        "outputs/research_reports/20261027_daily_refresh_policy_refactor_v1.md",
+        "trading/research/paper_account_continuity.py",
+        "trading/research/tests/test_paper_account_continuity_view.py",
+        "outputs/pipeline_receipts/20261027_paper_account_continuity_use_case_v1.json",
+        "outputs/research_reports/20261027_paper_account_continuity_use_case_v1.md"
       ]
     },
     {
@@ -365,7 +373,7 @@
       "domain": "data",
       "result": "A callable point-in-time versioned read returns only facts available at the requested cutoff.",
       "state": "PARTIAL",
-      "next": "Reuse the shared latest-on-or-before-cutoff selector; supply a pre-decision issuer retrieval/as-of capture plus revision identity before PIT admission.",
+      "next": "The selector now binds F2 receipts to the exact decision time; supply a pre-decision issuer retrieval/as-of capture plus revision identity and source bytes before PIT admission.",
       "prohibition": "Do not read the latest file implicitly.",
       "actual_paths": [
         "outputs/financials/f01_scoped_field_coverage_20261024.json",
@@ -414,7 +422,10 @@
         "trading/research/f2_source_selection.py",
         "trading/research/tests/test_f2_source_selection.py",
         "outputs/pipeline_receipts/20261027_f2_source_selection_000002_v1.json",
-        "outputs/research_reports/20261027_f2_source_selection_000002_v1.md"
+        "outputs/research_reports/20261027_f2_source_selection_000002_v1.md",
+        "outputs/pipeline_receipts/20261027_f2_source_selection_decision_time_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_decision_cutoff_selection_v1.json",
+        "outputs/research_reports/20261027_f2_decision_cutoff_selection_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -443,7 +454,10 @@
         "trading/research/f2_source_selection.py",
         "trading/research/tests/test_f2_source_selection.py",
         "outputs/pipeline_receipts/20261027_f2_source_selection_000002_v1.json",
-        "outputs/research_reports/20261027_f2_source_selection_000002_v1.md"
+        "outputs/research_reports/20261027_f2_source_selection_000002_v1.md",
+        "outputs/pipeline_receipts/20261027_f2_source_selection_decision_time_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_decision_cutoff_selection_v1.json",
+        "outputs/research_reports/20261027_f2_decision_cutoff_selection_v1.md"
       ]
     },
     {
@@ -1647,7 +1661,7 @@
       "domain": "workbench",
       "result": "Frontend/backend task and state semantics agree with request examples.",
       "state": "PARTIAL",
-      "next": "Keep lifecycle stages bound to one job id; submit, query and download now share one application use case while refresh remains read-only.",
+      "next": "Keep application views thin and explicit; migrate another caller only when a real paper journey reduces route knowledge without creating a second task or account registry.",
       "prohibition": "Do not let UI labels collapse paper, live and unknown states.",
       "actual_paths": [
         "trading/api.py",
@@ -1666,7 +1680,11 @@
         "outputs/pipeline_receipts/20261026_workbench_lifecycle_job_id_v2.json",
         "outputs/research_reports/20261026_workbench_lifecycle_job_id_v2.md",
         "outputs/pipeline_receipts/20261027_research_job_usecase_v1.json",
-        "outputs/research_reports/20261027_research_job_usecase_v1.md"
+        "outputs/research_reports/20261027_research_job_usecase_v1.md",
+        "trading/research/paper_account_continuity.py",
+        "trading/research/tests/test_paper_account_continuity_view.py",
+        "outputs/pipeline_receipts/20261027_paper_account_continuity_use_case_v1.json",
+        "outputs/research_reports/20261027_paper_account_continuity_use_case_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -1680,7 +1698,11 @@
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
         "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_lifecycle_job_id_v2.json",
-        "outputs/research_reports/20261026_workbench_lifecycle_job_id_v2.md"
+        "outputs/research_reports/20261026_workbench_lifecycle_job_id_v2.md",
+        "trading/research/paper_account_continuity.py",
+        "trading/research/tests/test_paper_account_continuity_view.py",
+        "outputs/pipeline_receipts/20261027_paper_account_continuity_use_case_v1.json",
+        "outputs/research_reports/20261027_paper_account_continuity_use_case_v1.md"
       ]
     },
     {
@@ -2778,5 +2800,5 @@
       "acceptance": "A real local HTTP submission returns one stable job id on same-key repeat; worker reaches completed, lifecycle exposes result/download stages, result JSON is readable, three files download with nonzero bytes, and execution_admitted=false. A local interrupted-job recovery receipt additionally binds the observation file hash/path to a read-only release version and commit, keeps MANUAL_RESUBMIT_REQUIRED without automatic retry, and records live_execution_ready=false; workbench/recovery tests pass without external channel interaction."
     }
   ],
-  "updated_at": "2026-10-27T09:10:00+08:00"
+  "updated_at": "2026-10-27"
 }
