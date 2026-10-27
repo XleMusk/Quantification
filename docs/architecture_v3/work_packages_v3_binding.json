@@ -424,9 +424,9 @@
     {
       "id": "D01",
       "domain": "data",
-      "result": "First-disclosure event samples have source locations and unknown-coverage reasons.",
-      "state": "PARTIAL",
-      "next": "Retain the two no-CDX probes as explicit coverage gaps; keep scope/period/unit mapping and unknown coverage visible until a historical issuer artifact is found.",
+      "result": "First-disclosure event samples have source locations and unknown-coverage reasons; one real pre-decision issuer archive is now hash-bound.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Expand the hash-bound archive coverage to more issuers and periods while retaining the two no-CDX probes as explicit gaps.",
       "prohibition": "UNKNOWN prior coverage is not no prior information.",
       "actual_paths": [
         "outputs/financials/f01_scoped_field_coverage_20261024.json",
@@ -458,7 +458,12 @@
         "outputs/pipeline_receipts/20261027_f2_wayback_600004_2024q1_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_688008_2024q1_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_two_issuer_probe_v1.json",
-        "outputs/research_reports/20261027_f2_wayback_two_issuer_probe_v1.md"
+        "outputs/research_reports/20261027_f2_wayback_two_issuer_probe_v1.md",
+        "D:/QuantificationData/trading/research/financials/20261027_f2_issuer_2023q1_wayback_20250905/source_snapshot.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_historical_source_gate_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_pit_sidecar_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_pit_fact_bridge_v1.json",
+        "outputs/research_reports/20261027_f2_wayback_historical_pit_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -479,15 +484,20 @@
         "outputs/pipeline_receipts/20261027_f2_wayback_600004_2024q1_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_688008_2024q1_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_two_issuer_probe_v1.json",
-        "outputs/research_reports/20261027_f2_wayback_two_issuer_probe_v1.md"
+        "outputs/research_reports/20261027_f2_wayback_two_issuer_probe_v1.md",
+        "D:/QuantificationData/trading/research/financials/20261027_f2_issuer_2023q1_wayback_20250905/source_snapshot.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_historical_source_gate_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_pit_sidecar_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_pit_fact_bridge_v1.json",
+        "outputs/research_reports/20261027_f2_wayback_historical_pit_v1.md"
       ]
     },
     {
       "id": "D02",
       "domain": "data",
-      "result": "A callable point-in-time versioned read returns only facts available at the requested cutoff.",
-      "state": "PARTIAL",
-      "next": "Keep the exact decision-time selector and failed probes; supply a pre-decision issuer retrieval/as-of capture plus revision identity and source bytes before PIT admission.",
+      "result": "A callable point-in-time versioned read returns only facts available at the requested cutoff; one Wayback-backed CNINFO snapshot now yields two typed F2 facts.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Add more pre-decision issuer snapshots and comparable periods; keep latest/current fetches blocked and never infer a prior fact.",
       "prohibition": "Do not read the latest file implicitly.",
       "actual_paths": [
         "outputs/financials/f01_scoped_field_coverage_20261024.json",
@@ -543,7 +553,12 @@
         "outputs/pipeline_receipts/20261027_f2_wayback_600004_2024q1_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_688008_2024q1_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_two_issuer_probe_v1.json",
-        "outputs/research_reports/20261027_f2_wayback_two_issuer_probe_v1.md"
+        "outputs/research_reports/20261027_f2_wayback_two_issuer_probe_v1.md",
+        "D:/QuantificationData/trading/research/financials/20261027_f2_issuer_2023q1_wayback_20250905/source_snapshot.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_historical_source_gate_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_pit_sidecar_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_pit_fact_bridge_v1.json",
+        "outputs/research_reports/20261027_f2_wayback_historical_pit_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -579,7 +594,12 @@
         "outputs/pipeline_receipts/20261027_f2_wayback_600004_2024q1_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_688008_2024q1_v1.json",
         "outputs/pipeline_receipts/20261027_f2_wayback_two_issuer_probe_v1.json",
-        "outputs/research_reports/20261027_f2_wayback_two_issuer_probe_v1.md"
+        "outputs/research_reports/20261027_f2_wayback_two_issuer_probe_v1.md",
+        "D:/QuantificationData/trading/research/financials/20261027_f2_issuer_2023q1_wayback_20250905/source_snapshot.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_historical_source_gate_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_pit_sidecar_v1.json",
+        "outputs/pipeline_receipts/20261027_f2_wayback_pit_fact_bridge_v1.json",
+        "outputs/research_reports/20261027_f2_wayback_historical_pit_v1.md"
       ]
     },
     {
