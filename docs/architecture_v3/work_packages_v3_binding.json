@@ -1339,7 +1339,11 @@
         "run_committee.py workbench-recovery-evidence",
         "trading/tests/test_workbench_recovery_dispatch.py",
         "outputs/pipeline_receipts/20261027_workbench_recovery_cli_v1.json",
-        "outputs/research_reports/20261027_workbench_recovery_cli_v1.md"
+        "outputs/research_reports/20261027_workbench_recovery_cli_v1.md",
+        "trading/research/operator_release_controls_view.py",
+        "trading/research/tests/test_operator_release_controls_view.py",
+        "outputs/pipeline_receipts/20261027_operator_release_controls_usecase_v1.json",
+        "outputs/research_reports/20261027_operator_release_controls_usecase_v1.md"
       ],
       "evidence": [
         "webapp/backend/app/main.py",
@@ -1354,7 +1358,11 @@
         "run_committee.py workbench-recovery-evidence",
         "trading/tests/test_workbench_recovery_dispatch.py",
         "outputs/pipeline_receipts/20261027_workbench_recovery_cli_v1.json",
-        "outputs/research_reports/20261027_workbench_recovery_cli_v1.md"
+        "outputs/research_reports/20261027_workbench_recovery_cli_v1.md",
+        "trading/research/operator_release_controls_view.py",
+        "trading/research/tests/test_operator_release_controls_view.py",
+        "outputs/pipeline_receipts/20261027_operator_release_controls_usecase_v1.json",
+        "outputs/research_reports/20261027_operator_release_controls_usecase_v1.md"
       ],
       "evidence_updated_on": "2026-10-26"
     },

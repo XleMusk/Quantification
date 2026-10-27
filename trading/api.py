@@ -23,6 +23,7 @@ from .research import paper_preview_view
 from .research import paper_preview_readiness_view
 from .research import candidate_evidence_view
 from .research import current_research_evidence_view
+from .research import operator_release_controls_view
 from .research import research_comparison_view
 
 router = APIRouter(prefix="/api/trading")
@@ -4728,26 +4729,16 @@ def operator_package_release_controls():
 
     alerts = read_csv(alerts_path)
     controls = read_csv(controls_path)
-    return {
-        "schema": "offline_release_controls_view_v1",
-        "status": "paper_controls_only",
-        "execution_admitted": False,
-        "live_alerts": False,
-        "ths_journal_reconciliation": journal_reconciliation,
-        "same_ledger_bundle_reconciliation": same_ledger_bundle_reconciliation,
-        **_same_ledger_compat_fields(
+    return operator_release_controls_view.build_view(
+        alerts=alerts,
+        controls=controls,
+        source_files={"alerts": str(alerts_path), "controls": str(controls_path)},
+        journal_reconciliation=journal_reconciliation,
+        same_ledger_bundle_reconciliation=same_ledger_bundle_reconciliation,
+        compatibility_fields=_same_ledger_compat_fields(
             same_ledger_bundle_reconciliation, journal_reconciliation
         ),
-        "ledger_mutated": journal_reconciliation["ledger_mutated"],
-        "alerts": {
-            "row_count": len(alerts),
-            "open_count": sum(row.get("state") == "open" for row in alerts),
-            "severity_counts": dict(Counter(row.get("severity", "unknown") for row in alerts)),
-            "rows": alerts,
-        },
-        "controls": {"row_count": len(controls), "rows": controls},
-        "source_files": {"alerts": str(alerts_path), "controls": str(controls_path)},
-    }
+    )
 
 
 @router.get("/operator-package/audit-events")
