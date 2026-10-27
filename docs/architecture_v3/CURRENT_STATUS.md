@@ -732,3 +732,8 @@ U02 新增隔离本地 HTTP 观测探针，实际完成 CSV 上传、同幂等�
 本周复盘回执 [`20261027_weekly_review_receipt_v3.json`](../../outputs/weekly_reviews/20261027_weekly_review_receipt_v3.json) 已生成。六策略同快照比较覆盖 184 个会话且全部保持 `STOP_RESEARCH_ONLY`；2026-10-26 全市场收市覆盖仍为 226/5211 行，显式 20 标的固定子集为完整研究包；F2 原始快照桥接仍为 18 行、0 个 ready fact；U02 本地 HTTP 链已完成。
 
 最大阻碍仍是完整全市场 StockDB 收市包、F2 决策日前 retrieval/as-of/revision 和授权 THS 只读导出。下一收市日沿 staged post-close 执行，保持缺失显式、无补值、无真实渠道操作。
+
+
+## THS readback provenance contract (2026-10-27)
+
+`trading/ths/target_readback.py` 现在可在提供 `source_root` 时重新读取授权只读导出并校验 SHA-256；文件缺失或哈希不一致会停止比较。合成和离线回读仍明确标记为非授权观察，未产生客户端操作、提交或账本变更。回执见 [`20261027_ths_readback_provenance_contract_v1.json`](../../outputs/pipeline_receipts/20261027_ths_readback_provenance_contract_v1.json)，测试 `10 passed`。

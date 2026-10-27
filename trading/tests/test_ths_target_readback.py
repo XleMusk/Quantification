@@ -1,3 +1,6 @@
+from hashlib import sha256
+from pathlib import Path
+
 import pytest
 
 from trading.ths.target_readback import compare_target_reference
@@ -96,3 +99,38 @@ def test_authorized_readonly_observation_requires_no_submission():
     assert result["authorized_readonly_observation"] is True
     assert result["submitted"] is False
     assert result["execution_admitted"] is False
+
+
+def test_authorized_observation_rehashes_export_when_source_root_is_supplied(tmp_path):
+    export = tmp_path / "ths_readback.json"
+    export.write_text("authorized export bytes", encoding="utf-8")
+    readback = {
+        "capture_mode": "authorized_read_only_export",
+        "client_interacted": True,
+        "account_observed": True,
+        "quote_observed": True,
+        "observed_at": "2026-10-27T01:20:00+08:00",
+        "source_file": export.name,
+        "source_sha256": sha256(export.read_bytes()).hexdigest(),
+        "rows": [{"symbol": "000001.SZSE", "qty": 100}, {"symbol": "600000.SSE", "qty": 200}],
+    }
+    result = compare_target_reference(_reference(), readback, source_root=tmp_path)
+    assert result["status"] == "readback_verified"
+    assert result["readback_provenance"]["source_file_verified"] is True
+    assert Path(result["readback_provenance"]["source_file"]) == export.resolve()
+
+
+def test_authorized_observation_rejects_changed_export_hash(tmp_path):
+    export = tmp_path / "ths_readback.json"
+    export.write_text("changed bytes", encoding="utf-8")
+    with pytest.raises(ValueError, match="source_sha256"):
+        compare_target_reference(_reference(), {
+            "capture_mode": "authorized_read_only_export",
+            "client_interacted": True,
+            "account_observed": True,
+            "quote_observed": True,
+            "observed_at": "2026-10-27T01:20:00+08:00",
+            "source_file": export.name,
+            "source_sha256": "a" * 64,
+            "rows": [{"symbol": "000001.SZSE", "qty": 100}, {"symbol": "600000.SSE", "qty": 200}],
+        }, source_root=tmp_path)

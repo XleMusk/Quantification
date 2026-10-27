@@ -1,0 +1,29 @@
+{
+  "schema": "ths_target_readback_provenance_contract_receipt_v1",
+  "status": "VERIFIED_LOCAL_CONTRACT",
+  "created_at": "2026-10-27T00:51:15.158985+00:00",
+  "implementation": [
+    "trading/ths/target_readback.py",
+    "trading/tests/test_ths_target_readback.py"
+  ],
+  "behavior": {
+    "authorized_export_requires_capture_mode": true,
+    "authorized_export_requires_observed_at_timezone": true,
+    "authorized_export_source_file_rehashed_when_source_root_supplied": true,
+    "hash_mismatch_stops_comparison": true,
+    "synthetic_readback_remains_unobserved": true,
+    "submission_or_ledger_mutation": false
+  },
+  "tests": {
+    "command": "D:\\Quantification\\env\\python.exe -m pytest -q trading/tests/test_ths_target_readback.py",
+    "result": "10 passed"
+  },
+  "boundary": {
+    "execution_admitted": false,
+    "client_interacted": false,
+    "submitted": false,
+    "ledger_mutated": false,
+    "authorized_observation_obtained": false
+  },
+  "next_gate": "A real user-authorized read-only export must be supplied before channel evidence can become authorized_readonly_observation."
+}

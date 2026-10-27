@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime
+from hashlib import sha256
 import json
 from pathlib import Path
 from typing import Any, Mapping
@@ -24,7 +25,7 @@ def _load(path: str | Path) -> dict[str, Any]:
     return value
 
 
-def _readback_provenance(readback: Mapping[str, Any]) -> dict[str, Any]:
+def _readback_provenance(readback: Mapping[str, Any], *, source_root: str | Path | None = None) -> dict[str, Any]:
     """Validate provenance only when a readback claims client observation.
 
     Offline and synthetic fixtures remain usable without an external source.
@@ -60,6 +61,17 @@ def _readback_provenance(readback: Mapping[str, Any]) -> dict[str, Any]:
         if (not isinstance(source_sha256, str) or len(source_sha256) != 64
                 or any(char not in "0123456789abcdefABCDEF" for char in source_sha256)):
             raise ValueError("Observed readback requires a 64-character source_sha256")
+        source_path = Path(source_file).expanduser()
+        if source_root is not None and not source_path.is_absolute():
+            source_path = Path(source_root).expanduser().resolve() / source_path
+        source_path = source_path.resolve()
+        if source_root is not None:
+            if not source_path.is_file():
+                raise ValueError("Observed readback source_file is missing")
+            actual = sha256(source_path.read_bytes()).hexdigest()
+            if actual.lower() != source_sha256.lower():
+                raise ValueError("Observed readback source_sha256 does not match source_file")
+            source_file = str(source_path)
         kind = AUTHORIZED_CAPTURE_MODE
     elif synthetic:
         kind = "synthetic_fixture"
@@ -68,18 +80,19 @@ def _readback_provenance(readback: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "kind": kind,
         "capture_mode": readback.get("capture_mode"),
-        "source_file": readback.get("source_file"),
+        "source_file": source_file if claims_channel else readback.get("source_file"),
         "source_sha256": readback.get("source_sha256"),
+        "source_file_verified": bool(claims_channel and source_root is not None),
         "client_interacted": client_interacted,
     }
 
 
-def compare_target_reference(reference: Mapping[str, Any], readback: Mapping[str, Any]) -> dict[str, Any]:
+def compare_target_reference(reference: Mapping[str, Any], readback: Mapping[str, Any], *, source_root: str | Path | None = None) -> dict[str, Any]:
     if reference.get("schema") != "quantification_ths_readonly_target_reference_v1":
         raise ValueError("Unexpected target reference schema")
     if reference.get("execution_admitted") is not False or reference.get("prefill_allowed") is not False:
         raise ValueError("Target reference crossed the execution boundary")
-    provenance = _readback_provenance(readback)
+    provenance = _readback_provenance(readback, source_root=source_root)
     expected_rows = reference.get("rows")
     received_rows = readback.get("rows")
     if not isinstance(expected_rows, list) or not isinstance(received_rows, list):
@@ -149,8 +162,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--reference", type=Path, required=True)
     parser.add_argument("--readback", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--source-root", type=Path,
+                        help="optional root for resolving and rehashing an authorized read-only export")
     args = parser.parse_args(argv)
-    result = compare_target_reference(_load(args.reference), _load(args.readback))
+    result = compare_target_reference(
+        _load(args.reference), _load(args.readback),
+        source_root=args.source_root if args.source_root is not None else args.readback.parent,
+    )
     output = args.output.expanduser().resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
