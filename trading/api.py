@@ -32,6 +32,7 @@ from .research import operator_blotter_view
 from .research import operator_execution_attribution_view
 from .research import operator_execution_evidence_view
 from .research import operator_basket_schedule_view
+from .research import operator_paper_selection_view
 from .research import operator_portfolio_views
 
 router = APIRouter(prefix="/api/trading")
@@ -3173,29 +3174,7 @@ def apply_paper_selection(body: PaperSelectionInput):
 @router.get("/operator-package/paper-selection")
 def operator_package_paper_selection():
     """Return the last explicit paper selection without rerunning the offline builder."""
-    package = operator_package()
-    receipt_path = _operator_package_session_root(package) / "paper_strategy_application_receipt_v1.json"
-    if not receipt_path.is_file():
-        return {"schema": "offline_paper_selection_view_v1", "status": "no_paper_strategy_selected", "strategy_id": None, "receipt": None, "capacity": None}
-    try:
-        receipt = json.loads(receipt_path.read_text(encoding="utf-8-sig"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
-        raise HTTPException(409, f"单策略纸面回执尚不可读取：{error}") from error
-    if receipt.get("schema") != "paper_strategy_application_receipt_v1":
-        raise HTTPException(409, "单策略纸面回执版本不受支持")
-    if str(receipt.get("execution_day")) != str(package.get("execution_day")):
-        return {"schema": "offline_paper_selection_view_v1", "status": "stale_paper_strategy_selection", "strategy_id": None, "receipt": None, "capacity": None}
-    capacity = None
-    risk_path = _package_artifact(package, "offline_portfolio_risk_summary")
-    if risk_path:
-        try:
-            risk_payload = json.loads(risk_path.read_text(encoding="utf-8-sig"))
-        except (OSError, UnicodeError, json.JSONDecodeError) as error:
-            raise HTTPException(409, f"候选组合风险书尚不可读取：{error}") from error
-        capacity = next((row for row in risk_payload.get("rows") or [] if str(row.get("strategy_id")) == str(receipt.get("strategy_id"))), None)
-        if capacity is not None:
-            capacity = {"row": capacity, "source_file": str(risk_path), "execution_admitted": False}
-    return {"schema": "offline_paper_selection_view_v1", "status": receipt.get("status", "offline_paper_strategy_applied"), "strategy_id": receipt.get("strategy_id"), "receipt": receipt, "capacity": capacity}
+    return operator_paper_selection_view.build_view(globals())
 
 
 @router.get("/operator-package/selected-plan")
