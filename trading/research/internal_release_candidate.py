@@ -35,6 +35,7 @@ REQUIRED_FILES = (
     "trading/research/factor_replay_comparison.py",
     "trading/research/research_adoption_rollup.py",
     "trading/research/workbench_manual_resubmit.py",
+    "trading/research/paper_preview_readiness_view.py",
     "run_committee.py",
 )
 
@@ -87,6 +88,9 @@ EVIDENCE_FILES = (
     "outputs/pipeline_receipts/20261027_operator_decision_queue_usecase_v1.json",
     "trading/research/tests/test_operator_evidence_view.py",
     "trading/research/tests/test_operator_decision_queue_view.py",
+    "trading/research/tests/test_paper_preview_readiness_view.py",
+    "outputs/pipeline_receipts/20261027_paper_preview_readiness_usecase_v1.json",
+    "outputs/research_reports/20261027_paper_preview_readiness_usecase_v1.md",
 )
 
 PAPER_EVIDENCE_FILES = (
@@ -187,6 +191,7 @@ def build_release(root: str | Path, output_dir: str | Path, *, version: str,
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_next_close_d0_d1.py trading/research/tests/test_post_close_d0_d1.py",
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_paper_pipeline_lineage.py trading/research/tests/test_candidate_library_binding.py trading/research/tests/test_research_adoption_rollup.py",
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_operator_evidence_view.py trading/research/tests/test_operator_decision_queue_view.py",
+            "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_paper_preview_readiness_view.py trading/tests/test_api_operator_package.py",
             "D:/Quantification/env/python.exe run_committee.py post-close-d0-d1 --help",
         ],
         "operating_entrypoints": {
