@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 import json
 import os
@@ -16,6 +17,65 @@ from .report import export
 
 def market_now():
     return datetime.now(timezone(timedelta(hours=8)))
+
+
+@dataclass
+class RefreshTracker:
+    """Track attempts separately from a successful end-of-day refresh."""
+
+    last_attempt_at: datetime | None = None
+    last_success_day: str | None = None
+    next_retry_at: datetime | None = None
+    input_revision: str | None = None
+    failure_count: int = 0
+    base_backoff_seconds: int = 30
+    max_backoff_seconds: int = 300
+
+    @classmethod
+    def from_snapshot(cls, snapshot: dict | None):
+        if not isinstance(snapshot, dict):
+            return cls()
+        raw_attempt = snapshot.get("last_attempt_at")
+        raw_retry = snapshot.get("next_retry_at")
+        return cls(
+            last_attempt_at=datetime.fromisoformat(raw_attempt) if raw_attempt else None,
+            last_success_day=snapshot.get("last_success_day"),
+            next_retry_at=datetime.fromisoformat(raw_retry) if raw_retry else None,
+            input_revision=snapshot.get("input_revision"),
+            failure_count=int(snapshot.get("failure_count", 0)),
+        )
+
+    def snapshot(self) -> dict:
+        return {
+            "last_attempt_at": self.last_attempt_at.isoformat() if self.last_attempt_at else None,
+            "last_success_day": self.last_success_day,
+            "next_retry_at": self.next_retry_at.isoformat() if self.next_retry_at else None,
+            "input_revision": self.input_revision,
+            "failure_count": self.failure_count,
+        }
+
+    def should_refresh(self, current: datetime, *, cutoff=(16, 15)) -> bool:
+        if current.weekday() >= 5 or (current.hour, current.minute) < cutoff:
+            return False
+        today = current.date().isoformat()
+        if self.last_success_day == today:
+            return False
+        return self.next_retry_at is None or current >= self.next_retry_at
+
+    def record_attempt(self, current: datetime) -> None:
+        self.last_attempt_at = current
+
+    def record_success(self, current: datetime, *, input_revision: str | None = None) -> None:
+        self.last_success_day = current.date().isoformat()
+        self.next_retry_at = None
+        self.input_revision = input_revision
+        self.failure_count = 0
+
+    def record_failure(self, current: datetime) -> None:
+        self.failure_count += 1
+        delay = min(self.base_backoff_seconds * (2 ** (self.failure_count - 1)),
+                    self.max_backoff_seconds)
+        self.next_retry_at = current + timedelta(seconds=delay)
 
 
 @contextmanager
@@ -98,7 +158,9 @@ def step(identifier, feed, current=None):
 
 def main(max_cycles=None, sleep_seconds=2):
     store.initialize()
-    feed, revision, last_refresh = None, None, None
+    feed, revision = None, None
+    prior_refresh = store.refresh_status() or {}
+    refresh_tracker = RefreshTracker.from_snapshot(prior_refresh.get("tracker"))
     historical_feeds = {}
     with lock(), heartbeat_loop():
         # A previous process may have died after a durable daily checkpoint.
@@ -109,23 +171,26 @@ def main(max_cycles=None, sleep_seconds=2):
         try:
             if previous_lease:
                 store.recover_interrupted_runs()
-            store.refresh_state("idle")
+            store.refresh_state("idle", tracker=refresh_tracker.snapshot())
             cycles = 0
             while max_cycles is None or cycles < max_cycles:
                 active = store.runs(active_only=True)
                 current = market_now()
                 today = current.date().isoformat()
-                if any(run["mode"] == "paper" for run in active) and current.weekday() < 5 and (current.hour, current.minute) >= (16, 15) and last_refresh != today:
+                if any(run["mode"] == "paper" for run in active) and refresh_tracker.should_refresh(current):
                     # End-of-day paper replay, not an intraday quote/execution service.
-                    last_refresh = today
-                    store.refresh_state("updating")
+                    refresh_tracker.record_attempt(current)
+                    store.refresh_state("updating", tracker=refresh_tracker.snapshot())
                     try:
                         from .prepare_data import prepare_data
-                        prepare_data(end=today)
-                        store.refresh_state("ready")
+                        manifest = prepare_data(end=today)
+                        refresh_tracker.record_success(
+                            current, input_revision=manifest.get("folder") if isinstance(manifest, dict) else None)
+                        store.refresh_state("ready", tracker=refresh_tracker.snapshot())
                     except Exception as error:
+                        refresh_tracker.record_failure(current)
                         traceback.print_exc()
-                        store.refresh_state("failed", str(error))
+                        store.refresh_state("failed", str(error), tracker=refresh_tracker.snapshot())
                 path = settings.DATASET / "manifest.json"
                 if path.exists() and path.stat().st_mtime_ns != revision:
                     try:

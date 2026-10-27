@@ -694,3 +694,12 @@ F2 historical gate CLI 现在对输入行声明的 `source_file/source_sha256` �
 
 Wayback 回执现已接入 `f2_fact_bridge`：使用公开替代财务 sidecar 与该历史探针回执运行 18 行事实桥，结果为 `BLOCKED_DATA`、0 个事实、0 个可计算因子；其中 2023Q1 行保留 `archive_capture_after_decision_only` 原因，其余行保留历史证据缺失。回执为 `outputs/pipeline_receipts/20261027_f2_wayback_bridge_000002_v1.json`，Fact bridge/Wayback/launcher 测试 `35 passed`。
 
+
+
+## Google Applied Design incremental delivery (2026-10-27)
+
+已将日终纸面刷新主循环按“attempt / success / retry / input revision”拆成可恢复的最小边界。`RefreshTracker` 不再在 `prepare_data()` 调用前把当天标记为完成：失败会在 30、60、120、240、300 秒上限内退避重试，成功后同日不重复刷新，成功输入目录会作为 `input_revision` 写入既有 `meta.refresh` 回执，worker 重启时恢复该状态。
+
+验收回执：[`20261027_worker_refresh_retry_v1.json`](../../outputs/pipeline_receipts/20261027_worker_refresh_retry_v1.json)；报告：[`20261027_worker_refresh_retry_v1.md`](../../outputs/research_reports/20261027_worker_refresh_retry_v1.md)。测试命令产生 `4 passed, 55 deselected`。该改动只影响纸面数据刷新调度，不改变 Engine/Ledger、账户余额、候选采用或执行闸门。
+
+下一步沿同一条 Google 波次推进：在下一个可用收市输入上复用该回执，继续 fixed_daily → D0/D1；数据缺口只阻塞依赖的收市包，不阻塞代码和研究比较。

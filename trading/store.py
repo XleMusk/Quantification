@@ -306,10 +306,21 @@ def end_worker_lease():
         db.execute("DELETE FROM meta WHERE key='worker_lease'")
 
 
-def refresh_state(status, error=None):
+def refresh_state(status, error=None, *, tracker=None):
     with connection() as db:
-        value = json.dumps({"status": status, "error": error, "at": now()})
+        payload = {"status": status, "error": error, "at": now()}
+        if tracker is not None:
+            payload["tracker"] = tracker
+        value = json.dumps(payload)
         db.execute("INSERT INTO meta VALUES('refresh',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", (value,))
+
+
+def refresh_status():
+    """Return the durable refresh receipt used to resume retry policy."""
+
+    with connection() as db:
+        row = db.execute("SELECT value FROM meta WHERE key='refresh'").fetchone()
+    return json.loads(row[0]) if row else None
 
 
 def health():

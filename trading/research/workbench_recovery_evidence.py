@@ -14,7 +14,7 @@ import json
 from pathlib import Path
 from typing import Any, Mapping
 
-from webapp.backend.app.release import latest_release
+from .release_projection import latest_release
 
 
 SCHEMA = "quantification_workbench_recovery_evidence_v1"
