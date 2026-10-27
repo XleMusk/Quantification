@@ -87,6 +87,14 @@ def test_internal_release_binds_promotion_review_application_view() -> None:
     assert "outputs/pipeline_receipts/20261027_operator_promotion_review_usecase_v1.json" in EVIDENCE_FILES
 
 
+def test_internal_release_binds_recovery_review_application_view() -> None:
+    from trading.research.internal_release_candidate import EVIDENCE_FILES, REQUIRED_FILES
+
+    assert "trading/research/operator_recovery_review_view.py" in REQUIRED_FILES
+    assert "trading/research/tests/test_operator_recovery_review_view.py" in EVIDENCE_FILES
+    assert "outputs/pipeline_receipts/20261027_operator_recovery_review_usecase_v1.json" in EVIDENCE_FILES
+
+
 def test_internal_release_binds_account_risk_application_view() -> None:
     from trading.research.internal_release_candidate import EVIDENCE_FILES, REQUIRED_FILES
 

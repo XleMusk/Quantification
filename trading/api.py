@@ -2750,77 +2750,15 @@ def _recovery_review_candidates(package):
 @router.get("/operator-package/recovery-review")
 def operator_package_recovery_review():
     """Return recovery scenarios and the latest explicit paper-only review."""
-    package = operator_package()
-    index_path, candidates = _recovery_review_candidates(package)
-    receipts = _recovery_review_receipts(package)
-    return {
-        "schema": "offline_recovery_review_view_v1",
-        "status": "human_recovery_review_recorded" if receipts else "manual_recovery_review_required",
-        "source_template": str(index_path),
-        "receipts": receipts,
-        "candidate_count": len(candidates),
-        "candidates": candidates,
-        "retry_permitted": False,
-        "automatic_recovery": False,
-        "execution_admitted": False,
-        "next_action": (
-            "保留人工接管决定，继续等待账户、委托和成交观察；不会自动重试或撤单"
-            if receipts else
-            "提交人工恢复审查决定前，系统保持停止和对账优先，不会自动重试"
-        ),
-    }
+    from .research import operator_recovery_review_view
+    return operator_recovery_review_view.build_view(globals())
 
 
 @router.post("/operator-package/recovery-review", status_code=202)
 def submit_operator_package_recovery_review(body: RecoveryReviewInput):
     """Persist a recovery review without authorizing retry, cancel or release."""
-    package = operator_package()
-    if package.get("package_freshness") == "stale_execution_day":
-        raise HTTPException(409, package.get("package_warning", "离线包已过期，不能记录新恢复审查"))
-    index_path, candidates = _recovery_review_candidates(package)
-    candidate = next(
-        (row for row in candidates
-         if str(row.get("strategy_id") or "") == body.strategy_id
-         and str(row.get("scenario_id") or "") == body.scenario_id),
-        None,
-    )
-    if candidate is None:
-        raise HTTPException(400, "恢复场景不在当前冻结恢复交接模板中")
-    if body.confirm_review is not True:
-        return {
-            "schema": "human_recovery_review_receipt_v1",
-            "status": "confirmation_required",
-            "strategy_id": body.strategy_id,
-            "scenario_id": body.scenario_id,
-            "decision": body.decision,
-            "retry_permitted": False,
-            "automatic_recovery": False,
-            "execution_admitted": False,
-            "next_action": "确认该人工处置决定后，再次提交 confirm_review=true；仍不会自动重试、撤单或提交。",
-        }
-    receipt = {
-        "schema": "human_recovery_review_receipt_v1",
-        "status": "human_recovery_review_recorded",
-        "execution_day": package.get("execution_day"),
-        "strategy_id": body.strategy_id,
-        "scenario_id": body.scenario_id,
-        "decision": body.decision,
-        "reviewer": body.reviewer,
-        "reviewed_at": body.reviewed_at,
-        "notes": body.notes,
-        "candidate_snapshot": candidate,
-        "source_template": str(index_path),
-        "retry_permitted": False,
-        "automatic_recovery": False,
-        "execution_admitted": False,
-        "submission_enabled": False,
-    }
-    target = _recovery_review_receipt_file(package, body.strategy_id, body.scenario_id)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    temporary = target.with_name(target.name + ".tmp")
-    temporary.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    temporary.replace(target)
-    return receipt
+    from .research import operator_recovery_review_view
+    return operator_recovery_review_view.submit_review(globals(), body)
 
 
 @router.post("/operator-package/paper-selection", status_code=202)

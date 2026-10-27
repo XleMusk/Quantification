@@ -902,3 +902,7 @@ Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027
 ## Promotion review application boundary (2026-10-27)
 
 策略晋级审查的 GET/POST 路由已委托给 `trading/research/operator_promotion_review_view.py`。独立服务保留冻结候选校验、显式 `confirm_review=true`、人工回执落盘和 `automatic_promotion=false`/`submission_enabled=false` 语义；相关 API 与应用服务测试 `4 passed`，回执为 `outputs/pipeline_receipts/20261027_operator_promotion_review_usecase_v1.json`。这只记录纸面人工审查，不打开晋级、券商或同花顺通道。
+
+## Recovery review application boundary (2026-10-27)
+
+人工恢复审查的 GET/POST 路由已委托给 `trading/research/operator_recovery_review_view.py`。独立服务读取冻结恢复交接索引，要求显式确认，落盘纸面审查回执，并保持 `retry_permitted=false`、`automatic_recovery=false`、`submission_enabled=false`；相关 API 与应用服务测试 `3 passed`，回执为 `outputs/pipeline_receipts/20261027_operator_recovery_review_usecase_v1.json`。没有自动重试、撤单、提交或外部账户交互。
