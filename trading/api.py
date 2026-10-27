@@ -39,6 +39,7 @@ from .research import opening_window_status_view
 from .research import operator_portfolio_views
 from .research import operator_account_risk_view
 from .research import operator_broker_observation_view
+from .research import operator_instrument_master_view
 
 router = APIRouter(prefix="/api/trading")
 
@@ -2991,31 +2992,16 @@ def operator_package_instrument_master():
         snapshot = json.loads(snapshot_path.read_text(encoding="utf-8-sig"))
     except (OSError, UnicodeError, json.JSONDecodeError) as error:
         raise HTTPException(409, f"证券主表诊断尚不可读取：{error}") from error
-    if (coverage.get("schema") != "instrument_master_coverage_v1"
-            or coverage.get("execution_admitted") is not False):
-        raise HTTPException(409, "证券主表覆盖诊断版本或执行边界不受支持")
-    return {
-        "schema": "offline_instrument_master_view_v1",
-        "status": snapshot.get("instrument_master", {}).get("status", "unknown"),
-        "source_cutoff": package.get("source_cutoff"),
-        "instrument_master": snapshot.get("instrument_master") or {},
-        "coverage": snapshot.get("instrument_master_coverage") or {
-            "status": coverage.get("status"),
-            "source_only": coverage.get("source_only") or [],
-            "master_only": coverage.get("master_only") or [],
-        },
-        "source_files": {
-            "snapshot": str(snapshot_path),
-            "coverage": str(coverage_path),
-            "master": (snapshot.get("instrument_master") or {}).get("master"),
-        },
-        "research_only": True,
-        "execution_admitted": False,
-        "account_observed": False,
-        "quotes_observed": False,
-        "client_interacted": False,
-        "basis": "cutoff-matched identity metadata and source-scope diagnostic; not PIT or broker authority",
-    }
+    try:
+        return operator_instrument_master_view.build_view(
+            package=package,
+            coverage=coverage,
+            snapshot=snapshot,
+            snapshot_path=str(snapshot_path),
+            coverage_path=str(coverage_path),
+        )
+    except operator_instrument_master_view.UnsupportedInstrumentMaster as error:
+        raise HTTPException(409, str(error)) from error
 
 
 @router.get("/operator-package/lifecycle")

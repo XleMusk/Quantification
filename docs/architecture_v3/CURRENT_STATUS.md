@@ -871,3 +871,8 @@ Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027
 ## Google Applied Design broker-observation application view (2026-10-27)
 
 `/operator-package/broker-observation-alerts` 已提取到纯只读 `trading/research/operator_broker_observation_view.py`，保留 persistent verified bundle 与 isolated rehearsal 的证据边界；44 个相关测试通过，回执为 `outputs/pipeline_receipts/20261027_operator_broker_observation_view_usecase_v1.json`。
+
+
+## Google Applied Design instrument-master application view (2026-10-27)
+
+`/operator-package/instrument-master` 已提取到纯只读 `trading/research/operator_instrument_master_view.py`，保留 schema、执行边界和 research-only 身份语义；回执为 `outputs/pipeline_receipts/20261027_operator_instrument_master_view_usecase_v1.json`。

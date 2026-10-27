@@ -50,6 +50,7 @@ REQUIRED_FILES = (
     "trading/research/operator_portfolio_views.py",
     "trading/research/operator_account_risk_view.py",
     "trading/research/operator_broker_observation_view.py",
+    "trading/research/operator_instrument_master_view.py",
     "trading/research/operator_basket_schedule_view.py",
     "trading/research/operator_paper_selection_view.py",
     "trading/research/operator_manual_statements_view.py",
@@ -195,6 +196,9 @@ EVIDENCE_FILES = (
     "trading/research/tests/test_operator_broker_observation_view.py",
     "outputs/pipeline_receipts/20261027_operator_broker_observation_view_usecase_v1.json",
     "outputs/research_reports/20261027_operator_broker_observation_view_usecase_v1.md",
+    "trading/research/tests/test_operator_instrument_master_view.py",
+    "outputs/pipeline_receipts/20261027_operator_instrument_master_view_usecase_v1.json",
+    "outputs/research_reports/20261027_operator_instrument_master_view_usecase_v1.md",
 )
 
 PAPER_EVIDENCE_FILES = (
@@ -319,6 +323,7 @@ def build_release(root: str | Path, output_dir: str | Path, *, version: str,
             "D:/Quantification/env/python.exe -m pytest -q webapp/backend/tests/test_job_lifecycle_view.py webapp/backend/tests/test_webapp.py",
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_operator_account_risk_view.py trading/tests/test_ths_account_risk.py trading/tests/test_api_operator_package.py trading/research/tests/test_internal_release_candidate.py",
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_operator_broker_observation_view.py trading/tests/test_api_operator_package.py trading/research/tests/test_operator_execution_evidence_view.py",
+            "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_operator_instrument_master_view.py trading/tests/test_api_operator_package.py trading/research/tests/test_operator_broker_observation_view.py",
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_candidate_evidence_view.py trading/research/tests/test_research_evidence_catalog.py trading/research/tests/test_native_research_evidence_catalog.py",
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_current_research_evidence_view.py trading/tests/test_api_operator_package.py",
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_operator_release_controls_view.py trading/tests/test_api_operator_package.py -k release_controls",
