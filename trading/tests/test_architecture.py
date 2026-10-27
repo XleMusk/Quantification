@@ -26,6 +26,7 @@ def test_reviewed_boundary_allowlists_are_exact_and_narrow():
     assert WORKBENCH_COMPOSITE == frozenset({
         "trading.research.capability_gap_scan",
         "trading.research.opening_cycle",
+        "trading.research.selected_plan_view",
         "trading.research.trader_desk_snapshot",
     })
     assert not CORE_SUPPORT & WORKBENCH_COMPOSITE

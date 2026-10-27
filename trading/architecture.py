@@ -44,6 +44,7 @@ GUI = ("pywinauto", "win32gui", "win32api", "win32con", "uiautomation", "pyautog
 WORKBENCH_COMPOSITE = frozenset({
     "trading.research.capability_gap_scan",
     "trading.research.opening_cycle",
+    "trading.research.selected_plan_view",
     "trading.research.trader_desk_snapshot",
 })
 
