@@ -2676,94 +2676,15 @@ def _promotion_review_receipt_path(package):
 @router.get("/operator-package/promotion-review")
 def operator_package_promotion_review():
     """Return the paper promotion template plus the latest explicit human receipt."""
-    package = operator_package()
-    review_path = _package_artifact(package, "strategy_promotion_review")
-    if not review_path:
-        raise HTTPException(404, "当前离线包缺少策略晋级审查模板")
-    try:
-        review = json.loads(review_path.read_text(encoding="utf-8-sig"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
-        raise HTTPException(409, f"策略晋级审查模板尚不可读取：{error}") from error
-    if review.get("schema") != "strategy_promotion_review_record_v1":
-        raise HTTPException(409, "策略晋级审查模板版本不受支持")
-    receipt_path = _promotion_review_receipt_path(package)
-    receipt = None
-    if receipt_path.is_file():
-        try:
-            receipt = json.loads(receipt_path.read_text(encoding="utf-8-sig"))
-        except (OSError, UnicodeError, json.JSONDecodeError) as error:
-            raise HTTPException(409, f"人工晋级审查回执尚不可读取：{error}") from error
-    return {
-        "schema": "offline_promotion_review_view_v1",
-        "status": "human_review_recorded" if receipt else review.get("status"),
-        "source_template": str(review_path),
-        "receipt": receipt,
-        "candidate_count": review.get("candidate_count", 0),
-        "eligible_candidate_count": review.get("eligible_candidate_count", 0),
-        "required_evidence": review.get("required_evidence") or [],
-        "automatic_promotion": False,
-        "execution_admitted": False,
-        "next_action": (
-            "保留人工审查记录；策略仍需独立证据、账户/行情观察和后续人工确认"
-            if receipt else
-            "提交明确的人审决定前，策略保持待审，不会自动晋级"
-        ),
-    }
+    from .research import operator_promotion_review_view
+    return operator_promotion_review_view.build_view(globals())
 
 
 @router.post("/operator-package/promotion-review", status_code=202)
 def submit_operator_package_promotion_review(body: PromotionReviewInput):
     """Persist an explicit paper-only human review; never promotes or submits."""
-    package = operator_package()
-    if package.get("package_freshness") == "stale_execution_day":
-        raise HTTPException(409, package.get("package_warning", "离线运营包已过期，不能记录新审查"))
-    review_path = _package_artifact(package, "strategy_promotion_review")
-    if not review_path:
-        raise HTTPException(404, "当前离线包缺少策略晋级审查模板")
-    try:
-        review = json.loads(review_path.read_text(encoding="utf-8-sig"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
-        raise HTTPException(409, f"策略晋级审查模板尚不可读取：{error}") from error
-    if review.get("schema") != "strategy_promotion_review_record_v1":
-        raise HTTPException(409, "策略晋级审查模板版本不受支持")
-    candidate = next(
-        (row for row in review.get("rows") or []
-         if str(row.get("strategy_id") or "") == body.strategy_id),
-        None,
-    )
-    if candidate is None:
-        raise HTTPException(400, "策略不在当前冻结晋级审查模板中")
-    if body.confirm_review is not True:
-        return {
-            "schema": "human_promotion_review_receipt_v1",
-            "status": "confirmation_required",
-            "strategy_id": body.strategy_id,
-            "decision": body.decision,
-            "automatic_promotion": False,
-            "execution_admitted": False,
-            "next_action": "确认该纸面审查决定后，再次提交 confirm_review=true；不会自动下单。",
-        }
-    receipt = {
-        "schema": "human_promotion_review_receipt_v1",
-        "status": "human_review_recorded",
-        "execution_day": package.get("execution_day"),
-        "strategy_id": body.strategy_id,
-        "decision": body.decision,
-        "reviewer": body.reviewer,
-        "reviewed_at": body.reviewed_at,
-        "notes": body.notes,
-        "candidate_snapshot": candidate,
-        "source_template": str(review_path),
-        "automatic_promotion": False,
-        "execution_admitted": False,
-        "submission_enabled": False,
-    }
-    target = _promotion_review_receipt_path(package)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    temporary = target.with_name(target.name + ".tmp")
-    temporary.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    temporary.replace(target)
-    return receipt
+    from .research import operator_promotion_review_view
+    return operator_promotion_review_view.submit_review(globals(), body)
 
 
 class RecoveryReviewInput(BaseModel):

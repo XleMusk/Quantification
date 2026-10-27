@@ -898,3 +898,7 @@ Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027
 ## Full-panel strategy count binding (2026-10-27)
 
 共同窗口比较回执现在显式写入 `strategy_count`，六策略全 panel 的值为 `6`；adoption rollup 不再把策略数量显示为 `null`。该修复只读取已保存账户产物，没有重跑策略或改变采用门槛。重生成的 full-panel 回执和 v14 rollup 已被新的 close-delivery v7 绑定，`execution_admitted=false`、`strategy_validated=false`、`paper_allowed=false` 保持不变。
+
+## Promotion review application boundary (2026-10-27)
+
+策略晋级审查的 GET/POST 路由已委托给 `trading/research/operator_promotion_review_view.py`。独立服务保留冻结候选校验、显式 `confirm_review=true`、人工回执落盘和 `automatic_promotion=false`/`submission_enabled=false` 语义；相关 API 与应用服务测试 `4 passed`，回执为 `outputs/pipeline_receipts/20261027_operator_promotion_review_usecase_v1.json`。这只记录纸面人工审查，不打开晋级、券商或同花顺通道。
