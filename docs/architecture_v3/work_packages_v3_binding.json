@@ -1830,6 +1830,10 @@
         "trading/research/tests/test_paper_preview_readiness_view.py",
         "outputs/pipeline_receipts/20261027_paper_preview_readiness_usecase_v1.json",
         "outputs/research_reports/20261027_paper_preview_readiness_usecase_v1.md",
+        "trading/research/selected_plan_view.py",
+        "trading/research/tests/test_selected_plan_view.py",
+        "outputs/pipeline_receipts/20261027_selected_plan_view_usecase_v1.json",
+        "outputs/research_reports/20261027_selected_plan_view_usecase_v1.md",
         "trading/research/candidate_evidence_view.py",
         "trading/research/tests/test_candidate_evidence_view.py",
         "outputs/pipeline_receipts/20261027_candidate_evidence_usecase_v1.json",
@@ -1876,6 +1880,10 @@
         "trading/research/tests/test_paper_preview_readiness_view.py",
         "outputs/pipeline_receipts/20261027_paper_preview_readiness_usecase_v1.json",
         "outputs/research_reports/20261027_paper_preview_readiness_usecase_v1.md",
+        "trading/research/selected_plan_view.py",
+        "trading/research/tests/test_selected_plan_view.py",
+        "outputs/pipeline_receipts/20261027_selected_plan_view_usecase_v1.json",
+        "outputs/research_reports/20261027_selected_plan_view_usecase_v1.md",
         "trading/research/candidate_evidence_view.py",
         "trading/research/tests/test_candidate_evidence_view.py",
         "outputs/pipeline_receipts/20261027_candidate_evidence_usecase_v1.json",
@@ -1885,7 +1893,7 @@
         "outputs/pipeline_receipts/20261027_current_research_evidence_usecase_v1.json",
         "outputs/research_reports/20261027_current_research_evidence_usecase_v1.md"
       ],
-      "acceptance": "The same-sample comparison, candidate evidence, current research evidence, operator evidence, decision queue and paper-preview readiness endpoints delegate to read-only application views, preserve response/error semantics, and pass focused view plus API consumer tests without account or source mutation."
+      "acceptance": "The same-sample comparison, candidate evidence, current research evidence, operator evidence, decision queue, paper-preview readiness and selected-plan endpoints delegate to read-only application views, preserve response/error semantics, and pass focused view plus API consumer tests without account or source mutation."
     },
     {
       "id": "U02",
