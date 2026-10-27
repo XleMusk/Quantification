@@ -1455,7 +1455,9 @@
         "outputs/research_reports/20261027_paper_pipeline_lineage_v2.md",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5/contract_receipt.json",
         "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5_summary.json",
-        "outputs/research_reports/20261027_post_close_derived_d0_d1_v5.md"
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v5.md",
+        "outputs/pipeline_receipts/20261027_post_close_pipeline_stage_trace_v1.json",
+        "outputs/research_reports/20261027_post_close_pipeline_stage_trace_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",

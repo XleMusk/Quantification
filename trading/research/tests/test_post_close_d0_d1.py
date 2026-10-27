@@ -60,6 +60,12 @@ def test_post_close_advances_fixed_daily_before_d0_d1(tmp_path: Path, monkeypatc
     assert [stage["stage"] for stage in receipt["stage_trace"]] == [
         "inputs", "fixed_daily", "candidate_inputs", "d0_d1"
     ]
+    assert [stage["stage"] for stage in receipt["pipeline_stage_trace"]] == [
+        "Data", "Signal", "Target Portfolio", "Orders", "BrokerAdapter", "Fill", "Cash/Position"
+    ]
+    assert receipt["pipeline_stage_trace"][4]["status"] == "NOT_ATTEMPTED_RESEARCH_ONLY"
+    assert receipt["pipeline_stage_trace"][5]["broker_fill"] is False
+    assert receipt["pipeline_stage_trace"][6]["persistent_ledger_mutated"] is False
     assert (tmp_path / "run" / "post_close_receipt.json").is_file()
     assert receipt["timing"]["elapsed_seconds"] >= 0
     assert receipt["timing"]["finished_at"].endswith("+00:00")
@@ -112,6 +118,8 @@ def test_post_close_waits_for_complete_fixed_source_without_d0_projection(tmp_pa
     assert receipt["missing_days"] == [CLOSE]
     assert receipt["execution_admitted"] is False
     assert receipt["stage_trace"][-1]["stage"] == "fixed_daily"
+    assert receipt["pipeline_stage_trace"][0]["status"] == "BOUND_CLOSE_SOURCES"
+    assert receipt["pipeline_stage_trace"][2]["status"] == "NOT_CREATED"
 
 
 def test_post_close_propagates_d0_block_and_snapshot_coverage(tmp_path: Path, monkeypatch) -> None:
@@ -134,6 +142,7 @@ def test_post_close_propagates_d0_block_and_snapshot_coverage(tmp_path: Path, mo
     assert receipt["reason"] == "Missing same-day StockDB rows; no price was carried forward"
     assert receipt["snapshot_coverage"]["status"] == "STALE_SNAPSHOT"
     assert receipt["execution_admitted"] is False
+    assert receipt["pipeline_stage_trace"][2]["status"] == "BLOCKED"
 
 
 def test_post_close_builds_candidate_targets_from_replay_manifest(tmp_path: Path, monkeypatch) -> None:

@@ -101,6 +101,27 @@ def _assert_unadmitted(payload: dict[str, Any], label: str) -> None:
         raise ValueError(f"{label} crossed execution boundary")
 
 
+def _pipeline_stage_trace(base: dict[str, Any], d0_result: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+    """Expose the canonical paper path while keeping broker stages unattempted."""
+
+    fixed = base.get("fixed_daily") or {}
+    candidate = base.get("candidate_input_bundle") or {}
+    d0_status = d0_result.get("status") if isinstance(d0_result, dict) else None
+    complete = d0_status == next_close_d0_d1.STATUS
+    blocked = isinstance(d0_status, str) and d0_status.startswith("BLOCKED")
+    projection_status = "PROJECTED_PAPER_ONLY" if complete else "BLOCKED" if blocked else "NOT_CREATED"
+    return [
+        {"stage": "Data", "status": "BOUND_CLOSE_SOURCES" if fixed else "WAITING_CLOSE_SOURCES"},
+        {"stage": "Signal", "status": "BOUND_CANDIDATE_INPUTS" if candidate else "WAITING_CANDIDATE_INPUTS"},
+        {"stage": "Target Portfolio", "status": projection_status},
+        {"stage": "Orders", "status": projection_status},
+        {"stage": "BrokerAdapter", "status": "NOT_ATTEMPTED_RESEARCH_ONLY", "execution_admitted": False},
+        {"stage": "Fill", "status": projection_status, "broker_fill": False},
+        {"stage": "Cash/Position", "status": "PROJECTED_EPHEMERAL_LEDGER" if complete else "NOT_CREATED",
+         "persistent_ledger_mutated": False},
+    ]
+
+
 def _write_receipt(receipt_path: Path, payload: dict[str, Any], *, started_monotonic: float | None = None) -> dict[str, Any]:
     """Persist one terminal receipt with bounded local timing evidence."""
 
@@ -125,6 +146,7 @@ def _run_fixed_daily_stage(*, fixed_dir: Path, close_date: str,
     )
     _assert_unadmitted(fixed_result, "fixed daily result")
     base["fixed_daily"] = fixed_result
+    base["pipeline_stage_trace"] = _pipeline_stage_trace(base)
     fixed_status = fixed_result.get("status")
     if fixed_status == "waiting_for_complete_sources":
         base["stage_trace"].append({
@@ -180,6 +202,7 @@ def _resolve_candidate_stage(*, source: Path | None,
         "receipt": candidate_bundle["receipt_path"],
         "manifest": candidate_bundle["manifest"],
     }
+    base["pipeline_stage_trace"] = _pipeline_stage_trace(base)
     base["stage_trace"].append({
         "stage": "candidate_inputs",
         "status": "BUILT_FROM_REPLAY",
@@ -214,6 +237,7 @@ def _run_d0_d1_stage(*, source: Path, output: Path, fixed_dir: Path,
         "status": d0_result.get("status"),
         "snapshot_coverage": d0_result.get("snapshot_coverage"),
     })
+    base["pipeline_stage_trace"] = _pipeline_stage_trace(base, d0_result)
     return d0_result
 
 
@@ -321,12 +345,14 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
         },
         "stage_trace": [{"stage": "inputs", "status": "READY"}],
     }
+    base["pipeline_stage_trace"] = _pipeline_stage_trace(base)
     try:
         _fixed_result, waiting = _run_fixed_daily_stage(
             fixed_dir=fixed_dir, close_date=close_date,
             packages=packages_resolved, supplement=supplement, base=base,
         )
         if waiting is not None:
+            base["pipeline_stage_trace"] = _pipeline_stage_trace(base)
             return _write_receipt(
                 receipt_path,
                 {**waiting, "receipt_path": str(receipt_path)},
@@ -359,17 +385,20 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
                 "receipt_path": str(receipt_path),
                 "artifacts": {"d0_d1": str(output / "next_close")},
             }
+            receipt["pipeline_stage_trace"] = _pipeline_stage_trace(receipt, d0_result)
             return _write_receipt(receipt_path, receipt, started_monotonic=started_monotonic)
         receipt = {**base, "status": STATUS, "fixed_daily": _fixed_result,
                    "d0_d1": d0_result, "receipt_path": str(receipt_path),
                    "snapshot_coverage": d0_result.get("snapshot_coverage"),
                    "artifacts": {"d0_d1": str(output / "next_close")}}
+        receipt["pipeline_stage_trace"] = _pipeline_stage_trace(receipt, d0_result)
         return _write_receipt(receipt_path, receipt, started_monotonic=started_monotonic)
     except Exception as error:
         failure = {**base, "status": FAILED_STATUS,
                    "error_type": type(error).__name__, "error": str(error),
                    "failure_evidence": {"output_dir": str(output),
                                         "receipt_path": str(receipt_path)}}
+        failure["pipeline_stage_trace"] = _pipeline_stage_trace(failure)
         _write_receipt(receipt_path, failure, started_monotonic=started_monotonic)
         raise
 
