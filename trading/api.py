@@ -28,6 +28,7 @@ from .research import ths_prefill_readback_view
 from .research import research_comparison_view
 from .research import operator_lifecycle_view
 from .research import operator_session_handoff_view
+from .research import operator_blotter_view
 
 router = APIRouter(prefix="/api/trading")
 
@@ -4039,43 +4040,7 @@ def operator_package_basket_schedule():
 @router.get("/operator-package/blotter")
 def operator_package_blotter():
     """Expose the frozen paper order blotter without broker I/O or ledger writes."""
-    package = operator_package()
-    journal_reconciliation = _ths_journal_reconciliation_view()
-    same_ledger_bundle_reconciliation = _same_ledger_bundle_reconciliation_view()
-    blotter_path = _package_artifact(package, "blotter")
-    if not blotter_path:
-        raise HTTPException(404, "当前离线包缺少纸面中央订单台")
-
-    try:
-        with blotter_path.open("r", encoding="utf-8-sig", newline="") as handle:
-            rows = list(csv.DictReader(handle))
-    except (OSError, UnicodeError, csv.Error) as error:
-        raise HTTPException(409, f"纸面中央订单台尚不可读取：{error}") from error
-
-    return {
-        "schema": "offline_blotter_view_v1",
-        "status": "paper_blotter_only",
-        "execution_admitted": False,
-        "account_observed": False,
-        "quotes_observed": False,
-        "ths_journal_reconciliation": journal_reconciliation,
-        "same_ledger_bundle_reconciliation": same_ledger_bundle_reconciliation,
-        **_same_ledger_compat_fields(
-            same_ledger_bundle_reconciliation, journal_reconciliation
-        ),
-        "ledger_mutated": journal_reconciliation["ledger_mutated"],
-        "blotter": {
-            "row_count": len(rows),
-            "preflight_status_counts": dict(Counter(row.get("preflight_status") or "unknown" for row in rows)),
-            "route_status_counts": dict(Counter(row.get("route_status") or "unknown" for row in rows)),
-            "lifecycle_counts": dict(Counter(row.get("lifecycle") or "unknown" for row in rows)),
-            "side_counts": dict(Counter(row.get("side") or "unknown" for row in rows)),
-            "route_available_count": sum(row.get("route_status") == "route_available" for row in rows),
-            "rows": rows,
-            "basis": "frozen paper order intent and reference prices; no broker acknowledgement, fill, account or quote observation",
-        },
-        "source_file": str(blotter_path),
-    }
+    return operator_blotter_view.build_view(globals())
 
 
 @router.get("/operator-package/execution-attribution")
