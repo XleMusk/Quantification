@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 import pandas as pd
 
-from . import data, store
+from . import data, research_jobs, store
 from .release import latest_release
 from .settings import MAX_UPLOAD, STORAGE, UI_ORIGIN
 from trading import store as trading_store
@@ -52,17 +52,17 @@ async def invalid_input(request, error):
 
 
 def require_dataset(identifier):
-    item = store.dataset(identifier)
-    if item is None:
-        raise HTTPException(404, "数据集不存在")
-    return item
+    try:
+        return research_jobs.require_dataset(identifier)
+    except research_jobs.DatasetNotFound as error:
+        raise HTTPException(404, "数据集不存在") from error
 
 
 def require_job(identifier):
-    item = store.job(identifier)
-    if item is None:
-        raise HTTPException(404, "任务不存在")
-    return item
+    try:
+        return research_jobs.require_job(identifier)
+    except research_jobs.JobNotFound as error:
+        raise HTTPException(404, "任务不存在") from error
 
 
 @app.get("/api/health")
@@ -147,17 +147,13 @@ def list_jobs():
 
 @app.post("/api/jobs", status_code=202)
 def submit_job(body: JobInput, idempotency_key: str = Header(..., min_length=8, max_length=80)):
-    item = require_dataset(body.dataset_id)
-    start, end = pd.Timestamp(body.start), pd.Timestamp(body.end)
-    if pd.isna(start) or pd.isna(end) or start > end or start < pd.Timestamp(item["start"]) or end > pd.Timestamp(item["end"]):
-        raise ValueError("研究日期须位于数据范围内，且开始日期不晚于结束日期")
-    if item["quality"]["invalid_rows"]:
-        raise ValueError("数据质量阻断：请先修复 OHLC / 成交量异常")
-    if len(item["symbols"]) < body.min_pairs:
-        raise ValueError("证券数量不足，至少需要 min_pairs 个证券")
-    config = {"start": body.start, "end": body.end, "min_pairs": body.min_pairs,
-              "factors": ["reversal_5", "momentum_20", "relative_volume_20"], "holding_sessions": 5}
-    return store.create_job(body.dataset_id, config, idempotency_key)
+    request = research_jobs.SubmitRequest(
+        dataset_id=body.dataset_id,
+        start=body.start,
+        end=body.end,
+        min_pairs=body.min_pairs,
+    )
+    return research_jobs.submit(request, idempotency_key)
 
 
 @app.get("/api/jobs/{identifier}")
@@ -263,17 +259,20 @@ def resubmit_job(identifier: str, idempotency_key: str = Header(..., min_length=
 
 @app.get("/api/jobs/{identifier}/result")
 def result(identifier: str):
-    item = require_job(identifier)
-    if item["status"] != "completed":
-        raise HTTPException(409, "任务尚未完成，没有可用结果")
-    return json.loads((STORAGE / "results" / identifier / "result.json").read_text(encoding="utf-8"))
+    try:
+        return research_jobs.read_result(identifier, STORAGE)
+    except research_jobs.JobNotFound as error:
+        raise HTTPException(404, "任务不存在") from error
+    except research_jobs.ResultUnavailable as error:
+        raise HTTPException(409, "任务尚未完成，没有可用结果") from error
 
 
 @app.get("/api/jobs/{identifier}/files/{filename}")
 def download(identifier: str, filename: str):
-    item = require_job(identifier)
-    allowed = {"summary.csv", "daily_ic.csv", "groups.csv", "factors.parquet", "REPORT.md", "result.json"}
-    if item["status"] != "completed" or filename not in allowed:
-        raise HTTPException(404, "结果文件不存在")
-    path = STORAGE / "results" / identifier / filename
+    try:
+        path = research_jobs.resolve_result_file(identifier, filename, STORAGE)
+    except research_jobs.JobNotFound as error:
+        raise HTTPException(404, "任务不存在") from error
+    except research_jobs.ResultUnavailable as error:
+        raise HTTPException(404, "结果文件不存在") from error
     return FileResponse(path, filename=filename)
