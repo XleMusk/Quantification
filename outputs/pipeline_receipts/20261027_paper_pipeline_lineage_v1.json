@@ -1,0 +1,116 @@
+{
+  "schema": "quantification_paper_pipeline_lineage_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY_PAPER_LINEAGE",
+  "close_date": "2026-10-23",
+  "execution_day": "2026-10-26",
+  "settlement_day": "2026-10-27",
+  "input_fingerprint": "9455726443ecf2959e196c91474a971702c6f01e661f699fa213b5570eac74c5",
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "stages": {
+    "data": {
+      "status": "STOCKDB_SNAPSHOT_BOUND",
+      "coverage": {
+        "status": "COMPLETE",
+        "reason": null,
+        "requested_close_date": "2026-10-23",
+        "effective_session_dates": [
+          "2026-10-20",
+          "2026-10-22",
+          "2026-10-23"
+        ],
+        "requested_symbol_count": 40,
+        "available_symbol_count": 40,
+        "missing_symbols": []
+      },
+      "source": {
+        "path": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261024_recent_full_v1\\snapshot.json",
+        "sha256": "557da9d859ae162093665d1d9c009093218d9ae8e91801b9da1b01e33eeaeafc"
+      }
+    },
+    "signal": {
+      "status": "STRATEGY_SIGNAL_INPUT_BOUND",
+      "strategies": [
+        "low_volatility_252_20",
+        "stockdb_low_vol_half_momentum_20"
+      ],
+      "source": {
+        "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_candidate_source_manifest_v1.json",
+        "sha256": "31d85dd23dbd206860060399db27d300d9fa1857bc915d481424043a63cabb05"
+      }
+    },
+    "target_portfolio": {
+      "status": "TARGET_PREVIEW_BOUND",
+      "fixed_target_count": 20,
+      "joint_target_count": 22,
+      "sources": [
+        {
+          "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v2\\next_close\\fixed\\target_holdings.csv",
+          "sha256": "9fb903ec898a581c5a58b8f93ab2a90601164d9cd6839a177487182e53d34d1c"
+        },
+        {
+          "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v2\\next_close\\joint_paper\\paper_package\\target_holdings.csv",
+          "sha256": "f285e1fee84015e8fdc1550035672baad3dbd7017b7894449b7b840a0c363be6"
+        }
+      ]
+    },
+    "orders": {
+      "status": "PAPER_ORDER_PLAN_BOUND",
+      "fixed_order_count": 20,
+      "joint_order_count": 22,
+      "sources": [
+        {
+          "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v2\\next_close\\fixed\\order_plan.csv",
+          "sha256": "9fb903ec898a581c5a58b8f93ab2a90601164d9cd6839a177487182e53d34d1c"
+        },
+        {
+          "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v2\\next_close\\joint_paper\\paper_package\\order_plan.csv",
+          "sha256": "f285e1fee84015e8fdc1550035672baad3dbd7017b7894449b7b840a0c363be6"
+        }
+      ]
+    },
+    "broker_adapter": {
+      "status": "REFERENCE_PAYLOAD_ONLY",
+      "mode": "offline_ths_reference_payload",
+      "client_interacted": false,
+      "submitted": false,
+      "source": {
+        "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_ths_target_readback_current_synthetic_v1.json",
+        "sha256": "03b9d7f69010ca2a212f3eec108fa897c460604b743954673cf446a6c42b3567"
+      }
+    },
+    "fill": {
+      "status": "MODELED_PAPER_FILL_PROJECTION",
+      "count": null,
+      "basis": "shared local Ledger projection; no broker fill observed",
+      "sources": [
+        {
+          "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v2\\next_close\\fixed\\projected_account.json",
+          "sha256": "c0388f23ac472c6a471742a43d323238b109c970d4b0fad5f2c6b8d2f7ed88bb"
+        },
+        {
+          "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v2\\next_close\\joint_paper\\paper_package\\projected_account.json",
+          "sha256": "cc88592ffec0b6520bdf557a64936b7f7db347c3497e80f0baf30ca8bce2e49c"
+        }
+      ]
+    },
+    "cash_position": {
+      "status": "PROJECTED_CASH_POSITION_BOUND",
+      "initial_cash_rmb": 140000.0,
+      "cash_after_modeled_fills_rmb": 78534.34,
+      "equity_at_observed_marks_rmb": 139889.34,
+      "position_count": 22,
+      "source": {
+        "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v2\\next_close\\joint_paper\\paper_package\\projected_account.json",
+        "sha256": "cc88592ffec0b6520bdf557a64936b7f7db347c3497e80f0baf30ca8bce2e49c"
+      }
+    }
+  },
+  "limitations": [
+    "This lineage joins saved research-only artifacts and does not create a persistent account.",
+    "BrokerAdapter is an offline reference payload, not a THS client observation or submission.",
+    "Fill count is intentionally not inferred from order count; projected cash/positions are modeled paper outputs."
+  ]
+}
