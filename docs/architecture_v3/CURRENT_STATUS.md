@@ -782,3 +782,5 @@ F2 fact bridge 现在把 `source_snapshot_id`、`source_sha256`、`snapshot_sour
 该 lineage 已收敛为可重复 CLI [`paper-pipeline-lineage`](../../run_committee.py)，重新读取并校验同一组保存回执后生成 v2；测试 `2 passed`，`py_compile` 通过。它只重建研究证据，不重跑策略、不访问外部渠道。
 
 候选库 v4 已将该 lineage receipt 作为必需 source binding，候选库现在可从规格和采用决定直接追到 D0/D1、THS synthetic readback 与 Data→Cash/Position stage map。回执为 [`20261027_candidate_library_binding_v4.json`](../../outputs/pipeline_receipts/20261027_candidate_library_binding_v4.json)，测试 `3 passed`。
+
+按同一薄用例边界，`/paper-preview-latest` 已从 `trading/api.py` 抽到 [`paper_preview_view.py`](../../trading/research/paper_preview_view.py)，路由只做委托，保留 missing/invalid/saved 状态和只读执行边界。回执 [`20261027_paper_preview_usecase_v1.json`](../../outputs/pipeline_receipts/20261027_paper_preview_usecase_v1.json)，相关测试 `58 passed`。

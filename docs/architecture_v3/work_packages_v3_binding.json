@@ -193,7 +193,11 @@
         "trading/research/paper_account_continuity.py",
         "trading/research/tests/test_paper_account_continuity_view.py",
         "outputs/pipeline_receipts/20261027_paper_account_continuity_use_case_v1.json",
-        "outputs/research_reports/20261027_paper_account_continuity_use_case_v1.md"
+        "outputs/research_reports/20261027_paper_account_continuity_use_case_v1.md",
+        "trading/research/paper_preview_view.py",
+        "trading/research/tests/test_paper_preview_view.py",
+        "outputs/pipeline_receipts/20261027_paper_preview_usecase_v1.json",
+        "outputs/research_reports/20261027_paper_preview_usecase_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -214,7 +218,11 @@
         "trading/research/paper_account_continuity.py",
         "trading/research/tests/test_paper_account_continuity_view.py",
         "outputs/pipeline_receipts/20261027_paper_account_continuity_use_case_v1.json",
-        "outputs/research_reports/20261027_paper_account_continuity_use_case_v1.md"
+        "outputs/research_reports/20261027_paper_account_continuity_use_case_v1.md",
+        "trading/research/paper_preview_view.py",
+        "trading/research/tests/test_paper_preview_view.py",
+        "outputs/pipeline_receipts/20261027_paper_preview_usecase_v1.json",
+        "outputs/research_reports/20261027_paper_preview_usecase_v1.md"
       ]
     },
     {
@@ -1760,7 +1768,11 @@
         "trading/research/paper_account_continuity.py",
         "trading/research/tests/test_paper_account_continuity_view.py",
         "outputs/pipeline_receipts/20261027_paper_account_continuity_use_case_v1.json",
-        "outputs/research_reports/20261027_paper_account_continuity_use_case_v1.md"
+        "outputs/research_reports/20261027_paper_account_continuity_use_case_v1.md",
+        "trading/research/paper_preview_view.py",
+        "trading/research/tests/test_paper_preview_view.py",
+        "outputs/pipeline_receipts/20261027_paper_preview_usecase_v1.json",
+        "outputs/research_reports/20261027_paper_preview_usecase_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -1778,7 +1790,11 @@
         "trading/research/paper_account_continuity.py",
         "trading/research/tests/test_paper_account_continuity_view.py",
         "outputs/pipeline_receipts/20261027_paper_account_continuity_use_case_v1.json",
-        "outputs/research_reports/20261027_paper_account_continuity_use_case_v1.md"
+        "outputs/research_reports/20261027_paper_account_continuity_use_case_v1.md",
+        "trading/research/paper_preview_view.py",
+        "trading/research/tests/test_paper_preview_view.py",
+        "outputs/pipeline_receipts/20261027_paper_preview_usecase_v1.json",
+        "outputs/research_reports/20261027_paper_preview_usecase_v1.md"
       ]
     },
     {
@@ -2056,7 +2072,11 @@
         "outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v2.json",
         "outputs/research_reports/20261027_paper_pipeline_lineage_v2.md",
         "outputs/pipeline_receipts/20261027_candidate_library_binding_v4.json",
-        "outputs/research_reports/20261027_candidate_library_binding_v4.md"
+        "outputs/research_reports/20261027_candidate_library_binding_v4.md",
+        "trading/research/paper_preview_view.py",
+        "trading/research/tests/test_paper_preview_view.py",
+        "outputs/pipeline_receipts/20261027_paper_preview_usecase_v1.json",
+        "outputs/research_reports/20261027_paper_preview_usecase_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -2091,7 +2111,11 @@
         "outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v2.json",
         "outputs/research_reports/20261027_paper_pipeline_lineage_v2.md",
         "outputs/pipeline_receipts/20261027_candidate_library_binding_v4.json",
-        "outputs/research_reports/20261027_candidate_library_binding_v4.md"
+        "outputs/research_reports/20261027_candidate_library_binding_v4.md",
+        "trading/research/paper_preview_view.py",
+        "trading/research/tests/test_paper_preview_view.py",
+        "outputs/pipeline_receipts/20261027_paper_preview_usecase_v1.json",
+        "outputs/research_reports/20261027_paper_preview_usecase_v1.md"
       ],
       "evidence_updated_on": "2026-10-27"
     },
