@@ -184,6 +184,8 @@ EVIDENCE_FILES = (
     "trading/research/tests/test_post_close_d0_d1.py",
     "outputs/pipeline_receipts/20261027_post_close_pipeline_stage_trace_v1.json",
     "outputs/research_reports/20261027_post_close_pipeline_stage_trace_v1.md",
+    "outputs/pipeline_receipts/20261027_post_close_direct_manifest_binding_v1.json",
+    "outputs/research_reports/20261027_post_close_direct_manifest_binding_v1.md",
     "trading/research/tests/test_runtime_recipe.py",
     "outputs/pipeline_receipts/20261027_runtime_recipe_v4.json",
     "outputs/research_reports/20261027_runtime_recipe_v4.md",

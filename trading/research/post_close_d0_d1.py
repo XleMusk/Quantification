@@ -182,7 +182,20 @@ def _resolve_candidate_stage(*, source: Path | None,
     if replay_manifest is None:
         if source is None:
             raise ValueError("Candidate source manifest was not resolved")
+        source = source.resolve()
+        payload = _read(source)
+        candidates = payload.get("candidates")
+        candidate_count = len(candidates) if isinstance(candidates, list) else None
+        manifest_ref = _ref(source)
+        base["candidate_source_manifest"] = manifest_ref
+        base["candidate_input_bundle"] = {
+            "source_kind": "direct_manifest",
+            "manifest": {**manifest_ref, "candidate_count": candidate_count},
+            "receipt": None,
+            "candidate_count": candidate_count,
+        }
         base["stage_trace"].append({"stage": "candidate_inputs", "status": "DIRECT_SOURCE"})
+        base["pipeline_stage_trace"] = _pipeline_stage_trace(base)
         return source
     raw = json.loads(replay_manifest.read_text(encoding="utf-8"))
     candidates = raw if isinstance(raw, list) else raw.get("candidates") if isinstance(raw, dict) else None
@@ -198,9 +211,12 @@ def _resolve_candidate_stage(*, source: Path | None,
         candidates, output / "candidate_inputs", catalog_path=catalog, gate_mode=gate_mode
     )
     resolved = Path(candidate_bundle["manifest"]["path"]).resolve()
+    base["candidate_source_manifest"] = _ref(resolved)
     base["candidate_input_bundle"] = {
         "receipt": candidate_bundle["receipt_path"],
         "manifest": candidate_bundle["manifest"],
+        "candidate_count": candidate_bundle["candidate_count"],
+        "source_kind": "generated_from_replay_manifest",
     }
     base["pipeline_stage_trace"] = _pipeline_stage_trace(base)
     base["stage_trace"].append({

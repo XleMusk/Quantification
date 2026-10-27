@@ -71,6 +71,31 @@ def test_post_close_advances_fixed_daily_before_d0_d1(tmp_path: Path, monkeypatc
     assert receipt["timing"]["finished_at"].endswith("+00:00")
 
 
+def test_post_close_binds_direct_candidate_manifest_to_signal_stage(tmp_path: Path, monkeypatch) -> None:
+    source, fixed_dir, package, stockdb = _inputs(tmp_path)
+
+    monkeypatch.setattr(orchestrator.stockdb_fixed_daily, "run", lambda *args, **kwargs: {
+        "status": "continued_research_only", "last_completed_day": CLOSE,
+        "execution_admitted": False,
+    })
+    monkeypatch.setattr(orchestrator.next_close_d0_d1, "run_contract", lambda *args, **kwargs: {
+        "status": "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1",
+        "execution_admitted": False,
+    })
+
+    receipt = orchestrator.run_pipeline(
+        source, tmp_path / "run", fixed_run_dir=fixed_dir, packages=[package],
+        close_date=CLOSE, execution_day="2026-10-27", settlement_day="2026-10-28",
+        initial_cash=100000.0, stockdb_root=stockdb)
+
+    binding = receipt["candidate_source_manifest"]
+    assert Path(binding["path"]) == source.resolve()
+    assert len(binding["sha256"]) == 64
+    assert receipt["candidate_input_bundle"]["candidate_count"] == 0
+    assert receipt["candidate_input_bundle"]["manifest"]["path"] == binding["path"]
+    assert receipt["pipeline_stage_trace"][1]["status"] == "BOUND_CANDIDATE_INPUTS"
+
+
 def test_post_close_resolves_execution_and_settlement_from_calendar(tmp_path: Path, monkeypatch) -> None:
     source, fixed_dir, package, stockdb = _inputs(tmp_path)
     calendar = tmp_path / "calendar.json"

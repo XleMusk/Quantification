@@ -886,3 +886,7 @@ Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027
 ## Workbench boundary-view browser observation (2026-10-27)
 
 本地浏览器在 `#comparison` 页面已实际显示“身份、账户风险与只读回读边界”区块；回执为 `outputs/pipeline_receipts/20261027_workbench_boundary_views_browser_observation_v1.json`。该证据仍是本地 UI 观察，不代表真实同花顺或券商证据。
+
+## Google applied design B: direct candidate manifest binding (2026-10-27)
+
+修正 `post_close_d0_d1.py` 的直连候选路径：此前直连 manifest 已被送入 D0/D1，但编排回执没有留下统一的候选来源绑定，`pipeline_stage_trace` 也可能把 Signal 写成等待输入。现在直连和 replay 生成的 manifest 都写入绝对路径、SHA-256、候选数量和来源类型，Signal 阶段统一显示为 `BOUND_CANDIDATE_INPUTS`。聚焦测试 `test_post_close_d0_d1.py` 为 `9 passed`，证据回执为 `outputs/pipeline_receipts/20261027_post_close_direct_manifest_binding_v1.json`。该修复只增强研究/纸面链路追踪，`execution_admitted=false`、`NO_TRADE` 和持久账本边界未改变。
