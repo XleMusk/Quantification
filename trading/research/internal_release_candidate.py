@@ -77,6 +77,16 @@ EVIDENCE_FILES = (
     "trading/tests/test_factor_replay_comparison.py",
     "trading/research/tests/test_research_adoption_rollup.py",
     "trading/research/tests/test_workbench_manual_resubmit.py",
+    "outputs/pipeline_receipts/20261027_research_adoption_rollup_v12.json",
+    "outputs/research_reports/20261027_research_adoption_rollup_v12.md",
+    "outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v5.json",
+    "outputs/research_reports/20261027_paper_pipeline_lineage_v5.md",
+    "outputs/pipeline_receipts/20261027_candidate_library_binding_v8.json",
+    "outputs/research_reports/20261027_candidate_library_binding_v8.md",
+    "outputs/pipeline_receipts/20261027_operator_evidence_usecase_v1.json",
+    "outputs/pipeline_receipts/20261027_operator_decision_queue_usecase_v1.json",
+    "trading/research/tests/test_operator_evidence_view.py",
+    "trading/research/tests/test_operator_decision_queue_view.py",
 )
 
 PAPER_EVIDENCE_FILES = (
@@ -91,6 +101,13 @@ PAPER_EVIDENCE_FILES = (
     "D:/Quantification/outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md",
     "D:/Quantification/outputs/pipeline_receipts/20261026_workbench_lifecycle_job_id_v2.json",
     "D:/Quantification/outputs/research_reports/20261026_workbench_lifecycle_job_id_v2.md",
+    "D:/Quantification/outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5/contract_receipt.json",
+    "D:/Quantification/outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5_summary.json",
+    "D:/Quantification/outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v5.json",
+    "D:/Quantification/outputs/pipeline_receipts/20261027_candidate_library_binding_v8.json",
+    "D:/Quantification/outputs/pipeline_receipts/20261027_research_adoption_rollup_v12.json",
+    "D:/Quantification/outputs/pipeline_receipts/20261027_operator_evidence_usecase_v1.json",
+    "D:/Quantification/outputs/pipeline_receipts/20261027_operator_decision_queue_usecase_v1.json",
 )
 
 
@@ -168,6 +185,8 @@ def build_release(root: str | Path, output_dir: str | Path, *, version: str,
         "git": _git(root),
         "validation_commands": [
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_next_close_d0_d1.py trading/research/tests/test_post_close_d0_d1.py",
+            "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_paper_pipeline_lineage.py trading/research/tests/test_candidate_library_binding.py trading/research/tests/test_research_adoption_rollup.py",
+            "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_operator_evidence_view.py trading/research/tests/test_operator_decision_queue_view.py",
             "D:/Quantification/env/python.exe run_committee.py post-close-d0-d1 --help",
         ],
         "operating_entrypoints": {
