@@ -838,3 +838,8 @@ lineage 继续贯通 StockDB Data、Signal、Target Portfolio、Orders、offline
 工作台的策略级纸面决策队列已提取为 [`trading/research/operator_decision_queue_view.py`](../../trading/research/operator_decision_queue_view.py)。它读取保存的决策队列，附加当前同一账本对账和恢复交接视图，并明确 `retry_permitted=false`；API 只负责请求和错误映射。
 
 聚焦验证命令结果为 `42 passed`，证据回执为 [`20261027_operator_decision_queue_usecase_v1.json`](../../outputs/pipeline_receipts/20261027_operator_decision_queue_usecase_v1.json)。没有任务创建、订单重试、账本变更或 broker/THS 交互。
+
+
+## Candidate library defaults now follow latest paper evidence (2026-10-27)
+
+`candidate_library_binding.py` 的无参 CLI 默认输入已从旧 rollup v10/lineage v2 更新到当前 adoption rollup v11/lineage v4；无参运行生成 [`20261027_candidate_library_binding_v7.json`](../../outputs/pipeline_receipts/20261027_candidate_library_binding_v7.json)，包含 9 个候选条目。所有条目仍为研究状态，未打开 paper 或 promotion 权限。
