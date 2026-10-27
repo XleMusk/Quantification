@@ -1838,6 +1838,10 @@
         "trading/research/tests/test_operator_lifecycle_view.py",
         "outputs/pipeline_receipts/20261027_operator_lifecycle_usecase_v1.json",
         "outputs/research_reports/20261027_operator_lifecycle_usecase_v1.md",
+        "trading/research/operator_session_handoff_view.py",
+        "trading/research/tests/test_operator_session_handoff_view.py",
+        "outputs/pipeline_receipts/20261027_operator_session_handoff_usecase_v1.json",
+        "outputs/research_reports/20261027_operator_session_handoff_usecase_v1.md",
         "trading/research/candidate_evidence_view.py",
         "trading/research/tests/test_candidate_evidence_view.py",
         "outputs/pipeline_receipts/20261027_candidate_evidence_usecase_v1.json",
@@ -1892,6 +1896,10 @@
         "trading/research/tests/test_operator_lifecycle_view.py",
         "outputs/pipeline_receipts/20261027_operator_lifecycle_usecase_v1.json",
         "outputs/research_reports/20261027_operator_lifecycle_usecase_v1.md",
+        "trading/research/operator_session_handoff_view.py",
+        "trading/research/tests/test_operator_session_handoff_view.py",
+        "outputs/pipeline_receipts/20261027_operator_session_handoff_usecase_v1.json",
+        "outputs/research_reports/20261027_operator_session_handoff_usecase_v1.md",
         "trading/research/candidate_evidence_view.py",
         "trading/research/tests/test_candidate_evidence_view.py",
         "outputs/pipeline_receipts/20261027_candidate_evidence_usecase_v1.json",
@@ -1901,7 +1909,7 @@
         "outputs/pipeline_receipts/20261027_current_research_evidence_usecase_v1.json",
         "outputs/research_reports/20261027_current_research_evidence_usecase_v1.md"
       ],
-      "acceptance": "The same-sample comparison, candidate evidence, current research evidence, operator evidence, decision queue, paper-preview readiness, selected-plan and lifecycle endpoints delegate to read-only application views, preserve response/error semantics, and pass focused view plus API consumer tests without account or source mutation."
+      "acceptance": "The same-sample comparison, candidate evidence, current research evidence, operator evidence, decision queue, paper-preview readiness, selected-plan, lifecycle and session-handoff endpoints delegate to read-only application views, preserve response/error semantics, and pass focused view plus API consumer tests without account or source mutation."
     },
     {
       "id": "U02",
