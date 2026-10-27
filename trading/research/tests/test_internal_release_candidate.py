@@ -134,6 +134,14 @@ def test_internal_release_binds_instrument_master_application_view() -> None:
     assert "outputs/pipeline_receipts/20261027_operator_instrument_master_view_usecase_v1.json" in EVIDENCE_FILES
 
 
+def test_internal_release_binds_operator_package_application_view() -> None:
+    from trading.research.internal_release_candidate import EVIDENCE_FILES, REQUIRED_FILES
+
+    assert "trading/research/operator_package_view.py" in REQUIRED_FILES
+    assert "trading/research/tests/test_operator_package_view.py" in EVIDENCE_FILES
+    assert "outputs/pipeline_receipts/20261027_operator_package_view_usecase_v1.json" in EVIDENCE_FILES
+
+
 def test_internal_release_binds_workbench_boundary_view_consumer() -> None:
     from trading.research.internal_release_candidate import EVIDENCE_FILES, REQUIRED_FILES
 

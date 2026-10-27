@@ -930,3 +930,7 @@ F02 已更新到当前主分支 runtime recipe v5：解释器为 `D:\Quantificat
 ### 全策略共同窗口采用决定（2026-10-27）
 
 新增 `run_committee.py full-panel-strategy-decision`，读取六策略共同窗口和同窗口 50/100 bps 成本压力回执，按预先声明的“基础窗口与最高成本压力下净收益、Sharpe 均为正才允许继续研究”规则生成逐策略决定。当前六个策略均为 `STOP_RESEARCH_ONLY`，没有策略验证、纸面采用或晋级；回执为 `outputs/pipeline_receipts/20261027_full_panel_strategy_decision_v1.json`，测试 `44 passed`。这补齐了同口径比较后的机器可读采用决定，不把负结果改写成候选采用。
+
+### 根运营包应用边界（2026-10-27）
+
+根 `/operator-package` 路由已委托给 `trading/research/operator_package_view.py`。视图负责加载保存的离线运营包、计算 execution-day 新鲜度并拼接纸面对账投影；相关测试 `55 passed`，回执为 `outputs/pipeline_receipts/20261027_operator_package_view_usecase_v1.json`。该路径保持只读纸面边界，不打开券商或同花顺客户端。

@@ -1894,7 +1894,7 @@
     {
       "id": "U01",
       "domain": "workbench",
-      "result": "Saved strategy comparison, candidate evidence, current research evidence, operator evidence review, operator decision queue and paper-preview readiness now have explicit read-only application views; HTTP routes retain response/error semantics and do not create tasks or accounts.",
+      "result": "Saved strategy comparison, candidate evidence, current research evidence, operator evidence review, operator decision queue, paper-preview readiness and the root operator package now have explicit read-only application views; HTTP routes retain response/error semantics and do not create tasks or accounts.",
       "state": "PARTIAL",
       "next": "Keep the paper-preview readiness view bound to persisted evidence; extract another route only when a current consumer requires it.",
       "prohibition": "Do not let UI labels collapse paper, live and unknown states.",
@@ -2014,7 +2014,11 @@
         "outputs/pipeline_receipts/20261027_workbench_boundary_views_consumer_v1.json",
         "outputs/research_reports/20261027_workbench_boundary_views_consumer_v1.md",
         "outputs/pipeline_receipts/20261027_workbench_boundary_views_browser_observation_v1.json",
-        "outputs/research_reports/20261027_workbench_boundary_views_browser_observation_v1.md"
+        "outputs/research_reports/20261027_workbench_boundary_views_browser_observation_v1.md",
+        "trading/research/operator_package_view.py",
+        "trading/research/tests/test_operator_package_view.py",
+        "outputs/pipeline_receipts/20261027_operator_package_view_usecase_v1.json",
+        "outputs/research_reports/20261027_operator_package_view_usecase_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -2127,7 +2131,11 @@
         "outputs/pipeline_receipts/20261027_workbench_boundary_views_consumer_v1.json",
         "outputs/research_reports/20261027_workbench_boundary_views_consumer_v1.md",
         "outputs/pipeline_receipts/20261027_workbench_boundary_views_browser_observation_v1.json",
-        "outputs/research_reports/20261027_workbench_boundary_views_browser_observation_v1.md"
+        "outputs/research_reports/20261027_workbench_boundary_views_browser_observation_v1.md",
+        "trading/research/operator_package_view.py",
+        "trading/research/tests/test_operator_package_view.py",
+        "outputs/pipeline_receipts/20261027_operator_package_view_usecase_v1.json",
+        "outputs/research_reports/20261027_operator_package_view_usecase_v1.md"
       ],
       "acceptance": "The same-sample comparison, candidate evidence, current research evidence, operator evidence, decision queue, paper-preview readiness, selected-plan, lifecycle, session-handoff, blotter, execution-attribution, execution-evidence, portfolio-controls, portfolio-risk, basket-schedule, GET paper-selection, manual-statements, ths-native-observation and opening-window-status endpoints delegate to read-only application views, preserve response/error semantics, and pass focused view plus API consumer tests without account or source mutation."
     },

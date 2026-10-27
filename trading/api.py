@@ -41,6 +41,7 @@ from .research import operator_portfolio_views
 from .research import operator_account_risk_view
 from .research import operator_broker_observation_view
 from .research import operator_instrument_master_view
+from .research import operator_package_view
 
 router = APIRouter(prefix="/api/trading")
 
@@ -2590,59 +2591,7 @@ def _broker_observation_alerts(bundle):
 @router.get("/operator-package")
 def operator_package():
     """Return the newest read-only paper operator package for the trading desk."""
-    path = _latest_operator_package_path()
-    if path is None:
-        raise HTTPException(404, "尚无离线运营包")
-    try:
-        payload = json.loads(path.read_text(encoding="utf-8-sig"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
-        raise HTTPException(409, f"离线运营包尚不可读取：{error}") from error
-    if payload.get("schema") != "offline_operator_package_v1":
-        raise HTTPException(409, "离线运营包版本不受支持")
-    payload["package_source_file"] = str(path.resolve())
-    execution_day = str(payload.get("execution_day") or "")
-    today = date.today().isoformat()
-    if execution_day and execution_day < today:
-        payload["package_freshness"] = "stale_execution_day"
-        payload["package_warning"] = (
-            f"execution_day={execution_day} is before server_date={today}; "
-            "do not reuse this package for a new paper selection or THS handoff"
-        )
-        payload["next_action"] = (
-            "build a future-dated opening pack from a current source cutoff before selection"
-        )
-    else:
-        payload["package_freshness"] = "current_or_future_execution_day"
-    structured_package = _latest_structured_observation_package()
-    complete_structured_package = _latest_complete_structured_observation_package()
-    structured_reconciliation = structured_package.get("order_reconciliation") or {}
-    journal_reconciliation = _ths_journal_reconciliation_view()
-    same_ledger_bundle_reconciliation = _same_ledger_bundle_reconciliation_view()
-    payload["structured_observation_package"] = structured_package
-    payload["structured_observation_package_complete"] = complete_structured_package
-    payload["structured_package_ready_for_ledger_reconciliation"] = bool(
-        structured_package.get("ready_for_ledger_reconciliation")
-    )
-    payload["complete_structured_package_ready_for_ledger_reconciliation"] = bool(
-        complete_structured_package.get("ready_for_ledger_reconciliation")
-    )
-    payload["order_reconciliation"] = structured_reconciliation
-    payload["order_reconciliation_status"] = structured_reconciliation.get("status")
-    payload["order_count"] = structured_reconciliation.get("order_count")
-    payload["trade_count"] = structured_reconciliation.get("trade_count")
-    payload["cashflow_count"] = structured_reconciliation.get("cashflow_count")
-    payload["ths_journal_reconciliation"] = journal_reconciliation
-    payload["same_ledger_bundle_reconciliation"] = same_ledger_bundle_reconciliation
-    # Surface the historical, explicit same-Ledger receipt at the package
-    # level.  This is a read-only projection of a prior import, not a request
-    # to mutate the Ledger or operate the broker client.
-    payload.update(_same_ledger_compat_fields(
-        same_ledger_bundle_reconciliation, journal_reconciliation
-    ))
-    payload["execution_admitted"] = False
-    payload["ledger_mutated"] = journal_reconciliation["ledger_mutated"]
-    payload["client_interacted"] = False
-    return payload
+    return operator_package_view.build_view(globals())
 
 
 @router.get("/operator-package/journal-reconciliation")
