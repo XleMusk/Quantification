@@ -17,9 +17,10 @@ from pydantic import BaseModel, Field
 from . import replay_reports, settings, store
 from .config import StrategyConfig
 from .feed import HistoricalFeed, freeze
-from .report import comparison, detail
+from .report import detail
 from .research import paper_account_continuity as paper_continuity
 from .research import paper_preview_view
+from .research import research_comparison_view
 
 router = APIRouter(prefix="/api/trading")
 
@@ -6638,9 +6639,8 @@ def saved_replay_detail(identifier: str, signal: str):
 
 @router.get("/research-comparison")
 def saved_window_comparison(runs: str, start: str, end: str):
-    from .research_comparison import compare
     try:
-        return compare(runs.split(","), start, end)
+        return research_comparison_view.window(runs, start, end)
     except FileNotFoundError as error:
         raise HTTPException(404, "研究回放结果不存在") from error
     except (OSError, ValueError, KeyError) as error:
@@ -6649,9 +6649,8 @@ def saved_window_comparison(runs: str, start: str, end: str):
 
 @router.get("/research-comparison-snapshots")
 def saved_window_comparison_snapshots(limit: int = Query(12, ge=1, le=50)):
-    from . import research_comparison
     try:
-        return research_comparison.saved_catalog(limit=limit)
+        return research_comparison_view.snapshots(limit=limit)
     except (OSError, ValueError, KeyError, TypeError) as error:
         raise HTTPException(409, f"保存的研究比较尚不可读取：{error}") from error
 

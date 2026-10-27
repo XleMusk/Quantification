@@ -794,3 +794,10 @@ F2 fact bridge 现在把 `source_snapshot_id`、`source_sha256`、`snapshot_sour
 
 
 F2 的合成 vertical slice 与 bridge 测试夹具已同步改为同季度同比期间（2024Q1 对 2023Q1），避免旧夹具用上一季度数据掩盖 F01 的期间契约；2026-10-25 的旧合成回执保留为历史证据，不作为当前契约的重新验证。
+
+
+## Google design C: strategy comparison application view (2026-10-27)
+
+同样本策略比较已从 HTTP 路由中提取为 [`trading/research/research_comparison_view.py`](../../trading/research/research_comparison_view.py)。`GET /research-comparison` 和 `GET /research-comparison-snapshots` 现在只负责请求解析与错误映射，应用视图负责读取已保存比较结果；不创建账户、不重放来源、不写入保存产物，响应字段和 404/409 语义保持不变。
+
+聚焦命令 `D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_research_comparison_view.py trading/tests/test_research_comparison.py` 结果为 `20 passed`。既有 API 消费者测试确认比较过程不调用账户存储且不修改源文件。证据回执为 [`20261027_research_comparison_usecase_v1.json`](../../outputs/pipeline_receipts/20261027_research_comparison_usecase_v1.json)。该切片服务策略比较主线，不改变策略采用决定，`execution_admitted=false` 保持不变。

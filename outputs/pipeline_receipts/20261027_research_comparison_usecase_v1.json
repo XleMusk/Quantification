@@ -1,0 +1,43 @@
+{
+  "schema": "research_comparison_usecase_receipt_v1",
+  "status": "VERIFIED_LOCAL_READONLY_USECASE",
+  "created_at": "2026-10-27T10:55:28.232063+08:00",
+  "journey": "same_sample_strategy_comparison",
+  "design_decision": "C_api_task_result_boundaries",
+  "execution_admitted": false,
+  "no_trade": true,
+  "account_mutated": false,
+  "source_artifacts_mutated": false,
+  "change": {
+    "application_module": "trading/research/research_comparison_view.py",
+    "http_routes": [
+      "GET /api/trading/research-comparison",
+      "GET /api/trading/research-comparison-snapshots"
+    ],
+    "behavior": "HTTP routes delegate comparison window and saved catalog reads; response shapes and 404/409 mapping are preserved",
+    "side_effects": "read-only saved research artifacts; no account creation, replay or source write"
+  },
+  "tests": {
+    "command": "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_research_comparison_view.py trading/tests/test_research_comparison.py",
+    "result": "20 passed",
+    "consumer_acceptance": "existing API test proves saved comparison does not use account storage or mutate source files"
+  },
+  "source_files": [
+    {
+      "path": "trading/research/research_comparison_view.py",
+      "sha256": "2e8ec2e1eaef235ac64ae44e1ebce083f119c72ed1f23ce7afe3082c4e5318b3"
+    },
+    {
+      "path": "trading/research/tests/test_research_comparison_view.py",
+      "sha256": "2692b516e5848e5720c3b21ae3c645b5ea092dd0fc22fc6b43d55f2c5f69bae0"
+    },
+    {
+      "path": "trading/api.py",
+      "sha256": "1ed4004c580ca5ffac4d9a45cdebf4c9f8e6af03c0fb797721f90f98a6c9e5f9"
+    }
+  ],
+  "limitations": [
+    "This extracts the saved comparison read use case; it does not promote any strategy or change comparison metrics.",
+    "No new market data or broker/THS evidence was created."
+  ]
+}
