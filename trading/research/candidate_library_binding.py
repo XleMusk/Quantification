@@ -24,7 +24,8 @@ DEFAULT_ROLLUP = Path("outputs/pipeline_receipts/20261027_research_adoption_roll
 DEFAULT_PANEL = Path("outputs/pipeline_receipts/20261027_full_panel_common_window_strategy_comparison_v1.json")
 DEFAULT_THS_READBACK = Path("outputs/pipeline_receipts/20261027_ths_target_readback_current_synthetic_v1.json")
 DEFAULT_LINEAGE = Path("outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v5.json")
-DEFAULT_OUTPUT = Path("outputs/pipeline_receipts/20261027_candidate_library_binding_v8.json")
+DEFAULT_COST_PRESSURE = Path("outputs/pipeline_receipts/20261026_common_window_cost_pressure_v1.json")
+DEFAULT_OUTPUT = Path("outputs/pipeline_receipts/20261027_candidate_library_binding_v9.json")
 
 
 def _read(path: Path) -> dict[str, Any]:
@@ -79,6 +80,45 @@ def _panel_index(panel: Mapping[str, Any]) -> dict[str, list[dict[str, Any]]]:
     return index
 
 
+def _cost_pressure_binding(cost: Mapping[str, Any], panel: Mapping[str, Any]) -> dict[str, Any]:
+    """Validate a saved same-window cost sensitivity without rerunning a strategy."""
+
+    if cost.get("status") != "COMPLETED_RESEARCH_ONLY_COST_PRESSURE":
+        raise ValueError("cost_pressure receipt is not a completed research-only diagnostic")
+    _require_boundary("cost_pressure", cost)
+    if cost.get("broker_or_ths_interacted") is not False:
+        raise ValueError("cost_pressure.broker_or_ths_interacted must be false")
+    contract = cost.get("contract")
+    if not isinstance(contract, Mapping):
+        raise ValueError("cost_pressure contract is required")
+    for key in ("same_saved_account_rows", "same_stockdb_snapshot", "base_fees_preserved",
+                "strategy_rerun", "ledger_mutated", "adoption_decision_changed"):
+        expected = key not in {"strategy_rerun", "ledger_mutated", "adoption_decision_changed"}
+        if contract.get(key) is not expected:
+            raise ValueError(f"cost_pressure.contract.{key} has an unsupported value")
+    cost_window = cost.get("common_window")
+    panel_window = panel.get("common_window")
+    if not isinstance(cost_window, Mapping) or not isinstance(panel_window, Mapping):
+        raise ValueError("cost_pressure and full panel require common_window")
+    for key in ("start", "end", "sessions"):
+        if cost_window.get(key) != panel_window.get(key):
+            raise ValueError(f"cost_pressure common_window.{key} differs from full panel")
+    if cost.get("stockdb_snapshot") != panel.get("stockdb_snapshot"):
+        raise ValueError("cost_pressure stockdb_snapshot differs from full panel")
+    strategies = cost.get("strategies")
+    if not isinstance(strategies, list):
+        raise ValueError("cost_pressure strategies are required")
+    return {
+        "status": cost["status"],
+        "common_window": deepcopy(cost_window),
+        "stockdb_snapshot": cost.get("stockdb_snapshot"),
+        "bps_levels": list(cost.get("bps_levels") or []),
+        "strategy_ids": [row.get("id") for row in strategies if isinstance(row, Mapping)],
+        "contract": deepcopy(contract),
+        "research_only": True,
+    }
+
+
 def _decision_index(rollup: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
     rows = rollup.get("candidate_decisions")
     if not isinstance(rows, list):
@@ -114,6 +154,7 @@ def bind_library(
     ths_readback_path: str | Path = DEFAULT_THS_READBACK,
     lineage_path: str | Path = DEFAULT_LINEAGE,
     output_path: str | Path = DEFAULT_OUTPUT,
+    cost_pressure_path: str | Path = DEFAULT_COST_PRESSURE,
 ) -> dict[str, Any]:
     """Join three saved receipts into one reproducible candidate library."""
 
@@ -121,6 +162,7 @@ def bind_library(
         "catalog": catalog_path, "adoption_rollup": rollup_path, "full_panel": panel_path,
         "ths_readback": ths_readback_path,
         "paper_lineage": lineage_path,
+        "cost_pressure": cost_pressure_path,
     }.items()}
     for name, path in paths.items():
         if not path.is_file():
@@ -130,6 +172,7 @@ def bind_library(
     panel = _read(paths["full_panel"])
     ths_readback = _read(paths["ths_readback"])
     lineage = _read(paths["paper_lineage"])
+    cost_pressure = _read(paths["cost_pressure"])
     _require_boundary("catalog", catalog)
     _require_boundary("adoption_rollup", rollup)
     _require_boundary("full_panel", panel)
@@ -137,6 +180,7 @@ def bind_library(
     if lineage.get("schema") != "quantification_paper_pipeline_lineage_v1" or lineage.get("status") != "VERIFIED_LOCAL_RESEARCH_ONLY_PAPER_LINEAGE":
         raise ValueError("paper lineage is not a verified research-only lineage")
     _require_boundary("paper_lineage", lineage)
+    cost_binding = _cost_pressure_binding(cost_pressure, panel)
     if rollup.get("status") != "COMPLETED_RESEARCH_ONLY_ADOPTION_ROLLUP":
         raise ValueError("adoption rollup is not a completed research-only rollup")
     if panel.get("status") != "COMPLETED_RESEARCH_ONLY_FULL_PANEL_COMMON_WINDOW":
@@ -216,6 +260,7 @@ def bind_library(
             **ths_binding,
         },
         "paper_lineage_binding": {"source": _ref(paths["paper_lineage"]), "status": lineage["status"]},
+        "cost_pressure_binding": {"source": _ref(paths["cost_pressure"]), **cost_binding},
         "candidate_count": len(bound),
         "bound_candidates": bound,
         "adoption_summary": deepcopy(rollup.get("candidate_summary")),
@@ -239,9 +284,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--panel", type=Path, default=DEFAULT_PANEL)
     parser.add_argument("--ths-readback", type=Path, default=DEFAULT_THS_READBACK)
     parser.add_argument("--paper-lineage", type=Path, default=DEFAULT_LINEAGE)
+    parser.add_argument("--cost-pressure", type=Path, default=DEFAULT_COST_PRESSURE)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     args = parser.parse_args(argv)
-    result = bind_library(args.catalog, args.rollup, args.panel, args.ths_readback, args.paper_lineage, args.output)
+    result = bind_library(args.catalog, args.rollup, args.panel, args.ths_readback,
+                          args.paper_lineage, args.output, args.cost_pressure)
     print(json.dumps({
         "status": result["status"], "candidate_count": result["candidate_count"],
         "execution_admitted": False, "output": result["output"],

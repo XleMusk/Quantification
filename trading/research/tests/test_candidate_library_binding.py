@@ -36,6 +36,7 @@ def _inputs(tmp_path):
     panel = _write(tmp_path / "panel.json", {
         "status": "COMPLETED_RESEARCH_ONLY_FULL_PANEL_COMMON_WINDOW",
         "execution_admitted": False, "common_window": {"sessions": 10},
+        "stockdb_snapshot": "snap",
         "comparison_contract": {"shared_stockdb_snapshot": True},
         "strategies": [
             {"id": "panel_a", "candidate_spec_id": "spec_a", "metrics": {"net_return": -0.1}},
@@ -52,12 +53,21 @@ def _inputs(tmp_path):
         "status": "VERIFIED_LOCAL_RESEARCH_ONLY_PAPER_LINEAGE",
         "execution_admitted": False,
     })
-    return catalog, rollup, panel, ths, lineage
+    cost = _write(tmp_path / "cost.json", {
+        "status": "COMPLETED_RESEARCH_ONLY_COST_PRESSURE", "execution_admitted": False,
+        "broker_or_ths_interacted": False, "common_window": {"sessions": 10},
+        "stockdb_snapshot": "snap", "bps_levels": [50.0, 100.0],
+        "strategies": [{"id": "panel_a"}],
+        "contract": {"same_saved_account_rows": True, "same_stockdb_snapshot": True,
+                     "base_fees_preserved": True, "strategy_rerun": False,
+                     "ledger_mutated": False, "adoption_decision_changed": False},
+    })
+    return catalog, rollup, panel, ths, lineage, cost
 
 
 def test_bind_library_keeps_panel_and_separate_gate_distinct(tmp_path):
-    catalog, rollup, panel, ths, lineage = _inputs(tmp_path)
-    result = bind_library(catalog, rollup, panel, ths, lineage, tmp_path / "bound.json")
+    catalog, rollup, panel, ths, lineage, cost = _inputs(tmp_path)
+    result = bind_library(catalog, rollup, panel, ths, lineage, tmp_path / "bound.json", cost)
     assert result["status"] == VERIFIED
     assert result["candidate_count"] == 2
     by_id = {row["id"]: row for row in result["bound_candidates"]}
@@ -71,21 +81,22 @@ def test_bind_library_keeps_panel_and_separate_gate_distinct(tmp_path):
     assert result["execution_admitted"] is False
     assert result["channel_binding"]["observation_class"] == "synthetic_fixture"
     assert result["paper_lineage_binding"]["status"] == "VERIFIED_LOCAL_RESEARCH_ONLY_PAPER_LINEAGE"
+    assert result["cost_pressure_binding"]["bps_levels"] == [50.0, 100.0]
 
 
 def test_bind_library_rejects_live_source_boundary(tmp_path):
-    catalog, rollup, panel, ths, lineage = _inputs(tmp_path)
+    catalog, rollup, panel, ths, lineage, cost = _inputs(tmp_path)
     rollup_data = json.loads(rollup.read_text())
     rollup_data["execution_admitted"] = True
     rollup.write_text(json.dumps(rollup_data), encoding="utf-8")
     with pytest.raises(ValueError, match="execution_admitted"):
-        bind_library(catalog, rollup, panel, ths, lineage, tmp_path / "bound.json")
+        bind_library(catalog, rollup, panel, ths, lineage, tmp_path / "bound.json", cost)
 
 
 def test_bind_library_rejects_ths_client_interaction(tmp_path):
-    catalog, rollup, panel, ths, lineage = _inputs(tmp_path)
+    catalog, rollup, panel, ths, lineage, cost = _inputs(tmp_path)
     ths_data = json.loads(ths.read_text())
     ths_data["client_interacted"] = True
     ths.write_text(json.dumps(ths_data), encoding="utf-8")
     with pytest.raises(ValueError, match="client_interacted"):
-        bind_library(catalog, rollup, panel, ths, lineage, tmp_path / "bound.json")
+        bind_library(catalog, rollup, panel, ths, lineage, tmp_path / "bound.json", cost)

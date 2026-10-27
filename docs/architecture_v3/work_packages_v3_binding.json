@@ -3110,6 +3110,10 @@
         "outputs/research_reports/20261027_paper_pipeline_lineage_v5.md",
         "outputs/pipeline_receipts/20261027_candidate_library_binding_v8.json",
         "outputs/research_reports/20261027_candidate_library_binding_v8.md",
+        "outputs/pipeline_receipts/20261027_full_panel_common_window_cost_pressure_v1.json",
+        "outputs/research_reports/20261027_full_panel_common_window_cost_pressure_v1.md",
+        "outputs/pipeline_receipts/20261027_candidate_library_binding_v9.json",
+        "outputs/research_reports/20261027_candidate_library_binding_v9.md",
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v12.json",
         "outputs/research_reports/20261027_research_adoption_rollup_v12.md"
       ],
@@ -3175,10 +3179,14 @@
         "outputs/research_reports/20261027_paper_pipeline_lineage_v5.md",
         "outputs/pipeline_receipts/20261027_candidate_library_binding_v8.json",
         "outputs/research_reports/20261027_candidate_library_binding_v8.md",
+        "outputs/pipeline_receipts/20261027_full_panel_common_window_cost_pressure_v1.json",
+        "outputs/research_reports/20261027_full_panel_common_window_cost_pressure_v1.md",
+        "outputs/pipeline_receipts/20261027_candidate_library_binding_v9.json",
+        "outputs/research_reports/20261027_candidate_library_binding_v9.md",
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v12.json",
         "outputs/research_reports/20261027_research_adoption_rollup_v12.md"
       ],
-      "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3, the retained joint target gate, the complete public-seat replay gate, candidate same-day freshness, value-size retrospective projection, leader partial cross-year projection and a six-strategy full-panel common-window receipt on one StockDB snapshot. It records all rows as research-only, keeps strategy_validated=false, paper_allowed=false, promotion_allowed=false and execution_admitted=false, and passes the focused rollup and comparison tests. PIT, untouched-forward, corporate-action and channel evidence remain separate gates."
+      "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3, the retained joint target gate, the complete public-seat replay gate, candidate same-day freshness, value-size retrospective projection, leader partial cross-year projection, a six-strategy full-panel common-window receipt and same-window 50/100 bps cost-pressure evidence on one StockDB snapshot. It records all rows as research-only, keeps strategy_validated=false, paper_allowed=false, promotion_allowed=false and execution_admitted=false, and passes the focused rollup, comparison and candidate-library tests. PIT, untouched-forward, corporate-action and channel evidence remain separate gates."
     },
     {
       "id": "P33",
