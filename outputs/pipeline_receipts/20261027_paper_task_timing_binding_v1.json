@@ -1,0 +1,50 @@
+{
+  "schema": "paper_task_timing_binding_v1",
+  "status": "VERIFIED_LOCAL_PAPER_TASK_TIMING",
+  "timing_contract": {
+    "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_timing_contract_v1.json",
+    "sha256": "9975fbdbc7f0465793605a6217b9daafc0f02dc23230d1fb5ab7e4caa0f38c6e"
+  },
+  "paper_task": {
+    "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v2\\post_close_receipt.json",
+    "sha256": "4fbd1659b059bb5d6c39dc48ebbb05e6f310b40aef1acaabe728e8637b1c69e9"
+  },
+  "task": {
+    "close_date": "2026-10-23",
+    "execution_day": "2026-10-26",
+    "settlement_day": "2026-10-27",
+    "input_fingerprint": "a7f2c2ce414a0990ef1ecc4cf23f01afc02f37893fb1fbdea8f98f104b40979a",
+    "snapshot_coverage": {
+      "status": "COMPLETE",
+      "reason": null,
+      "requested_close_date": "2026-10-23",
+      "effective_session_dates": [
+        "2026-10-20",
+        "2026-10-22",
+        "2026-10-23"
+      ],
+      "requested_symbol_count": 40,
+      "available_symbol_count": 40,
+      "missing_symbols": []
+    },
+    "fixed_target_count": 20,
+    "fixed_paper_order_count": 20,
+    "joint_paper_order_count": 22
+  },
+  "timing": {
+    "started_at": "2026-10-26T17:10:38.957674+00:00",
+    "finished_at": "2026-10-26T17:10:39.057099+00:00",
+    "wall_seconds": 0.099731,
+    "clock_basis": "local_monotonic_wall_clock"
+  },
+  "expense": {
+    "provider_cost_cny": null,
+    "status": "UNMEASURED_EXTERNAL_PROVIDER_EXPENSE"
+  },
+  "scope": "accepted_non_live_paper_task",
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "next": "Use an independently authorized provider receipt before adding monetary expense; do not infer it from wall time."
+}
