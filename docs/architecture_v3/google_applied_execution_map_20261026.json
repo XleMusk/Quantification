@@ -2,136 +2,29 @@
   "schema": "google_applied_execution_map_v1",
   "source_document": "C:/Users/13944/Downloads/Quantification_Google_Applied_Design_20261026.pdf",
   "purpose": "将Google公开工程实践映射为现有量化系统的交付切片，不建立第二份任务台账",
-  "constraints": {
-    "execution_admitted": false,
-    "candidate_panel_only": true,
-    "live_execution_ready": false,
-    "no_real_login_or_orders": true
-  },
+  "constraints": {"execution_admitted": false, "candidate_panel_only": true, "live_execution_ready": false, "no_real_login_or_orders": true},
   "design_decisions": [
-    {
-      "id": "A",
-      "name": "financial_fact_time_semantics",
-      "customer_outcome": "财报事实在决策截止前可追溯，F01只消费口径和时间均合格的事实",
-      "packages": [
-        "F01",
-        "D01",
-        "D02",
-        "D03",
-        "D04"
-      ],
-      "acceptance": "retrieval/as-of/revision、期间、单位和scope均有证据；缺证据输出BLOCKED_DATA且不进入因子或账户"
-    },
-    {
-      "id": "B",
-      "name": "continuous_paper_atomicity",
-      "customer_outcome": "固定策略和候选策略沿同一Engine/Ledger连续推进并可恢复",
-      "packages": [
-        "O01",
-        "O03",
-        "O04",
-        "O05",
-        "U05",
-        "U06"
-      ],
-      "acceptance": "同一持久账户完成日切、费用、现金/持仓、游标和恢复回执；投影计划不冒充成交"
-    },
-    {
-      "id": "C",
-      "name": "api_task_result_boundaries",
-      "customer_outcome": "提交、查询、下载和恢复围绕同一任务身份工作，结果来源可定位",
-      "packages": [
-        "F05",
-        "F06",
-        "U01",
-        "U02",
-        "U04"
-      ],
-      "acceptance": "幂等键、job_id、生命周期、结果下载和恢复尝试可关联；冲突和旧attempt不能覆盖新状态"
-    },
-    {
-      "id": "D",
-      "name": "reproducible_release_environment",
-      "customer_outcome": "同一代码、输入、依赖和规则可以重建研究发布包",
-      "packages": [
-        "F02",
-        "F03",
-        "F04",
-        "O06"
-      ],
-      "acceptance": "发布清单绑定代码提交、输入、策略、费率、schema、测试和恢复范围；工作树干净且live_execution_ready=false"
-    }
+    {"id": "A", "name": "financial_fact_time_semantics", "customer_outcome": "财报事实在决策截止前可追溯，F01只消费口径和时间均合格的事实", "packages": ["F01", "D01", "D02", "D03", "D04"], "acceptance": "retrieval/as-of/revision、期间、单位和scope均有证据；缺证据输出BLOCKED_DATA且不进入因子或账户"},
+    {"id": "B", "name": "continuous_paper_atomicity", "customer_outcome": "固定策略和候选策略沿同一Engine/Ledger连续推进并可恢复", "packages": ["O01", "O03", "O04", "O05", "U05", "U06"], "acceptance": "同一持久账户完成日切、费用、现金/持仓、游标和恢复回执；投影计划不冒充成交"},
+    {"id": "C", "name": "api_task_result_boundaries", "customer_outcome": "提交、查询、下载和恢复围绕同一任务身份工作，结果来源可定位", "packages": ["F05", "F06", "U01", "U02", "U04"], "acceptance": "幂等键、job_id、生命周期、结果下载和恢复尝试可关联；冲突和旧attempt不能覆盖新状态"},
+    {"id": "D", "name": "reproducible_release_environment", "customer_outcome": "同一代码、输入、依赖和规则可以重建研究发布包", "packages": ["F02", "F03", "F04", "O06"], "acceptance": "发布清单绑定代码提交、输入、策略、费率、schema、测试和恢复范围；工作树干净且live_execution_ready=false"}
   ],
   "delivery_waves": [
-    {
-      "id": "W1",
-      "customer_outcome": "财报事件切片可解释",
-      "decisions": [
-        "A"
-      ],
-      "exit": "至少一个真实来源事件通过全部PIT门；否则保留机器可读BLOCKED_DATA并继续独立路线"
-    },
-    {
-      "id": "W2",
-      "customer_outcome": "下一完整收市后的D0/D1纸面账户连续生产",
-      "decisions": [
-        "B"
-      ],
-      "exit": "固定与候选同口径输入生成Signal、Target Portfolio、Orders、Fill、Cash/Position及恢复回执"
-    },
-    {
-      "id": "W3",
-      "customer_outcome": "研究工作台结果可追查",
-      "decisions": [
-        "C"
-      ],
-      "exit": "实际POST到结果下载使用同一job_id，并通过隔离输入完成恢复演练"
-    },
-    {
-      "id": "W4",
-      "customer_outcome": "可重建的内部候选发布",
-      "decisions": [
-        "D"
-      ],
-      "exit": "发布manifest与最终commit一致，缺失清单为空，外部执行门仍关闭"
-    }
+    {"id": "W1", "customer_outcome": "财报事件切片可解释", "decisions": ["A"], "exit": "至少一个真实来源事件通过全部PIT门；否则保留机器可读BLOCKED_DATA并继续独立路线"},
+    {"id": "W2", "customer_outcome": "下一完整收市后的D0/D1纸面账户连续生产", "decisions": ["B"], "exit": "固定与候选同口径输入生成Signal、Target Portfolio、Orders、Fill、Cash/Position及恢复回执"},
+    {"id": "W3", "customer_outcome": "研究工作台结果可追查", "decisions": ["C"], "exit": "实际POST到结果下载使用同一job_id，并通过隔离输入完成恢复演练"},
+    {"id": "W4", "customer_outcome": "可重建的内部候选发布", "decisions": ["D"], "exit": "发布manifest与最终commit一致，缺失清单为空，外部执行门仍关闭"}
   ],
-  "operating_loop": [
-    "select_customer_outcome",
-    "bind_existing_work_package_and_baseline",
-    "implement_small_complete_change",
-    "run_independent_expected_behavior_test",
-    "run_latest_combination_and_consumer_path",
-    "remove_only_proven_redundancy",
-    "publish_commit_and_receipt",
-    "dispatch_next_ready_package"
-  ],
-  "stop_conditions": [
-    "没有新增输入、缺陷或业务决定时不重复生成审计报告",
-    "缺数据或授权只阻塞依赖路线，不阻塞代码、历史回放和策略比较",
-    "不得以测试数量、Agent数量、删除行数或收益强行宣称完成"
-  ],
-  "current_execution": {
+  "operating_loop": ["select_customer_outcome", "bind_existing_work_package_and_baseline", "implement_small_complete_change", "run_independent_expected_behavior_test", "run_latest_combination_and_consumer_path", "remove_only_proven_redundancy", "publish_commit_and_receipt", "dispatch_next_ready_package"],
+  "stop_conditions": ["没有新增输入、缺陷或业务决定时不重复生成审计报告", "缺数据或授权只阻塞依赖路线，不阻塞代码、历史回放和策略比较", "不得以测试数量、Agent数量、删除行数或收益强行宣称完成"]
+  ,"current_execution": {
     "as_of": "2026-10-27",
     "commit": "604bec155ea40d01c5b074474e11d1d6700323a9",
     "release": "D:/QuantificationData/trading/research/releases/20261027_v77/release_manifest.json",
-    "verified_local_changes": [
-      "P23 F01 rejects cumulative profit facts until explicit conversion",
-      "P23 F01 requires same-quarter profit endpoints",
-      "P23 cumulative-to-single-quarter uses half-open boundary",
-      "F2 vertical and bridge fixtures consume same-quarter year-over-year periods"
-    ],
+    "verified_local_changes": ["P23 F01 rejects cumulative profit facts until explicit conversion", "P23 F01 requires same-quarter profit endpoints", "P23 cumulative-to-single-quarter uses half-open boundary", "F2 vertical and bridge fixtures consume same-quarter year-over-year periods"],
     "validation": "35 focused tests passed; internal release candidate live_execution_ready=false",
-    "next_execution_order": [
-      "W2 run the next real close package through fixed and candidate D0/D1 paper continuity when input exists",
-      "W3 extract one current API research application use case with a real consumer and behavior tests",
-      "W1 acquire a genuinely pre-decision F2 retrieval/as-of/revision payload; keep BLOCKED_DATA until then"
-    ],
-    "external_blockers": [
-      "real pre-decision PIT retrieval/as-of/revision payload",
-      "complete full-market StockDB close package",
-      "authorized THS read-only export"
-    ],
+    "next_execution_order": ["W2 run the next real close package through fixed and candidate D0/D1 paper continuity when input exists", "W3 extract one current API research application use case with a real consumer and behavior tests", "W1 acquire a genuinely pre-decision F2 retrieval/as-of/revision payload; keep BLOCKED_DATA until then"],
+    "external_blockers": ["real pre-decision PIT retrieval/as-of/revision payload", "complete full-market StockDB close package", "authorized THS read-only export"],
     "non_blocking_rule": "An unavailable external route does not pause code refactoring, historical comparison, paper lineage or release packaging"
   }
 }
