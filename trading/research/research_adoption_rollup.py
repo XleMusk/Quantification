@@ -21,9 +21,10 @@ DEFAULT_SHORTLINE = Path("outputs/pipeline_receipts/20261026_shortline_adoption_
 DEFAULT_D0_D1 = Path("outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5/contract_receipt.json")
 DEFAULT_CURRENT_WINDOW = Path("outputs/pipeline_receipts/20261026_current_window_fixed_candidate_v1.json")
 DEFAULT_FULL_PANEL = Path("outputs/pipeline_receipts/20261027_full_panel_common_window_strategy_comparison_v1.json")
+DEFAULT_COST_PRESSURE = Path("outputs/pipeline_receipts/20261027_full_panel_common_window_cost_pressure_v1.json")
 DEFAULT_SAME_DAY_GATE = Path("outputs/pipeline_receipts/20261027_candidate_same_day_gate_20261026.json")
-DEFAULT_OUTPUT = Path("outputs/pipeline_receipts/20261027_research_adoption_rollup_v12.json")
-DEFAULT_REPORT = Path("outputs/research_reports/20261027_research_adoption_rollup_v12.md")
+DEFAULT_OUTPUT = Path("outputs/pipeline_receipts/20261027_research_adoption_rollup_v13.json")
+DEFAULT_REPORT = Path("outputs/research_reports/20261027_research_adoption_rollup_v13.md")
 RETAINED_JOINT_SCHEMA = "quantification_retained_joint_candidate_comparison_v1"
 D0_D1_SCHEMA = "stockdb_next_close_d0_d1_contract_v1"
 D0_D1_STATUS = "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1"
@@ -298,6 +299,55 @@ def _full_panel_summary(receipt: Mapping[str, Any], path: Path) -> dict[str, Any
     }
 
 
+def _cost_pressure_summary(receipt: Mapping[str, Any], path: Path) -> dict[str, Any]:
+    """Bind saved turnover-cost sensitivity without changing adoption decisions."""
+    if receipt.get("schema") != "quantification_common_window_cost_pressure_v1":
+        raise ValueError(f"cost-pressure schema mismatch: {path}")
+    if receipt.get("status") != "COMPLETED_RESEARCH_ONLY_COST_PRESSURE":
+        raise ValueError(f"cost-pressure is not complete: {path}")
+    if receipt.get("execution_admitted") is not False or receipt.get("broker_or_ths_interacted") is not False:
+        raise ValueError(f"cost-pressure execution boundary crossed: {path}")
+    contract = receipt.get("contract")
+    window = receipt.get("common_window")
+    strategies = receipt.get("strategies")
+    bps_levels = receipt.get("bps_levels")
+    snapshot = receipt.get("stockdb_snapshot")
+    if not isinstance(contract, Mapping) or not isinstance(window, Mapping) or not isinstance(strategies, list):
+        raise ValueError(f"cost-pressure payload is incomplete: {path}")
+    if not isinstance(bps_levels, list) or not bps_levels or not all(isinstance(value, (int, float)) for value in bps_levels):
+        raise ValueError(f"cost-pressure bps levels are invalid: {path}")
+    if not snapshot or contract.get("same_saved_account_rows") is not True or contract.get("same_stockdb_snapshot") is not True:
+        raise ValueError(f"cost-pressure source contract is incomplete: {path}")
+    if contract.get("strategy_rerun") is not False or contract.get("ledger_mutated") is not False or contract.get("adoption_decision_changed") is not False:
+        raise ValueError(f"cost-pressure contract changed strategy/adoption state: {path}")
+    rows = []
+    for strategy in strategies:
+        if not isinstance(strategy, Mapping) or not isinstance(strategy.get("pressure"), list):
+            raise ValueError(f"cost-pressure strategy row is malformed: {path}")
+        rows.append({
+            "id": strategy.get("id"),
+            "label": strategy.get("label"),
+            "base_net_return": strategy.get("base_net_return"),
+            "base_fees_rmb": strategy.get("base_fees_rmb"),
+            "base_window_turnover_value": strategy.get("base_window_turnover_value"),
+            "pressure": list(strategy.get("pressure") or []),
+            "research_decision_unchanged": strategy.get("research_decision_unchanged"),
+        })
+    return {
+        "status": receipt.get("status"),
+        "common_window": dict(window),
+        "stockdb_snapshot": snapshot,
+        "bps_levels": list(bps_levels),
+        "strategy_count": len(rows),
+        "strategies": rows,
+        "contract": dict(contract),
+        "source": {"path": str(path.resolve()), "sha256": _sha256(path)},
+        "paper_allowed": False,
+        "promotion_allowed": False,
+        "next_gate": "retain cost sensitivity as a research input until PIT, untouched-forward and prospective evidence agree",
+    }
+
+
 def _public_seat_summary(receipt: Mapping[str, Any], path: Path) -> dict[str, Any]:
     """Bind the public-seat timing/PIT gate already attached to candidate adoption.
 
@@ -441,7 +491,8 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
                  full_panel_path: Path | None = None,
                  same_day_gate_path: Path | None = None,
                  value_size_path: Path | None = None,
-                 leader_path: Path | None = None) -> dict[str, Any]:
+                 leader_path: Path | None = None,
+                 cost_pressure_path: Path | None = None) -> dict[str, Any]:
     candidate = _read(candidate_path)
     factor = _read(factor_path)
     shortline = _read(shortline_path)
@@ -475,6 +526,10 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
     if full_panel_path is not None:
         full_panel = _full_panel_summary(_read(full_panel_path), full_panel_path)
         separate_gates["full_panel_common_window"] = full_panel
+    cost_pressure = None
+    if cost_pressure_path is not None:
+        cost_pressure = _cost_pressure_summary(_read(cost_pressure_path), cost_pressure_path)
+        separate_gates["full_panel_cost_pressure"] = cost_pressure
     same_day_gate = None
     if same_day_gate_path is not None:
         same_day_gate = _same_day_gate_summary(_read(same_day_gate_path), same_day_gate_path)
@@ -514,6 +569,12 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
             f"Full-panel common window {full_panel['common_window']['start']}..{full_panel['common_window']['end']} binds "
             f"{full_panel['strategy_count']} strategies on one snapshot; keep all rows research-only until PIT and forward gates pass."
         ))
+    if cost_pressure is not None:
+        next_actions.insert(3, (
+            f"Cost pressure {cost_pressure['common_window']['start']}..{cost_pressure['common_window']['end']} "
+            f"binds {cost_pressure['strategy_count']} strategies at {cost_pressure['bps_levels']} bps; "
+            "keep it as economic robustness evidence only."
+        ))
     return {
         "schema": SCHEMA,
         "status": "COMPLETED_RESEARCH_ONLY_ADOPTION_ROLLUP",
@@ -536,6 +597,8 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
                if value_size_path is not None else {}),
             **({"leader_joint_paper": {"path": str(leader_path.resolve()), "sha256": _sha256(leader_path)}}
                if leader_path is not None else {}),
+            **({"full_panel_cost_pressure": {"path": str(cost_pressure_path.resolve()), "sha256": _sha256(cost_pressure_path)}}
+               if cost_pressure_path is not None else {}),
         },
         "candidate_summary": candidate.get("summary"),
         "candidate_decisions": [
@@ -621,6 +684,17 @@ def render_markdown(receipt: Mapping[str, Any]) -> str:
                 f"orders {row['orders'] if row['orders'] is not None else 'n/a'}, "
                 f"fills {row['fills'] if row['fills'] is not None else 'n/a'}."
             )
+    cost_pressure = receipt["separate_gates"].get("full_panel_cost_pressure")
+    if cost_pressure is not None:
+        lines += [
+            "",
+            f"Cost pressure: `{cost_pressure['common_window']['start']}..{cost_pressure['common_window']['end']}` "
+            f"({cost_pressure['common_window']['sessions']} sessions), {cost_pressure['strategy_count']} strategies, "
+            f"bps `{cost_pressure['bps_levels']}`, snapshot `{cost_pressure['stockdb_snapshot']}`.",
+        ]
+        for row in cost_pressure["strategies"]:
+            levels = ", ".join(f"{item.get('bps')}bp={item.get('net_return')}" for item in row["pressure"])
+            lines.append(f"- `{row['id']}`: {levels}; decision unchanged `{row['research_decision_unchanged']}`.")
     same_day_gate = receipt["separate_gates"].get("latest_candidate_same_day_gate")
     if same_day_gate is not None:
         lines += [
@@ -661,11 +735,12 @@ def write_outputs(*, candidate_path: Path = DEFAULT_CANDIDATE,
                   same_day_gate_path: Path | None = DEFAULT_SAME_DAY_GATE,
                   value_size_path: Path | None = None,
                   leader_path: Path | None = None,
+                  cost_pressure_path: Path | None = DEFAULT_COST_PRESSURE,
                   output: Path = DEFAULT_OUTPUT,
                   report: Path = DEFAULT_REPORT) -> tuple[Path, Path]:
     receipt = build_rollup(candidate_path, factor_path, shortline_path, retained_joint_path,
                            d0_d1_path, current_window_path, full_panel_path,
-                           same_day_gate_path, value_size_path, leader_path)
+                           same_day_gate_path, value_size_path, leader_path, cost_pressure_path)
     output.parent.mkdir(parents=True, exist_ok=True)
     report.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -692,6 +767,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="optional historical value/size joint paper receipt kept as a separate gate")
     parser.add_argument("--leader-joint-paper", type=Path,
                         help="optional leader-style joint paper receipt kept as a separate gate")
+    parser.add_argument("--full-panel-cost-pressure", type=Path, default=DEFAULT_COST_PRESSURE,
+                        help="saved same-window turnover-cost sensitivity receipt")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
     args = parser.parse_args(argv)
@@ -705,6 +782,7 @@ def main(argv: list[str] | None = None) -> int:
                                    same_day_gate_path=args.candidate_same_day_gate,
                                    value_size_path=args.value_size_joint_paper,
                                    leader_path=args.leader_joint_paper,
+                                   cost_pressure_path=args.full_panel_cost_pressure,
                                    output=args.output, report=args.report)
     print(json.dumps({"status": "COMPLETED_RESEARCH_ONLY_ADOPTION_ROLLUP",
                       "output": str(output), "report": str(report)}, ensure_ascii=False))

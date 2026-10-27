@@ -102,6 +102,8 @@ EVIDENCE_FILES = (
     "trading/research/tests/test_workbench_manual_resubmit.py",
     "outputs/pipeline_receipts/20261027_research_adoption_rollup_v12.json",
     "outputs/research_reports/20261027_research_adoption_rollup_v12.md",
+    "outputs/pipeline_receipts/20261027_research_adoption_rollup_v13.json",
+    "outputs/research_reports/20261027_research_adoption_rollup_v13.md",
     "outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v5.json",
     "outputs/research_reports/20261027_paper_pipeline_lineage_v5.md",
     "outputs/pipeline_receipts/20261027_candidate_library_binding_v9.json",
@@ -201,7 +203,7 @@ PAPER_EVIDENCE_FILES = (
     "D:/Quantification/outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5_summary.json",
     "D:/Quantification/outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v5.json",
     "D:/Quantification/outputs/pipeline_receipts/20261027_candidate_library_binding_v9.json",
-    "D:/Quantification/outputs/pipeline_receipts/20261027_research_adoption_rollup_v12.json",
+    "D:/Quantification/outputs/pipeline_receipts/20261027_research_adoption_rollup_v13.json",
     "D:/Quantification/outputs/pipeline_receipts/20261027_operator_evidence_usecase_v1.json",
     "D:/Quantification/outputs/pipeline_receipts/20261027_operator_decision_queue_usecase_v1.json",
 )

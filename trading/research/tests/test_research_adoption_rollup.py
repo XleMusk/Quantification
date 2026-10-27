@@ -239,6 +239,33 @@ def test_rollup_binds_full_panel_common_window_without_promotion(tmp_path):
     assert result["execution_admitted"] is False
 
 
+def test_rollup_binds_full_panel_cost_pressure_without_changing_adoption(tmp_path):
+    candidate, factor, shortline, retained_joint = _fixtures(tmp_path)
+    cost_pressure = _write_receipt(tmp_path / "cost_pressure.json", {
+        "schema": "quantification_common_window_cost_pressure_v1",
+        "status": "COMPLETED_RESEARCH_ONLY_COST_PRESSURE",
+        "execution_admitted": False,
+        "broker_or_ths_interacted": False,
+        "common_window": {"start": "2026-01-05", "end": "2026-10-13", "sessions": 184},
+        "stockdb_snapshot": "snapshot-v1",
+        "bps_levels": [50.0, 100.0],
+        "strategies": [{"id": "panel_a", "label": "Panel A", "base_net_return": 0.01,
+                         "base_fees_rmb": 1.0, "base_window_turnover_value": 100.0,
+                         "pressure": [{"bps": 50.0, "net_return": 0.005}],
+                         "research_decision_unchanged": "CONTINUE_RESEARCH_ONLY"}],
+        "contract": {"same_saved_account_rows": True, "same_stockdb_snapshot": True,
+                     "strategy_rerun": False, "ledger_mutated": False,
+                     "adoption_decision_changed": False},
+    })
+    result = build_rollup(candidate, factor, shortline, retained_joint,
+                          cost_pressure_path=cost_pressure)
+    gate = result["separate_gates"]["full_panel_cost_pressure"]
+    assert gate["strategy_count"] == 1
+    assert gate["bps_levels"] == [50.0, 100.0]
+    assert result["paper_allowed"] is False
+    assert result["promotion_allowed"] is False
+
+
 def test_rollup_rejects_current_window_boundary_crossing(tmp_path):
     candidate, factor, shortline, _retained_joint = _fixtures(tmp_path)
     current_window = _write_receipt(tmp_path / "current_window.json", {
