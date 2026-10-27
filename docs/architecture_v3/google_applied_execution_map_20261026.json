@@ -141,6 +141,7 @@
       "O01/O04 direct candidate manifests now bind path/hash/count and mark Signal as bound in the post-close receipt",
       "O06 close-delivery entrypoint rebuilds inner D0/D1 lineage, adoption rollup, candidate library and internal release from one fingerprinted saved-evidence run",
       "P32 full-panel common-window receipt exposes explicit strategy_count and adoption rollup binds the six-strategy count",
+      "P32 full-panel decision binds base and 100 bps cost-pressure outcome for all six strategies without changing adoption",
       "F03 promotion-review GET/POST routes delegate to a paper-only application boundary with explicit confirmation",
       "F03 recovery-review GET/POST routes delegate to a paper-only application boundary with retry/cancel/submission disabled",
       "F03 paper-selection POST delegates to the offline paper-only application boundary with frozen candidate validation",

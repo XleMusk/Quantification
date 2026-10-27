@@ -256,6 +256,19 @@ def test_current_window_strategy_comparison_help_is_available():
     assert "--candidate-run" in result.stdout
 
 
+def test_full_panel_strategy_decision_route_is_registered_once():
+    source = (ROOT / "run_committee.py").read_text(encoding="utf-8")
+    assert source.count('if argv[:1] == ["full-panel-strategy-decision"]:') == 1
+    result = subprocess.run(
+        [sys.executable, "-Xutf8", str(ROOT / "run_committee.py"),
+         "full-panel-strategy-decision", "--help"],
+        cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
+    )
+    assert result.returncode == 0
+    assert "--panel" in result.stdout
+    assert "--cost-pressure" in result.stdout
+
+
 def test_stockdb_close_package_help_is_available():
     source = (ROOT / "run_committee.py").read_text(encoding="utf-8")
     assert source.count('if argv[:1] == ["stockdb-close-package"]:') == 1

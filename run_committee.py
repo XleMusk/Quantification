@@ -269,6 +269,9 @@ def main(argv=None):
     if argv[:1] == ["common-window-strategy-comparison"]:
         from trading.research.common_window_strategy_comparison import main as common_window_strategy_comparison_main
         return common_window_strategy_comparison_main(argv[1:])
+    if argv[:1] == ["full-panel-strategy-decision"]:
+        from trading.research.full_panel_strategy_decision import main as full_panel_strategy_decision_main
+        return full_panel_strategy_decision_main(argv[1:])
     if argv[:1] == ["current-window-strategy-comparison"]:
         from trading.research.current_window_strategy_comparison import main as current_window_strategy_comparison_main
         return current_window_strategy_comparison_main(argv[1:])

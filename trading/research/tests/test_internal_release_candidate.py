@@ -79,6 +79,14 @@ def test_internal_release_binds_full_panel_strategy_count_evidence() -> None:
     assert "outputs/pipeline_receipts/20261027_full_panel_common_window_strategy_comparison_v1.json" in EVIDENCE_FILES
 
 
+def test_internal_release_binds_full_panel_strategy_decision() -> None:
+    from trading.research.internal_release_candidate import EVIDENCE_FILES, REQUIRED_FILES
+
+    assert "trading/research/full_panel_strategy_decision.py" in REQUIRED_FILES
+    assert "trading/research/tests/test_full_panel_strategy_decision.py" in EVIDENCE_FILES
+    assert "outputs/pipeline_receipts/20261027_full_panel_strategy_decision_v1.json" in EVIDENCE_FILES
+
+
 def test_internal_release_binds_promotion_review_application_view() -> None:
     from trading.research.internal_release_candidate import EVIDENCE_FILES, REQUIRED_FILES
 
