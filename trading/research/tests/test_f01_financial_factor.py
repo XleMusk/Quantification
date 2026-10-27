@@ -72,6 +72,28 @@ def test_f01_rejects_assets_marked_as_flow_period():
     assert result.reason == "asset_period_kind_mismatch"
 
 
+def test_f01_rejects_cumulative_profit_until_explicitly_converted():
+    result = compute_f01(
+        fact("cur", "parent_net_profit", 120, period_end=date(2026, 9, 30), period_kind="cumulative"),
+        fact("prior", "parent_net_profit", 70, period_end=date(2025, 9, 30), period_kind="cumulative"),
+        fact("assets", "total_assets", 1000, period_end=date(2026, 9, 30)),
+        EVENT,
+    )
+    assert result.status == INCOMPARABLE
+    assert result.reason == "profit_period_kind_mismatch"
+
+
+def test_f01_rejects_different_quarter_endpoints():
+    result = compute_f01(
+        fact("cur", "parent_net_profit", 50, period_end=date(2026, 9, 30)),
+        fact("prior", "parent_net_profit", 40, period_end=date(2025, 6, 30)),
+        fact("assets", "total_assets", 1000, period_end=date(2026, 9, 30)),
+        EVENT,
+    )
+    assert result.status == INCOMPARABLE
+    assert result.reason == "profit_period_not_comparable"
+
+
 def test_f01_separates_disclosure_window_from_decision_cutoff():
     current_available = TimeWindow.exact("2026-10-20T10:00:00+08:00")
     cutoff = TimeWindow.exact("2026-10-20T15:05:00+08:00")
@@ -131,4 +153,4 @@ def test_cumulative_to_single_quarter_keeps_decimal_units_and_latest_availabilit
     derived = cumulative_to_single_quarter(current, prior, derived_fact_id="q3")
     assert derived.value == Decimal("50")
     assert derived.period_kind == "single_quarter"
-    assert derived.period_start == date(2026, 6, 30)
+    assert derived.period_start == date(2026, 7, 1)

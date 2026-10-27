@@ -10,7 +10,7 @@ create orders or alter an account.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
@@ -102,7 +102,7 @@ def _validate_facts(current: FinancialFact, prior: FinancialFact, assets: Financ
         return (INCOMPARABLE, "issuer_identity_conflict")
     if current.metric_id != "parent_net_profit" or prior.metric_id != "parent_net_profit" or assets.metric_id != "total_assets":
         return (INCOMPARABLE, "metric_identity_mismatch")
-    if current.period_kind not in {"single_quarter", "cumulative"} or prior.period_kind not in {"single_quarter", "cumulative"}:
+    if current.period_kind != "single_quarter" or prior.period_kind != "single_quarter":
         return (INCOMPARABLE, "profit_period_kind_mismatch")
     if assets.period_kind != "point_in_time":
         return (INCOMPARABLE, "asset_period_kind_mismatch")
@@ -110,8 +110,10 @@ def _validate_facts(current: FinancialFact, prior: FinancialFact, assets: Financ
         return (INCOMPARABLE, "profit_scope_currency_or_unit_conflict")
     if (current.scope_group, current.currency, current.unit) != (assets.scope_group, assets.currency, assets.unit):
         return (INCOMPARABLE, "asset_scope_currency_or_unit_conflict")
-    if current.period_end == prior.period_end or current.period_end <= prior.period_end:
+    if current.period_end <= prior.period_end:
         return (INCOMPARABLE, "current_and_prior_period_not_ordered")
+    if (current.period_end.month, current.period_end.day) != (prior.period_end.month, prior.period_end.day):
+        return (INCOMPARABLE, "profit_period_not_comparable")
     return (READY, "")
 
 
@@ -196,7 +198,7 @@ def cumulative_to_single_quarter(current_ytd: FinancialFact, prior_ytd: Financia
         raise ValueError("cumulative flows must be observed")
     available = max((current_ytd, prior_ytd), key=lambda value: value.available.end or value.available.start).available
     return FinancialFact(derived_fact_id, current_ytd.issuer_id, current_ytd.metric_id,
-                         prior_ytd.period_end, current_ytd.period_end, "single_quarter",
+                         prior_ytd.period_end + timedelta(days=1), current_ytd.period_end, "single_quarter",
                          current_ytd.scope_group, current_ytd.currency, current_ytd.unit,
                          _decimal(current_ytd.value, "current_ytd.value") - _decimal(prior_ytd.value, "prior_ytd.value"),
                          available)

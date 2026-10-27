@@ -2585,21 +2585,26 @@
     {
       "id": "P23",
       "domain": "data",
-      "result": "F01 now rejects flow-period assets and non-comparable profit period kinds before factor calculation; the local F01/F2 vertical contract remains executable only with explicit point-in-time assets, while real historical source admission stays blocked.",
+      "result": "F01 now rejects flow-period assets, cumulative profit facts and non-comparable profit periods before factor calculation; explicit conversion uses half-open quarter boundaries, while real historical source admission stays blocked.",
       "state": "VERIFIED_LOCAL_SEMANTICS_BLOCKED_EXTERNAL_DATA",
       "next": "Use a real pre-decision retrieval/as-of and revision payload for the locked 2023Q1 issuer artifact; then rerun the same bridge without weakening the semantic contract.",
       "prohibition": "Do not relabel a flow-period asset as point-in-time or treat local file timestamps as historical issuer retrieval.",
       "actual_paths": [
         "trading/research/f01_financial_factor.py",
         "trading/research/tests/test_f01_financial_factor.py",
-        "trading/research/tests/test_f2_vertical_slice.py"
+        "trading/research/tests/test_f2_vertical_slice.py",
+        "outputs/pipeline_receipts/20261027_f01_period_contract_v1.json",
+        "outputs/research_reports/20261027_f01_period_contract_v1.md"
       ],
       "evidence": [
         "trading/research/f01_financial_factor.py",
         "trading/research/tests/test_f01_financial_factor.py",
-        "trading/research/tests/test_f2_vertical_slice.py"
+        "trading/research/tests/test_f2_vertical_slice.py",
+        "outputs/pipeline_receipts/20261027_f01_period_contract_v1.json",
+        "outputs/research_reports/20261027_f01_period_contract_v1.md"
       ],
-      "acceptance": "The F01 pure function returns INCOMPARABLE/asset_period_kind_mismatch for total_assets marked single_quarter, accepts point_in_time assets in the ready fixture, and the focused F01/F2 suite passes without changing execution permissions."
+      "acceptance": "The F01 pure function returns INCOMPARABLE for flow-period assets, cumulative profits and different quarter endpoints; explicit cumulative conversion returns a single-quarter period starting the day after the prior cumulative end; the focused F01/F2 suite passes without changing execution permissions.",
+      "evidence_updated_on": "2026-10-27"
     },
     {
       "id": "P24",

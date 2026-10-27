@@ -784,3 +784,10 @@ F2 fact bridge 现在把 `source_snapshot_id`、`source_sha256`、`snapshot_sour
 候选库 v4 已将该 lineage receipt 作为必需 source binding，候选库现在可从规格和采用决定直接追到 D0/D1、THS synthetic readback 与 Data→Cash/Position stage map。回执为 [`20261027_candidate_library_binding_v4.json`](../../outputs/pipeline_receipts/20261027_candidate_library_binding_v4.json)，测试 `3 passed`。
 
 按同一薄用例边界，`/paper-preview-latest` 已从 `trading/api.py` 抽到 [`paper_preview_view.py`](../../trading/research/paper_preview_view.py)，路由只做委托，保留 missing/invalid/saved 状态和只读执行边界。回执 [`20261027_paper_preview_usecase_v1.json`](../../outputs/pipeline_receipts/20261027_paper_preview_usecase_v1.json)，相关测试 `58 passed`。
+
+## Google applied design A: F01 period contract (2026-10-27)
+
+
+按 `Quantification_Google_Applied_Design_20261026.pdf` 的设计决定 A，F01 期间契约已完成一个局部、可交付的语义修复：`compute_f01` 现在只接受已经转换为 `single_quarter` 的归母利润事实；累计利润必须先经过 `cumulative_to_single_quarter`，且派生单季从前一累计期间结束日的次日开始。当前利润与上年利润还必须共享同一季度结束月日，否则返回 `INCOMPARABLE/profit_period_not_comparable`。
+
+聚焦验证命令 `D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_f01_financial_factor.py trading/research/tests/test_f01_signal.py trading/research/tests/test_f2_fact_bridge.py` 结果为 `28 passed`。证据回执为 [`20261027_f01_period_contract_v1.json`](../../outputs/pipeline_receipts/20261027_f01_period_contract_v1.json)；该结果只证明本地语义和桥接行为，真实 PIT 检索/as-of/revision 证据仍未补齐，F2 仍保持外部数据阻断。`execution_admitted=false`、`NO_TRADE` 未改变。
