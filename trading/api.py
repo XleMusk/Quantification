@@ -24,6 +24,7 @@ from .research import paper_preview_readiness_view
 from .research import candidate_evidence_view
 from .research import current_research_evidence_view
 from .research import operator_release_controls_view
+from .research import ths_prefill_readback_view
 from .research import research_comparison_view
 
 router = APIRouter(prefix="/api/trading")
@@ -5249,86 +5250,21 @@ class ThsPrefillReadbackInput(BaseModel):
     qty: str = Field(min_length=1, max_length=32)
 
 
-def _normalize_ths_readback(field: str, value: str) -> str:
-    """Canonicalize harmless form formatting while preserving invalid text."""
-    text = str(value).strip()
-    if field == "symbol":
-        return text.split(".", 1)[0].strip().upper()
-    if field == "price":
-        try:
-            number = Decimal(text.replace(",", ""))
-            if number.is_finite():
-                return f"{number:.2f}"
-        except (InvalidOperation, ValueError):
-            pass
-    if field == "qty":
-        try:
-            number = Decimal(text.replace(",", ""))
-            if number.is_finite() and number == number.to_integral_value():
-                return str(int(number))
-        except (InvalidOperation, ValueError):
-            pass
-    return text
-
-
 @router.post("/ths-reference-payload/readback")
 def ths_reference_payload_readback(body: ThsPrefillReadbackInput):
     """Compare one captured form row with the frozen THS payload without submission."""
     payload = ths_reference_payload(strategy_id=body.strategy_id)
-    row = next((item for item in payload.get("rows") or []
-                if int(item.get("sequence") or 0) == body.sequence), None)
-    if row is None:
-        raise HTTPException(404, "当前离线载荷没有该序号的订单")
-    base = {
-        "schema": "ths_prefill_readback_view_v1",
-        "strategy_id": body.strategy_id,
-        "sequence": body.sequence,
-        "execution_day": payload.get("execution_day"),
-        "submitted": False,
-        "ledger_mutated": False,
-        "execution_admitted": False,
-    }
-    if row.get("route_status") != "route_available":
-        return {
-            **base,
-            "status": "route_unavailable",
-            "expected": None,
-            "readback": {"symbol": body.symbol, "price": body.price, "qty": body.qty},
-            "mismatches": [],
-            "route_status": row.get("route_status"),
-            "route_reason": row.get("route_reason"),
-        }
-    # Compare canonical field values rather than the serialized spelling in
-    # the frozen payload.  THS commonly renders a raw RMB price as ``4.1``
-    # while the payload may carry ``4.10``; those are the same form value.
-    expected_raw = {
-        "symbol": str(row.get("symbol") or "").split(".")[0],
-        "price": str(row.get("price_rmb") or ""),
-        "qty": str(row.get("qty") or ""),
-    }
-    expected = {
-        field: _normalize_ths_readback(field, value)
-        for field, value in expected_raw.items()
-    }
-    raw_received = {"symbol": body.symbol, "price": body.price, "qty": body.qty}
-    received = {field: _normalize_ths_readback(field, value) for field, value in raw_received.items()}
-    mismatches = [
-        {"field": field, "expected": expected[field], "received": received[field]}
-        for field in ("symbol", "price", "qty")
-        if received[field] != expected[field]
-    ]
-    return {
-        **base,
-        "status": "readback_verified" if not mismatches else "readback_mismatch",
-        "expected": expected,
-        "expected_raw": expected_raw,
-        "readback": raw_received,
-        "normalized_readback": received,
-        "mismatches": mismatches,
-        "mismatch_count": len(mismatches),
-        "route_status": row.get("route_status"),
-        "route_reason": row.get("route_reason"),
-    }
+    try:
+        return ths_prefill_readback_view.build_view(
+            strategy_id=body.strategy_id,
+            sequence=body.sequence,
+            symbol=body.symbol,
+            price=body.price,
+            qty=body.qty,
+            payload=payload,
+        )
+    except KeyError as error:
+        raise HTTPException(404, "当前离线载荷没有该序号的订单") from error
 
 
 @router.get("/ths-observation-bundle/readiness")

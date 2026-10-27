@@ -1300,7 +1300,11 @@
         "outputs/pipeline_receipts/20261027_ths_readback_provenance_contract_v1.json",
         "outputs/research_reports/20261027_ths_readback_provenance_contract_v1.md",
         "outputs/pipeline_receipts/20261027_candidate_library_binding_v3.json",
-        "outputs/research_reports/20261027_candidate_library_binding_v3.md"
+        "outputs/research_reports/20261027_candidate_library_binding_v3.md",
+        "trading/research/ths_prefill_readback_view.py",
+        "trading/research/tests/test_ths_prefill_readback_view.py",
+        "outputs/pipeline_receipts/20261027_ths_prefill_readback_usecase_v1.json",
+        "outputs/research_reports/20261027_ths_prefill_readback_usecase_v1.md"
       ],
       "evidence": [
         "trading/ths/adapter.py",
@@ -1313,7 +1317,11 @@
         "outputs/pipeline_receipts/20261027_ths_readback_provenance_contract_v1.json",
         "outputs/research_reports/20261027_ths_readback_provenance_contract_v1.md",
         "outputs/pipeline_receipts/20261027_candidate_library_binding_v3.json",
-        "outputs/research_reports/20261027_candidate_library_binding_v3.md"
+        "outputs/research_reports/20261027_candidate_library_binding_v3.md",
+        "trading/research/ths_prefill_readback_view.py",
+        "trading/research/tests/test_ths_prefill_readback_view.py",
+        "outputs/pipeline_receipts/20261027_ths_prefill_readback_usecase_v1.json",
+        "outputs/research_reports/20261027_ths_prefill_readback_usecase_v1.md"
       ],
       "evidence_updated_on": "2026-10-27"
     },
