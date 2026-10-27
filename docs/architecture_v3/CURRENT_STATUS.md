@@ -851,3 +851,8 @@ lineage 继续贯通 StockDB Data、Signal、Target Portfolio、Orders、offline
 
 
 Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027_candidate_library_binding_v8.json`](../../outputs/pipeline_receipts/20261027_candidate_library_binding_v8.json)，继续绑定当前 fixed D0/D1 和空候选事实。
+
+
+## Adoption rollup defaults follow current D0/D1 evidence (2026-10-27)
+
+`research_adoption_rollup.py` 的无参 CLI 现在默认绑定最新 fixed D0/D1、current-window、六策略 full panel 和 candidate same-day gate；无参运行生成 [`20261027_research_adoption_rollup_v12.json`](../../outputs/pipeline_receipts/20261027_research_adoption_rollup_v12.json)。回执保留 `candidate_count=0` 与 `BLOCKED_STALE_CANDIDATE_INPUT`，没有把旧候选当作当前候选。

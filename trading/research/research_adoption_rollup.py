@@ -18,8 +18,12 @@ SCHEMA = "quantification_research_adoption_rollup_v1"
 DEFAULT_CANDIDATE = Path("outputs/pipeline_receipts/20261026_candidate_adoption_decision_v1.json")
 DEFAULT_FACTOR = Path("outputs/pipeline_receipts/20261026_mature_factor_horizon_comparison_v1.json")
 DEFAULT_SHORTLINE = Path("outputs/pipeline_receipts/20261026_shortline_adoption_gate_v2.json")
-DEFAULT_OUTPUT = Path("outputs/pipeline_receipts/20261026_research_adoption_rollup_v1.json")
-DEFAULT_REPORT = Path("outputs/research_reports/20261026_research_adoption_rollup_v1.md")
+DEFAULT_D0_D1 = Path("outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5/contract_receipt.json")
+DEFAULT_CURRENT_WINDOW = Path("outputs/pipeline_receipts/20261026_current_window_fixed_candidate_v1.json")
+DEFAULT_FULL_PANEL = Path("outputs/pipeline_receipts/20261027_full_panel_common_window_strategy_comparison_v1.json")
+DEFAULT_SAME_DAY_GATE = Path("outputs/pipeline_receipts/20261027_candidate_same_day_gate_20261026.json")
+DEFAULT_OUTPUT = Path("outputs/pipeline_receipts/20261027_research_adoption_rollup_v12.json")
+DEFAULT_REPORT = Path("outputs/research_reports/20261027_research_adoption_rollup_v12.md")
 RETAINED_JOINT_SCHEMA = "quantification_retained_joint_candidate_comparison_v1"
 D0_D1_SCHEMA = "stockdb_next_close_d0_d1_contract_v1"
 D0_D1_STATUS = "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1"
@@ -651,10 +655,10 @@ def write_outputs(*, candidate_path: Path = DEFAULT_CANDIDATE,
                   factor_path: Path = DEFAULT_FACTOR,
                   shortline_path: Path = DEFAULT_SHORTLINE,
                   retained_joint_path: Path | None = None,
-                  d0_d1_path: Path | None = None,
-                  current_window_path: Path | None = None,
-                  full_panel_path: Path | None = None,
-                  same_day_gate_path: Path | None = None,
+                  d0_d1_path: Path | None = DEFAULT_D0_D1,
+                  current_window_path: Path | None = DEFAULT_CURRENT_WINDOW,
+                  full_panel_path: Path | None = DEFAULT_FULL_PANEL,
+                  same_day_gate_path: Path | None = DEFAULT_SAME_DAY_GATE,
                   value_size_path: Path | None = None,
                   leader_path: Path | None = None,
                   output: Path = DEFAULT_OUTPUT,
@@ -676,13 +680,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--shortline-adoption", type=Path, default=DEFAULT_SHORTLINE)
     parser.add_argument("--retained-joint-comparison", type=Path,
                         help="optional retained joint target comparison kept as a separate gate")
-    parser.add_argument("--d0-d1-receipt", type=Path,
+    parser.add_argument("--d0-d1-receipt", type=Path, default=DEFAULT_D0_D1,
                         help="optional completed same-day D0/D1 paper receipt to bind as a separate gate")
-    parser.add_argument("--current-window-comparison", type=Path,
+    parser.add_argument("--current-window-comparison", type=Path, default=DEFAULT_CURRENT_WINDOW,
                         help="optional completed explicit current-window comparison to bind as a separate gate")
-    parser.add_argument("--full-panel-comparison", type=Path,
+    parser.add_argument("--full-panel-comparison", type=Path, default=DEFAULT_FULL_PANEL,
                         help="optional six-strategy common-window comparison to bind as a separate gate")
-    parser.add_argument("--candidate-same-day-gate", type=Path,
+    parser.add_argument("--candidate-same-day-gate", type=Path, default=DEFAULT_SAME_DAY_GATE,
                         help="optional candidate freshness gate to bind before D0/D1 projection")
     parser.add_argument("--value-size-joint-paper", type=Path,
                         help="optional historical value/size joint paper receipt kept as a separate gate")
