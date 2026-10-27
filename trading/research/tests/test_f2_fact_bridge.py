@@ -28,7 +28,7 @@ def _historical(tmp_path, symbol="000001.SZSE", period="2024Q1"):
     return path
 
 
-def _source_snapshot_receipt(tmp_path, *, pit=True):
+def _source_snapshot_receipt(tmp_path, *, pit=True, hash_mismatch=False):
     source = tmp_path / "issuer.pdf"
     source.write_bytes(b"synthetic issuer source")
     row = {
@@ -37,7 +37,7 @@ def _source_snapshot_receipt(tmp_path, *, pit=True):
         "publication_date": "2024-04-27",
         "revision_id": "issuer-000001-2024Q1-v1",
         "source_file": source.name,
-        "source_sha256": _sha(source),
+        "source_sha256": "0" * 64 if hash_mismatch else _sha(source),
     }
     if pit:
         row.update({
@@ -93,6 +93,8 @@ def test_source_snapshot_adapter_receipt_feeds_fact_bridge(tmp_path):
     assert result["historical_evidence_schema"] == "f2_source_snapshot_adapter_v1"
     assert result["source_snapshot_id"] == "bridge-fixture-v1"
     assert result["rows"][0]["source_provenance"]["source_snapshot_id"] == "bridge-fixture-v1"
+    assert result["rows"][0]["source_provenance"]["snapshot_source_check"] == "source_hash_verified"
+    assert result["rows"][0]["source_provenance"]["snapshot_source_check_passed"] is True
     assert result["rows"][0]["source_provenance"]["source_hash_verified"] is True
     assert all(fact["source_provenance"]["source_hash_verified"] is True
                for fact in result["rows"][0]["facts"])
@@ -119,6 +121,17 @@ def test_source_snapshot_without_pit_fields_stays_blocked_in_fact_bridge(tmp_pat
     assert result["status"] == BLOCKED
     assert result["summary"]["fact_rows"] == 0
     assert result["summary"]["reason_counts"]["historical:historical_retrieval_asof_unproven"] == 1
+
+
+def test_source_snapshot_hash_mismatch_stays_blocked_with_explicit_provenance(tmp_path):
+    result = build_fact_bridge(
+        _sidecar(tmp_path), historical_evidence=_source_snapshot_receipt(tmp_path, hash_mismatch=True))
+
+    assert result["status"] == BLOCKED
+    provenance = result["rows"][0]["source_provenance"]
+    assert provenance["snapshot_source_check"] == "source_hash_mismatch"
+    assert provenance["snapshot_source_check_passed"] is False
+    assert provenance["source_hash_verified"] is False
 
 
 def test_wayback_probe_receipt_feeds_fact_bridge_and_stays_blocked(tmp_path):

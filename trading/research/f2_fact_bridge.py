@@ -200,6 +200,9 @@ def _row_facts(row: Mapping[str, Any], *, source_row: Mapping[str, Any] | None =
         "source_snapshot_id": historical_row.get("source_snapshot_id") if isinstance(historical_row, Mapping) else None,
         "source_file": historical_row.get("source_file") if isinstance(historical_row, Mapping) else None,
         "source_sha256": historical_row.get("source_sha256") if isinstance(historical_row, Mapping) else None,
+        "snapshot_source_check": historical_row.get("snapshot_source_check") if isinstance(historical_row, Mapping) else None,
+        "snapshot_source_check_passed": (historical_row.get("snapshot_source_check_passed") is True
+                                          if isinstance(historical_row, Mapping) else False),
         "source_hash_verified": (historical_row.get("snapshot_source_check_passed") is True
                                   if isinstance(historical_row, Mapping) else False),
     }
