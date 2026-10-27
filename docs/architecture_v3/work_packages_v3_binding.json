@@ -1990,7 +1990,7 @@
       "domain": "workbench",
       "result": "Browser task chain reaches a real result and survives reconnect; the lifecycle stage and recovery projection now have a pure read-only application view.",
       "state": "PARTIAL",
-      "next": "Keep browser submit, refresh and result links bound to one job id; reuse the local HTTP probe and add browser observation only when it provides new evidence.",
+      "next": "Keep the browser task/result/download chain bound to one job_id; external broker/THS observation and account recovery remain separate.",
       "prohibition": "A screenshot cannot prove backend persistence or broker acceptance.",
       "actual_paths": [
         "webapp/frontend/src/components/PaperAccountContinuity.tsx",
@@ -2017,7 +2017,9 @@
         "webapp/backend/app/job_lifecycle_view.py",
         "webapp/backend/tests/test_job_lifecycle_view.py",
         "outputs/pipeline_receipts/20261027_job_lifecycle_view_usecase_v1.json",
-        "outputs/research_reports/20261027_job_lifecycle_view_usecase_v1.md"
+        "outputs/research_reports/20261027_job_lifecycle_view_usecase_v1.md",
+        "outputs/pipeline_receipts/20261027_workbench_u02_browser_observation_v1.json",
+        "outputs/research_reports/20261027_workbench_u02_browser_observation_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -2039,7 +2041,9 @@
         "webapp/backend/app/job_lifecycle_view.py",
         "webapp/backend/tests/test_job_lifecycle_view.py",
         "outputs/pipeline_receipts/20261027_job_lifecycle_view_usecase_v1.json",
-        "outputs/research_reports/20261027_job_lifecycle_view_usecase_v1.md"
+        "outputs/research_reports/20261027_job_lifecycle_view_usecase_v1.md",
+        "outputs/pipeline_receipts/20261027_workbench_u02_browser_observation_v1.json",
+        "outputs/research_reports/20261027_workbench_u02_browser_observation_v1.md"
       ]
     },
     {

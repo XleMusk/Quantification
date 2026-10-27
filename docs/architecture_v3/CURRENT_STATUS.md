@@ -856,3 +856,8 @@ Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027
 ## Adoption rollup defaults follow current D0/D1 evidence (2026-10-27)
 
 `research_adoption_rollup.py` 的无参 CLI 现在默认绑定最新 fixed D0/D1、current-window、六策略 full panel 和 candidate same-day gate；无参运行生成 [`20261027_research_adoption_rollup_v12.json`](../../outputs/pipeline_receipts/20261027_research_adoption_rollup_v12.json)。回执保留 `candidate_count=0` 与 `BLOCKED_STALE_CANDIDATE_INPUT`，没有把旧候选当作当前候选。
+
+
+## Google Applied Design U02 browser observation (2026-10-27)
+
+在本地工作台浏览器中实际观察同一 `job_id=9665ad5779ae40378e12f644e721155c` 从任务页到结果页，再下载 `result.json`。四个生命周期阶段均完成，结果页显示 6 个文件；下载文件 SHA-256 已写入 `outputs/pipeline_receipts/20261027_workbench_u02_browser_observation_v1.json`。该证据只覆盖本地浏览器/HTTP 研究链，`execution_admitted=false`、无券商或同花顺交互，不替代 THS、账户、PIT 或市场证据。
