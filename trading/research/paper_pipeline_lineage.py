@@ -10,11 +10,11 @@ from typing import Any, Mapping
 
 SCHEMA = "quantification_paper_pipeline_lineage_v1"
 VERIFIED = "VERIFIED_LOCAL_RESEARCH_ONLY_PAPER_LINEAGE"
-DEFAULT_POST_CLOSE = Path("outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2/next_close/contract_receipt.json")
-DEFAULT_FIXED = Path("outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2/next_close/fixed/result.json")
-DEFAULT_JOINT = Path("outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v2/next_close/joint_paper/joint_paper_receipt.json")
+DEFAULT_POST_CLOSE = Path("outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5/contract_receipt.json")
+DEFAULT_FIXED = Path("outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5/fixed/result.json")
+DEFAULT_JOINT = Path("outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5/joint_paper/joint_paper_receipt.json")
 DEFAULT_THS = Path("outputs/pipeline_receipts/20261027_ths_target_readback_current_synthetic_v1.json")
-DEFAULT_OUTPUT = Path("outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v1.json")
+DEFAULT_OUTPUT = Path("outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v5.json")
 
 def _read(path: str | Path) -> dict[str, Any]:
     value = json.loads(Path(path).expanduser().resolve().read_text(encoding="utf-8-sig"))

@@ -843,3 +843,8 @@ lineage 继续贯通 StockDB Data、Signal、Target Portfolio、Orders、offline
 ## Candidate library defaults now follow latest paper evidence (2026-10-27)
 
 `candidate_library_binding.py` 的无参 CLI 默认输入已从旧 rollup v10/lineage v2 更新到当前 adoption rollup v11/lineage v4；无参运行生成 [`20261027_candidate_library_binding_v7.json`](../../outputs/pipeline_receipts/20261027_candidate_library_binding_v7.json)，包含 9 个候选条目。所有条目仍为研究状态，未打开 paper 或 promotion 权限。
+
+
+## Paper lineage CLI defaults follow current D0/D1 evidence (2026-10-27)
+
+`paper_pipeline_lineage.py` 的无参 CLI 默认输入已从旧 v2 回执更新到最新 2026-10-26 fixed D0/D1 v5；无参运行生成 [`20261027_paper_pipeline_lineage_v5.json`](../../outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v5.json)。这样后续候选库和流水线命令不会静默回到旧纸面输入。

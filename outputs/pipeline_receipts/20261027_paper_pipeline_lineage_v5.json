@@ -1,0 +1,132 @@
+{
+  "schema": "quantification_paper_pipeline_lineage_v1",
+  "status": "VERIFIED_LOCAL_RESEARCH_ONLY_PAPER_LINEAGE",
+  "close_date": "2026-10-26",
+  "execution_day": "2026-10-27",
+  "settlement_day": "2026-10-28",
+  "input_fingerprint": "ff02e3227f02085fa9d9842c109d2121cb9d909d814b9f207643b93b17b101a3",
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "stages": {
+    "data": {
+      "status": "STOCKDB_SNAPSHOT_BOUND",
+      "coverage": {
+        "status": "COMPLETE",
+        "reason": null,
+        "requested_close_date": "2026-10-26",
+        "effective_session_dates": [
+          "2026-10-26"
+        ],
+        "requested_symbol_count": 20,
+        "available_symbol_count": 20,
+        "missing_symbols": []
+      },
+      "source": {
+        "path": "D:\\QuantificationData\\trading\\research\\stockdb_snapshots\\stockdb_20261026_recent_full_v1\\snapshot.json",
+        "sha256": "1edc4b58f16341da5d9119a9a6769dbf71d82302a20802cd7f60b4657c48b368"
+      }
+    },
+    "signal": {
+      "status": "STRATEGY_SIGNAL_INPUT_BOUND",
+      "strategies": [
+        "low_volatility_252_20"
+      ],
+      "candidate_count": 0,
+      "source": {
+        "path": "D:\\QuantificationData\\trading\\research\\candidate_inputs\\20261027_fixed_only_candidates_v1.json",
+        "sha256": "3a037e1c646f973dfda15dafd7fbecb2ad7e48690384d26e23d9cea0c6b7c11e"
+      }
+    },
+    "target_portfolio": {
+      "status": "TARGET_PREVIEW_BOUND",
+      "fixed_target_count": 20,
+      "joint_target_count": 20,
+      "sources": [
+        {
+          "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v5\\fixed\\target_holdings.csv",
+          "sha256": "6a0a1e2f627ff6a86a3abab24db817081f63384c66f3d13ea5e0a6e03e7a97fc"
+        },
+        {
+          "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v5\\joint_paper\\paper_package\\target_holdings.csv",
+          "sha256": "8b319dbf06e58a45d49bcdfca8c408b8f416b6e4ae3e9067fbbccb046d8075c7"
+        }
+      ]
+    },
+    "orders": {
+      "status": "PAPER_ORDER_PLAN_BOUND",
+      "fixed_order_count": 20,
+      "joint_order_count": 20,
+      "sources": [
+        {
+          "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v5\\fixed\\order_plan.csv",
+          "sha256": "6a0a1e2f627ff6a86a3abab24db817081f63384c66f3d13ea5e0a6e03e7a97fc"
+        },
+        {
+          "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v5\\joint_paper\\paper_package\\order_plan.csv",
+          "sha256": "8b319dbf06e58a45d49bcdfca8c408b8f416b6e4ae3e9067fbbccb046d8075c7"
+        }
+      ]
+    },
+    "broker_adapter": {
+      "status": "REFERENCE_PAYLOAD_ONLY",
+      "mode": "offline_ths_reference_payload",
+      "client_interacted": false,
+      "submitted": false,
+      "source": {
+        "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_ths_target_readback_current_synthetic_v1.json",
+        "sha256": "03b9d7f69010ca2a212f3eec108fa897c460604b743954673cf446a6c42b3567"
+      }
+    },
+    "fill": {
+      "status": "MODELED_PAPER_FILL_PROJECTION",
+      "count": null,
+      "basis": "shared local Ledger projection; no broker fill observed",
+      "sources": [
+        {
+          "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v5\\fixed\\projected_account.json",
+          "sha256": "608ab85b4f7b833a43aff6ae3c87b1a3bf50186627e0be48591cd31a7ea14a8f"
+        },
+        {
+          "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v5\\joint_paper\\paper_package\\projected_account.json",
+          "sha256": "5d8e0c3b0f6e3fccb6c7be719335c9a9c0ce652ad507b9c58ff2711ee8ce2ad0"
+        }
+      ]
+    },
+    "cash_position": {
+      "status": "PROJECTED_CASH_POSITION_BOUND",
+      "initial_cash_rmb": 140000.0,
+      "cash_after_modeled_fills_rmb": 28016.8,
+      "equity_at_observed_marks_rmb": 139898.8,
+      "position_count": 20,
+      "source": {
+        "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v5\\joint_paper\\paper_package\\projected_account.json",
+        "sha256": "5d8e0c3b0f6e3fccb6c7be719335c9a9c0ce652ad507b9c58ff2711ee8ce2ad0"
+      }
+    }
+  },
+  "sources": {
+    "post_close": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v5\\contract_receipt.json",
+      "sha256": "cc24008a1f9b486ff51428df0fdb5af5c110c9652600b66c26ef73549d2c9482"
+    },
+    "fixed": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v5\\fixed\\result.json",
+      "sha256": "25f52d7a189f474779e8421560cf38766cabeea9dc9cf8d7986787abd76f7473"
+    },
+    "joint": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v5\\joint_paper\\joint_paper_receipt.json",
+      "sha256": "764704ebba9ad942c85f282190fee6e9572164cecfd45cdf77c6e853c1e59f1f"
+    },
+    "ths_readback": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_ths_target_readback_current_synthetic_v1.json",
+      "sha256": "03b9d7f69010ca2a212f3eec108fa897c460604b743954673cf446a6c42b3567"
+    }
+  },
+  "limitations": [
+    "This lineage joins saved research-only artifacts and does not create a persistent account.",
+    "BrokerAdapter is an offline reference payload, not a THS client observation or submission.",
+    "Fill count is intentionally not inferred from order count; projected cash and positions are modeled outputs."
+  ]
+}
