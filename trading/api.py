@@ -37,6 +37,7 @@ from .research import operator_paper_selection_view
 from .research import ths_native_observation_view
 from .research import opening_window_status_view
 from .research import operator_portfolio_views
+from .research import operator_account_risk_view
 
 router = APIRouter(prefix="/api/trading")
 
@@ -3142,8 +3143,6 @@ def operator_package_account_risk():
     This is a read-only consumer.  It does not open THS, submit an order, or
     mutate the Ledger.  Rehearsal data remains explicitly rehearsal-only.
     """
-    from .ths.account_risk import build_account_risk_view
-
     account_inputs = _operator_account_risk_inputs()
     journal_reconciliation = _ths_journal_reconciliation_view()
     same_ledger_bundle_reconciliation = _same_ledger_bundle_reconciliation_view()
@@ -3154,63 +3153,19 @@ def operator_package_account_risk():
     # A persistent user export is preferred; otherwise the newest native
     # receipt remains primary and any rehearsal stays visibly nested.
     package = account_inputs["package"]
-    result = build_account_risk_view(
-        package,
+    from .ths.account_risk import build_account_risk_view
+
+    return operator_account_risk_view.build_account_risk_view(
+        package=package,
+        complete_package=complete_package,
+        native_package=native_package,
+        quote_preview=quote_preview,
         quote_observation=quote_observation,
-        reconciliation=same_ledger_bundle_reconciliation,
+        journal_reconciliation=journal_reconciliation,
+        same_ledger_bundle_reconciliation=same_ledger_bundle_reconciliation,
+        same_ledger_compat_fields=_same_ledger_compat_fields,
+        account_risk_builder=build_account_risk_view,
     )
-    if complete_package.get("source_scope") == "isolated_rehearsal":
-        result["isolated_rehearsal_view"] = build_account_risk_view(
-            complete_package, quote_observation=quote_observation,
-            reconciliation=same_ledger_bundle_reconciliation,
-        )
-    result["native_observation"] = {
-        "status": native_package.get("status", "missing"),
-        "source_scope": native_package.get("source_scope", "missing"),
-        "source_file": native_package.get("source_file"),
-        "account_observed": bool(native_package.get("account_observed")),
-        "orders_observed": bool(native_package.get("orders_observed")),
-        "trades_observed": bool(native_package.get("trades_observed")),
-        "cashflows_observed": bool(native_package.get("cashflows_observed")),
-        "ready_for_ledger_reconciliation": bool(
-            native_package.get("ready_for_ledger_reconciliation")
-        ),
-        "unknowns": native_package.get("unknowns") or [],
-    }
-    result["primary_evidence"] = package.get("source_scope") or "missing"
-    result.update({
-        "source_file": package.get("source_file"),
-        "source_paths": package.get("source_paths") or {},
-        "quote_observation": {
-            "status": quote_preview.get("status"),
-            "source": quote_preview.get("source"),
-            "observed_at": quote_preview.get("observed_at"),
-            "trading_date": quote_preview.get("trading_date"),
-            "price_count": quote_preview.get("price_count", 0),
-            "missing_symbols": quote_preview.get("missing_symbols") or [],
-            "canonical_inputs_ready": bool(quote_preview.get("canonical_inputs_ready")),
-        },
-        "basis": "validated THS account export plus optional raw RMB quote observation; read-only",
-        "ths_journal_reconciliation": journal_reconciliation,
-        "same_ledger_bundle_reconciliation": same_ledger_bundle_reconciliation,
-        **_same_ledger_compat_fields(
-            same_ledger_bundle_reconciliation, journal_reconciliation
-        ),
-        "ledger_mutated": journal_reconciliation["ledger_mutated"],
-        "next_action": (
-            "use the existing explicit same-Ledger preview/import for this persistent export"
-            if result.get("source_scope") == "persistent_user_export"
-            and result.get("ledger_binding", {}).get("ready_for_ledger_reconciliation")
-            and not result.get("ledger_binding", {}).get("ledger_reconciled")
-            else "capture a complete persistent THS account/orders/trades/cashflows export"
-            if result.get("status") in {
-                "blocked_missing_or_invalid_account_evidence",
-                "isolated_rehearsal_only",
-            }
-            else "review risk flags; no order submission is enabled"
-        ),
-    })
-    return result
 
 
 class ThsAccountOrderRiskInput(BaseModel):
@@ -3228,40 +3183,23 @@ def operator_package_account_order_risk(body: ThsAccountOrderRiskInput):
     unified Ledger.  It is an order-level companion to account-risk; the
     resulting receipt remains paper/read-only evidence.
     """
-    from .ths.account_risk import evaluate_order_risk
-
     account_inputs = _operator_account_risk_inputs()
     journal_reconciliation = _ths_journal_reconciliation_view()
     same_ledger_bundle_reconciliation = _same_ledger_bundle_reconciliation_view()
     package = account_inputs["package"]
     native_package = account_inputs["native_package"]
-    result = evaluate_order_risk(
-        package,
-        body.orders,
+    from .ths.account_risk import evaluate_order_risk
+
+    return operator_account_risk_view.build_order_risk_view(
+        package=package,
+        native_package=native_package,
+        orders=body.orders,
         quote_observation=body.quote_observation,
-        reconciliation=same_ledger_bundle_reconciliation,
+        journal_reconciliation=journal_reconciliation,
+        same_ledger_bundle_reconciliation=same_ledger_bundle_reconciliation,
+        same_ledger_compat_fields=_same_ledger_compat_fields,
+        order_risk_builder=evaluate_order_risk,
     )
-    result["primary_evidence"] = package.get("source_scope") or "missing"
-    result["native_observation"] = {
-        "status": native_package.get("status", "missing"),
-        "source_scope": native_package.get("source_scope", "missing"),
-        "source_file": native_package.get("source_file"),
-        "account_observed": bool(native_package.get("account_observed")),
-        "orders_observed": bool(native_package.get("orders_observed")),
-        "trades_observed": bool(native_package.get("trades_observed")),
-        "cashflows_observed": bool(native_package.get("cashflows_observed")),
-        "ready_for_ledger_reconciliation": bool(
-            native_package.get("ready_for_ledger_reconciliation")
-        ),
-        "unknowns": native_package.get("unknowns") or [],
-    }
-    result["ths_journal_reconciliation"] = journal_reconciliation
-    result["same_ledger_bundle_reconciliation"] = same_ledger_bundle_reconciliation
-    result.update(_same_ledger_compat_fields(
-        same_ledger_bundle_reconciliation, journal_reconciliation
-    ))
-    result["ledger_mutated"] = journal_reconciliation["ledger_mutated"]
-    return result
 
 
 @router.get("/operator-package/release-controls")

@@ -54,3 +54,11 @@ def test_internal_release_binds_current_browser_job_observation() -> None:
 
     assert "outputs/pipeline_receipts/20261027_workbench_u02_browser_observation_v1.json" in EVIDENCE_FILES
     assert "outputs/research_reports/20261027_workbench_u02_browser_observation_v1.md" in EVIDENCE_FILES
+
+
+def test_internal_release_binds_account_risk_application_view() -> None:
+    from trading.research.internal_release_candidate import EVIDENCE_FILES, REQUIRED_FILES
+
+    assert "trading/research/operator_account_risk_view.py" in REQUIRED_FILES
+    assert "trading/research/tests/test_operator_account_risk_view.py" in EVIDENCE_FILES
+    assert "outputs/pipeline_receipts/20261027_operator_account_risk_view_usecase_v1.json" in EVIDENCE_FILES

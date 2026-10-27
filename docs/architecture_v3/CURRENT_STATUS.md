@@ -861,3 +861,8 @@ Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027
 ## Google Applied Design U02 browser observation (2026-10-27)
 
 在本地工作台浏览器中实际观察同一 `job_id=9665ad5779ae40378e12f644e721155c` 从任务页到结果页，再下载 `result.json`。四个生命周期阶段均完成，结果页显示 6 个文件；下载文件 SHA-256 已写入 `outputs/pipeline_receipts/20261027_workbench_u02_browser_observation_v1.json`。该证据只覆盖本地浏览器/HTTP 研究链，`execution_admitted=false`、无券商或同花顺交互，不替代 THS、账户、PIT 或市场证据。
+
+
+## Google Applied Design account-risk application view (2026-10-27)
+
+账户风险和订单风险两个工作台入口已从 `trading/api.py` 提取到纯只读 `trading/research/operator_account_risk_view.py`，继续复用 `trading/ths/account_risk.py` 的算术，不新增账户写入者。69 个相关测试通过；回执为 `outputs/pipeline_receipts/20261027_operator_account_risk_view_usecase_v1.json`。
