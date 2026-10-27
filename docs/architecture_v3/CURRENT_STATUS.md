@@ -922,3 +922,7 @@ F05/F06 已把当前保存的 post-close D0/D1 任务重新绑定到 `paper-task
 ## Runtime recipe current binding (2026-10-27)
 
 F02 已更新到当前主分支 runtime recipe v5：解释器为 `D:\Quantification\env\python.exe`、Python 3.10.20、`trading` 导入路径和 Git clean 状态均已记录，`execution_admitted=false`。F02 工作包现为 `VERIFIED_LOCAL`，证据为 `outputs/pipeline_receipts/20261027_runtime_recipe_v5.json`。
+
+### F03 audit-events 应用边界（2026-10-27）
+
+`/operator-package/audit-events` 已从 `trading/api.py` 抽出到 `trading/research/operator_audit_events_view.py`。视图同时支持保存的 CSV 和 JSONL 审计事件日志，保留事件顺序、状态/事件类型计数、同花顺回读对账字段和 `ledger_mutated` 边界；HTTP 适配器只负责委托，不接触券商或同花顺客户端。回执为 `outputs/pipeline_receipts/20261027_operator_audit_events_view_usecase_v1.json`，视图/API/架构测试 `56 passed`，`py_compile` 通过。F03 已更新为 `VERIFIED_LOCAL`，这仍是纸面研究证据，不代表真实账户状态。

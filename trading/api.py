@@ -31,6 +31,7 @@ from .research import operator_session_handoff_view
 from .research import operator_blotter_view
 from .research import operator_execution_attribution_view
 from .research import operator_execution_evidence_view
+from .research import operator_audit_events_view
 from .research import operator_manual_statements_view
 from .research import operator_basket_schedule_view
 from .research import operator_paper_selection_view
@@ -3015,53 +3016,7 @@ def operator_package_release_controls():
 @router.get("/operator-package/audit-events")
 def operator_package_audit_events():
     """Expose the ordered paper event trail without treating it as broker state."""
-    package = operator_package()
-    event_path = _package_artifact(package, "paper_audit_event_log")
-    jsonl_path = _package_artifact(package, "paper_audit_event_log_jsonl")
-    if not event_path and not jsonl_path:
-        raise HTTPException(404, "当前离线包缺少纸面审计事件日志")
-    rows = []
-    if event_path:
-        try:
-            with event_path.open("r", encoding="utf-8-sig", newline="") as handle:
-                rows = list(csv.DictReader(handle))
-        except (OSError, UnicodeError, csv.Error) as error:
-            raise HTTPException(409, f"纸面审计事件日志尚不可读取：{error}") from error
-    elif jsonl_path:
-        try:
-            for line in jsonl_path.read_text(encoding="utf-8-sig").splitlines():
-                if line.strip():
-                    value = json.loads(line)
-                    if not isinstance(value, dict):
-                        raise ValueError("审计 JSONL 行必须是对象")
-                    rows.append(value)
-        except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as error:
-            raise HTTPException(409, f"纸面审计 JSONL 尚不可读取：{error}") from error
-    journal_reconciliation = _ths_journal_reconciliation_view()
-    same_ledger_bundle_reconciliation = _same_ledger_bundle_reconciliation_view()
-    return {
-        "schema": "offline_audit_event_log_view_v1",
-        "status": "paper_event_log_only",
-        "execution_admitted": False,
-        "live_alerts": False,
-        "broker_state_observed": False,
-        "client_interacted": False,
-        "ledger_mutated": journal_reconciliation["ledger_mutated"],
-        "event_count": len(rows),
-        "state_counts": dict(Counter(row.get("state") or "unknown" for row in rows)),
-        "event_type_counts": dict(Counter(row.get("event_type") or "unknown" for row in rows)),
-        "events": rows,
-        "ths_journal_reconciliation": journal_reconciliation,
-        "same_ledger_bundle_reconciliation": same_ledger_bundle_reconciliation,
-        **_same_ledger_compat_fields(
-            same_ledger_bundle_reconciliation, journal_reconciliation
-        ),
-        "source_files": {
-            "csv": str(event_path) if event_path else None,
-            "jsonl": str(jsonl_path) if jsonl_path else None,
-        },
-        "next_action": "纸面事件仅用于审计和人工交接；真实订单、成交、账户和资金流水仍需持久同花顺观察包。",
-    }
+    return operator_audit_events_view.build_view(globals())
 
 
 @router.get("/operator-package/basket-schedule")

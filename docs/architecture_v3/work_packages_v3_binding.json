@@ -182,8 +182,8 @@
     {
       "id": "F03",
       "domain": "development",
-      "result": "Shared object, error and state meanings have one consumer-facing definition; promotion, recovery review and paper selection now have independent paper-only application boundaries.",
-      "state": "PARTIAL",
+      "result": "Shared object, error and state meanings have one consumer-facing definition; promotion, recovery review, paper selection and audit-events now have independent paper-only application boundaries.",
+      "state": "VERIFIED_LOCAL",
       "next": "Keep the route-policy boundary while migrating another real application journey; do not add generic interfaces without a replacement consumer. Use the next complete close to verify the staged post-close path.",
       "prohibition": "Do not silently reinterpret an existing field or empty target.",
       "actual_paths": [
@@ -235,7 +235,11 @@
         "webapp/frontend/src/components/OfflineOperatorBoard.tsx",
         "webapp/frontend/src/tradingTypes.ts",
         "outputs/pipeline_receipts/20261027_workbench_boundary_views_consumer_v1.json",
-        "outputs/research_reports/20261027_workbench_boundary_views_consumer_v1.md"
+        "outputs/research_reports/20261027_workbench_boundary_views_consumer_v1.md",
+        "trading/research/operator_audit_events_view.py",
+        "trading/research/tests/test_operator_audit_events_view.py",
+        "outputs/pipeline_receipts/20261027_operator_audit_events_view_usecase_v1.json",
+        "outputs/research_reports/20261027_operator_audit_events_view_usecase_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -284,7 +288,11 @@
         "webapp/frontend/src/components/OfflineOperatorBoard.tsx",
         "webapp/frontend/src/tradingTypes.ts",
         "outputs/pipeline_receipts/20261027_workbench_boundary_views_consumer_v1.json",
-        "outputs/research_reports/20261027_workbench_boundary_views_consumer_v1.md"
+        "outputs/research_reports/20261027_workbench_boundary_views_consumer_v1.md",
+        "trading/research/operator_audit_events_view.py",
+        "trading/research/tests/test_operator_audit_events_view.py",
+        "outputs/pipeline_receipts/20261027_operator_audit_events_view_usecase_v1.json",
+        "outputs/research_reports/20261027_operator_audit_events_view_usecase_v1.md"
       ]
     },
     {
