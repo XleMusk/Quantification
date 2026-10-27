@@ -173,6 +173,7 @@ def build_receipt(*, strategy_ids: Iterable[str] | None = None,
             "strategy_ids": list(requested),
         },
         "stockdb_snapshot": entries[0]["stockdb_snapshot"],
+        "strategy_count": len(strategies),
         "strategies": strategies,
         "limitations": [
             "The common window is derived from saved completed account artifacts; no strategy was rerun.",

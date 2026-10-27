@@ -894,3 +894,7 @@ Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027
 ## Google workflow close delivery entrypoint (2026-10-27)
 
 新增 `run_committee.py close-delivery`，把已完成的外层 post-close 回执解析到内层 D0/D1 contract，再按固定顺序重建 `paper_pipeline_lineage`、`research_adoption_rollup`、`candidate_library` 和内部 release。入口对所有输入建立 SHA-256 指纹，重复同一输入直接复用回执，输入变化使用新输出目录；中途失败保留失败回执，不自动重试。用已保存的 2026-10-26 纸面产物完成端到端重建，四个阶段全部成功；回执为 `outputs/pipeline_receipts/20261027_close_delivery_v2/close_delivery_receipt.json`，发布包为 `D:/QuantificationData/trading/research/releases/20261027_v133/release_manifest.json`。这是本地研究/纸面证据，未访问券商或同花顺，`execution_admitted=false`、`live_execution_ready=false`。
+
+## Full-panel strategy count binding (2026-10-27)
+
+共同窗口比较回执现在显式写入 `strategy_count`，六策略全 panel 的值为 `6`；adoption rollup 不再把策略数量显示为 `null`。该修复只读取已保存账户产物，没有重跑策略或改变采用门槛。重生成的 full-panel 回执和 v14 rollup 已被新的 close-delivery v7 绑定，`execution_admitted=false`、`strategy_validated=false`、`paper_allowed=false` 保持不变。

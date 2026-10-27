@@ -55,6 +55,7 @@ def test_common_window_uses_date_intersection_and_rmb_fee_conversion(tmp_path, m
         "basis": "intersection_of_saved_daily_account_dates",
     }
     assert all(row["metrics"]["sessions"] == 2 for row in receipt["strategies"])
+    assert receipt["strategy_count"] == 2
     assert receipt["strategies"][0]["metrics"]["net_return"] == pytest.approx(0.1)
     assert receipt["strategies"][0]["metrics"]["fees_rmb"] == pytest.approx(1.0)
     assert receipt["strategies"][1]["metrics"]["fees_rmb"] == pytest.approx(2.5)
@@ -90,5 +91,6 @@ def test_full_panel_is_additive_and_binds_requested_strategy_ids(tmp_path, monke
     assert receipt["schema"] == comparison.FULL_SCHEMA
     assert receipt["status"] == "COMPLETED_RESEARCH_ONLY_FULL_PANEL_COMMON_WINDOW"
     assert receipt["comparison_contract"]["strategy_ids"] == list(comparison.FULL_STRATEGY_IDS)
+    assert receipt["strategy_count"] == len(comparison.FULL_STRATEGY_IDS)
     assert [row["id"] for row in receipt["strategies"]] == list(comparison.FULL_STRATEGY_IDS)
     assert receipt["execution_admitted"] is False

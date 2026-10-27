@@ -71,6 +71,14 @@ def test_internal_release_binds_close_delivery_entrypoint() -> None:
     assert "outputs/pipeline_receipts/20261027_close_delivery_v2/close_delivery_receipt.json" in EVIDENCE_FILES
 
 
+def test_internal_release_binds_full_panel_strategy_count_evidence() -> None:
+    from trading.research.internal_release_candidate import EVIDENCE_FILES, REQUIRED_FILES
+
+    assert "trading/research/common_window_strategy_comparison.py" in REQUIRED_FILES
+    assert "trading/tests/test_common_window_strategy_comparison.py" in EVIDENCE_FILES
+    assert "outputs/pipeline_receipts/20261027_full_panel_common_window_strategy_comparison_v1.json" in EVIDENCE_FILES
+
+
 def test_internal_release_binds_account_risk_application_view() -> None:
     from trading.research.internal_release_candidate import EVIDENCE_FILES, REQUIRED_FILES
 
