@@ -29,6 +29,9 @@ def _inputs(tmp_path):
             {"strategy_id": "panel_a_h60", "research_action": "CONTINUE_RESEARCH_ONLY"},
         ],
         "separate_gates": {"shortline_native_lr_lgbm": {"status": "SEPARATE_GATE", "paper_allowed": False}},
+        "inputs": {key: {"path": f"{key}.json", "sha256": "a" * 64} for key in (
+            "d0_d1_paper", "candidate_same_day_gate", "full_panel_comparison",
+            "current_window_comparison")},
     })
     panel = _write(tmp_path / "panel.json", {
         "status": "COMPLETED_RESEARCH_ONLY_FULL_PANEL_COMMON_WINDOW",
@@ -53,6 +56,8 @@ def test_bind_library_keeps_panel_and_separate_gate_distinct(tmp_path):
     assert len(by_id["spec_a"]["adoption_decisions"]) == 2
     assert by_id["shortline_native_lr_lgbm"]["binding_status"] == "SEPARATE_GATE_BOUND"
     assert by_id["shortline_native_lr_lgbm"]["panel_strategies"] == []
+    assert set(result["pipeline_bindings"]) == {"d0_d1_paper", "candidate_same_day_gate",
+                                                 "full_panel_comparison", "current_window_comparison"}
     assert result["execution_admitted"] is False
 
 

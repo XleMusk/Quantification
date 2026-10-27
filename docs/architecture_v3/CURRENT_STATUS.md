@@ -772,3 +772,5 @@ F2 fact bridge 现在把 `source_snapshot_id`、`source_sha256`、`snapshot_sour
 ## Candidate library binding (2026-10-27)
 
 新增 [`candidate_library_binding.py`](../../trading/research/candidate_library_binding.py) 将候选目录、六策略同口径面板和 adoption rollup v10 按 `candidate_spec_id` 绑定成一份机器读候选库。9 个目录项中，Ridge 两个 horizon 作为同一 spec 的显式 variant；shortline、公开席位、value-size 和 leader-style 保留为 `SEPARATE_GATE_BOUND`，没有被冒充成共同窗口比较。实际回执 [`20261027_candidate_library_binding_v1.json`](../../outputs/pipeline_receipts/20261027_candidate_library_binding_v1.json) 的汇总为 3 continue、2 stop、1 coverage blocked、4 separate gate、0 strategy validated；测试 `2 passed`，提交 `6ad3356`。
+
+候选库 v2 又把最新 D0/D1 纸面回执、candidate same-day gate、full-panel comparison 和 current-window comparison 作为顶层 pipeline source bindings 暴露出来，形成从候选规格到纸面计划的可追查入口；这些绑定只引用已保存回执，不重跑策略或改变采用决定。回执为 [`20261027_candidate_library_binding_v2.json`](../../outputs/pipeline_receipts/20261027_candidate_library_binding_v2.json)，测试 `2 passed`。

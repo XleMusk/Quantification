@@ -172,6 +172,12 @@ def bind_library(
         "sources": {name: _ref(path) for name, path in paths.items()},
         "common_window": deepcopy(panel.get("common_window")),
         "comparison_contract": deepcopy(panel.get("comparison_contract")),
+        "pipeline_bindings": {
+            key: deepcopy((rollup.get("inputs") or {}).get(key))
+            for key in ("d0_d1_paper", "candidate_same_day_gate", "full_panel_comparison",
+                        "current_window_comparison")
+            if isinstance((rollup.get("inputs") or {}).get(key), Mapping)
+        },
         "candidate_count": len(bound),
         "bound_candidates": bound,
         "adoption_summary": deepcopy(rollup.get("candidate_summary")),
