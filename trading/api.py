@@ -22,6 +22,7 @@ from .research import paper_account_continuity as paper_continuity
 from .research import paper_preview_view
 from .research import paper_preview_readiness_view
 from .research import candidate_evidence_view
+from .research import current_research_evidence_view
 from .research import research_comparison_view
 
 router = APIRouter(prefix="/api/trading")
@@ -589,45 +590,19 @@ def research_candidate_evidence():
 @router.get("/research/leader-comparison")
 def leader_research_comparison():
     """Latest fixed leader comparison; failures stay visible and never select orders."""
-    root = settings.ROOT / "outputs" / "leader_daily_replay"
-    paths = sorted(root.glob("*/result.json"), key=lambda path: path.stat().st_mtime, reverse=True)
-    if not paths:
-        return {"status": "missing", "source_file": None, "cases": [],
-                "candidate_panel_only": True, "strategy_validated": False,
-                "selection_enabled": False, "execution_admitted": False}
-    path = paths[0]
     try:
-        payload = json.loads(path.read_text(encoding="utf-8-sig"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        return current_research_evidence_view.leader_comparison(settings.ROOT)
+    except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as error:
         raise HTTPException(409, f"最新龙头研究结果尚不可读取：{error}") from error
-    if (payload.get("schema") != "leader_daily_comparison_v2"
-            or payload.get("candidate_panel_only") is not True
-            or payload.get("execution_admitted") is not False
-            or payload.get("strategy_validated") is not False
-            or payload.get("selection_enabled") is not False):
-        raise HTTPException(409, "龙头研究结果缺少候选面板边界")
-    return {**payload, "source_file": str(path.resolve()), "research_only": True,
-            "automatic_promotion": False, "execution_admitted": False}
 
 
 @router.get("/research/market-scoreboard")
 def market_forecast_scoreboard():
     """Read registered predictions and outcomes without fitting or updating them."""
-    path = settings.ROOT / "outputs" / "market_regime_scoreboard" / "scoreboard.json"
-    if not path.is_file():
-        return {"status": "missing", "source_file": None, "summary_by_horizon": {},
-                "selection_enabled": False, "strategy_validated": False, "execution_admitted": False}
     try:
-        payload = json.loads(path.read_text(encoding="utf-8-sig"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        return current_research_evidence_view.market_scoreboard(settings.ROOT)
+    except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as error:
         raise HTTPException(409, f"大盘事前核验结果尚不可读取：{error}") from error
-    if (payload.get("schema") != "market_regime_scoreboard_v1"
-            or payload.get("execution_admitted") is not False
-            or payload.get("model_refit") is not False):
-        raise HTTPException(409, "大盘核验结果缺少冻结模型与研究边界")
-    return {**payload, "status": "saved_forecast_outcome_audit", "source_file": str(path.resolve()),
-            "research_only": True, "automatic_promotion": False, "selection_enabled": False,
-            "strategy_validated": False, "execution_admitted": False}
 
 
 @router.get("/research/leader-close-publication")

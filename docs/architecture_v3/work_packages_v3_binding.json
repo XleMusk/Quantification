@@ -1760,7 +1760,7 @@
     {
       "id": "U01",
       "domain": "workbench",
-      "result": "Saved strategy comparison, candidate evidence, operator evidence review, operator decision queue and paper-preview readiness now have explicit read-only application views; HTTP routes retain response/error semantics and do not create tasks or accounts.",
+      "result": "Saved strategy comparison, candidate evidence, current research evidence, operator evidence review, operator decision queue and paper-preview readiness now have explicit read-only application views; HTTP routes retain response/error semantics and do not create tasks or accounts.",
       "state": "PARTIAL",
       "next": "Keep the paper-preview readiness view bound to persisted evidence; extract another route only when a current consumer requires it.",
       "prohibition": "Do not let UI labels collapse paper, live and unknown states.",
@@ -1809,7 +1809,11 @@
         "trading/research/candidate_evidence_view.py",
         "trading/research/tests/test_candidate_evidence_view.py",
         "outputs/pipeline_receipts/20261027_candidate_evidence_usecase_v1.json",
-        "outputs/research_reports/20261027_candidate_evidence_usecase_v1.md"
+        "outputs/research_reports/20261027_candidate_evidence_usecase_v1.md",
+        "trading/research/current_research_evidence_view.py",
+        "trading/research/tests/test_current_research_evidence_view.py",
+        "outputs/pipeline_receipts/20261027_current_research_evidence_usecase_v1.json",
+        "outputs/research_reports/20261027_current_research_evidence_usecase_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -1851,9 +1855,13 @@
         "trading/research/candidate_evidence_view.py",
         "trading/research/tests/test_candidate_evidence_view.py",
         "outputs/pipeline_receipts/20261027_candidate_evidence_usecase_v1.json",
-        "outputs/research_reports/20261027_candidate_evidence_usecase_v1.md"
+        "outputs/research_reports/20261027_candidate_evidence_usecase_v1.md",
+        "trading/research/current_research_evidence_view.py",
+        "trading/research/tests/test_current_research_evidence_view.py",
+        "outputs/pipeline_receipts/20261027_current_research_evidence_usecase_v1.json",
+        "outputs/research_reports/20261027_current_research_evidence_usecase_v1.md"
       ],
-      "acceptance": "The same-sample comparison, candidate evidence, operator evidence, decision queue and paper-preview readiness endpoints delegate to read-only application views, preserve response/error semantics, and pass focused view plus API consumer tests without account or source mutation."
+      "acceptance": "The same-sample comparison, candidate evidence, current research evidence, operator evidence, decision queue and paper-preview readiness endpoints delegate to read-only application views, preserve response/error semantics, and pass focused view plus API consumer tests without account or source mutation."
     },
     {
       "id": "U02",
