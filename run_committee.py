@@ -308,6 +308,9 @@ def main(argv=None):
     if argv[:1] == ["candidate-spec-registry"]:
         from trading.research.candidate_spec_registry import main as candidate_spec_registry_main
         return candidate_spec_registry_main(argv[1:])
+    if argv[:1] == ["candidate-library-binding"]:
+        from trading.research.candidate_library_binding import main as candidate_library_binding_main
+        return candidate_library_binding_main(argv[1:])
     if argv[:1] == ["paper-account-provenance"]:
         from trading.research.paper_account_provenance import main as paper_account_provenance_main
         return paper_account_provenance_main(argv[1:])
