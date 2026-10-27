@@ -146,6 +146,7 @@
       "F03 paper-selection POST delegates to the offline paper-only application boundary with frozen candidate validation",
       "O05 saved-command failure-to-success recovery receipt verifies no automatic producer retry and idempotent adoption",
       "F05/F06 current accepted D0/D1 task is bound through the paper-task-timing-binding launcher with unknown provider expense",
+      "F02 current runtime recipe binds the project interpreter, trading import, environment and clean Git state",
       "E04 operator release-controls route delegates to a read-only paper-control view",
       "F01 official CNINFO source snapshot is hash-bound while historical as-of remains blocked",
       "E02 THS prefill readback route delegates to a read-only comparison view",

@@ -257,8 +257,8 @@ PAPER_EVIDENCE_FILES = (
 )
 
 RUNTIME_RECIPE_FILES = (
-    "outputs/pipeline_receipts/20261027_runtime_recipe_v4.json",
-    "outputs/research_reports/20261027_runtime_recipe_v4.md",
+    "outputs/pipeline_receipts/20261027_runtime_recipe_v5.json",
+    "outputs/research_reports/20261027_runtime_recipe_v5.md",
 )
 
 

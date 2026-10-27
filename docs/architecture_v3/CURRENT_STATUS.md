@@ -918,3 +918,7 @@ Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027
 ## Accepted paper-task timing binding (2026-10-27)
 
 F05/F06 已把当前保存的 post-close D0/D1 任务重新绑定到 `paper-task-timing-binding` CLI。新回执 `outputs/pipeline_receipts/20261027_paper_task_timing_binding_v2.json` 记录本地单调时钟 `wall_seconds=0.079602`，外部 provider 成本保持 `null`，并保持 `execution_admitted=false`；相关测试 `60 passed`。F05/F06 工作包现为 `VERIFIED_LOCAL`，外部 provider 费用仍需独立授权凭据才能填写。
+
+## Runtime recipe current binding (2026-10-27)
+
+F02 已更新到当前主分支 runtime recipe v5：解释器为 `D:\Quantification\env\python.exe`、Python 3.10.20、`trading` 导入路径和 Git clean 状态均已记录，`execution_admitted=false`。F02 工作包现为 `VERIFIED_LOCAL`，证据为 `outputs/pipeline_receipts/20261027_runtime_recipe_v5.json`。

@@ -148,8 +148,8 @@
       "id": "F02",
       "domain": "development",
       "result": "Isolated workspaces and runtime configuration are reproducible and cleanable; the current release now binds a fresh interpreter/import/Git runtime recipe.",
-      "state": "PARTIAL",
-      "next": "Use the bounded runtime recipe for each package that writes code or durable state; create an isolated worktree only when the package actually needs one.",
+      "state": "VERIFIED_LOCAL",
+      "next": "Reuse the current runtime recipe for each changed package; create an isolated worktree only when the package actually needs one.",
       "prohibition": "A worktree is not a safety sandbox and must not receive credentials.",
       "evidence_updated_on": "2026-10-26",
       "actual_paths": [
@@ -161,7 +161,9 @@
         "outputs/pipeline_receipts/20261026_runtime_recipe_v2.json",
         "outputs/research_reports/20261026_runtime_recipe_v2.md",
         "outputs/pipeline_receipts/20261027_runtime_recipe_v4.json",
-        "outputs/research_reports/20261027_runtime_recipe_v4.md"
+        "outputs/research_reports/20261027_runtime_recipe_v4.md",
+        "outputs/pipeline_receipts/20261027_runtime_recipe_v5.json",
+        "outputs/research_reports/20261027_runtime_recipe_v5.md"
       ],
       "evidence": [
         "trading/research/runtime_recipe.py",
@@ -172,7 +174,9 @@
         "outputs/pipeline_receipts/20261026_runtime_recipe_v2.json",
         "outputs/research_reports/20261026_runtime_recipe_v2.md",
         "outputs/pipeline_receipts/20261027_runtime_recipe_v4.json",
-        "outputs/research_reports/20261027_runtime_recipe_v4.md"
+        "outputs/research_reports/20261027_runtime_recipe_v4.md",
+        "outputs/pipeline_receipts/20261027_runtime_recipe_v5.json",
+        "outputs/research_reports/20261027_runtime_recipe_v5.md"
       ]
     },
     {
