@@ -34,6 +34,7 @@ from .research import operator_execution_evidence_view
 from .research import operator_manual_statements_view
 from .research import operator_basket_schedule_view
 from .research import operator_paper_selection_view
+from .research import ths_native_observation_view
 from .research import operator_portfolio_views
 
 router = APIRouter(prefix="/api/trading")
@@ -1245,92 +1246,7 @@ def ths_native_grids():
 @router.get("/ths-native-observation")
 def ths_native_observation():
     """Combine current THS read-only evidence into a non-admitting observation candidate."""
-    summary = ths_native_summary()
-    grids = ths_native_grids()
-    readonly_evidence = ths_readonly_evidence()
-    structured_package = _latest_structured_observation_package()
-    structured_reconciliation = structured_package.get("order_reconciliation") or {}
-    holdings = (grids.get("grids") or {}).get("holdings") or {}
-    candidate = holdings.get("ocr_candidate") or {}
-
-    # Prefer the newest indexed evidence as one coherent read-only view. The
-    # legacy top-level receipts remain a fallback for installations that have
-    # not produced an index yet; they must not override a newer nested capture.
-    indexed_summary = readonly_evidence.get("summary") or {}
-    if readonly_evidence.get("status") == "partial_readonly_evidence" and indexed_summary:
-        summary = {
-            "schema": "ths_native_account_summary_view_v1",
-            "status": indexed_summary.get("status", "read"),
-            "source": "readonly_evidence_index",
-            "source_file": indexed_summary.get("path"),
-            "observed_at": indexed_summary.get("observed_at"),
-            "account_alias": readonly_evidence.get("account_alias"),
-            "metrics_raw": indexed_summary.get("metrics_raw") or {},
-            "positions_read": bool(indexed_summary.get("positions_read")),
-            "orders_read": bool(indexed_summary.get("orders_read")),
-            "trades_read": bool(indexed_summary.get("trades_read")),
-            "full_account_observation": bool(indexed_summary.get("full_account_observation")),
-            "client_interacted": True,
-            "submitted": False,
-            "execution_admitted": False,
-            "next_action": "Use the indexed receipts for display only; import explicit THS exports before sizing or reconciliation.",
-        }
-        indexed_holdings = ((readonly_evidence.get("holdings") or {}).get("candidate") or {})
-        candidate_path = indexed_holdings.get("path")
-        if candidate_path and Path(candidate_path).is_file():
-            try:
-                indexed_payload = json.loads(Path(candidate_path).read_text(encoding="utf-8-sig"))
-                if isinstance(indexed_payload, dict):
-                    candidate = indexed_payload
-            except (OSError, UnicodeError, json.JSONDecodeError):
-                # Keep the already captured legacy candidate if the indexed
-                # candidate file has become unavailable or malformed.
-                pass
-
-    checks = candidate.get("checks") or {}
-    holdings_ready = bool(
-        candidate.get("candidate_state") == "symbol_rows_detected"
-        and checks.get("summary_cross_checks_pass") is True
-    )
-    missing = []
-    if summary.get("status") not in {"read", "read_background"}:
-        missing.append("account_summary")
-    if not holdings_ready:
-        missing.append("verified_structured_holdings")
-    missing.extend(["cash_total_and_cash_frozen", "structured_orders", "structured_trades"])
-    return {
-        "schema": "ths_native_observation_candidate_v1",
-        "status": "candidate_only" if summary.get("status") in {"read", "read_background"} else "incomplete",
-        "client_session": _ths_client_session_status(),
-        "account_summary": summary,
-        "readonly_evidence": readonly_evidence,
-        "structured_observation_package": structured_package,
-        "order_reconciliation": structured_reconciliation,
-        "order_reconciliation_status": structured_reconciliation.get("status"),
-        "order_count": structured_reconciliation.get("order_count"),
-        "trade_count": structured_reconciliation.get("trade_count"),
-        "cashflow_count": structured_reconciliation.get("cashflow_count"),
-        "structured_package_ready_for_ledger_reconciliation": bool(
-            structured_package.get("ready_for_ledger_reconciliation")
-        ),
-        "position_candidate": {
-            "rows": candidate.get("rows") or [],
-            "row_count": candidate.get("row_count", 0),
-            "candidate_state": candidate.get("candidate_state"),
-            "checks": checks,
-            "structured": False,
-            "semantic_verified": False,
-        },
-        "missing_evidence": missing,
-        "full_account_observation": False,
-        "orders_read": False,
-        "trades_read": False,
-        "ledger_mutated": False,
-        "client_interacted": False,
-        "submitted": False,
-        "execution_admitted": False,
-        "next_action": "Use as a display candidate only; require complete cash, structured positions, orders and trades before sizing, reconciliation or prefill.",
-    }
+    return ths_native_observation_view.build_view(globals())
 
 
 def _observation_age_seconds(observed_at):
