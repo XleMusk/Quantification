@@ -29,6 +29,7 @@ from .research import research_comparison_view
 from .research import operator_lifecycle_view
 from .research import operator_session_handoff_view
 from .research import operator_blotter_view
+from .research import operator_execution_attribution_view
 
 router = APIRouter(prefix="/api/trading")
 
@@ -4046,45 +4047,7 @@ def operator_package_blotter():
 @router.get("/operator-package/execution-attribution")
 def operator_package_execution_attribution():
     """Expose frozen parent/child execution attribution for paper TCA review."""
-    package = operator_package()
-    journal_reconciliation = _ths_journal_reconciliation_view()
-    same_ledger_bundle_reconciliation = _same_ledger_bundle_reconciliation_view()
-    attribution_path = _package_artifact(package, "paper_execution_attribution")
-    if not attribution_path:
-        raise HTTPException(404, "当前离线包缺少纸面执行归因产物")
-
-    try:
-        payload = json.loads(attribution_path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
-        raise HTTPException(409, f"纸面执行归因尚不可读取：{error}") from error
-
-    return {
-        "schema": "offline_execution_attribution_view_v1",
-        "status": payload.get("status", "offline_reference_attribution"),
-        "execution_admitted": False,
-        "real_broker_state": False,
-        "account_observed": False,
-        "quotes_observed": False,
-        "ths_journal_reconciliation": journal_reconciliation,
-        "same_ledger_bundle_reconciliation": same_ledger_bundle_reconciliation,
-        **_same_ledger_compat_fields(
-            same_ledger_bundle_reconciliation, journal_reconciliation
-        ),
-        "ledger_mutated": journal_reconciliation["ledger_mutated"],
-        "parent_count": payload.get("parent_count", 0),
-        "child_count": payload.get("child_count", 0),
-        "completed_parent_count": payload.get("completed_parent_count", 0),
-        "residual_parent_count": payload.get("residual_parent_count", 0),
-        "tca_metrics": payload.get("tca_metrics", {}),
-        "side_summary": payload.get("side_summary", []),
-        "scenario_summary": payload.get("scenario_summary", []),
-        "child_pressure_scenarios": payload.get("child_pressure_scenarios", []),
-        "execution_cost_stress": payload.get("execution_cost_stress", []),
-        "parents": payload.get("parents", []),
-        "basis": payload.get("tca_basis", "frozen reference price and configured paper cost; no observed fill benchmark"),
-        "not_attempted": payload.get("not_attempted", []),
-        "source_file": str(attribution_path),
-    }
+    return operator_execution_attribution_view.build_view(globals())
 
 
 @router.get("/operator-package/session-handoff")
