@@ -1754,9 +1754,9 @@
     {
       "id": "U01",
       "domain": "workbench",
-      "result": "Saved strategy comparison, operator evidence review and operator decision queue now have explicit read-only application views; HTTP routes retain response/error semantics and do not create tasks or accounts.",
+      "result": "Saved strategy comparison, operator evidence review, operator decision queue and paper-preview readiness now have explicit read-only application views; HTTP routes retain response/error semantics and do not create tasks or accounts.",
       "state": "PARTIAL",
-      "next": "Extract another route only when it serves a current paper/workbench consumer; do not add generic service layers.",
+      "next": "Keep the paper-preview readiness view bound to persisted evidence; extract another route only when a current consumer requires it.",
       "prohibition": "Do not let UI labels collapse paper, live and unknown states.",
       "actual_paths": [
         "trading/api.py",
@@ -1795,7 +1795,11 @@
         "trading/research/operator_decision_queue_view.py",
         "trading/research/tests/test_operator_decision_queue_view.py",
         "outputs/pipeline_receipts/20261027_operator_decision_queue_usecase_v1.json",
-        "outputs/research_reports/20261027_operator_decision_queue_usecase_v1.md"
+        "outputs/research_reports/20261027_operator_decision_queue_usecase_v1.md",
+        "trading/research/paper_preview_readiness_view.py",
+        "trading/research/tests/test_paper_preview_readiness_view.py",
+        "outputs/pipeline_receipts/20261027_paper_preview_readiness_usecase_v1.json",
+        "outputs/research_reports/20261027_paper_preview_readiness_usecase_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -1829,9 +1833,13 @@
         "trading/research/operator_decision_queue_view.py",
         "trading/research/tests/test_operator_decision_queue_view.py",
         "outputs/pipeline_receipts/20261027_operator_decision_queue_usecase_v1.json",
-        "outputs/research_reports/20261027_operator_decision_queue_usecase_v1.md"
+        "outputs/research_reports/20261027_operator_decision_queue_usecase_v1.md",
+        "trading/research/paper_preview_readiness_view.py",
+        "trading/research/tests/test_paper_preview_readiness_view.py",
+        "outputs/pipeline_receipts/20261027_paper_preview_readiness_usecase_v1.json",
+        "outputs/research_reports/20261027_paper_preview_readiness_usecase_v1.md"
       ],
-      "acceptance": "The same-sample comparison and snapshot endpoints delegate to one read-only application view, preserve existing response/error semantics, and pass focused view plus API consumer tests without account or source mutation."
+      "acceptance": "The same-sample comparison, operator evidence, decision queue and paper-preview readiness endpoints delegate to read-only application views, preserve response/error semantics, and pass focused view plus API consumer tests without account or source mutation."
     },
     {
       "id": "U02",
