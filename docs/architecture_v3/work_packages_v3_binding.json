@@ -1777,7 +1777,9 @@
         "trading/research/system_daily_refresh.py",
         "trading/research/tests/test_system_daily_command_recovery.py",
         "outputs/pipeline_receipts/20261026_system_daily_fault_injection_v1.json",
-        "outputs/research_reports/20261026_system_daily_fault_injection_v1.md"
+        "outputs/research_reports/20261026_system_daily_fault_injection_v1.md",
+        "outputs/pipeline_receipts/20261027_system_daily_failure_success_recovery_v1.json",
+        "outputs/research_reports/20261027_system_daily_failure_success_recovery_v1.md"
       ],
       "evidence": [
         "trading/research/post_close_d0_d1.py",
@@ -1788,6 +1790,8 @@
         "trading/research/tests/test_system_daily_command_recovery.py",
         "outputs/pipeline_receipts/20261026_system_daily_fault_injection_v1.json",
         "outputs/research_reports/20261026_system_daily_fault_injection_v1.md",
+        "outputs/pipeline_receipts/20261027_system_daily_failure_success_recovery_v1.json",
+        "outputs/research_reports/20261027_system_daily_failure_success_recovery_v1.md",
         "trading/worker.py",
         "trading/store.py",
         "trading/tests/test_worker_refresh.py",

@@ -910,3 +910,7 @@ Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027
 ## Paper selection application boundary (2026-10-27)
 
 纸面策略选择 POST 路由现在委托给 `operator_paper_selection_view.py`，与读取视图共用冻结候选校验和回执边界；服务只调用本地离线策略选择脚本，返回 `execution_admitted=false`、`submission_enabled=false`，不访问券商或同花顺。相关测试 `5 passed`，回执为 `outputs/pipeline_receipts/20261027_operator_paper_selection_action_v1.json`。
+
+## System daily failure-to-success recovery (2026-10-27)
+
+补充了 O05 的失败到成功恢复证据：失败子进程保持失败且不自动重试，成功终态只记录一次，恢复只接收已保存终态而不重新启动生产者，重复恢复保持幂等。`test_system_daily_command_recovery.py` 为 `10 passed`，回执为 `outputs/pipeline_receipts/20261027_system_daily_failure_success_recovery_v1.json`。这是本地研究/纸面恢复证据，真实券商和同花顺恢复仍不在执行闸门内。
