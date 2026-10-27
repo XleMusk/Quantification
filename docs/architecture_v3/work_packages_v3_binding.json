@@ -245,7 +245,7 @@
       "domain": "development",
       "result": "Persistent tasks and global concurrency/expense decisions are recoverable.",
       "state": "PARTIAL",
-      "next": "Reuse the post-close timing receipt on an accepted non-live paper slice; keep provider expense and external retry boundaries separate.",
+      "next": "Keep the accepted-paper timing binding joined to persisted task receipts; do not expand budgets or infer provider expense from wall time.",
       "prohibition": "Do not fill task slots or expand budgets to make progress look larger.",
       "evidence_updated_on": "2026-10-27",
       "actual_paths": [
@@ -265,7 +265,11 @@
         "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md",
         "trading/research/post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261027_post_close_timing_contract_v1.json",
-        "outputs/research_reports/20261027_post_close_timing_contract_v1.md"
+        "outputs/research_reports/20261027_post_close_timing_contract_v1.md",
+        "trading/research/paper_timing_binding.py",
+        "trading/research/tests/test_paper_timing_binding.py",
+        "outputs/pipeline_receipts/20261027_paper_task_timing_binding_v1.json",
+        "outputs/research_reports/20261027_paper_task_timing_binding_v1.md"
       ],
       "evidence": [
         "trading/store.py",
@@ -282,7 +286,11 @@
         "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md",
         "trading/research/post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261027_post_close_timing_contract_v1.json",
-        "outputs/research_reports/20261027_post_close_timing_contract_v1.md"
+        "outputs/research_reports/20261027_post_close_timing_contract_v1.md",
+        "trading/research/paper_timing_binding.py",
+        "trading/research/tests/test_paper_timing_binding.py",
+        "outputs/pipeline_receipts/20261027_paper_task_timing_binding_v1.json",
+        "outputs/research_reports/20261027_paper_task_timing_binding_v1.md"
       ]
     },
     {
@@ -290,7 +298,7 @@
       "domain": "development",
       "result": "Agent throughput and expense are measured per accepted business capability.",
       "state": "PARTIAL",
-      "next": "Bind post-close elapsed timing to accepted paper-task receipts; do not treat wall time as provider expense or strategy evidence.",
+      "next": "Bind the next accepted paper task to the same receipt contract; provider cost remains null until an independent authorized receipt exists.",
       "prohibition": "Do not use token count or task count as delivery.",
       "evidence_updated_on": "2026-10-27",
       "actual_paths": [
@@ -302,7 +310,11 @@
         "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md",
         "trading/research/post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261027_post_close_timing_contract_v1.json",
-        "outputs/research_reports/20261027_post_close_timing_contract_v1.md"
+        "outputs/research_reports/20261027_post_close_timing_contract_v1.md",
+        "trading/research/paper_timing_binding.py",
+        "trading/research/tests/test_paper_timing_binding.py",
+        "outputs/pipeline_receipts/20261027_paper_task_timing_binding_v1.json",
+        "outputs/research_reports/20261027_paper_task_timing_binding_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json",
@@ -311,7 +323,11 @@
         "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md",
         "trading/research/post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261027_post_close_timing_contract_v1.json",
-        "outputs/research_reports/20261027_post_close_timing_contract_v1.md"
+        "outputs/research_reports/20261027_post_close_timing_contract_v1.md",
+        "trading/research/paper_timing_binding.py",
+        "trading/research/tests/test_paper_timing_binding.py",
+        "outputs/pipeline_receipts/20261027_paper_task_timing_binding_v1.json",
+        "outputs/research_reports/20261027_paper_task_timing_binding_v1.md"
       ],
       "acceptance": "A bounded accepted D0/D1 slice records local monotonic wall time, retains external provider expense as unknown, and leaves execution_admitted=false."
     },
@@ -465,7 +481,7 @@
       "domain": "data",
       "result": "Event master, U value, exclusions and source links are reproducible.",
       "state": "PARTIAL",
-      "next": "Carry a real source_snapshot_id and verified file hashes into the event master; keep missing publication/retrieval/revision facts explicit.",
+      "next": "The bridge now carries source snapshot identity and byte-check results into each fact provenance; supply a real PIT-ready snapshot before event admission.",
       "prohibition": "Do not turn missing event evidence into zero return or exclusion without reason.",
       "actual_paths": [
         "outputs/pipeline_receipts/20261024_publication_event_contract_local_receipt.json",
@@ -520,9 +536,11 @@
         "outputs/pipeline_receipts/20261026_f2_bridge_source_snapshot_provenance_v1.json",
         "outputs/research_reports/20261026_f2_bridge_source_snapshot_provenance_v1.md",
         "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v4.json",
-        "outputs/research_reports/20261026_f2_wayback_2023q1_v4.md"
+        "outputs/research_reports/20261026_f2_wayback_2023q1_v4.md",
+        "outputs/pipeline_receipts/20261027_f2_fact_bridge_provenance_v1.json",
+        "outputs/research_reports/20261027_f2_fact_bridge_provenance_v1.md"
       ],
-      "evidence_updated_on": "2026-10-26",
+      "evidence_updated_on": "2026-10-27",
       "evidence": [
         "trading/research/f2_historical_evidence.py",
         "trading/research/tests/test_f2_historical_evidence.py",
@@ -544,7 +562,9 @@
         "trading/research/f2_wayback_probe.py",
         "trading/research/tests/test_f2_wayback_probe.py",
         "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v4.json",
-        "outputs/research_reports/20261026_f2_wayback_2023q1_v4.md"
+        "outputs/research_reports/20261026_f2_wayback_2023q1_v4.md",
+        "outputs/pipeline_receipts/20261027_f2_fact_bridge_provenance_v1.json",
+        "outputs/research_reports/20261027_f2_fact_bridge_provenance_v1.md"
       ]
     },
     {
@@ -1311,21 +1331,29 @@
       "domain": "execution",
       "result": "Non-live paper orchestration timing is traceable; provider and external expense remain unclaimed.",
       "state": "PARTIAL",
-      "next": "Bind the timing receipt to an accepted paper task on the next complete close; add provider expense only when an authorized non-live source supplies it.",
+      "next": "Reuse the timing binder on the next complete close; add provider expense only when an authorized non-live source supplies it.",
       "prohibition": "Do not infer queue position or fill from daily bars.",
       "actual_paths": [
         "trading/research/post_close_d0_d1.py",
         "trading/research/tests/test_post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261027_post_close_timing_contract_v1.json",
         "outputs/research_reports/20261027_post_close_timing_contract_v1.md",
-        "outputs/pipeline_receipts/20261027_daily_refresh_policy_refactor_v1.json"
+        "outputs/pipeline_receipts/20261027_daily_refresh_policy_refactor_v1.json",
+        "trading/research/paper_timing_binding.py",
+        "trading/research/tests/test_paper_timing_binding.py",
+        "outputs/pipeline_receipts/20261027_paper_task_timing_binding_v1.json",
+        "outputs/research_reports/20261027_paper_task_timing_binding_v1.md"
       ],
       "evidence": [
         "trading/research/post_close_d0_d1.py",
         "trading/research/tests/test_post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261027_post_close_timing_contract_v1.json",
         "outputs/research_reports/20261027_post_close_timing_contract_v1.md",
-        "outputs/pipeline_receipts/20261027_daily_refresh_policy_refactor_v1.json"
+        "outputs/pipeline_receipts/20261027_daily_refresh_policy_refactor_v1.json",
+        "trading/research/paper_timing_binding.py",
+        "trading/research/tests/test_paper_timing_binding.py",
+        "outputs/pipeline_receipts/20261027_paper_task_timing_binding_v1.json",
+        "outputs/research_reports/20261027_paper_task_timing_binding_v1.md"
       ],
       "evidence_updated_on": "2026-10-27"
     },

@@ -760,3 +760,9 @@ F2 来源选择现在按 `decision_time(decision_day)=15:05:00+08:00` 比较时�
 ## E05 paper timing state binding (2026-10-27)
 
 已有 post-close 终态回执和日终刷新回执现在正式绑定 E05：非实时纸面编排的 `finished_at` 与 `elapsed_seconds` 可追踪，状态由 `UNBOUND` 更新为 `PARTIAL`。该状态不代表供应商费用、队列位置、成交质量或策略证据；下一完整收市再把耗时绑定到实际接受的纸面任务，费用字段只有在授权的非实时来源提供时才加入。
+
+## Accepted paper-task timing binding and F2 provenance (2026-10-27)
+
+E05/F06 已完成一个可复用的纸面任务绑定器：[`paper_timing_binding.py`](../../trading/research/paper_timing_binding.py) 将 post-close timing contract 与一条已完成的 research-only D0/D1 回执按哈希绑定。实际绑定 2026-10-23 收市任务，覆盖 40/40、固定纸面订单 20、联合纸面订单 22、本地耗时 `0.099731s`；供应商费用保持 `null`。回执为 [`20261027_paper_task_timing_binding_v1.json`](../../outputs/pipeline_receipts/20261027_paper_task_timing_binding_v1.json)，测试 `5 passed`，提交 `0cec03c`。这不是券商或同花顺证据。
+
+F2 fact bridge 现在把 `source_snapshot_id`、`source_sha256`、`snapshot_source_check` 和 `snapshot_source_check_passed` 传入每个事实的 `source_provenance`；哈希不匹配仍然阻断，不放宽 PIT/revision 闸门。18 行真实桥接重跑仍为 `BLOCKED_DATA`、0 个 ready fact、0 个因子。回执为 [`20261027_f2_fact_bridge_provenance_v1.json`](../../outputs/pipeline_receipts/20261027_f2_fact_bridge_provenance_v1.json)，测试 `27 passed`，提交 `da312f5`。
