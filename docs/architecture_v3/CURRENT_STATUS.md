@@ -810,3 +810,10 @@ F2 的合成 vertical slice 与 bridge 测试夹具已同步改为同季度同�
 本次同日候选清单为空，因此没有复用旧候选或把旧日期结果冒充当前候选；`candidate_count=0` 被保留在回执中。代码修复把解析后的执行日和结算日写入 D0/D1 回执顶层，聚焦 `next_close_d0_d1` 与 `post_close_d0_d1` 测试为 `27 passed`。完整回执为 [`20261027_post_close_derived_d0_d1_v5/contract_receipt.json`](../../outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5/contract_receipt.json)，摘要为 [`20261027_post_close_derived_d0_d1_v5_summary.json`](../../outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5_summary.json)。
 
 本次仍为 `derived_stockdb_research_only` 与 `TARGET_PREVIEW`，没有 broker/THS 交互、没有持久账本变更，`execution_admitted=false` 保持不变。
+
+
+## Candidate adoption rollup bound to latest fixed D0/D1 (2026-10-27)
+
+研究采用总表已更新到 [`20261027_research_adoption_rollup_v11.json`](../../outputs/pipeline_receipts/20261027_research_adoption_rollup_v11.json)，并由 [`20261027_candidate_library_binding_v5.json`](../../outputs/pipeline_receipts/20261027_candidate_library_binding_v5.json) 绑定到候选库。总表同时引用 2026-10-26 fixed D0/D1、六策略共同窗口、当前窗口诊断和候选同日 freshness gate。最新 fixed D0/D1 为 20/20 覆盖、20 个固定订单、20 个联合订单；候选 freshness gate 仍为 `BLOCKED_STALE_CANDIDATE_INPUT`，因此没有旧候选被重新用于当前日。
+
+候选库当前摘要仍是 `continue_research_only=3`、`stop_research_only=2`、`blocked_coverage=1`、`strategy_validated=0`。`paper_allowed=false`、`promotion_allowed=false`、`execution_admitted=false` 持续有效。
