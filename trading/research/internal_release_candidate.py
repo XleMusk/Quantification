@@ -185,6 +185,8 @@ EVIDENCE_FILES = (
     "webapp/backend/tests/test_job_lifecycle_view.py",
     "outputs/pipeline_receipts/20261027_job_lifecycle_view_usecase_v1.json",
     "outputs/research_reports/20261027_job_lifecycle_view_usecase_v1.md",
+    "outputs/pipeline_receipts/20261027_workbench_u02_browser_observation_v1.json",
+    "outputs/research_reports/20261027_workbench_u02_browser_observation_v1.md",
 )
 
 PAPER_EVIDENCE_FILES = (

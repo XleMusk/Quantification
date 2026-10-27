@@ -47,3 +47,10 @@ def test_internal_release_binds_current_runtime_recipe() -> None:
 
     assert "outputs/pipeline_receipts/20261027_runtime_recipe_v4.json" in RUNTIME_RECIPE_FILES
     assert "outputs/research_reports/20261027_runtime_recipe_v4.md" in RUNTIME_RECIPE_FILES
+
+
+def test_internal_release_binds_current_browser_job_observation() -> None:
+    from trading.research.internal_release_candidate import EVIDENCE_FILES
+
+    assert "outputs/pipeline_receipts/20261027_workbench_u02_browser_observation_v1.json" in EVIDENCE_FILES
+    assert "outputs/research_reports/20261027_workbench_u02_browser_observation_v1.md" in EVIDENCE_FILES
