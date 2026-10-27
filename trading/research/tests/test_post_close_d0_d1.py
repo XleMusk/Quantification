@@ -61,6 +61,8 @@ def test_post_close_advances_fixed_daily_before_d0_d1(tmp_path: Path, monkeypatc
         "inputs", "fixed_daily", "candidate_inputs", "d0_d1"
     ]
     assert (tmp_path / "run" / "post_close_receipt.json").is_file()
+    assert receipt["timing"]["elapsed_seconds"] >= 0
+    assert receipt["timing"]["finished_at"].endswith("+00:00")
 
 
 def test_post_close_resolves_execution_and_settlement_from_calendar(tmp_path: Path, monkeypatch) -> None:

@@ -1,0 +1,23 @@
+{
+  "schema": "stockdb_post_close_timing_contract_receipt_v1",
+  "status": "VERIFIED_LOCAL",
+  "created_at": "2026-10-27T00:55:23.531673+00:00",
+  "implementation": [
+    "trading/research/post_close_d0_d1.py",
+    "trading/research/tests/test_post_close_d0_d1.py"
+  ],
+  "timing_fields": [
+    "finished_at",
+    "elapsed_seconds"
+  ],
+  "basis": "local wall-clock duration for the non-live post-close orchestration; not provider expense or strategy evidence",
+  "execution_admitted": false,
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "tests": {
+    "command": "D:\\Quantification\\env\\python.exe -m pytest -q trading/research/tests/test_post_close_d0_d1.py",
+    "result": "8 passed"
+  },
+  "next": "Bind timing into the next real close receipt; keep provider/data latency and monetary expense separate."
+}

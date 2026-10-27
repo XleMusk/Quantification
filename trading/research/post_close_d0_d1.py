@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 from hashlib import sha256
 import json
 from pathlib import Path
+import time
 from typing import Any, Sequence
 
 from . import next_close_d0_d1, stockdb_fixed_daily
@@ -100,9 +101,14 @@ def _assert_unadmitted(payload: dict[str, Any], label: str) -> None:
         raise ValueError(f"{label} crossed execution boundary")
 
 
-def _write_receipt(receipt_path: Path, payload: dict[str, Any]) -> dict[str, Any]:
-    """Persist one terminal receipt at the orchestration boundary."""
+def _write_receipt(receipt_path: Path, payload: dict[str, Any], *, started_monotonic: float | None = None) -> dict[str, Any]:
+    """Persist one terminal receipt with bounded local timing evidence."""
 
+    finished_at = datetime.now(timezone.utc).isoformat()
+    timing = {"finished_at": finished_at}
+    if started_monotonic is not None:
+        timing["elapsed_seconds"] = round(max(0.0, time.monotonic() - started_monotonic), 3)
+    payload = {**payload, "timing": timing}
     receipt_path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
@@ -287,6 +293,7 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
         joint_capacity_policy=joint_capacity_policy,
         joint_max_target_rows=joint_max_target_rows)
     receipt_path = output / "post_close_receipt.json"
+    started_monotonic = time.monotonic()
     if receipt_path.is_file():
         existing = _read(receipt_path)
         if existing.get("input_fingerprint") != fingerprint:
@@ -323,6 +330,7 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
             return _write_receipt(
                 receipt_path,
                 {**waiting, "receipt_path": str(receipt_path)},
+                started_monotonic=started_monotonic,
             )
         source = _resolve_candidate_stage(
             source=source, replay_manifest=replay_manifest, decision=decision,
@@ -351,18 +359,18 @@ def run_pipeline(source_manifest: str | Path | None, output_dir: str | Path, *,
                 "receipt_path": str(receipt_path),
                 "artifacts": {"d0_d1": str(output / "next_close")},
             }
-            return _write_receipt(receipt_path, receipt)
+            return _write_receipt(receipt_path, receipt, started_monotonic=started_monotonic)
         receipt = {**base, "status": STATUS, "fixed_daily": _fixed_result,
                    "d0_d1": d0_result, "receipt_path": str(receipt_path),
                    "snapshot_coverage": d0_result.get("snapshot_coverage"),
                    "artifacts": {"d0_d1": str(output / "next_close")}}
-        return _write_receipt(receipt_path, receipt)
+        return _write_receipt(receipt_path, receipt, started_monotonic=started_monotonic)
     except Exception as error:
         failure = {**base, "status": FAILED_STATUS,
                    "error_type": type(error).__name__, "error": str(error),
                    "failure_evidence": {"output_dir": str(output),
                                         "receipt_path": str(receipt_path)}}
-        _write_receipt(receipt_path, failure)
+        _write_receipt(receipt_path, failure, started_monotonic=started_monotonic)
         raise
 
 

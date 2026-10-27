@@ -737,3 +737,8 @@ U02 新增隔离本地 HTTP 观测探针，实际完成 CSV 上传、同幂等�
 ## THS readback provenance contract (2026-10-27)
 
 `trading/ths/target_readback.py` 现在可在提供 `source_root` 时重新读取授权只读导出并校验 SHA-256；文件缺失或哈希不一致会停止比较。合成和离线回读仍明确标记为非授权观察，未产生客户端操作、提交或账本变更。回执见 [`20261027_ths_readback_provenance_contract_v1.json`](../../outputs/pipeline_receipts/20261027_ths_readback_provenance_contract_v1.json)，测试 `10 passed`。
+
+
+## Post-close timing contract (2026-10-27)
+
+post-close 终态回执现在记录 `finished_at` 和 `elapsed_seconds`，绑定现有输入指纹与执行边界。它只衡量本地编排耗时，不冒充供应商费用、成交质量或策略证据。回执 [`20261027_post_close_timing_contract_v1.json`](../../outputs/pipeline_receipts/20261027_post_close_timing_contract_v1.json)，测试 `8 passed`。

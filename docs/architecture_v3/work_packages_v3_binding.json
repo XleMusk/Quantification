@@ -1277,7 +1277,7 @@
       "domain": "execution",
       "result": "Execution timing and expense chain is traceable.",
       "state": "UNBOUND",
-      "next": "Measure only on an authorized, non-live paper or observed route.",
+      "next": "Reuse post-close timing receipts on the next non-live paper route; keep local duration separate from provider expense and strategy evidence.",
       "prohibition": "Do not infer queue position or fill from daily bars."
     },
     {
