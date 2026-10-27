@@ -345,7 +345,7 @@
       "domain": "data",
       "result": "A callable point-in-time versioned read returns only facts available at the requested cutoff.",
       "state": "PARTIAL",
-      "next": "Use the deterministic latest-on-or-before-cutoff archive selection; supply a pre-decision issuer retrieval/as-of capture plus revision identity before PIT admission.",
+      "next": "Use the deterministic latest-on-or-before-cutoff archive selection; the bridge now accepts raw source snapshots and still requires pre-decision issuer retrieval/as-of capture plus revision identity before PIT admission.",
       "prohibition": "Do not read the latest file implicitly.",
       "actual_paths": [
         "outputs/financials/f01_scoped_field_coverage_20261024.json",
@@ -388,9 +388,11 @@
         "outputs/pipeline_receipts/20261026_f2_real_source_snapshot_v1/fact_bridge_receipt.json",
         "outputs/research_reports/20261026_f2_real_source_snapshot_v1.md",
         "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v3.json",
-        "outputs/research_reports/20261026_f2_wayback_2023q1_v3.md"
+        "outputs/research_reports/20261026_f2_wayback_2023q1_v3.md",
+        "outputs/pipeline_receipts/20261027_f2_raw_snapshot_bridge_v1.json",
+        "outputs/research_reports/20261027_f2_raw_snapshot_bridge_v1.md"
       ],
-      "evidence_updated_on": "2026-10-26",
+      "evidence_updated_on": "2026-10-27",
       "evidence": [
         "trading/research/f2_historical_evidence.py",
         "trading/research/tests/test_f2_historical_evidence.py",
@@ -411,7 +413,9 @@
         "trading/research/f2_wayback_probe.py",
         "trading/research/tests/test_f2_wayback_probe.py",
         "outputs/pipeline_receipts/20261026_f2_wayback_2023q1_v3.json",
-        "outputs/research_reports/20261026_f2_wayback_2023q1_v3.md"
+        "outputs/research_reports/20261026_f2_wayback_2023q1_v3.md",
+        "outputs/pipeline_receipts/20261027_f2_raw_snapshot_bridge_v1.json",
+        "outputs/research_reports/20261027_f2_raw_snapshot_bridge_v1.md"
       ]
     },
     {
@@ -1589,13 +1593,14 @@
       "domain": "workbench",
       "result": "Frontend/backend task and state semantics agree with request examples.",
       "state": "PARTIAL",
-      "next": "Keep the lifecycle endpoint and UI stage labels bound to the same job id; refresh remains read-only.",
+      "next": "Keep lifecycle stages bound to one job id; submit, query and download now share one application use case while refresh remains read-only.",
       "prohibition": "Do not let UI labels collapse paper, live and unknown states.",
       "actual_paths": [
         "trading/api.py",
         "trading/tests/test_api_paper_continuity.py",
         "outputs/pipeline_receipts/20261026_paper_account_continuity_api_v1.json",
         "webapp/backend/app/main.py",
+        "webapp/backend/app/research_jobs.py",
         "webapp/backend/tests/test_webapp.py",
         "webapp/frontend/src/types.ts",
         "webapp/frontend/src/pages/Tasks.tsx",
@@ -1605,9 +1610,11 @@
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
         "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_lifecycle_job_id_v2.json",
-        "outputs/research_reports/20261026_workbench_lifecycle_job_id_v2.md"
+        "outputs/research_reports/20261026_workbench_lifecycle_job_id_v2.md",
+        "outputs/pipeline_receipts/20261027_research_job_usecase_v1.json",
+        "outputs/research_reports/20261027_research_job_usecase_v1.md"
       ],
-      "evidence_updated_on": "2026-10-26",
+      "evidence_updated_on": "2026-10-27",
       "evidence": [
         "webapp/backend/app/main.py",
         "webapp/backend/tests/test_webapp.py",
@@ -1627,13 +1634,14 @@
       "domain": "workbench",
       "result": "Browser task chain reaches a real result and survives reconnect.",
       "state": "PARTIAL",
-      "next": "Keep the lifecycle endpoint and UI stage labels bound to the same job id; refresh remains read-only. Browser submit/refresh/result-link evidence is now recorded.",
+      "next": "Keep browser submit, refresh and result links bound to one job id and application use case; add real browser observation when available.",
       "prohibition": "A screenshot cannot prove backend persistence or broker acceptance.",
       "actual_paths": [
         "webapp/frontend/src/components/PaperAccountContinuity.tsx",
         "webapp/frontend/src/pages/Trading.tsx",
         "outputs/pipeline_receipts/20261026_workbench_paper_continuity_ui_v1.json",
         "webapp/backend/app/main.py",
+        "webapp/backend/app/research_jobs.py",
         "webapp/backend/tests/test_webapp.py",
         "webapp/frontend/src/types.ts",
         "webapp/frontend/src/pages/Tasks.tsx",
@@ -1643,9 +1651,11 @@
         "outputs/pipeline_receipts/20261026_workbench_job_lifecycle_browser_v1.json",
         "outputs/research_reports/20261026_workbench_job_lifecycle_browser_v1.md",
         "outputs/pipeline_receipts/20261026_workbench_lifecycle_job_id_v2.json",
-        "outputs/research_reports/20261026_workbench_lifecycle_job_id_v2.md"
+        "outputs/research_reports/20261026_workbench_lifecycle_job_id_v2.md",
+        "outputs/pipeline_receipts/20261027_research_job_usecase_v1.json",
+        "outputs/research_reports/20261027_research_job_usecase_v1.md"
       ],
-      "evidence_updated_on": "2026-10-26",
+      "evidence_updated_on": "2026-10-27",
       "evidence": [
         "webapp/backend/app/main.py",
         "webapp/backend/tests/test_webapp.py",
@@ -2595,9 +2605,9 @@
     {
       "id": "P32",
       "domain": "research",
-      "result": "The latest candidate adoption matrix, mature-factor horizon comparison, StockDB-backed shortline adoption gate and retained joint portfolio gate are joined into a research-only rollup with explicit continuation, stop and coverage decisions. A current-window receipt now compares the explicit 2026-10-26 fixed and half-momentum replay artifacts without changing the retained long-window receipt or rerunning either strategy. The latest rollup now binds the current-window fixed-versus-half-momentum receipt, the complete public-seat replay timing/PIT gate, and saved value-size and leader-style joint paper projections as separate research gates, preserving explicit research-only boundaries without promotion.",
+      "result": "The latest candidate adoption matrix, mature-factor horizon comparison, StockDB-backed shortline adoption gate and retained joint portfolio gate are joined into a research-only rollup with explicit continuation, stop and coverage decisions. The latest rollup now binds a six-strategy same-snapshot common-window panel covering fixed low-volatility, half-momentum, 12-1 momentum, Ridge, Alpha158/LightGBM and Ridge h60, while preserving explicit research-only boundaries without promotion.",
       "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
-      "next": "After the next complete close, regenerate D0/D1, current-window comparison and adoption rollup together; keep PIT, forward, corporate-action and channel gates separate.",
+      "next": "After the next complete close, regenerate D0/D1, full-panel comparison and adoption rollup together; keep PIT, forward, corporate-action and channel gates separate.",
       "prohibition": "Do not treat the rollup as strategy validation, paper/live promotion or a substitute for PIT/forward/THS evidence.",
       "actual_paths": [
         "trading/research/research_adoption_rollup.py",
@@ -2623,7 +2633,13 @@
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v8.json",
         "outputs/research_reports/20261027_research_adoption_rollup_v8.md",
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v9.json",
-        "outputs/research_reports/20261027_research_adoption_rollup_v9.md"
+        "outputs/research_reports/20261027_research_adoption_rollup_v9.md",
+        "trading/research/common_window_strategy_comparison.py",
+        "trading/tests/test_common_window_strategy_comparison.py",
+        "outputs/pipeline_receipts/20261027_full_panel_common_window_strategy_comparison_v1.json",
+        "outputs/research_reports/20261027_full_panel_common_window_strategy_comparison_v1.md",
+        "outputs/pipeline_receipts/20261027_research_adoption_rollup_v10.json",
+        "outputs/research_reports/20261027_research_adoption_rollup_v10.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -2649,9 +2665,15 @@
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v8.json",
         "outputs/research_reports/20261027_research_adoption_rollup_v8.md",
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v9.json",
-        "outputs/research_reports/20261027_research_adoption_rollup_v9.md"
+        "outputs/research_reports/20261027_research_adoption_rollup_v9.md",
+        "trading/research/common_window_strategy_comparison.py",
+        "trading/tests/test_common_window_strategy_comparison.py",
+        "outputs/pipeline_receipts/20261027_full_panel_common_window_strategy_comparison_v1.json",
+        "outputs/research_reports/20261027_full_panel_common_window_strategy_comparison_v1.md",
+        "outputs/pipeline_receipts/20261027_research_adoption_rollup_v10.json",
+        "outputs/research_reports/20261027_research_adoption_rollup_v10.md"
       ],
-      "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3, the retained joint target gate, the complete public-seat replay gate, candidate same-day freshness, value-size retrospective projection and leader partial cross-year projection; records the separate joint decision as CONTINUE_RESEARCH_ONLY with NOT_COMPARABLE_PROJECTION_ONLY, the public-seat decision as CONTINUE_RESEARCH_ONLY with publication timing/PIT/causal attribution still false, and stale candidate input as BLOCKED_STALE_CANDIDATE_INPUT before D0/D1 projection. It keeps strategy_validated=0 and execution_admitted=false, and passes the focused rollup tests. The explicit current-window comparison binds the same StockDB snapshot, intersects the 2026-08-31..2026-10-26 saved-account dates, reports both legs, and keeps promotion_allowed=false."
+      "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3, the retained joint target gate, the complete public-seat replay gate, candidate same-day freshness, value-size retrospective projection, leader partial cross-year projection and a six-strategy full-panel common-window receipt on one StockDB snapshot. It records all rows as research-only, keeps strategy_validated=false, paper_allowed=false, promotion_allowed=false and execution_admitted=false, and passes the focused rollup and comparison tests. PIT, untouched-forward, corporate-action and channel evidence remain separate gates."
     },
     {
       "id": "P33",

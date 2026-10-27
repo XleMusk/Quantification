@@ -98,6 +98,20 @@ def test_source_snapshot_adapter_receipt_feeds_fact_bridge(tmp_path):
                for fact in result["rows"][0]["facts"])
 
 
+def test_raw_source_snapshot_manifest_feeds_fact_bridge(tmp_path):
+    _source_snapshot_receipt(tmp_path)
+    manifest = tmp_path / "raw_source_snapshot.json"
+    payload = json.loads((tmp_path / "source_snapshot.json").read_text(encoding="utf-8"))
+    manifest.write_text(json.dumps(payload), encoding="utf-8")
+
+    result = build_fact_bridge(_sidecar(tmp_path), historical_evidence=manifest)
+
+    assert result["status"] == READY
+    assert result["summary"]["fact_rows"] == 2
+    assert result["historical_evidence_schema"] == "f2_source_snapshot_v1"
+    assert result["source_snapshot_id"] == "bridge-fixture-v1"
+
+
 def test_source_snapshot_without_pit_fields_stays_blocked_in_fact_bridge(tmp_path):
     result = build_fact_bridge(
         _sidecar(tmp_path), historical_evidence=_source_snapshot_receipt(tmp_path, pit=False))

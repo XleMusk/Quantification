@@ -10,7 +10,9 @@ def _dataset(**overrides):
         "id": "a" * 32,
         "start": "2024-01-01",
         "end": "2024-12-31",
-        "symbols": ["000001.SZSE", "600000.SSE"],
+        "symbols": [
+            "000001.SZSE", "000002.SZSE", "000003.SZSE", "000004.SZSE", "600000.SSE",
+        ],
         "quality": {"invalid_rows": 0},
     }
     value.update(overrides)
@@ -26,7 +28,7 @@ def test_submit_use_case_validates_and_registers_one_request(monkeypatch):
     monkeypatch.setattr(research_jobs.store, "create_job", create_job)
 
     result = research_jobs.submit(
-        research_jobs.SubmitRequest("a" * 32, "2024-02-01", "2024-03-01", 2),
+        research_jobs.SubmitRequest("a" * 32, "2024-02-01", "2024-03-01", 5),
         "request-1",
     )
 
@@ -44,7 +46,7 @@ def test_submit_use_case_keeps_data_failures_explicit(monkeypatch, dataset, mess
     monkeypatch.setattr(research_jobs.store, "dataset", lambda identifier: dataset)
     with pytest.raises(ValueError, match=message):
         research_jobs.submit(
-            research_jobs.SubmitRequest("a" * 32, "2024-02-01", "2024-03-01", 2),
+            research_jobs.SubmitRequest("a" * 32, "2024-02-01", "2024-03-01", 5),
             "request-2",
         )
 
@@ -61,3 +63,6 @@ def test_result_use_cases_read_only_and_reject_missing_files(monkeypatch, tmp_pa
     assert research_jobs.resolve_result_file(job_id, "REPORT.md", tmp_path).name == "REPORT.md"
     with pytest.raises(research_jobs.ResultUnavailable):
         research_jobs.resolve_result_file(job_id, "missing.csv", tmp_path)
+    (result_path / "result.json").unlink()
+    with pytest.raises(research_jobs.ResultUnavailable):
+        research_jobs.read_result(job_id, tmp_path)

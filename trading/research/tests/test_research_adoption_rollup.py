@@ -211,6 +211,34 @@ def test_rollup_binds_current_window_without_promotion(tmp_path):
     assert result["next_actions"][1].startswith("Current-window 2026-08-31")
 
 
+def test_rollup_binds_full_panel_common_window_without_promotion(tmp_path):
+    candidate, factor, shortline, retained_joint = _fixtures(tmp_path)
+    full_panel = _write_receipt(tmp_path / "full_panel.json", {
+        "schema": "quantification_full_panel_common_window_strategy_comparison_v1",
+        "status": "COMPLETED_RESEARCH_ONLY_FULL_PANEL_COMMON_WINDOW",
+        "execution_admitted": False, "strategy_validated": False,
+        "ledger_mutated": False, "broker_or_ths_interacted": False,
+        "promotion_allowed": False, "stockdb_snapshot": "snapshot-v1",
+        "common_window": {"start": "2026-01-05", "end": "2026-10-13", "sessions": 184},
+        "strategies": [
+            {"id": f"strategy-{index}", "label": f"Strategy {index}",
+             "execution_admitted": False, "strategy_validated": False,
+             "research_decision": "STOP_RESEARCH_ONLY",
+             "metrics": {"net_return": None, "max_drawdown": None,
+                         "sharpe_zero_rf_252": None, "orders": None, "fills": None}}
+            for index in range(6)
+        ],
+    })
+    result = build_rollup(candidate, factor, shortline, retained_joint,
+                          full_panel_path=full_panel)
+    gate = result["separate_gates"]["full_panel_common_window"]
+    assert gate["strategy_count"] == 6
+    assert gate["common_window"]["sessions"] == 184
+    assert gate["strategies"][0]["research_decision"] == "STOP_RESEARCH_ONLY"
+    assert gate["promotion_allowed"] is False
+    assert result["execution_admitted"] is False
+
+
 def test_rollup_rejects_current_window_boundary_crossing(tmp_path):
     candidate, factor, shortline, _retained_joint = _fixtures(tmp_path)
     current_window = _write_receipt(tmp_path / "current_window.json", {

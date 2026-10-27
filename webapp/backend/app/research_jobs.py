@@ -63,6 +63,8 @@ def require_job(identifier: str) -> dict:
 def submit(request: SubmitRequest, idempotency_key: str) -> dict:
     """Validate and register one idempotent research request."""
 
+    if not 5 <= request.min_pairs <= 100:
+        raise ValueError("min_pairs 必须在 5 到 100 之间")
     item = require_dataset(request.dataset_id)
     start, end = pd.Timestamp(request.start), pd.Timestamp(request.end)
     if (pd.isna(start) or pd.isna(end) or start > end
@@ -88,6 +90,8 @@ def read_result(identifier: str, storage: str | Path) -> dict:
     if item["status"] != "completed":
         raise ResultUnavailable(identifier)
     path = Path(storage) / "results" / identifier / "result.json"
+    if not path.is_file():
+        raise ResultUnavailable("result.json")
     return json.loads(path.read_text(encoding="utf-8"))
 
 

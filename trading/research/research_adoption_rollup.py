@@ -25,6 +25,7 @@ D0_D1_SCHEMA = "stockdb_next_close_d0_d1_contract_v1"
 D0_D1_STATUS = "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1"
 CURRENT_WINDOW_SCHEMA = "quantification_current_window_strategy_comparison_v1"
 CURRENT_WINDOW_STATUS = "COMPLETED_RESEARCH_ONLY_CURRENT_WINDOW_COMPARISON"
+FULL_PANEL_SCHEMA = "quantification_full_panel_common_window_strategy_comparison_v1"
 JOINT_PAPER_SCHEMA = "quantification_joint_portfolio_paper_package_v1"
 
 
@@ -247,6 +248,52 @@ def _current_window_summary(receipt: Mapping[str, Any], path: Path) -> dict[str,
     }
 
 
+def _full_panel_summary(receipt: Mapping[str, Any], path: Path) -> dict[str, Any]:
+    """Bind the six-strategy common-window panel without making an adoption decision."""
+
+    if receipt.get("schema") != FULL_PANEL_SCHEMA:
+        raise ValueError(f"full-panel schema mismatch: {path}")
+    if any(receipt.get(key) is not False for key in
+           ("execution_admitted", "strategy_validated", "ledger_mutated",
+            "broker_or_ths_interacted", "promotion_allowed")):
+        raise ValueError(f"full-panel execution boundary crossed: {path}")
+    window = receipt.get("common_window")
+    strategies = receipt.get("strategies")
+    snapshot = receipt.get("stockdb_snapshot")
+    if not isinstance(window, Mapping) or not isinstance(strategies, list) or not strategies or not snapshot:
+        raise ValueError(f"full-panel payload is incomplete: {path}")
+    if type(window.get("sessions")) is not int or window["sessions"] <= 0:
+        raise ValueError(f"full-panel sessions are invalid: {path}")
+    rows = []
+    for row in strategies:
+        if not isinstance(row, Mapping) or not isinstance(row.get("metrics"), Mapping):
+            raise ValueError(f"full-panel strategy row is malformed: {path}")
+        if row.get("strategy_validated") is not False or row.get("execution_admitted") is not False:
+            raise ValueError(f"full-panel strategy boundary crossed: {path}")
+        metrics = row["metrics"]
+        rows.append({
+            "strategy_id": row.get("id"),
+            "label": row.get("label"),
+            "research_decision": row.get("research_decision"),
+            "net_return": metrics.get("net_return"),
+            "max_drawdown": metrics.get("max_drawdown"),
+            "sharpe_zero_rf_252": metrics.get("sharpe_zero_rf_252"),
+            "orders": metrics.get("orders"),
+            "fills": metrics.get("fills"),
+        })
+    return {
+        "status": receipt.get("status"),
+        "common_window": dict(window),
+        "stockdb_snapshot": snapshot,
+        "strategy_count": len(rows),
+        "strategies": rows,
+        "source": {"path": str(path.resolve()), "sha256": _sha256(path)},
+        "paper_allowed": False,
+        "promotion_allowed": False,
+        "next_gate": "retain the full-panel diagnostic until PIT, untouched-forward and prospective account evidence agree",
+    }
+
+
 def _public_seat_summary(receipt: Mapping[str, Any], path: Path) -> dict[str, Any]:
     """Bind the public-seat timing/PIT gate already attached to candidate adoption.
 
@@ -387,6 +434,7 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
                  retained_joint_path: Path | None = None,
                  d0_d1_path: Path | None = None,
                  current_window_path: Path | None = None,
+                 full_panel_path: Path | None = None,
                  same_day_gate_path: Path | None = None,
                  value_size_path: Path | None = None,
                  leader_path: Path | None = None) -> dict[str, Any]:
@@ -419,6 +467,10 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
     if current_window_path is not None:
         current_window = _current_window_summary(_read(current_window_path), current_window_path)
         separate_gates["latest_current_window"] = current_window
+    full_panel = None
+    if full_panel_path is not None:
+        full_panel = _full_panel_summary(_read(full_panel_path), full_panel_path)
+        separate_gates["full_panel_common_window"] = full_panel
     same_day_gate = None
     if same_day_gate_path is not None:
         same_day_gate = _same_day_gate_summary(_read(same_day_gate_path), same_day_gate_path)
@@ -453,6 +505,11 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
             f"Current-window {current_window['common_window']['start']}..{current_window['common_window']['end']} is bound as a terminal diagnostic; "
             "do not promote from this short slice."
         ))
+    if full_panel is not None:
+        next_actions.insert(2, (
+            f"Full-panel common window {full_panel['common_window']['start']}..{full_panel['common_window']['end']} binds "
+            f"{full_panel['strategy_count']} strategies on one snapshot; keep all rows research-only until PIT and forward gates pass."
+        ))
     return {
         "schema": SCHEMA,
         "status": "COMPLETED_RESEARCH_ONLY_ADOPTION_ROLLUP",
@@ -467,6 +524,8 @@ def build_rollup(candidate_path: Path = DEFAULT_CANDIDATE,
                if d0_d1_path is not None else {}),
             **({"current_window_comparison": {"path": str(current_window_path.resolve()), "sha256": _sha256(current_window_path)}}
                if current_window_path is not None else {}),
+            **({"full_panel_comparison": {"path": str(full_panel_path.resolve()), "sha256": _sha256(full_panel_path)}}
+               if full_panel_path is not None else {}),
             **({"candidate_same_day_gate": {"path": str(same_day_gate_path.resolve()), "sha256": _sha256(same_day_gate_path)}}
                if same_day_gate_path is not None else {}),
             **({"value_size_joint_paper": {"path": str(value_size_path.resolve()), "sha256": _sha256(value_size_path)}}
@@ -543,6 +602,21 @@ def render_markdown(receipt: Mapping[str, Any]) -> str:
                 f"- `{row['strategy_id']}`: {row['research_decision']}, "
                 f"return {float(row['net_return']):.4%}, orders {row['orders']}, fills {row['fills']}."
             )
+    full_panel = receipt["separate_gates"].get("full_panel_common_window")
+    if full_panel is not None:
+        lines += [
+            "",
+            f"Full-panel comparison: `{full_panel['common_window']['start']}..{full_panel['common_window']['end']}` "
+            f"({full_panel['common_window']['sessions']} sessions), {full_panel['strategy_count']} strategies, "
+            f"snapshot `{full_panel['stockdb_snapshot']}`.",
+        ]
+        for row in full_panel["strategies"]:
+            lines.append(
+                f"- `{row['strategy_id']}`: {row['research_decision']}, "
+                f"return {row['net_return'] if row['net_return'] is not None else 'n/a'}, "
+                f"orders {row['orders'] if row['orders'] is not None else 'n/a'}, "
+                f"fills {row['fills'] if row['fills'] is not None else 'n/a'}."
+            )
     same_day_gate = receipt["separate_gates"].get("latest_candidate_same_day_gate")
     if same_day_gate is not None:
         lines += [
@@ -579,14 +653,15 @@ def write_outputs(*, candidate_path: Path = DEFAULT_CANDIDATE,
                   retained_joint_path: Path | None = None,
                   d0_d1_path: Path | None = None,
                   current_window_path: Path | None = None,
+                  full_panel_path: Path | None = None,
                   same_day_gate_path: Path | None = None,
                   value_size_path: Path | None = None,
                   leader_path: Path | None = None,
                   output: Path = DEFAULT_OUTPUT,
                   report: Path = DEFAULT_REPORT) -> tuple[Path, Path]:
     receipt = build_rollup(candidate_path, factor_path, shortline_path, retained_joint_path,
-                           d0_d1_path, current_window_path, same_day_gate_path,
-                           value_size_path, leader_path)
+                           d0_d1_path, current_window_path, full_panel_path,
+                           same_day_gate_path, value_size_path, leader_path)
     output.parent.mkdir(parents=True, exist_ok=True)
     report.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -605,6 +680,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="optional completed same-day D0/D1 paper receipt to bind as a separate gate")
     parser.add_argument("--current-window-comparison", type=Path,
                         help="optional completed explicit current-window comparison to bind as a separate gate")
+    parser.add_argument("--full-panel-comparison", type=Path,
+                        help="optional six-strategy common-window comparison to bind as a separate gate")
     parser.add_argument("--candidate-same-day-gate", type=Path,
                         help="optional candidate freshness gate to bind before D0/D1 projection")
     parser.add_argument("--value-size-joint-paper", type=Path,
@@ -620,6 +697,7 @@ def main(argv: list[str] | None = None) -> int:
                                    retained_joint_path=args.retained_joint_comparison,
                                    d0_d1_path=args.d0_d1_receipt,
                                    current_window_path=args.current_window_comparison,
+                                   full_panel_path=args.full_panel_comparison,
                                    same_day_gate_path=args.candidate_same_day_gate,
                                    value_size_path=args.value_size_joint_paper,
                                    leader_path=args.leader_joint_paper,

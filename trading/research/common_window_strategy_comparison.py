@@ -29,6 +29,17 @@ STRATEGY_IDS = (
     "mature_factor_balanced_ridge",
     "mature_factor_balanced_ridge_h60",
 )
+FULL_STRATEGY_IDS = (
+    "fixed_low_volatility_252_20",
+    "low_vol_half_momentum_20",
+    "momentum_12_1_20",
+    "mature_factor_balanced_ridge",
+    "alpha158_lgbm_cap500",
+    "mature_factor_balanced_ridge_h60",
+)
+FULL_SCHEMA = "quantification_full_panel_common_window_strategy_comparison_v1"
+FULL_RECEIPT_NAME = "20261027_full_panel_common_window_strategy_comparison_v1.json"
+FULL_REPORT_NAME = "20261027_full_panel_common_window_strategy_comparison_v1.md"
 
 
 def _date(value: str) -> date:
@@ -80,20 +91,24 @@ def _daily_metrics(rows: Iterable[dict[str, str]], dates: set[date]) -> dict[str
     }
 
 
-def _resolve_entries() -> list[dict[str, Any]]:
+def _resolve_entries(strategy_ids: Iterable[str] | None = None) -> list[dict[str, Any]]:
     source = build_long_window_receipt(include_h60=True)
     by_id = {entry["id"]: entry for entry in source["strategies"]}
-    missing = [strategy_id for strategy_id in STRATEGY_IDS if strategy_id not in by_id]
+    requested = tuple(strategy_ids or STRATEGY_IDS)
+    missing = [strategy_id for strategy_id in requested if strategy_id not in by_id]
     if missing:
         raise ValueError(f"Missing retained comparison entries: {missing}")
-    snapshots = {by_id[strategy_id]["stockdb_snapshot"] for strategy_id in STRATEGY_IDS}
+    snapshots = {by_id[strategy_id]["stockdb_snapshot"] for strategy_id in requested}
     if len(snapshots) != 1:
         raise ValueError(f"Strategies do not share one StockDB snapshot: {sorted(snapshots)}")
-    return [by_id[strategy_id] for strategy_id in STRATEGY_IDS]
+    return [by_id[strategy_id] for strategy_id in requested]
 
 
-def build_receipt() -> dict[str, Any]:
-    entries = _resolve_entries()
+def build_receipt(*, strategy_ids: Iterable[str] | None = None,
+                  schema: str = SCHEMA,
+                  status: str = "COMPLETED_RESEARCH_ONLY_COMMON_WINDOW") -> dict[str, Any]:
+    requested = tuple(strategy_ids or STRATEGY_IDS)
+    entries = _resolve_entries() if strategy_ids is None else _resolve_entries(requested)
     daily_by_entry: list[tuple[dict[str, Any], list[dict[str, str]]]] = []
     for entry in entries:
         daily_path = Path(entry["source_paths"]["daily"])
@@ -133,13 +148,15 @@ def build_receipt() -> dict[str, Any]:
         })
 
     return {
-        "schema": SCHEMA,
-        "status": "COMPLETED_RESEARCH_ONLY_COMMON_WINDOW",
+        "schema": schema,
+        "status": status,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "execution_admitted": False,
         "strategy_validated": False,
         "ledger_mutated": False,
         "broker_or_ths_interacted": False,
+        "paper_allowed": False,
+        "promotion_allowed": False,
         "common_window": {
             "start": common_start.isoformat(),
             "end": common_end.isoformat(),
@@ -153,6 +170,7 @@ def build_receipt() -> dict[str, Any]:
             "metrics": ["sessions", "orders", "fills", "net_return", "max_drawdown", "sharpe_zero_rf_252", "fees_rmb", "window_turnover_value"],
             "research_decision_rule": "common-window net_return > 0 and Sharpe > 0 means CONTINUE_RESEARCH_ONLY",
             "no_parameter_retuning": True,
+            "strategy_ids": list(requested),
         },
         "stockdb_snapshot": entries[0]["stockdb_snapshot"],
         "strategies": strategies,
@@ -164,10 +182,26 @@ def build_receipt() -> dict[str, Any]:
     }
 
 
-def render_markdown(receipt: dict[str, Any]) -> str:
+def build_full_receipt() -> dict[str, Any]:
+    """Compare every saved long-window strategy on one shared overlap.
+
+    This is additive evidence. The retained three-strategy receipt stays
+    unchanged for existing adoption bindings; the full panel is a separate
+    same-snapshot diagnostic covering fixed, momentum, Ridge, Alpha158/LGBM
+    and the prespecified Ridge h60 variant.
+    """
+
+    return build_receipt(
+        strategy_ids=FULL_STRATEGY_IDS,
+        schema=FULL_SCHEMA,
+        status="COMPLETED_RESEARCH_ONLY_FULL_PANEL_COMMON_WINDOW",
+    )
+
+
+def render_markdown(receipt: dict[str, Any], *, title: str | None = None) -> str:
     window = receipt["common_window"]
     lines = [
-        "# Common-window strategy comparison (2026-10-26)",
+        f"# {title or 'Common-window strategy comparison (2026-10-26)'}",
         "",
         f"Common saved-account window: `{window['start']}..{window['end']}` ({window['sessions']} sessions).",
         "",
@@ -200,12 +234,34 @@ def write_outputs(receipt_path: Path | None = None, report_path: Path | None = N
     return receipt_path, report_path
 
 
+def write_full_outputs(receipt_path: Path | None = None,
+                       report_path: Path | None = None) -> tuple[Path, Path]:
+    """Write the additive full-panel common-window evidence."""
+
+    receipt_path = receipt_path or ROOT / "outputs/pipeline_receipts" / FULL_RECEIPT_NAME
+    report_path = report_path or ROOT / "outputs/research_reports" / FULL_REPORT_NAME
+    receipt_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    receipt = build_full_receipt()
+    receipt["receipt_path"] = str(receipt_path.resolve())
+    receipt["report_path"] = str(report_path.resolve())
+    receipt_path.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    report_path.write_text(
+        render_markdown(receipt, title="Full-panel common-window strategy comparison (2026-10-27)"), encoding="utf-8")
+    return receipt_path, report_path
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--receipt", type=Path)
     parser.add_argument("--report", type=Path)
+    parser.add_argument("--full-panel", action="store_true",
+                        help="write the additive six-strategy common-window panel")
     args = parser.parse_args(argv)
-    receipt_path, report_path = write_outputs(args.receipt, args.report)
+    if args.full_panel:
+        receipt_path, report_path = write_full_outputs(args.receipt, args.report)
+    else:
+        receipt_path, report_path = write_outputs(args.receipt, args.report)
     print(json.dumps({"receipt": str(receipt_path), "report": str(report_path)}, ensure_ascii=False))
     return 0
 

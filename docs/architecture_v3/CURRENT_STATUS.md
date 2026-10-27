@@ -703,3 +703,14 @@ Wayback 回执现已接入 `f2_fact_bridge`：使用公开替代财务 sidecar �
 验收回执：[`20261027_worker_refresh_retry_v1.json`](../../outputs/pipeline_receipts/20261027_worker_refresh_retry_v1.json)；报告：[`20261027_worker_refresh_retry_v1.md`](../../outputs/research_reports/20261027_worker_refresh_retry_v1.md)。测试命令产生 `4 passed, 55 deselected`。该改动只影响纸面数据刷新调度，不改变 Engine/Ledger、账户余额、候选采用或执行闸门。
 
 下一步沿同一条 Google 波次推进：在下一个可用收市输入上复用该回执，继续 fixed_daily → D0/D1；数据缺口只阻塞依赖的收市包，不阻塞代码和研究比较。
+
+
+## Google Applied Design mainline increments (2026-10-27)
+
+本轮完成三个可复用主线包。研究工作台把 submit/query/download 的业务校验和结果读取移到 `webapp/backend/app/research_jobs.py`，HTTP 层只保留解析、错误映射和响应；原有 job_id、幂等键、状态码与研究-only 边界保持不变。
+
+F2 fact bridge 现在可以直接消费 `f2_source_snapshot_v1` 原始清单，先复用 source snapshot 哈希检查，再进入 publication/as-of/revision 闸门。真实 current-fetch 回执仍是 `BLOCKED_DATA`：18 行、0 个可用事实、0 个因子，决策日前 as-of/revision 证据缺失被保留。
+
+策略比较新增六策略同口径入口：固定低波动、低波/半动量、12-1 动量、成熟因子 Ridge、Alpha158/LightGBM、Ridge h60。共同 StockDB 快照覆盖 `2026-01-05..2026-10-13` 的 184 个会话，六个结果均保持 `STOP_RESEARCH_ONLY`；回执已绑定到 adoption rollup v10，仍不允许 paper/promotion。
+
+组合回归：研究任务/Web API 32 passed；F2、策略比较、adoption rollup 及相关边界测试在提交前复跑。当前发布继续保持 `execution_admitted=false`、`NO_TRADE`、`candidate_panel_only=true`。

@@ -60,3 +60,35 @@ def test_common_window_uses_date_intersection_and_rmb_fee_conversion(tmp_path, m
     assert receipt["strategies"][1]["metrics"]["fees_rmb"] == pytest.approx(2.5)
     assert receipt["execution_admitted"] is False
     assert receipt["ledger_mutated"] is False
+
+
+def test_full_panel_is_additive_and_binds_requested_strategy_ids(tmp_path, monkeypatch):
+    entries = []
+    for index, strategy_id in enumerate(comparison.FULL_STRATEGY_IDS):
+        daily = tmp_path / f"{index}_daily.csv"
+        orders = tmp_path / f"{index}_orders.csv"
+        fills = tmp_path / f"{index}_fills.csv"
+        _write_csv(
+            daily,
+            ["date", "equity", "turnover_value"],
+            [{"date": "2024-01-02", "equity": 100.0, "turnover_value": 10},
+             {"date": "2024-01-04", "equity": 99.0 - index, "turnover_value": 20}],
+        )
+        _write_csv(orders, ["day", "fees"], [{"day": "2024-01-02", "fees": 100}])
+        _write_csv(fills, ["day"], [{"day": "2024-01-02"}])
+        entries.append({
+            "id": strategy_id,
+            "label": strategy_id,
+            "candidate_spec_id": f"spec-{index}",
+            "stockdb_snapshot": "snapshot",
+            "source_paths": {"daily": str(daily), "orders": str(orders), "fills": str(fills)},
+        })
+    monkeypatch.setattr(comparison, "_resolve_entries", lambda strategy_ids=None: entries)
+
+    receipt = comparison.build_full_receipt()
+
+    assert receipt["schema"] == comparison.FULL_SCHEMA
+    assert receipt["status"] == "COMPLETED_RESEARCH_ONLY_FULL_PANEL_COMMON_WINDOW"
+    assert receipt["comparison_contract"]["strategy_ids"] == list(comparison.FULL_STRATEGY_IDS)
+    assert [row["id"] for row in receipt["strategies"]] == list(comparison.FULL_STRATEGY_IDS)
+    assert receipt["execution_admitted"] is False

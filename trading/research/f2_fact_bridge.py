@@ -29,7 +29,11 @@ from .f01_financial_factor import FinancialFact
 from .financial_factor_contracts import TimeWindow, publication_interval
 from .financial_units import normalize_amount
 from .f2_historical_evidence import BLOCKED as HISTORICAL_BLOCKED, READY as HISTORICAL_READY, SCHEMA as HISTORICAL_SCHEMA
-from .f2_source_snapshot import SCHEMA as SOURCE_SNAPSHOT_SCHEMA
+from .f2_source_snapshot import (
+    SCHEMA as SOURCE_SNAPSHOT_SCHEMA,
+    SNAPSHOT_SCHEMA as SOURCE_SNAPSHOT_MANIFEST_SCHEMA,
+    build_source_snapshot_receipt,
+)
 from .publication_event_contract import evaluate_publication_evidence
 
 
@@ -286,6 +290,7 @@ def build_fact_bridge(sidecar: str | Path, *, scoped_receipt: str | Path | None 
             if isinstance(item, Mapping):
                 source_rows[f"{item.get('symbol')}:{item.get('period')}"] = item
 
+    decision_day = payload.get("decision_day")
     historical_rows: dict[str, Mapping[str, Any]] = {}
     historical_path: Path | None = None
     historical_schema: str | None = None
@@ -298,25 +303,38 @@ def build_fact_bridge(sidecar: str | Path, *, scoped_receipt: str | Path | None 
         historical_schema = historical.get("schema")
         if historical_schema == HISTORICAL_SCHEMA:
             historical_rows_payload = historical.get("rows", [])
-        elif historical_schema == SOURCE_SNAPSHOT_SCHEMA:
+        elif historical_schema in {SOURCE_SNAPSHOT_SCHEMA, SOURCE_SNAPSHOT_MANIFEST_SCHEMA}:
             gate = historical.get("historical_gate")
+            if not isinstance(gate, Mapping):
+                # Accept the producer's raw source snapshot as an input too.
+                # Materialize its gate here so callers cannot skip source-byte
+                # verification or the publication/as-of/revision contract.
+                if not isinstance(decision_day, str) or not decision_day.strip():
+                    raise ValueError("raw source snapshot requires sidecar decision_day")
+                materialized_snapshot = build_source_snapshot_receipt(
+                    historical_path, decision_day=decision_day)
+                gate = materialized_snapshot.get("historical_gate")
+                snapshot = materialized_snapshot.get("snapshot")
+            else:
+                snapshot = historical.get("snapshot")
             if not isinstance(gate, Mapping) or gate.get("schema") != HISTORICAL_SCHEMA:
                 raise ValueError(f"{SOURCE_SNAPSHOT_SCHEMA} receipt has no historical gate")
             historical_rows_payload = gate.get("rows", [])
-            snapshot = historical.get("snapshot")
             if isinstance(snapshot, Mapping) and isinstance(snapshot.get("snapshot_id"), str):
                 source_snapshot_id = snapshot["snapshot_id"]
         elif historical_schema == WAYBACK_SCHEMA:
             evidence = historical.get("historical_evidence")
             historical_rows_payload = [evidence] if isinstance(evidence, Mapping) else []
         else:
-            raise ValueError(f"expected {HISTORICAL_SCHEMA}, {SOURCE_SNAPSHOT_SCHEMA} or {WAYBACK_SCHEMA}")
+            raise ValueError(
+                f"expected {HISTORICAL_SCHEMA}, {SOURCE_SNAPSHOT_SCHEMA}, "
+                f"{SOURCE_SNAPSHOT_MANIFEST_SCHEMA} or {WAYBACK_SCHEMA}"
+            )
         for item in historical_rows_payload if isinstance(historical_rows_payload, list) else []:
             if isinstance(item, Mapping):
                 historical_rows[f"{item.get('symbol')}:{item.get('period')}"] = item
 
     materialized: list[dict[str, Any]] = []
-    decision_day = payload.get("decision_day")
     for row in rows:
         if not isinstance(row, Mapping):
             materialized.append({"status": BLOCKED, "reason_codes": ["row_not_mapping"], "facts": [], "execution_admitted": False})
