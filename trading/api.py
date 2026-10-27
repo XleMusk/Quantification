@@ -18,6 +18,7 @@ from . import replay_reports, settings, store
 from .config import StrategyConfig
 from .feed import HistoricalFeed, freeze
 from .report import comparison, detail
+from .research import paper_account_continuity as paper_continuity
 
 router = APIRouter(prefix="/api/trading")
 
@@ -1485,11 +1486,7 @@ def _latest_paper_preview_path():
 
 def _latest_paper_continuity_path():
     """Find the newest saved paper-account continuity receipt for the desk view."""
-    root = settings.ROOT / "outputs" / "paper_plans"
-    candidates = [
-        path for path in root.glob("**/*continuity_receipt.json") if path.is_file()
-    ]
-    return max(candidates, key=lambda path: path.stat().st_mtime) if candidates else None
+    return paper_continuity.latest_receipt_path(settings.ROOT)
 
 
 @router.get("/paper-preview-latest")
@@ -1545,43 +1542,7 @@ def paper_preview_latest():
 @router.get("/paper-account-continuity")
 def paper_account_continuity():
     """Expose one saved paper-account continuity record without advancing it."""
-    path = _latest_paper_continuity_path()
-    base = {
-        "schema": "paper_account_continuity_view_v1",
-        "execution_admitted": False,
-        "broker_connected": False,
-        "client_interacted": False,
-        "ledger_mutated": False,
-        "account_observed": False,
-    }
-    if path is None:
-        return {
-            **base,
-            "status": "not_observed",
-            "next_action": "先生成纸面账户连续性回执。",
-        }
-    try:
-        payload = json.loads(path.read_text(encoding="utf-8-sig"))
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
-        return {**base, "status": "invalid_receipt", "source_file": str(path), "error": str(error)}
-    return {
-        **base,
-        "status": payload.get("status", "paper_continuity_saved"),
-        "source_file": str(path),
-        "run_dir": payload.get("run_dir"),
-        "last_completed_day": payload.get("last_completed_day"),
-        "generation": payload.get("generation"),
-        "daily_rows": payload.get("daily_rows", 0),
-        "replay_completed_sessions": payload.get("replay_completed_sessions", 0),
-        "order_count": payload.get("order_count", 0),
-        "fill_count": payload.get("fill_count", 0),
-        "pending_targets": bool(payload.get("pending_targets", False)),
-        "cash_cny": payload.get("cash_cny"),
-        "position_count": payload.get("position_count", 0),
-        "refresh_gate": payload.get("refresh_gate"),
-        "limitations": payload.get("limitations") or [],
-        "next_action": "新交易日收市后沿同一纸面账户推进；当前不生成重复日切，不预填、不提交。",
-    }
+    return paper_continuity.build_view(settings.ROOT)
 
 
 def _latest_structured_ths_bundle():
