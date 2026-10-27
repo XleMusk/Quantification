@@ -229,9 +229,9 @@
       "domain": "development",
       "result": "Persistent tasks and global concurrency/expense decisions are recoverable.",
       "state": "PARTIAL",
-      "next": "Add task timing/expense measurement only when a bounded V3 paper slice has an accepted result; retain the current durable rejection boundary and do not add auto-retry.",
+      "next": "Reuse the post-close timing receipt on an accepted non-live paper slice; keep provider expense and external retry boundaries separate.",
       "prohibition": "Do not fill task slots or expand budgets to make progress look larger.",
-      "evidence_updated_on": "2026-10-26",
+      "evidence_updated_on": "2026-10-27",
       "actual_paths": [
         "trading/store.py",
         "trading/api.py",
@@ -246,7 +246,10 @@
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json",
         "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json",
-        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md"
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md",
+        "trading/research/post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261027_post_close_timing_contract_v1.json",
+        "outputs/research_reports/20261027_post_close_timing_contract_v1.md"
       ],
       "evidence": [
         "trading/store.py",
@@ -260,7 +263,10 @@
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json",
         "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json",
-        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md"
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md",
+        "trading/research/post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261027_post_close_timing_contract_v1.json",
+        "outputs/research_reports/20261027_post_close_timing_contract_v1.md"
       ]
     },
     {
@@ -268,22 +274,28 @@
       "domain": "development",
       "result": "Agent throughput and expense are measured per accepted business capability.",
       "state": "PARTIAL",
-      "next": "Extend the same local measurement to accepted paper-task receipts; do not treat wall time as provider expense or strategy evidence.",
+      "next": "Bind post-close elapsed timing to accepted paper-task receipts; do not treat wall time as provider expense or strategy evidence.",
       "prohibition": "Do not use token count or task count as delivery.",
-      "evidence_updated_on": "2026-10-26",
+      "evidence_updated_on": "2026-10-27",
       "actual_paths": [
         "trading/research/next_close_d0_d1.py",
         "trading/research/tests/test_next_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json",
         "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json",
-        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md"
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md",
+        "trading/research/post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261027_post_close_timing_contract_v1.json",
+        "outputs/research_reports/20261027_post_close_timing_contract_v1.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v3/contract_receipt.json",
         "outputs/research_reports/20261026_fixed_candidate_d0_d1_v3.md",
         "outputs/pipeline_receipts/20261026_fixed_candidate_d0_d1_v4/contract_receipt.json",
-        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md"
+        "outputs/research_reports/20261026_fixed_candidate_d0_d1_v4.md",
+        "trading/research/post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261027_post_close_timing_contract_v1.json",
+        "outputs/research_reports/20261027_post_close_timing_contract_v1.md"
       ],
       "acceptance": "A bounded accepted D0/D1 slice records local monotonic wall time, retains external provider expense as unknown, and leaves execution_admitted=false."
     },
