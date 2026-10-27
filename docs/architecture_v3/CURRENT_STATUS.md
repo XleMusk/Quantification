@@ -756,3 +756,7 @@ post-close 终态回执现在记录 `finished_at` 和 `elapsed_seconds`，绑定
 F2 来源选择现在按 `decision_time(decision_day)=15:05:00+08:00` 比较时间戳，而不是只比较日期；同日决策后捕获会留在观察证据中但不会进入 `eligible`。真实 `000002.SZSE/2023Q1` Wayback 仍只有 `2025-09-05T23:50:23+00:00` 捕获，2024-05-01 决策日的选择回执为 `BLOCKED_DATA`、eligible=0；没有 PIT 事实、因子或账户回放准入。回执为 [`20261027_f2_decision_cutoff_selection_v1.json`](../../outputs/pipeline_receipts/20261027_f2_decision_cutoff_selection_v1.json)，提交 `29ee086`，相关测试 `34 passed`。
 
 下一步仍按主线推进：取得真实决策日前的 retrieval/as-of/revision/source bytes 证据；下一完整收市后复用 `fixed_daily → D0/D1`；只在有真实消费者时继续抽取应用用例。
+
+## E05 paper timing state binding (2026-10-27)
+
+已有 post-close 终态回执和日终刷新回执现在正式绑定 E05：非实时纸面编排的 `finished_at` 与 `elapsed_seconds` 可追踪，状态由 `UNBOUND` 更新为 `PARTIAL`。该状态不代表供应商费用、队列位置、成交质量或策略证据；下一完整收市再把耗时绑定到实际接受的纸面任务，费用字段只有在授权的非实时来源提供时才加入。

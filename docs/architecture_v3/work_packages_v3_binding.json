@@ -1309,10 +1309,25 @@
     {
       "id": "E05",
       "domain": "execution",
-      "result": "Execution timing and expense chain is traceable.",
-      "state": "UNBOUND",
-      "next": "Reuse post-close timing receipts on the next non-live paper route; keep local duration separate from provider expense and strategy evidence.",
-      "prohibition": "Do not infer queue position or fill from daily bars."
+      "result": "Non-live paper orchestration timing is traceable; provider and external expense remain unclaimed.",
+      "state": "PARTIAL",
+      "next": "Bind the timing receipt to an accepted paper task on the next complete close; add provider expense only when an authorized non-live source supplies it.",
+      "prohibition": "Do not infer queue position or fill from daily bars.",
+      "actual_paths": [
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261027_post_close_timing_contract_v1.json",
+        "outputs/research_reports/20261027_post_close_timing_contract_v1.md",
+        "outputs/pipeline_receipts/20261027_daily_refresh_policy_refactor_v1.json"
+      ],
+      "evidence": [
+        "trading/research/post_close_d0_d1.py",
+        "trading/research/tests/test_post_close_d0_d1.py",
+        "outputs/pipeline_receipts/20261027_post_close_timing_contract_v1.json",
+        "outputs/research_reports/20261027_post_close_timing_contract_v1.md",
+        "outputs/pipeline_receipts/20261027_daily_refresh_policy_refactor_v1.json"
+      ],
+      "evidence_updated_on": "2026-10-27"
     },
     {
       "id": "E06",
