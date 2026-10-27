@@ -876,3 +876,8 @@ Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027
 ## Google Applied Design instrument-master application view (2026-10-27)
 
 `/operator-package/instrument-master` 已提取到纯只读 `trading/research/operator_instrument_master_view.py`，保留 schema、执行边界和 research-only 身份语义；回执为 `outputs/pipeline_receipts/20261027_operator_instrument_master_view_usecase_v1.json`。
+
+
+## Google Applied Design workbench boundary-view consumer (2026-10-27)
+
+`OfflineOperatorBoard.tsx` 已接入证券主表、账户风险和券商/同花顺观察三个只读应用视图，统一展示证据来源与执行边界；前端 `npm.cmd run build` 通过。回执为 `outputs/pipeline_receipts/20261027_workbench_boundary_views_consumer_v1.json`。

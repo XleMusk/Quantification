@@ -51,6 +51,8 @@ REQUIRED_FILES = (
     "trading/research/operator_account_risk_view.py",
     "trading/research/operator_broker_observation_view.py",
     "trading/research/operator_instrument_master_view.py",
+    "webapp/frontend/src/components/OfflineOperatorBoard.tsx",
+    "webapp/frontend/src/tradingTypes.ts",
     "trading/research/operator_basket_schedule_view.py",
     "trading/research/operator_paper_selection_view.py",
     "trading/research/operator_manual_statements_view.py",
@@ -199,6 +201,8 @@ EVIDENCE_FILES = (
     "trading/research/tests/test_operator_instrument_master_view.py",
     "outputs/pipeline_receipts/20261027_operator_instrument_master_view_usecase_v1.json",
     "outputs/research_reports/20261027_operator_instrument_master_view_usecase_v1.md",
+    "outputs/pipeline_receipts/20261027_workbench_boundary_views_consumer_v1.json",
+    "outputs/research_reports/20261027_workbench_boundary_views_consumer_v1.md",
 )
 
 PAPER_EVIDENCE_FILES = (
@@ -324,6 +328,7 @@ def build_release(root: str | Path, output_dir: str | Path, *, version: str,
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_operator_account_risk_view.py trading/tests/test_ths_account_risk.py trading/tests/test_api_operator_package.py trading/research/tests/test_internal_release_candidate.py",
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_operator_broker_observation_view.py trading/tests/test_api_operator_package.py trading/research/tests/test_operator_execution_evidence_view.py",
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_operator_instrument_master_view.py trading/tests/test_api_operator_package.py trading/research/tests/test_operator_broker_observation_view.py",
+            "npm.cmd run build --prefix D:/Quantification/webapp/frontend",
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_candidate_evidence_view.py trading/research/tests/test_research_evidence_catalog.py trading/research/tests/test_native_research_evidence_catalog.py",
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_current_research_evidence_view.py trading/tests/test_api_operator_package.py",
             "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_operator_release_controls_view.py trading/tests/test_api_operator_package.py -k release_controls",

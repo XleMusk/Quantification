@@ -219,7 +219,11 @@
         "trading/research/operator_instrument_master_view.py",
         "trading/research/tests/test_operator_instrument_master_view.py",
         "outputs/pipeline_receipts/20261027_operator_instrument_master_view_usecase_v1.json",
-        "outputs/research_reports/20261027_operator_instrument_master_view_usecase_v1.md"
+        "outputs/research_reports/20261027_operator_instrument_master_view_usecase_v1.md",
+        "webapp/frontend/src/components/OfflineOperatorBoard.tsx",
+        "webapp/frontend/src/tradingTypes.ts",
+        "outputs/pipeline_receipts/20261027_workbench_boundary_views_consumer_v1.json",
+        "outputs/research_reports/20261027_workbench_boundary_views_consumer_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -256,7 +260,11 @@
         "trading/research/operator_instrument_master_view.py",
         "trading/research/tests/test_operator_instrument_master_view.py",
         "outputs/pipeline_receipts/20261027_operator_instrument_master_view_usecase_v1.json",
-        "outputs/research_reports/20261027_operator_instrument_master_view_usecase_v1.md"
+        "outputs/research_reports/20261027_operator_instrument_master_view_usecase_v1.md",
+        "webapp/frontend/src/components/OfflineOperatorBoard.tsx",
+        "webapp/frontend/src/tradingTypes.ts",
+        "outputs/pipeline_receipts/20261027_workbench_boundary_views_consumer_v1.json",
+        "outputs/research_reports/20261027_workbench_boundary_views_consumer_v1.md"
       ]
     },
     {
@@ -1385,7 +1393,11 @@
         "trading/research/operator_broker_observation_view.py",
         "trading/research/tests/test_operator_broker_observation_view.py",
         "outputs/pipeline_receipts/20261027_operator_broker_observation_view_usecase_v1.json",
-        "outputs/research_reports/20261027_operator_broker_observation_view_usecase_v1.md"
+        "outputs/research_reports/20261027_operator_broker_observation_view_usecase_v1.md",
+        "webapp/frontend/src/components/OfflineOperatorBoard.tsx",
+        "webapp/frontend/src/tradingTypes.ts",
+        "outputs/pipeline_receipts/20261027_workbench_boundary_views_consumer_v1.json",
+        "outputs/research_reports/20261027_workbench_boundary_views_consumer_v1.md"
       ],
       "evidence": [
         "webapp/backend/app/main.py",
@@ -1408,7 +1420,11 @@
         "trading/research/operator_broker_observation_view.py",
         "trading/research/tests/test_operator_broker_observation_view.py",
         "outputs/pipeline_receipts/20261027_operator_broker_observation_view_usecase_v1.json",
-        "outputs/research_reports/20261027_operator_broker_observation_view_usecase_v1.md"
+        "outputs/research_reports/20261027_operator_broker_observation_view_usecase_v1.md",
+        "webapp/frontend/src/components/OfflineOperatorBoard.tsx",
+        "webapp/frontend/src/tradingTypes.ts",
+        "outputs/pipeline_receipts/20261027_workbench_boundary_views_consumer_v1.json",
+        "outputs/research_reports/20261027_workbench_boundary_views_consumer_v1.md"
       ],
       "evidence_updated_on": "2026-10-27"
     },
@@ -1930,7 +1946,11 @@
         "trading/research/operator_instrument_master_view.py",
         "trading/research/tests/test_operator_instrument_master_view.py",
         "outputs/pipeline_receipts/20261027_operator_instrument_master_view_usecase_v1.json",
-        "outputs/research_reports/20261027_operator_instrument_master_view_usecase_v1.md"
+        "outputs/research_reports/20261027_operator_instrument_master_view_usecase_v1.md",
+        "webapp/frontend/src/components/OfflineOperatorBoard.tsx",
+        "webapp/frontend/src/tradingTypes.ts",
+        "outputs/pipeline_receipts/20261027_workbench_boundary_views_consumer_v1.json",
+        "outputs/research_reports/20261027_workbench_boundary_views_consumer_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -2037,7 +2057,11 @@
         "trading/research/operator_instrument_master_view.py",
         "trading/research/tests/test_operator_instrument_master_view.py",
         "outputs/pipeline_receipts/20261027_operator_instrument_master_view_usecase_v1.json",
-        "outputs/research_reports/20261027_operator_instrument_master_view_usecase_v1.md"
+        "outputs/research_reports/20261027_operator_instrument_master_view_usecase_v1.md",
+        "webapp/frontend/src/components/OfflineOperatorBoard.tsx",
+        "webapp/frontend/src/tradingTypes.ts",
+        "outputs/pipeline_receipts/20261027_workbench_boundary_views_consumer_v1.json",
+        "outputs/research_reports/20261027_workbench_boundary_views_consumer_v1.md"
       ],
       "acceptance": "The same-sample comparison, candidate evidence, current research evidence, operator evidence, decision queue, paper-preview readiness, selected-plan, lifecycle, session-handoff, blotter, execution-attribution, execution-evidence, portfolio-controls, portfolio-risk, basket-schedule, GET paper-selection, manual-statements, ths-native-observation and opening-window-status endpoints delegate to read-only application views, preserve response/error semantics, and pass focused view plus API consumer tests without account or source mutation."
     },
