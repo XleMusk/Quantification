@@ -21,6 +21,7 @@ from .report import detail
 from .research import paper_account_continuity as paper_continuity
 from .research import paper_preview_view
 from .research import paper_preview_readiness_view
+from .research import candidate_evidence_view
 from .research import research_comparison_view
 
 router = APIRouter(prefix="/api/trading")
@@ -582,8 +583,7 @@ def _latest_alpha158_lightgbm_diagnostic():
 @router.get("/research/candidate-evidence")
 def research_candidate_evidence():
     """Project saved registry/evidence only; never refresh research or accounts."""
-    from .research_evidence_catalog import read_catalog
-    return read_catalog(settings.ROOT, settings.DATA_ROOT)
+    return candidate_evidence_view.build_view(settings.ROOT, settings.DATA_ROOT)
 
 
 @router.get("/research/leader-comparison")
