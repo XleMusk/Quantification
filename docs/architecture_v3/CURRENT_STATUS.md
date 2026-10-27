@@ -766,3 +766,5 @@ F2 来源选择现在按 `decision_time(decision_day)=15:05:00+08:00` 比较时�
 E05/F06 已完成一个可复用的纸面任务绑定器：[`paper_timing_binding.py`](../../trading/research/paper_timing_binding.py) 将 post-close timing contract 与一条已完成的 research-only D0/D1 回执按哈希绑定。实际绑定 2026-10-23 收市任务，覆盖 40/40、固定纸面订单 20、联合纸面订单 22、本地耗时 `0.099731s`；供应商费用保持 `null`。回执为 [`20261027_paper_task_timing_binding_v1.json`](../../outputs/pipeline_receipts/20261027_paper_task_timing_binding_v1.json)，测试 `5 passed`，提交 `0cec03c`。这不是券商或同花顺证据。
 
 F2 fact bridge 现在把 `source_snapshot_id`、`source_sha256`、`snapshot_source_check` 和 `snapshot_source_check_passed` 传入每个事实的 `source_provenance`；哈希不匹配仍然阻断，不放宽 PIT/revision 闸门。18 行真实桥接重跑仍为 `BLOCKED_DATA`、0 个 ready fact、0 个因子。回执为 [`20261027_f2_fact_bridge_provenance_v1.json`](../../outputs/pipeline_receipts/20261027_f2_fact_bridge_provenance_v1.json)，测试 `27 passed`，提交 `da312f5`。
+
+补充探测了已有 F01 样本中的 600004.SSE/2024Q1 与 688008.SSE/2024Q1 两个原始披露 URL。Wayback CDX 均返回 0 个捕获，故两条仍为 `BLOCKED_DATA`、`pit_asof_safe=false`；失败证据保留在 [`20261027_f2_wayback_two_issuer_probe_v1.json`](../../outputs/pipeline_receipts/20261027_f2_wayback_two_issuer_probe_v1.json)。这次探测没有把当前披露冒充历史 PIT，也没有阻塞代码、纸面或策略比较路线。

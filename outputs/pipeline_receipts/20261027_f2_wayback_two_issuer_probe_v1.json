@@ -1,0 +1,32 @@
+{
+  "schema": "f2_wayback_two_issuer_probe_receipt_v1",
+  "created_at": "2026-10-27T09:40:00+08:00",
+  "status": "BLOCKED_DATA",
+  "decision_day": "2024-05-01",
+  "probes": [
+    {
+      "symbol": "600004.SSE",
+      "period": "2024Q1",
+      "publication_date": "2024-04-27",
+      "receipt": "outputs/pipeline_receipts/20261027_f2_wayback_600004_2024q1_v1.json",
+      "observed_captures": 0,
+      "eligible_captures": 0,
+      "pit_asof_safe": false,
+      "reason": "no_cdx_capture"
+    },
+    {
+      "symbol": "688008.SSE",
+      "period": "2024Q1",
+      "publication_date": "2024-04-26",
+      "receipt": "outputs/pipeline_receipts/20261027_f2_wayback_688008_2024q1_v1.json",
+      "observed_captures": 0,
+      "eligible_captures": 0,
+      "pit_asof_safe": false,
+      "reason": "no_cdx_capture"
+    }
+  ],
+  "execution_admitted": false,
+  "factor_computed": false,
+  "account_replay": false,
+  "next": "Do not infer PIT availability from the current issuer PDFs; continue with independent F2 contract/code work and retain these failed probes."
+}

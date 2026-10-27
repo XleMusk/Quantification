@@ -1,0 +1,72 @@
+{
+  "schema": "f2_wayback_probe_v1",
+  "status": "BLOCKED_DATA",
+  "execution_admitted": false,
+  "symbol": "600004.SSE",
+  "period": "2024Q1",
+  "publication_date": "2024-04-27",
+  "decision_day": "2024-05-01",
+  "source_url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESH_STOCK/2024/2024-4/2024-04-27/10121170.PDF",
+  "cdx_url": "https://web.archive.org/cdx/search/cdx?url=https%3A%2F%2Ffile.finance.sina.com.cn%2F211.154.219.97%3A9494%2FMRGG%2FCNSESH_STOCK%2F2024%2F2024-4%2F2024-04-27%2F10121170.PDF&output=json&filter=statuscode:200&fl=timestamp,original,statuscode,digest&collapse=digest",
+  "retrieval": {
+    "requested_at": "2026-10-27T09:33:11.065819+08:00",
+    "retrieved_at": "2026-10-27T09:33:12.907614+08:00",
+    "http_status": 200,
+    "content_type": "application/json",
+    "response_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "error": null
+  },
+  "archive_retrieval": null,
+  "archive_payload_path": null,
+  "captures": [],
+  "captures_on_or_before_decision_day": [],
+  "selected_capture": null,
+  "capture_selection": {
+    "policy": "latest_on_or_before_decision_day_v1",
+    "eligible_count": 0,
+    "observed_count": 0,
+    "selected_capture_at": null
+  },
+  "historical_evidence": {
+    "schema": "f2_historical_evidence_contract_v1",
+    "status": "BLOCKED_DATA",
+    "symbol": "600004.SSE",
+    "period": "2024Q1",
+    "evidence_kind": "historical_archive",
+    "historical_retrieval_asof_verified": false,
+    "revision_history_verified": false,
+    "source_provenance_verified": false,
+    "pit_asof_safe": false,
+    "reason_codes": [
+      "no_cdx_capture",
+      "historical_retrieval_asof_unproven",
+      "revision_history_unproven",
+      "historical_source_provenance_unproven",
+      "contract:retrieval_asof_invalid:retrieved_at must be an offset-aware ISO timestamp",
+      "contract:revision_id_missing",
+      "contract:source_file_or_sha256_missing"
+    ],
+    "publication_contract": {
+      "publication_evidence_present": true,
+      "publication_event_proven": true,
+      "retrieved_asof_proven": false,
+      "revision_identity_proven": false,
+      "source_provenance_proven": false,
+      "pit_asof_safe": false,
+      "publication_evidence_reasons": [
+        "retrieval_asof_invalid:retrieved_at must be an offset-aware ISO timestamp",
+        "revision_id_missing",
+        "source_file_or_sha256_missing"
+      ]
+    },
+    "execution_admitted": false,
+    "source_file": null,
+    "source_sha256": null
+  },
+  "factor_computed": false,
+  "account_replay": false,
+  "limitations": [
+    "A capture after the decision cutoff does not prove historical retrieval/as-of availability.",
+    "This probe never creates FinancialFact, factor, target, order, fill or account state."
+  ]
+}
