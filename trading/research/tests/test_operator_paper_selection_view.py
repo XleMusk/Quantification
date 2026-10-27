@@ -1,7 +1,11 @@
+import json
 from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
 
 from trading import api
-from trading.research.operator_paper_selection_view import build_view
+from trading.research.operator_paper_selection_view import apply_selection, build_view
 
 
 def _namespace(monkeypatch, tmp_path, package):
@@ -47,3 +51,46 @@ def test_route_delegates_to_read_only_view(monkeypatch):
     )
 
     assert api.operator_package_paper_selection() == expected
+
+
+def test_apply_selection_runs_only_frozen_candidate_script(monkeypatch, tmp_path):
+    opening_pack = tmp_path / "opening_pack.json"
+    opening_pack.write_text("{}", encoding="utf-8")
+    session = tmp_path / "session"
+    package = {
+        "package_freshness": "fresh",
+        "strategy_candidates": [{"strategy_id": "candidate_a"}],
+        "opening_pack": str(opening_pack),
+    }
+    calls = []
+    monkeypatch.setattr(api, "operator_package", lambda: package)
+    monkeypatch.setattr(api.settings, "DATA_ROOT", tmp_path)
+    monkeypatch.setattr(api, "_operator_package_session_root", lambda _package: session)
+
+    class Result:
+        returncode = 0
+        stdout = "paper-only"
+        stderr = ""
+
+    monkeypatch.setattr(
+        "trading.research.operator_paper_selection_view.subprocess.run",
+        lambda command, **kwargs: (calls.append((command, kwargs)) or Result()),
+    )
+    receipt = {"schema": "paper_strategy_application_receipt_v1", "strategy_id": "candidate_a"}
+    session.mkdir()
+    (session / "paper_strategy_application_receipt_v1.json").write_text(
+        json.dumps(receipt), encoding="utf-8"
+    )
+    result = apply_selection(api.__dict__, SimpleNamespace(strategy_id="candidate_a"))
+    assert result["status"] == "offline_paper_strategy_applied"
+    assert result["execution_admitted"] is False
+    assert result["submission_enabled"] is False
+    assert calls and "apply_offline_strategy_selection.ps1" in calls[0][0][5]
+
+
+def test_apply_selection_rejects_unknown_candidate(monkeypatch, tmp_path):
+    package = {"package_freshness": "fresh", "strategy_candidates": []}
+    monkeypatch.setattr(api, "operator_package", lambda: package)
+    with pytest.raises(Exception) as error:
+        apply_selection(api.__dict__, SimpleNamespace(strategy_id="unknown"))
+    assert getattr(error.value, "status_code", None) == 400

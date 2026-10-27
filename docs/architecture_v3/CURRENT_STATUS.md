@@ -906,3 +906,7 @@ Candidate library 的无参默认 lineage 已同步到 v5，并生成 [`20261027
 ## Recovery review application boundary (2026-10-27)
 
 人工恢复审查的 GET/POST 路由已委托给 `trading/research/operator_recovery_review_view.py`。独立服务读取冻结恢复交接索引，要求显式确认，落盘纸面审查回执，并保持 `retry_permitted=false`、`automatic_recovery=false`、`submission_enabled=false`；相关 API 与应用服务测试 `3 passed`，回执为 `outputs/pipeline_receipts/20261027_operator_recovery_review_usecase_v1.json`。没有自动重试、撤单、提交或外部账户交互。
+
+## Paper selection application boundary (2026-10-27)
+
+纸面策略选择 POST 路由现在委托给 `operator_paper_selection_view.py`，与读取视图共用冻结候选校验和回执边界；服务只调用本地离线策略选择脚本，返回 `execution_admitted=false`、`submission_enabled=false`，不访问券商或同花顺。相关测试 `5 passed`，回执为 `outputs/pipeline_receipts/20261027_operator_paper_selection_action_v1.json`。

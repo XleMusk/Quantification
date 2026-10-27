@@ -215,6 +215,8 @@ EVIDENCE_FILES = (
     "trading/research/tests/test_operator_recovery_review_view.py",
     "outputs/pipeline_receipts/20261027_operator_recovery_review_usecase_v1.json",
     "outputs/research_reports/20261027_operator_recovery_review_usecase_v1.md",
+    "outputs/pipeline_receipts/20261027_operator_paper_selection_action_v1.json",
+    "outputs/research_reports/20261027_operator_paper_selection_action_v1.md",
     "trading/tests/test_api_operator_package.py",
     "outputs/pipeline_receipts/20261027_operator_promotion_review_usecase_v1.json",
     "outputs/research_reports/20261027_operator_promotion_review_usecase_v1.md",

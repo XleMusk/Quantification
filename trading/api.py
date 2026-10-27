@@ -2764,33 +2764,7 @@ def submit_operator_package_recovery_review(body: RecoveryReviewInput):
 @router.post("/operator-package/paper-selection", status_code=202)
 def apply_paper_selection(body: PaperSelectionInput):
     """Materialize one explicitly chosen candidate as a paper-only desk."""
-    package = operator_package()
-    if package.get("package_freshness") == "stale_execution_day":
-        raise HTTPException(409, package.get("package_warning", "离线运营包已过期，不能继续选择"))
-    candidates = {str(row.get("strategy_id")) for row in package.get("strategy_candidates", [])}
-    if body.strategy_id not in candidates:
-        raise HTTPException(400, "候选策略不在当前冻结运营包中")
-    opening_pack = Path(str(package.get("opening_pack", "")))
-    script = Path(__file__).resolve().parents[1] / "scripts" / "apply_offline_strategy_selection.ps1"
-    if not opening_pack.is_file() or not script.is_file():
-        raise HTTPException(409, "纸面策略选择所需的冻结运营包或脚本不存在")
-    command = [
-        "powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(script),
-        "-OpeningPack", str(opening_pack), "-StrategyId", body.strategy_id,
-        "-OutputRoot", str(settings.DATA_ROOT / "research" / "opening_session_runs"),
-    ]
-    try:
-        result = subprocess.run(command, cwd=str(script.parents[1]), capture_output=True, text=True,
-                                encoding="utf-8", errors="replace", timeout=180, check=False)
-    except subprocess.TimeoutExpired as error:
-        raise HTTPException(504, "纸面策略选择超过 180 秒，未尝试任何真实交易动作") from error
-    if result.returncode != 0:
-        detail = (result.stderr or result.stdout or "纸面策略选择失败").strip()[-4000:]
-        raise HTTPException(409, detail)
-    receipt_path = _operator_package_session_root(package) / "paper_strategy_application_receipt_v1.json"
-    receipt = json.loads(receipt_path.read_text(encoding="utf-8-sig")) if receipt_path.is_file() else None
-    return {"status": "offline_paper_strategy_applied", "strategy_id": body.strategy_id,
-            "receipt": receipt, "stdout_tail": (result.stdout or "").strip()[-2000:]}
+    return operator_paper_selection_view.apply_selection(globals(), body)
 
 
 @router.get("/operator-package/paper-selection")
