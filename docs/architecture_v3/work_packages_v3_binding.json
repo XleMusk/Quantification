@@ -1396,9 +1396,9 @@
     {
       "id": "O01",
       "domain": "operations",
-      "result": "Calendar and business schedule calculate windows and classify missing inputs.",
+      "result": "The registered derived StockDB fixed_daily head reached 2026-10-26 and the next-close D0/D1 contract produced a date-complete fixed TARGET_PREVIEW with explicit execution and settlement dates.",
       "state": "PARTIAL",
-      "next": "On the next complete close, reuse the staged post-close coordinator with the latest registered fixed_daily head and same-day candidate manifest; keep TARGET_PREVIEW and persistent account scope distinct.",
+      "next": "On the next complete close, pass the fresh same-day candidate manifest through the same coordinator; keep empty candidate input explicit and never reuse an older candidate.",
       "prohibition": "Do not use machine timezone or weekday inference.",
       "evidence_updated_on": "2026-10-27",
       "actual_paths": [
@@ -1448,7 +1448,10 @@
         "trading/research/paper_pipeline_lineage.py",
         "trading/research/tests/test_paper_pipeline_lineage.py",
         "outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v2.json",
-        "outputs/research_reports/20261027_paper_pipeline_lineage_v2.md"
+        "outputs/research_reports/20261027_paper_pipeline_lineage_v2.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5/contract_receipt.json",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v5.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1494,8 +1497,12 @@
         "trading/research/tests/test_paper_pipeline_lineage.py",
         "run_committee.py",
         "outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v2.json",
-        "outputs/research_reports/20261027_paper_pipeline_lineage_v2.md"
-      ]
+        "outputs/research_reports/20261027_paper_pipeline_lineage_v2.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5/contract_receipt.json",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v5.md"
+      ],
+      "acceptance": "A complete 2026-10-26 snapshot covers 20/20 symbols; the receipt exposes close/execution/settlement dates, fixed target/order counts, and execution_admitted=false."
     },
     {
       "id": "O02",
@@ -1538,7 +1545,7 @@
       "domain": "operations",
       "result": "Business observability and capacity measurements expose bottlenecks.",
       "state": "PARTIAL",
-      "next": "On each changed close, pass the registered fixed_daily head and same-day candidate manifest through the staged post-close D0/D1 coordinator; retain coverage, target counts and stage_trace as the bounded reference.",
+      "next": "On each changed close, pass the registered fixed_daily head and same-day candidate manifest through the staged post-close D0/D1 coordinator; retain the v5 coverage, target counts, date fields and stage receipt.",
       "prohibition": "Do not turn monitoring uncertainty into a false offline status.",
       "actual_paths": [
         "trading/research/daily_candidate_paper_batch.py",
@@ -1609,7 +1616,9 @@
         "outputs/pipeline_receipts/20261027_post_close_stage_refactor_v1.json",
         "outputs/research_reports/20261027_post_close_stage_refactor_v1.md",
         "outputs/weekly_reviews/20261027_weekly_review_receipt_v3.json",
-        "outputs/weekly_reviews/20261027_weekly_review_v3.md"
+        "outputs/weekly_reviews/20261027_weekly_review_v3.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v5.md"
       ],
       "evidence": [
         "outputs/pipeline_receipts/20261026_continuous_paper_acceptance_v1/receipt.json",
@@ -1645,7 +1654,9 @@
         "outputs/pipeline_receipts/20261027_post_close_stage_refactor_v1.json",
         "outputs/research_reports/20261027_post_close_stage_refactor_v1.md",
         "outputs/weekly_reviews/20261027_weekly_review_receipt_v3.json",
-        "outputs/weekly_reviews/20261027_weekly_review_v3.md"
+        "outputs/weekly_reviews/20261027_weekly_review_v3.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v5.md"
       ],
       "evidence_updated_on": "2026-10-27"
     },
@@ -2208,9 +2219,9 @@
     {
       "id": "P10",
       "domain": "operations",
-      "result": "The next-close D0/D1 contract can optionally emit the fixed-plus-candidate budgeted joint paper package from the same frozen StockDB quote snapshot.",
+      "result": "The next-close D0/D1 contract emitted the fixed-only TARGET_PREVIEW and joint paper package from the complete 2026-10-26 pinned StockDB snapshot; top-level dates and fixed/candidate counts are explicit.",
       "state": "VERIFIED_LOCAL",
-      "next": "Run the optional joint route on the first real same-day close; retain its TARGET_PREVIEW receipt and persistent fixed_daily scope as separate layers.",
+      "next": "Use the same contract with a fresh same-day candidate manifest after the next close; the current zero-candidate result is retained as fixed-only evidence.",
       "prohibition": "The joint projection is paper-only and does not replace the individual candidate receipts or authorize channel actions.",
       "actual_paths": [
         "trading/research/next_close_d0_d1.py",
@@ -2229,7 +2240,10 @@
         "trading/research/post_close_d0_d1.py",
         "trading/research/tests/test_post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
-        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5/contract_receipt.json",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v5.md"
       ],
       "evidence": [
         "trading/research/tests/test_next_close_d0_d1.py",
@@ -2244,10 +2258,13 @@
         "trading/research/post_close_d0_d1.py",
         "trading/research/tests/test_post_close_d0_d1.py",
         "outputs/pipeline_receipts/20261026_next_close_scope_boundary_v1/receipt.json",
-        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md"
+        "outputs/research_reports/20261026_next_close_scope_boundary_v1.md",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5/contract_receipt.json",
+        "outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5_summary.json",
+        "outputs/research_reports/20261027_post_close_derived_d0_d1_v5.md"
       ],
       "acceptance": "The fixture D0/D1 run captures one same-day snapshot, projects fixed and candidate legs, and emits a two-order joint paper receipt under the budgeted policy with execution_admitted=false.",
-      "evidence_updated_on": "2026-10-26"
+      "evidence_updated_on": "2026-10-27"
     },
     {
       "id": "P11",

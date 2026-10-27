@@ -801,3 +801,12 @@ F2 的合成 vertical slice 与 bridge 测试夹具已同步改为同季度同�
 同样本策略比较已从 HTTP 路由中提取为 [`trading/research/research_comparison_view.py`](../../trading/research/research_comparison_view.py)。`GET /research-comparison` 和 `GET /research-comparison-snapshots` 现在只负责请求解析与错误映射，应用视图负责读取已保存比较结果；不创建账户、不重放来源、不写入保存产物，响应字段和 404/409 语义保持不变。
 
 聚焦命令 `D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_research_comparison_view.py trading/tests/test_research_comparison.py` 结果为 `20 passed`。既有 API 消费者测试确认比较过程不调用账户存储且不修改源文件。证据回执为 [`20261027_research_comparison_usecase_v1.json`](../../outputs/pipeline_receipts/20261027_research_comparison_usecase_v1.json)。该切片服务策略比较主线，不改变策略采用决定，`execution_admitted=false` 保持不变。
+
+
+## 2026-10-26 close: fixed D0/D1 paper production (2026-10-27)
+
+新的完整 2026-10-26 目标标的 StockDB close package 已接入已登记的 derived `fixed_daily` 账户，账户 generation 从 `2026-10-23` 推进到 `generation-2:2026-10-26`。固定低波策略的 D0/D1 合同现在明确记录 `close_date=2026-10-26`、`execution_day=2026-10-27`、`settlement_day=2026-10-28`，同日快照覆盖 20/20 标的，生成 20 个目标持仓、20 个 TARGET_PREVIEW 纸面订单，并生成 20 个联合纸面订单。
+
+本次同日候选清单为空，因此没有复用旧候选或把旧日期结果冒充当前候选；`candidate_count=0` 被保留在回执中。代码修复把解析后的执行日和结算日写入 D0/D1 回执顶层，聚焦 `next_close_d0_d1` 与 `post_close_d0_d1` 测试为 `27 passed`。完整回执为 [`20261027_post_close_derived_d0_d1_v5/contract_receipt.json`](../../outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5/contract_receipt.json)，摘要为 [`20261027_post_close_derived_d0_d1_v5_summary.json`](../../outputs/pipeline_receipts/20261027_post_close_derived_d0_d1_v5_summary.json)。
+
+本次仍为 `derived_stockdb_research_only` 与 `TARGET_PREVIEW`，没有 broker/THS 交互、没有持久账本变更，`execution_admitted=false` 保持不变。

@@ -1,0 +1,51 @@
+{
+  "schema": "stockdb_next_close_d0_d1_summary_v1",
+  "status": "COMPLETED_RESEARCH_ONLY_NEXT_CLOSE_D0_D1",
+  "created_at": "2026-10-27T03:05:21.769089+00:00",
+  "source_receipt": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_derived_d0_d1_v5\\contract_receipt.json",
+  "source_receipt_sha256": "cc24008a1f9b486ff51428df0fdb5af5c110c9652600b66c26ef73549d2c9482",
+  "close_date": "2026-10-26",
+  "execution_day": "2026-10-27",
+  "settlement_day": "2026-10-28",
+  "fixed_daily": {
+    "status": "committed",
+    "account_version": "generation-2:2026-10-26",
+    "generation": 2,
+    "execution_reference_mode": "derived_stockdb_research_only",
+    "last_completed_day": "2026-10-26"
+  },
+  "snapshot_coverage": {
+    "status": "COMPLETE",
+    "reason": null,
+    "requested_close_date": "2026-10-26",
+    "effective_session_dates": [
+      "2026-10-26"
+    ],
+    "requested_symbol_count": 20,
+    "available_symbol_count": 20,
+    "missing_symbols": []
+  },
+  "candidate_count": 0,
+  "fixed_target_count": 20,
+  "fixed_paper_order_count": 20,
+  "joint_paper_order_count": 20,
+  "projection_mode": "TARGET_PREVIEW",
+  "broker_interacted": false,
+  "ths_interacted": false,
+  "persistent_ledger_mutated": false,
+  "execution_admitted": false,
+  "task_measurement": {
+    "schema": "local_task_measurement_v1",
+    "started_at": "2026-10-27T03:05:21.769089+00:00",
+    "finished_at": "2026-10-27T03:05:22.182107+00:00",
+    "wall_seconds": 0.412916,
+    "clock_basis": "local_monotonic_wall_clock",
+    "external_provider_cost_cny": null,
+    "execution_admitted": false
+  },
+  "limitations": [
+    "Targets are strategy-adapter inputs and must already be same-day outputs.",
+    "StockDB rows are local read-only observations; no PIT or corporate-action promotion occurs.",
+    "Paper fills are shared Ledger projections, not broker fills or THS instructions."
+  ]
+}

@@ -464,6 +464,8 @@ def run_contract(source_manifest: str | Path, output_dir: str | Path, *,
     started_at = receipt_base_created_at = datetime.now(timezone.utc).isoformat()
     receipt_base = {
         "schema": SCHEMA, "status": "CAPTURING_D0_D1", "created_at": receipt_base_created_at,
+        "close_date": close_date, "execution_day": execution_day,
+        "settlement_day": settlement_day,
         "execution_admitted": False, "broker_interacted": False, "ths_interacted": False,
         "persistent_ledger_mutated": False, "input_fingerprint": fingerprint,
         "fingerprint_inputs": fingerprint_inputs, "reused_existing_run": False,

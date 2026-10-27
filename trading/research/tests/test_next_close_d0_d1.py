@@ -157,6 +157,9 @@ def test_next_close_resolves_d0_d1_dates_from_pinned_calendar(tmp_path, monkeypa
         initial_cash=100000.0)
 
     assert receipt["status"] == contract.STATUS
+    assert receipt["close_date"] == DAY
+    assert receipt["execution_day"] == "2026-10-27"
+    assert receipt["settlement_day"] == "2026-10-28"
     assert receipt["time_semantics"]["source_day"] == DAY
     assert receipt["calendar"]["execution"]["status"] == "resolved_authoritative_static_calendar"
     assert receipt["fingerprint_inputs"]["execution_day"] == "2026-10-27"
