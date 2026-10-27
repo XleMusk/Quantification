@@ -725,3 +725,10 @@ F2 新增共享 `latest_on_or_before_cutoff_v1` 来源选择器，Wayback 探针
 U02 新增隔离本地 HTTP 观测探针，实际完成 CSV 上传、同幂等键 POST、worker 完成、lifecycle/result 查询和三个结果文件下载；回执为 `COMPLETED_LOCAL_RESEARCH_HTTP_CHAIN`。这是本地合成研究链证据，不是浏览器、THS 或账户证据。
 
 本轮新增工作包测试：post-close focused 57 passed；F2 selection/Wayback/source snapshot/dispatch 33 passed；U02 真实进程链 1 passed。
+
+
+## Weekly research review v3 (2026-10-27)
+
+本周复盘回执 [`20261027_weekly_review_receipt_v3.json`](../../outputs/weekly_reviews/20261027_weekly_review_receipt_v3.json) 已生成。六策略同快照比较覆盖 184 个会话且全部保持 `STOP_RESEARCH_ONLY`；2026-10-26 全市场收市覆盖仍为 226/5211 行，显式 20 标的固定子集为完整研究包；F2 原始快照桥接仍为 18 行、0 个 ready fact；U02 本地 HTTP 链已完成。
+
+最大阻碍仍是完整全市场 StockDB 收市包、F2 决策日前 retrieval/as-of/revision 和授权 THS 只读导出。下一收市日沿 staged post-close 执行，保持缺失显式、无补值、无真实渠道操作。
