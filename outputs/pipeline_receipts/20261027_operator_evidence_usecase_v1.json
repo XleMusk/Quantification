@@ -1,0 +1,38 @@
+{
+  "schema": "operator_evidence_usecase_receipt_v1",
+  "status": "VERIFIED_LOCAL_READONLY_USECASE",
+  "created_at": "2026-10-27T11:29:48.954105+08:00",
+  "journey": "operator_strategy_evidence_review",
+  "design_decision": "C_api_task_result_boundaries",
+  "execution_admitted": false,
+  "automatic_promotion": false,
+  "account_mutated": false,
+  "change": {
+    "application_module": "trading/research/operator_evidence_view.py",
+    "route": "GET /api/trading/operator-package/evidence",
+    "behavior": "HTTP route delegates saved evidence-card read model and maps missing/invalid artifacts to existing 404/409 responses"
+  },
+  "tests": {
+    "command": "D:/Quantification/env/python.exe -m pytest -q trading/research/tests/test_operator_evidence_view.py trading/tests/test_api_operator_package.py",
+    "result": "41 passed",
+    "consumer_acceptance": "existing operator-package tests passed through the delegated route helpers"
+  },
+  "source_files": [
+    {
+      "path": "trading/research/operator_evidence_view.py",
+      "sha256": "0c1f948b746c64c0f305fcce2c80f4da83fc86a610c1754f008de34599fd58e5"
+    },
+    {
+      "path": "trading/research/tests/test_operator_evidence_view.py",
+      "sha256": "9355e8f597908ccc2a7c3f974404dbc95a905230905693a7322b15af1db5cb07"
+    },
+    {
+      "path": "trading/api.py",
+      "sha256": "0480eb30b7f6606d0dcf9bde3611a936b291930df2eb482c0ac8e61dfb120979"
+    }
+  ],
+  "limitations": [
+    "This view reads saved offline research artifacts only; it does not rerun research or mutate an account.",
+    "Promotion remains manual and disabled; no broker or THS channel is contacted."
+  ]
+}

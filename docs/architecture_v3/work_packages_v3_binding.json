@@ -1754,9 +1754,9 @@
     {
       "id": "U01",
       "domain": "workbench",
-      "result": "The saved same-sample strategy comparison now has an explicit read-only application view; HTTP routes delegate the comparison window and snapshot catalog while preserving response, error and no-mutation semantics.",
+      "result": "Saved strategy comparison and operator evidence review now have explicit read-only application views; HTTP routes retain existing response/error semantics and do not create tasks or accounts.",
       "state": "PARTIAL",
-      "next": "Use the extracted view as the application boundary for the next real comparison consumer; do not add a second account or task registry.",
+      "next": "Extract another route only when it serves a current paper/workbench consumer; do not add generic service layers.",
       "prohibition": "Do not let UI labels collapse paper, live and unknown states.",
       "actual_paths": [
         "trading/api.py",
@@ -1787,7 +1787,11 @@
         "trading/research/research_comparison_view.py",
         "trading/research/tests/test_research_comparison_view.py",
         "outputs/pipeline_receipts/20261027_research_comparison_usecase_v1.json",
-        "outputs/research_reports/20261027_research_comparison_usecase_v1.md"
+        "outputs/research_reports/20261027_research_comparison_usecase_v1.md",
+        "trading/research/operator_evidence_view.py",
+        "trading/research/tests/test_operator_evidence_view.py",
+        "outputs/pipeline_receipts/20261027_operator_evidence_usecase_v1.json",
+        "outputs/research_reports/20261027_operator_evidence_usecase_v1.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -1813,7 +1817,11 @@
         "trading/research/research_comparison_view.py",
         "trading/research/tests/test_research_comparison_view.py",
         "outputs/pipeline_receipts/20261027_research_comparison_usecase_v1.json",
-        "outputs/research_reports/20261027_research_comparison_usecase_v1.md"
+        "outputs/research_reports/20261027_research_comparison_usecase_v1.md",
+        "trading/research/operator_evidence_view.py",
+        "trading/research/tests/test_operator_evidence_view.py",
+        "outputs/pipeline_receipts/20261027_operator_evidence_usecase_v1.json",
+        "outputs/research_reports/20261027_operator_evidence_usecase_v1.md"
       ],
       "acceptance": "The same-sample comparison and snapshot endpoints delegate to one read-only application view, preserve existing response/error semantics, and pass focused view plus API consumer tests without account or source mutation."
     },

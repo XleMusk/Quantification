@@ -824,3 +824,10 @@ F2 的合成 vertical slice 与 bridge 测试夹具已同步改为同季度同�
 最新 D0/D1 纸面结果已生成 [`20261027_paper_pipeline_lineage_v4.json`](../../outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v4.json)，并由候选库绑定 v6 接入。此次修复了 lineage 的实际语义：Signal 阶段从 fixed paper package 与 candidate manifest 派生策略列表，2026-10-26 输入实际只包含 `low_volatility_252_20`，`candidate_count=0`；不会再把旧的半动量候选写入当前 lineage。
 
 lineage 继续贯通 StockDB Data、Signal、Target Portfolio、Orders、offline BrokerAdapter reference、MODELED Fill 和 projected Cash/Position；没有 broker/THS 提交、没有持久账户变更，`execution_admitted=false` 保持不变。相关回归测试 `2 passed`。
+
+
+## Google design C: operator evidence application view (2026-10-27)
+
+工作台策略证据审查已从 [`trading/api.py`](../../trading/api.py) 提取为 [`trading/research/operator_evidence_view.py`](../../trading/research/operator_evidence_view.py)。`GET /operator-package/evidence` 现在只负责 HTTP 状态映射，应用视图读取已保存的证据卡、晋级审查、策略看板、稳健性诊断和解释性产物；不会重跑研究、修改账本或访问 broker/THS。
+
+聚焦验证命令结果为 `41 passed`，证据回执为 [`20261027_operator_evidence_usecase_v1.json`](../../outputs/pipeline_receipts/20261027_operator_evidence_usecase_v1.json)。`execution_admitted=false`、自动晋级关闭保持不变。
