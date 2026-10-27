@@ -23,6 +23,7 @@ import subprocess
 
 from ..contracts import MARKET_TZ
 from ..settings import DATA_ROOT, ROOT
+from . import daily_refresh_policy as command_policy
 from . import opening_daily, system_daily_command_child as command_child
 from .shortline_native_preopen_forward import _lock, _source
 from .leader_daily_signals import _calendar_view
@@ -33,19 +34,7 @@ FLAGS = {"research_only": True, "candidate_panel_only": True,
     "execution_admitted": False, "selection_enabled": False,
     "strategy_validated": False, "broker_interacted": False,
     "model_refit": False, "network_accessed": False, "user_account_mutated": False}
-ALLOWED = {"baostock-bulk-extras", "leader-close-publication", "leader-recent-source-preview",
-    "leader-eight-type-forward-register", "leader-eight-type-split-forward",
-    "leader-environment", "leader-identity", "leader-identity-episodes", "leader-eight-type-inputs",
-    "leader-eight-type-paper", "leader-eight-type-forward", "leader-published-forward",
-    "recent-source-qlib-provider", "recent-source-alpha158", "recent-source-alpha158-target-publication",
-    "recent-source-alpha158-forward-run", "shortline-native-preopen-forward",
-    "leader-dated-catchup-inputs", "leader-dated-catchup-paper",
-    "leader-dated-identity", "leader-dated-catchup-forward", "leader-eight-type-residual",
-    "leader-known-identity-paper", "leader-entry-confirmation-inputs", "leader-entry-comparison",
-    "leader-entry-comparison-forward", "seat-append-source-audit", "seat-append-dated-inputs",
-    "seat-append-forward", "seat-hypothesis-dated-inputs", "seat-hypothesis-dated-forward", "seat-daily",
-    "seat-collect", "seat-disclosure-catalog", "leader-type-router-paper", "leader-type-router-forward",
-    "native-intraday-paper", "leader-type-router-runtime-repair"}
+ALLOWED = command_policy.ALLOWED
 
 
 def _attached_recipe(kind):
@@ -135,39 +124,7 @@ def _set(argv, flag, values):
 
 
 def _command(argv):
-    argv = list(argv)
-    if any(Path(token).name == "run_committee.py" for token in argv):
-        index = next(i for i, token in enumerate(argv) if Path(token).name == "run_committee.py")
-        argv = argv[index+1:]
-    if not argv or argv[0] not in ALLOWED or any(value in argv for value in
-            ("--save-next", "--refit", "--train", "--submit", "--live")):
-        raise ValueError("Only the fixed existing research production commands are supported")
-    if argv[0] == "leader-eight-type-residual" and argv[1:2] not in (["publish"], ["forward"]):
-        raise ValueError("The attached residual method may only publish or consume its existing registration")
-    if argv[0] == "leader-known-identity-paper" and argv[1:2] not in (["publish"], ["forward"]):
-        raise ValueError("The attached known-identity method may only publish or consume its existing registration")
-    if argv[0] == "leader-entry-comparison" and argv[1:2] != ["publish"]:
-        raise ValueError("The attached entry comparison may only publish its existing registration")
-    if ((argv[0] == "leader-type-router-paper" and argv[1:2] != ["publish"])
-            or (argv[0] == "leader-type-router-forward" and argv[1:2] != ["run"])):
-        raise ValueError("The attached router may only publish or consume its existing registration")
-    if argv[0] == "seat-daily" and argv[1:2] != ["project-static-audit"]:
-        raise ValueError("The seat helper may only project the saved exact source audit")
-    if argv[0] == "seat-disclosure-catalog" and argv[1:2] not in (["batch"], ["append"]):
-        raise ValueError("The daily source may only build or append its exact saved disclosure batch")
-    if argv[0] == "seat-collect" and ("--execute" not in argv or _values(argv, "--max-pages") != ["3"]
-            or len(_values(argv, "--start")) != 1 or _values(argv, "--start") != _values(argv, "--end")):
-        raise ValueError("Daily disclosure collection requires one exact day and the fixed three-page bound")
-    if argv[0] == "native-intraday-paper" and (_values(argv, "--phase") != ["closing"]
-            or any(len(_values(argv, flag)) != 1 for flag in ("--run-dir", "--plan", "--prior-package", "--quote"))):
-        raise ValueError("Daily refresh may only close an existing explicit native PAPER session")
-    if argv[0] == "leader-type-router-runtime-repair":
-        if argv[1:2] not in (["publish"], ["forward"]):
-            raise ValueError("The daily supervisor may only publish/consume an existing explicit runtime repair")
-        return [str(ROOT / "env/python.exe"), "-B", "-X", "utf8", "-m",
-            "trading.research.leader_type_router_runtime_repair", *argv[1:]]
-    return [str(ROOT / "env/python.exe"), "-B", "-X", "utf8", str(ROOT / "run_committee.py"), *argv]
-
+    return command_policy.command(argv, root=ROOT)
 
 def _command_flags(step):
     if step["command"][0] in {"seat-append-source-audit", "seat-collect"}:
