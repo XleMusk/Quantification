@@ -1,0 +1,200 @@
+{
+  "schema": "quantification_weekly_review_receipt_v1",
+  "reviewed_at": "2026-10-27T00:47:19.436096+00:00",
+  "period": "2026-10-25..2026-10-27",
+  "execution_admitted": false,
+  "headline": "Staged post-close, F2 source selection, six-strategy comparison and local workbench evidence advanced; full-universe close and real channel/PIT gates remain closed.",
+  "strategy_performance": {
+    "full_panel_common_window": {
+      "window": {
+        "start": "2026-01-05",
+        "end": "2026-10-13",
+        "sessions": 184,
+        "basis": "intersection_of_saved_daily_account_dates"
+      },
+      "stockdb_snapshot": "D:\\QuantificationData\\trading\\research\\full_market\\stockdb_2024_0101_1013_current_cutoff_v1",
+      "strategies": [
+        {
+          "strategy_id": "fixed_low_volatility_252_20",
+          "research_decision": "STOP_RESEARCH_ONLY",
+          "net_return": -0.04226501032578045,
+          "max_drawdown": -0.11485095485277308,
+          "sharpe_zero_rf_252": -0.6413571648546545,
+          "orders": 72,
+          "fills": 97
+        },
+        {
+          "strategy_id": "low_vol_half_momentum_20",
+          "research_decision": "STOP_RESEARCH_ONLY",
+          "net_return": -0.0551594360392238,
+          "max_drawdown": -0.16580549050519688,
+          "sharpe_zero_rf_252": -0.38523433723920053,
+          "orders": 201,
+          "fills": 355
+        },
+        {
+          "strategy_id": "momentum_12_1_20",
+          "research_decision": "STOP_RESEARCH_ONLY",
+          "net_return": -0.007450309324175897,
+          "max_drawdown": -0.04527412168052858,
+          "sharpe_zero_rf_252": -0.1323501415133944,
+          "orders": 45,
+          "fills": 57
+        },
+        {
+          "strategy_id": "mature_factor_balanced_ridge",
+          "research_decision": "STOP_RESEARCH_ONLY",
+          "net_return": -0.06265745540096612,
+          "max_drawdown": -0.18138374409643643,
+          "sharpe_zero_rf_252": -0.40749624208934976,
+          "orders": 94,
+          "fills": 188
+        },
+        {
+          "strategy_id": "alpha158_lgbm_cap500",
+          "research_decision": "STOP_RESEARCH_ONLY",
+          "net_return": -0.07324878571428572,
+          "max_drawdown": -0.28681717524745354,
+          "sharpe_zero_rf_252": -0.34695216716991845,
+          "orders": 436,
+          "fills": 816
+        },
+        {
+          "strategy_id": "mature_factor_balanced_ridge_h60",
+          "research_decision": "STOP_RESEARCH_ONLY",
+          "net_return": -0.03868714940865037,
+          "max_drawdown": -0.1910393802223842,
+          "sharpe_zero_rf_252": -0.2530488822687726,
+          "orders": 94,
+          "fills": 188
+        }
+      ],
+      "paper_allowed": false,
+      "promotion_allowed": false
+    },
+    "mature_factor_horizon": {
+      "status": "COMPLETED_RESEARCH_ONLY_HORIZON_COMPARISON",
+      "decision": "NO_ADOPTION_RESEARCH_ONLY",
+      "baseline": {
+        "strategy_id": "stockdb_factor_monthly_ridge_v1",
+        "horizon_sessions": null,
+        "sessions": 648,
+        "net_return": 0.36976350000000013,
+        "max_drawdown": -0.18138374409643643,
+        "sharpe_zero_rf_252": 0.7614069513373845
+      },
+      "variant": {
+        "strategy_id": "mature_factor_balanced_ridge_h60",
+        "horizon_sessions": 60,
+        "sessions": 648,
+        "net_return": 0.32176678571428585,
+        "max_drawdown": -0.1910393802223842,
+        "sharpe_zero_rf_252": 0.7394977565296924
+      },
+      "variant_minus_baseline": {
+        "net_return": -0.04799671428571428,
+        "max_drawdown": -0.009655636125947775,
+        "sharpe_zero_rf_252": -0.021909194807692045
+      },
+      "paper_allowed": false,
+      "promotion_allowed": false,
+      "next_gate": "PIT-complete untouched holdout before horizon selection"
+    },
+    "public_seat": {
+      "decision": "CONTINUE_RESEARCH_ONLY",
+      "case_counts": {
+        "total": 9,
+        "completed": 9,
+        "failed_or_stopped": 0
+      },
+      "completed_sessions": 2169,
+      "completed_orders": 6133,
+      "completed_fills": 9173,
+      "publication_timing_verified": false,
+      "pit_membership_verified": false,
+      "causal_seat_alpha_verified": false
+    }
+  },
+  "data_quality": {
+    "full_market_close": {
+      "status": "BLOCKED_DATA_STOCKDB_CLOSE_COVERAGE",
+      "day": "2026-10-26",
+      "requested_symbols": 5211,
+      "available_daily_rows": 226,
+      "missing_daily_rows": 4985,
+      "available_minute_rows": 0,
+      "reason": "Native StockDB service returned only 226/5211 daily rows for the full dated universe, so the exact complete close package required by fixed_daily/post_close cannot be claimed or consumed."
+    },
+    "fixed_target_subset": {
+      "day": "2026-10-26",
+      "status": "complete_stockdb_close_package_research_only",
+      "requested_symbol_count": 20,
+      "available_symbol_count": 20,
+      "missing_symbols": [],
+      "roster_mode": "explicit_snapshot_subset",
+      "full_dated_roster_inventory_complete": true
+    },
+    "missing_policy": "preserve_missing_no_imputation",
+    "coverage_receipt": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261026_stockdb_close_coverage_v1.json",
+      "sha256": "0d8fd0d429e26d1e2fde3333c11198dd8980698aa9066bdf01d2cb7311bead63"
+    }
+  },
+  "f2_evidence": {
+    "status": "BLOCKED_DATA",
+    "rows": 18,
+    "ready_rows": 0,
+    "fact_rows": 0,
+    "historical_asof_revision": "blocked",
+    "evidence": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_f2_raw_snapshot_bridge_v1.json",
+      "sha256": "a26a514a21d70348eb341f08571562037d5c1d48d8136e623be9925c00a2ab31"
+    }
+  },
+  "ths_evidence": {
+    "synthetic_readback": "available",
+    "authorized_read_only_observation": false,
+    "client_interacted": false,
+    "prefill_allowed": false,
+    "next_required": "authorized read-only account/quote export with timestamp and source hash"
+  },
+  "workbench_evidence": {
+    "status": "COMPLETED_LOCAL_RESEARCH_HTTP_CHAIN",
+    "same_job_id": true,
+    "downloads_available": true,
+    "account_or_broker_evidence": false,
+    "receipt": {
+      "path": "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_workbench_u02_http_observation_v1.json",
+      "sha256": "a0e811bd6b6f6d9d56cc62e0716baac98e304a43948209eb1fb69257e7e7f76f"
+    }
+  },
+  "largest_blockers": [
+    {
+      "id": "D0",
+      "blocker": "full-universe 2026-10-26 StockDB close remains incomplete",
+      "effect": "full-market fixed_daily/post-close cannot be claimed; explicit 20-symbol fixed subset remains research-only"
+    },
+    {
+      "id": "F2",
+      "blocker": "pre-decision retrieval/as-of/revision evidence remains missing",
+      "effect": "real F2 facts and factors remain BLOCKED_DATA"
+    },
+    {
+      "id": "T1",
+      "blocker": "authorized THS read-only export remains missing",
+      "effect": "no real account/quote/readback or prefill evidence"
+    }
+  ],
+  "route_changes": [
+    "On the next close, use the staged coordinator with the latest RefreshTracker state and do not fabricate missing rows.",
+    "Keep the six-strategy panel on one snapshot/cost/window and require PIT plus untouched-forward evidence before adoption.",
+    "Keep synthetic THS readback and local HTTP workbench evidence separate from real-channel evidence."
+  ],
+  "execution_boundary": "No login, order, cancellation, transfer, paid purchase or THS client operation was attempted.",
+  "evidence_added": [
+    "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_post_close_stage_refactor_v1.json",
+    "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_f2_source_selection_000002_v1.json",
+    "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_workbench_u02_http_observation_v1.json",
+    "D:\\Quantification\\outputs\\pipeline_receipts\\20261027_research_adoption_rollup_v10.json"
+  ]
+}
