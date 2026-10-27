@@ -3047,7 +3047,7 @@
       "domain": "research",
       "result": "The no-argument adoption rollup now binds the latest fixed D0/D1 receipt, current-window comparison, full panel and candidate freshness gate by default; v12 preserves explicit fixed-only and stale-candidate outcomes.",
       "state": "VERIFIED_LOCAL_RESEARCH_ONLY",
-      "next": "On the next complete close, replace the stale candidate gate with a fresh same-day candidate manifest, rerun D0/D1 and regenerate the rollup/binding; keep PIT, forward, corporate-action and channel gates separate.",
+      "next": "On the next complete close, replace stale candidate gate with fresh same-day candidate manifest, rerun D0/D1 and regenerate rollup/binding; cost-pressure sensitivity is bound as research-only and does not change adoption.",
       "prohibition": "Do not treat the rollup as strategy validation, paper/live promotion or a substitute for PIT/forward/THS evidence.",
       "actual_paths": [
         "trading/research/research_adoption_rollup.py",
@@ -3115,7 +3115,9 @@
         "outputs/pipeline_receipts/20261027_candidate_library_binding_v9.json",
         "outputs/research_reports/20261027_candidate_library_binding_v9.md",
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v12.json",
-        "outputs/research_reports/20261027_research_adoption_rollup_v12.md"
+        "outputs/research_reports/20261027_research_adoption_rollup_v12.md",
+        "outputs/pipeline_receipts/20261027_research_adoption_rollup_v13.json",
+        "outputs/research_reports/20261027_research_adoption_rollup_v13.md"
       ],
       "evidence_updated_on": "2026-10-27",
       "evidence": [
@@ -3184,7 +3186,9 @@
         "outputs/pipeline_receipts/20261027_candidate_library_binding_v9.json",
         "outputs/research_reports/20261027_candidate_library_binding_v9.md",
         "outputs/pipeline_receipts/20261027_research_adoption_rollup_v12.json",
-        "outputs/research_reports/20261027_research_adoption_rollup_v12.md"
+        "outputs/research_reports/20261027_research_adoption_rollup_v12.md",
+        "outputs/pipeline_receipts/20261027_research_adoption_rollup_v13.json",
+        "outputs/research_reports/20261027_research_adoption_rollup_v13.md"
       ],
       "acceptance": "The rollup binds candidate v2, mature-factor horizon, shortline gate v3, the retained joint target gate, the complete public-seat replay gate, candidate same-day freshness, value-size retrospective projection, leader partial cross-year projection, a six-strategy full-panel common-window receipt and same-window 50/100 bps cost-pressure evidence on one StockDB snapshot. It records all rows as research-only, keeps strategy_validated=false, paper_allowed=false, promotion_allowed=false and execution_admitted=false, and passes the focused rollup, comparison and candidate-library tests. PIT, untouched-forward, corporate-action and channel evidence remain separate gates."
     },
