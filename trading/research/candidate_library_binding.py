@@ -23,6 +23,7 @@ DEFAULT_CATALOG = Path("docs/architecture_v3/candidate_strategy_catalog_20261024
 DEFAULT_ROLLUP = Path("outputs/pipeline_receipts/20261027_research_adoption_rollup_v10.json")
 DEFAULT_PANEL = Path("outputs/pipeline_receipts/20261027_full_panel_common_window_strategy_comparison_v1.json")
 DEFAULT_THS_READBACK = Path("outputs/pipeline_receipts/20261027_ths_target_readback_current_synthetic_v1.json")
+DEFAULT_LINEAGE = Path("outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v2.json")
 DEFAULT_OUTPUT = Path("outputs/pipeline_receipts/20261027_candidate_library_binding_v1.json")
 
 
@@ -111,6 +112,7 @@ def bind_library(
     rollup_path: str | Path = DEFAULT_ROLLUP,
     panel_path: str | Path = DEFAULT_PANEL,
     ths_readback_path: str | Path = DEFAULT_THS_READBACK,
+    lineage_path: str | Path = DEFAULT_LINEAGE,
     output_path: str | Path = DEFAULT_OUTPUT,
 ) -> dict[str, Any]:
     """Join three saved receipts into one reproducible candidate library."""
@@ -118,6 +120,7 @@ def bind_library(
     paths = {name: Path(value).expanduser().resolve() for name, value in {
         "catalog": catalog_path, "adoption_rollup": rollup_path, "full_panel": panel_path,
         "ths_readback": ths_readback_path,
+        "paper_lineage": lineage_path,
     }.items()}
     for name, path in paths.items():
         if not path.is_file():
@@ -126,10 +129,14 @@ def bind_library(
     rollup = _read(paths["adoption_rollup"])
     panel = _read(paths["full_panel"])
     ths_readback = _read(paths["ths_readback"])
+    lineage = _read(paths["paper_lineage"])
     _require_boundary("catalog", catalog)
     _require_boundary("adoption_rollup", rollup)
     _require_boundary("full_panel", panel)
     ths_binding = _ths_binding(ths_readback)
+    if lineage.get("schema") != "quantification_paper_pipeline_lineage_v1" or lineage.get("status") != "VERIFIED_LOCAL_RESEARCH_ONLY_PAPER_LINEAGE":
+        raise ValueError("paper lineage is not a verified research-only lineage")
+    _require_boundary("paper_lineage", lineage)
     if rollup.get("status") != "COMPLETED_RESEARCH_ONLY_ADOPTION_ROLLUP":
         raise ValueError("adoption rollup is not a completed research-only rollup")
     if panel.get("status") != "COMPLETED_RESEARCH_ONLY_FULL_PANEL_COMMON_WINDOW":
@@ -208,6 +215,7 @@ def bind_library(
             "source": _ref(paths["ths_readback"]),
             **ths_binding,
         },
+        "paper_lineage_binding": {"source": _ref(paths["paper_lineage"]), "status": lineage["status"]},
         "candidate_count": len(bound),
         "bound_candidates": bound,
         "adoption_summary": deepcopy(rollup.get("candidate_summary")),
@@ -230,9 +238,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--rollup", type=Path, default=DEFAULT_ROLLUP)
     parser.add_argument("--panel", type=Path, default=DEFAULT_PANEL)
     parser.add_argument("--ths-readback", type=Path, default=DEFAULT_THS_READBACK)
+    parser.add_argument("--paper-lineage", type=Path, default=DEFAULT_LINEAGE)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     args = parser.parse_args(argv)
-    result = bind_library(args.catalog, args.rollup, args.panel, args.ths_readback, args.output)
+    result = bind_library(args.catalog, args.rollup, args.panel, args.ths_readback, args.paper_lineage, args.output)
     print(json.dumps({
         "status": result["status"], "candidate_count": result["candidate_count"],
         "execution_admitted": False, "output": result["output"],

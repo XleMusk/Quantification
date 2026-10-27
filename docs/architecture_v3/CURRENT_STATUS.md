@@ -780,3 +780,5 @@ F2 fact bridge 现在把 `source_snapshot_id`、`source_sha256`、`snapshot_sour
 补充生成了 [`20261027_paper_pipeline_lineage_v1.json`](../../outputs/pipeline_receipts/20261027_paper_pipeline_lineage_v1.json)：将同一 2026-10-23 D0/D1 保存产物按哈希串起 Data、Signal、TARGET_PREVIEW、纸面 Orders、`REFERENCE_PAYLOAD_ONLY` BrokerAdapter、建模 Fill 和 Cash/Position。回执明确 22 个联合目标、22 个联合纸面订单、22 个 projected positions；Fill 数量不从订单数推断，BrokerAdapter 不代表真实 THS 交互。
 
 该 lineage 已收敛为可重复 CLI [`paper-pipeline-lineage`](../../run_committee.py)，重新读取并校验同一组保存回执后生成 v2；测试 `2 passed`，`py_compile` 通过。它只重建研究证据，不重跑策略、不访问外部渠道。
+
+候选库 v4 已将该 lineage receipt 作为必需 source binding，候选库现在可从规格和采用决定直接追到 D0/D1、THS synthetic readback 与 Data→Cash/Position stage map。回执为 [`20261027_candidate_library_binding_v4.json`](../../outputs/pipeline_receipts/20261027_candidate_library_binding_v4.json)，测试 `3 passed`。
